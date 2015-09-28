@@ -1,5 +1,7 @@
 # Eclipes Files #
 .metadata/
+.settings/
+.bin/
 
 *.class
 
