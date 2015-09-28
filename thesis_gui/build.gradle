@@ -1,0 +1,10 @@
+dependencies {
+	compile project(':thesis_core')
+}
+
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'thesis.gui.ThesisGUIApp'
+	}
+}

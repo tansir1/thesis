@@ -1,0 +1,5 @@
+//Declare all subprojects
+include 'thesis_core'
+include 'thesis_gui'
+
+rootProject.name = '../thesis_build_root'

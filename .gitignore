@@ -1,3 +1,7 @@
+# Gradle Files #
+**/.gradle/
+**/build/
+
 # Eclipes Files #
 .metadata/
 .settings/
