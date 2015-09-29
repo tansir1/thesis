@@ -2,4 +2,8 @@
 include 'thesis_core'
 include 'thesis_gui'
 
-rootProject.name = '../thesis_build_root'
+//rootProject.name = 'thesis_build_root'
+rootProject.name = 'thesis'
+
+project(':thesis_core').projectDir = new File('../thesis_core')
+project(':thesis_gui').projectDir = new File('../thesis_gui')
