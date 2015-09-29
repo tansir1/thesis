@@ -1,0 +1,16 @@
+dependencies {
+	compile project(':thesis_core')
+}
+
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'thesis.gui.ThesisGUIApp'
+	}
+}
+
+task deployLocal(type: Copy) {
+    from jar
+    from project(':thesis_core').jar
+    into "../deploy"
+}   
