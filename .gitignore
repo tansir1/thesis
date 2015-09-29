@@ -3,10 +3,10 @@
 **/build/
 
 # Eclipes Files #
-.metadata/
-.settings/
-.bin/
-.recommenders/
+**/.metadata/
+**/.settings/
+**/bin/
+**/.recommenders/
 
 *.class
 
