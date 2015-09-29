@@ -31,6 +31,7 @@ public class MainWindow
       frame.setJMenuBar(menuBar.getMenuBar());
 
       buildGUI();
+      frame.pack();
       frame.setVisible(true);
    }
 
