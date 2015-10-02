@@ -12,5 +12,7 @@ public class WorldTests
    {
       //TODO Implement me
       fail();
+      
+      //wc <-> cc
    }
 }

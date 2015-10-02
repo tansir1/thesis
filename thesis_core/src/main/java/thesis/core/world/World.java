@@ -5,12 +5,12 @@ public class World
    /**
     * Width of the rectangular world in kilometers.
     */
-   private float width;
+   private double width;
 
    /**
     * Height of the rectangular world in kilometers.
     */
-   private float height;
+   private double height;
 
    /**
     * The world is divided into this many rows.
@@ -23,6 +23,16 @@ public class World
    private int numCols;
 
    /**
+    * The lateral (vertical) distance in kilometers spanned by a row.
+    */
+   private double distPerRow;
+
+   /**
+    * The longitudinal (horizontal) distance in kilometers spanned by a column.
+    */
+   private double distPerCol;
+
+   /**
     * 
     * @param width
     *           Width of the rectangular world in kilometers.
@@ -33,7 +43,7 @@ public class World
     * @param numCols
     *           Divide the world in this many columns.
     */
-   public World(float width, float height, int numRows, int numCols)
+   public World(double width, double height, int numRows, int numCols)
    {
       if (width < 0)
       {
@@ -59,6 +69,9 @@ public class World
       this.height = height;
       this.numRows = numRows;
       this.numCols = numCols;
+
+      distPerRow = height / (numRows * 1.0);
+      distPerCol = width / (numCols * 1.0);
    }
 
    /**
@@ -66,7 +79,7 @@ public class World
     * 
     * @return Width of the world in kilometers.
     */
-   public float getWidth()
+   public double getWidth()
    {
       return width;
    }
@@ -76,7 +89,7 @@ public class World
     * 
     * @return Height of the world in kilometers.
     */
-   public float getHeight()
+   public double getHeight()
    {
       return height;
    }
@@ -104,6 +117,8 @@ public class World
    /**
     * Converts a physical world location to a discretized cell location.
     * 
+    * This allocates a new CellCoordinate.
+    * 
     * @param wc
     *           Convert this world location.
     * @return The discretized cell coordinates encapsulating the given world
@@ -115,17 +130,78 @@ public class World
       {
          throw new NullPointerException("wc cannot be null.");
       }
-      
-      return null;
+
+      int row = (int) (wc.getNorth() / distPerRow);
+      int col = (int) (wc.getEast() / distPerCol);
+
+      return new CellCoordinate(row, col);
    }
 
+   /**
+    * Converts a physical world location to a discretized cell location.
+    * 
+    * @param wc
+    *           Convert this world coordinate into a cell coordinate.
+    * @param cc
+    *           The value of the world coordinate conversion will be stored in
+    *           this cell coordinate.
+    */
+   public void convertWorldToCell(WorldCoordinate wc, CellCoordinate cc)
+   {
+      if (wc == null)
+      {
+         throw new NullPointerException("wc cannot be null.");
+      }
+
+      int row = (int) (wc.getNorth() / distPerRow);
+      int col = (int) (wc.getEast() / distPerCol);
+
+      cc.setCoordinate(row, col);
+   }
+
+   /**
+    * Converts the given cell location to a world location. The world location
+    * will be at the center of the cell.
+    * 
+    * This allocates a new WorldCoordinate.
+    * 
+    * @param cc
+    *           The coordinate to convert.
+    * @return The center of the cell in world coordinates.
+    */
    public WorldCoordinate convertCellToWorld(CellCoordinate cc)
    {
       if (cc == null)
       {
          throw new NullPointerException("cc cannot be null");
       }
-      
-      return null;
+
+      double north = cc.getRow() * distPerRow;
+      double east = cc.getColumn() * distPerCol;
+
+      return new WorldCoordinate(north, east);
+   }
+
+   /**
+    * Converts the given cell location to a world location. The world location
+    * will be at the center of the cell.
+    * 
+    * @param cc
+    *           The coordinate to convert.
+    * @param wc
+    *           The converted cell coordinate data will be stored in this world
+    *           coordinate.
+    */
+   public void convertCellToWorld(CellCoordinate cc, WorldCoordinate wc)
+   {
+      if (cc == null)
+      {
+         throw new NullPointerException("cc cannot be null");
+      }
+
+      double north = cc.getRow() * distPerRow;
+      double east = cc.getColumn() * distPerCol;
+
+      wc.setCoordinate(north, east);
    }
 }
