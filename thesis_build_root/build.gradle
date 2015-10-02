@@ -11,12 +11,5 @@ subprojects {
        jcenter()
     }
 
-    dependencies {
-    	compile files("$jdkHome/lib/tools.jar")
-    	compile 'org.slf4j:slf4j-api:1.7.12'
-    	
-        testCompile 'junit:junit:4.12'
-    }
-
-    version = '1.0'
+    version = '0.0.0'
 }
