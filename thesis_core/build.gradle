@@ -1,5 +1,7 @@
 def jdkHome = System.getenv("JAVA_HOME")
 
+apply plugin: 'java'
+
 dependencies {
 	compile files("$jdkHome/lib/tools.jar")
 	compile 'org.slf4j:slf4j-api:1.7.12'

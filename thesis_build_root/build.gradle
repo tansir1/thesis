@@ -1,15 +1,29 @@
 def jdkHome = System.getenv("JAVA_HOME")
 
+//Load the version number for the version.properties file
+Properties versProps = new Properties()
+versProps.load(new FileInputStream("../thesis_core/src/main/resources/thesis/core/version.properties"))
+def versionStr = versProps.getProperty("version.major")
+versionStr += "." + versProps.getProperty("version.minor")
+versionStr += "." + versProps.getProperty("version.patch")
+
+
+
 subprojects {
-    apply plugin: 'java'
+	//apply plugin: 'java'
 
-	targetCompatibility = "1.8"
-	sourceCompatibility = "1.8"
+	//targetCompatibility = "1.8"
+	//sourceCompatibility = "1.8"
 
-
-    repositories {
-       jcenter()
+	repositories {
+		//Where to download dependencies
+        jcenter()
+       
+		flatDir {
+			name "localDeploy"
+		    dirs "../localDeploy"
+	    }       
     }
-
-    version = '0.0.0'
+    
+    version = versionStr
 }
