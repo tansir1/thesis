@@ -1,5 +1,8 @@
 package thesis.core.world;
 
+/**
+ *Conversion routines between discrete grid coordinates and continuous world coordinates.
+ */
 public class World
 {
    /**
@@ -131,32 +134,31 @@ public class World
          throw new NullPointerException("wc cannot be null.");
       }
 
-      int row = (int) (wc.getNorth() / distPerRow);
-      int col = (int) (wc.getEast() / distPerCol);
-
-      return new CellCoordinate(row, col);
+      CellCoordinate to = new CellCoordinate();
+      convertWorldToCell(wc, to);
+      return to;
    }
 
    /**
     * Converts a physical world location to a discretized cell location.
     * 
-    * @param wc
+    * @param from
     *           Convert this world coordinate into a cell coordinate.
-    * @param cc
+    * @param to
     *           The value of the world coordinate conversion will be stored in
     *           this cell coordinate.
     */
-   public void convertWorldToCell(WorldCoordinate wc, CellCoordinate cc)
+   public void convertWorldToCell(WorldCoordinate from, CellCoordinate to)
    {
-      if (wc == null)
+      if (from == null)
       {
-         throw new NullPointerException("wc cannot be null.");
+         throw new NullPointerException("from cannot be null.");
       }
 
-      int row = (int) (wc.getNorth() / distPerRow);
-      int col = (int) (wc.getEast() / distPerCol);
+      int row = (int) (from.getNorth() / distPerRow);
+      int col = (int) (from.getEast() / distPerCol);
 
-      cc.setCoordinate(row, col);
+      to.setCoordinate(row, col);
    }
 
    /**
@@ -176,32 +178,31 @@ public class World
          throw new NullPointerException("cc cannot be null");
       }
 
-      double north = cc.getRow() * distPerRow;
-      double east = cc.getColumn() * distPerCol;
-
-      return new WorldCoordinate(north, east);
+      WorldCoordinate to = new WorldCoordinate();
+      convertCellToWorld(cc, to);
+      return to;
    }
 
    /**
     * Converts the given cell location to a world location. The world location
     * will be at the center of the cell.
     * 
-    * @param cc
+    * @param from
     *           The coordinate to convert.
-    * @param wc
+    * @param to
     *           The converted cell coordinate data will be stored in this world
     *           coordinate.
     */
-   public void convertCellToWorld(CellCoordinate cc, WorldCoordinate wc)
+   public void convertCellToWorld(CellCoordinate from, WorldCoordinate to)
    {
-      if (cc == null)
+      if (from == null)
       {
-         throw new NullPointerException("cc cannot be null");
+         throw new NullPointerException("from cannot be null");
       }
 
-      double north = cc.getRow() * distPerRow;
-      double east = cc.getColumn() * distPerCol;
+      double north = from.getRow() * distPerRow + (distPerRow * 0.5);
+      double east = from.getColumn() * distPerCol + (distPerCol * 0.5);
 
-      wc.setCoordinate(north, east);
+      to.setCoordinate(north, east);
    }
 }
