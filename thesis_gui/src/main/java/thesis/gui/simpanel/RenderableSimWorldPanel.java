@@ -142,7 +142,6 @@ public class RenderableSimWorldPanel extends JPanel
          CellCoordinate cc = pixelsToCellCoordinate(x, y);
          
          String locationTxt = wc.toString() + " - " + cc.toString();
-         System.out.println(locationTxt);
          g2d.setColor(Color.YELLOW);
          g2d.drawString(locationTxt, 5, getHeight() - 10);
       }
@@ -200,14 +199,12 @@ public class RenderableSimWorldPanel extends JPanel
       public void mouseEntered(MouseEvent evt)
       {
          mouseOver = true;
-         System.out.println("mouseEntered");
       }
 
       @Override
       public void mouseExited(MouseEvent evt)
       {
          mouseOver = false;
-         System.out.println("mouseExited");
       }
 
       @Override
