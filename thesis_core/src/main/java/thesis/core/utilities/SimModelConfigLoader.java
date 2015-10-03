@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *Parses a simulation configuration file.
+ * Parses a simulation configuration file.
  */
 public class SimModelConfigLoader
 {
@@ -14,12 +14,12 @@ public class SimModelConfigLoader
     * Parsed configuration data is stored here.
     */
    private SimModelConfig cfg;
-   
+
    public SimModelConfigLoader()
    {
       cfg = new SimModelConfig();
    }
-   
+
    /**
     * Load a simulation configuration file.
     * 
@@ -30,28 +30,28 @@ public class SimModelConfigLoader
    public boolean loadFile(File propFile)
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      
+
       PropertiesLoader propsLdr = new PropertiesLoader();
       boolean success = propsLdr.loadFile(propFile);
-      
-      if(success)
+
+      if (success)
       {
-         logger.info("Loading simulation configuration from {}.", propFile);
-         
+         logger.debug("Loading simulation configuration from {}.", propFile);
+
          loadWorldData(propsLdr);
-         
+
          success = loadGenericSimData(propsLdr, logger);
-         
+
       }
-      
-      if(!success)
+
+      if (!success)
       {
          logger.error("Failed to load simulation configuration from {}.", propFile);
       }
-      
+
       return success;
    }
-   
+
    private void loadWorldData(PropertiesLoader props)
    {
       cfg.setWorldWidth(props.getDouble("world.width", 100.0));
@@ -59,7 +59,7 @@ public class SimModelConfigLoader
       cfg.setNumWorldRows(props.getInt("world.rows", 10));
       cfg.setNumWorldCols(props.getInt("world.cols", 10));
    }
-   
+
    private boolean loadGenericSimData(PropertiesLoader props, Logger logger)
    {
       boolean success = true;
@@ -73,5 +73,15 @@ public class SimModelConfigLoader
          success = false;
       }
       return success;
+   }
+
+   /**
+    * Get the configuration data.  Only useful after parsing a configuration file via {@link #loadFile(File)}.
+    * 
+    * @return The configuration data.
+    */
+   public SimModelConfig getConfigData()
+   {
+      return cfg;
    }
 }

@@ -33,7 +33,7 @@ public class SimModel
    public void init(SimModelConfig cfg)
    {
       world = new World(cfg.getWorldWidth(), cfg.getWorldHeight(), cfg.getNumWorldRows(), cfg.getNumWorldCols());
-      logger.info("Sim model initialized with:\n{}", cfg);
+      logger.debug("Sim model initialized with:\n{}", cfg);
    }
 
    /**
