@@ -89,6 +89,28 @@ public class PropertiesLoader
    }
 
    /**
+    * Read an integer value from the properties file and throw an exception if
+    * the value is not found.
+    * 
+    * @param key
+    *           The key to the property to read.
+    * @return The parsed value from the file.
+    * @throws RuntimeException
+    *            Thrown if the specified key is not found in the properties
+    *            file.
+    */
+   public int getInt(String key) throws Exception
+   {
+      String propsVal = props.getProperty(key);
+      if (propsVal == null)
+      {
+         throw new RuntimeException("No value found for key: " + key);
+      }
+
+      return Integer.parseInt(propsVal);
+   }
+
+   /**
     * Read a double value from the properties file.
     * 
     * @param key
