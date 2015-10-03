@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import thesis.core.SimModel;
-import thesis.gui.simworld.RenderableSimWorldWidget;
+import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 /**
  * Contains the GUI application's main window frame.
@@ -17,8 +17,8 @@ import thesis.gui.simworld.RenderableSimWorldWidget;
 public class MainWindow
 {
    private JFrame frame;
-   private RenderableSimWorldWidget simWorldWidget;
-   
+   private RenderableSimWorldPanel simPanel;
+
    public MainWindow()
    {
       frame = new JFrame("Thesis Simulator");
@@ -42,9 +42,9 @@ public class MainWindow
 
    private void buildGUI()
    {
-      simWorldWidget = new RenderableSimWorldWidget();
+      simPanel = new RenderableSimWorldPanel();
       frame.setLayout(new BorderLayout());
-      frame.add(simWorldWidget.getRenderable(), BorderLayout.CENTER);
+      frame.add(simPanel, BorderLayout.CENTER);
    }
 
    protected void onClose()
@@ -70,9 +70,15 @@ public class MainWindow
    {
       return frame;
    }
-   
+
+   /**
+    * Connect the event listeners of the GUI to the event triggers in the model.
+    * 
+    * @param simModel
+    *           The model to listen to and to render.
+    */
    public void connectSimModel(SimModel simModel)
    {
-      //TODO Connect map to renderer
+      simPanel.connectSimModel(simModel);
    }
 }

@@ -1,4 +1,4 @@
-package thesis.gui.simworld;
+package thesis.gui.simpanel;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -7,12 +7,13 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import thesis.core.SimModel;
 import thesis.core.world.World;
 
 @SuppressWarnings("serial")
-class RenderableSimWorldPanel extends JPanel
+public class RenderableSimWorldPanel extends JPanel
 {
-   private World world;
+   private SimModel simModel;
    
    public RenderableSimWorldPanel()
    {
@@ -21,9 +22,9 @@ class RenderableSimWorldPanel extends JPanel
       setPreferredSize(minSz);
    }
    
-   public void setWorld(World world)
+   public void connectSimModel(SimModel simModel)
    {
-      this.world = world;
+      this.simModel = simModel;
    }
    
    @Override
@@ -37,10 +38,10 @@ class RenderableSimWorldPanel extends JPanel
       g2d.fillRect(0, 0, getWidth(), getHeight());
 
       //Draw nothing if the world isn't ready yet
-      if(world == null)
+      if(simModel == null)
       {
          g2d.setColor(Color.WHITE);
-         g2d.drawString("World initializing", getWidth()/2, getHeight()/2);
+         g2d.drawString("Simulation initializing", getWidth()/2, getHeight()/2);
       }
       else
       {
@@ -55,11 +56,13 @@ class RenderableSimWorldPanel extends JPanel
       final int pixW = getWidth() - 1;
       
       g2d.drawRect(0, 0, pixW, pixH);
-      final int numCols = world.getColumnCount();
-      final int numRows = world.getRowCount();
+      final int numCols = simModel.getWorld().getColumnCount();
+      final int numRows = simModel.getWorld().getRowCount();
       
       final int colW = (int)Math.round((pixW * 1.0) / (numCols * 1.0));
       final int rowH = (int)Math.round((pixH * 1.0) / (numRows * 1.0));
+      
+      g2d.setColor(Color.white);
       
       //0th border line is handled by the border rectangle
       for(int i=1; i<numCols; ++i)
