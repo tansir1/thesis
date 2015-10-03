@@ -1,10 +1,14 @@
 package thesis.gui.mainwindow;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import thesis.core.SimModel;
+import thesis.gui.simworld.RenderableSimWorldWidget;
 
 /**
  * Contains the GUI application's main window frame.
@@ -13,7 +17,8 @@ import javax.swing.JOptionPane;
 public class MainWindow
 {
    private JFrame frame;
-
+   private RenderableSimWorldWidget simWorldWidget;
+   
    public MainWindow()
    {
       frame = new JFrame("Thesis Simulator");
@@ -37,7 +42,9 @@ public class MainWindow
 
    private void buildGUI()
    {
-
+      simWorldWidget = new RenderableSimWorldWidget();
+      frame.setLayout(new BorderLayout());
+      frame.add(simWorldWidget.getRenderable(), BorderLayout.CENTER);
    }
 
    protected void onClose()
@@ -62,5 +69,10 @@ public class MainWindow
    protected JFrame getParentFrame()
    {
       return frame;
+   }
+   
+   public void connectSimModel(SimModel simModel)
+   {
+      //TODO Connect map to renderer
    }
 }
