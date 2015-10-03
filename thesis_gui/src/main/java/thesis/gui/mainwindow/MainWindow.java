@@ -1,10 +1,14 @@
 package thesis.gui.mainwindow;
 
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
+import thesis.core.SimModel;
+import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 /**
  * Contains the GUI application's main window frame.
@@ -13,6 +17,7 @@ import javax.swing.JOptionPane;
 public class MainWindow
 {
    private JFrame frame;
+   private RenderableSimWorldPanel simPanel;
 
    public MainWindow()
    {
@@ -37,7 +42,9 @@ public class MainWindow
 
    private void buildGUI()
    {
-
+      simPanel = new RenderableSimWorldPanel();
+      frame.setLayout(new BorderLayout());
+      frame.add(simPanel, BorderLayout.CENTER);
    }
 
    protected void onClose()
@@ -62,5 +69,16 @@ public class MainWindow
    protected JFrame getParentFrame()
    {
       return frame;
+   }
+
+   /**
+    * Connect the event listeners of the GUI to the event triggers in the model.
+    * 
+    * @param simModel
+    *           The model to listen to and to render.
+    */
+   public void connectSimModel(SimModel simModel)
+   {
+      simPanel.connectSimModel(simModel);
    }
 }

@@ -131,7 +131,7 @@ public class CellCoordinate
       StringBuilder sb = new StringBuilder();
       sb.append("Row: ");
       sb.append(row);
-      sb.append("Col: ");
+      sb.append(" Col: ");
       sb.append(col);
       return sb.toString();
    }
