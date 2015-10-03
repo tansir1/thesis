@@ -1,7 +1,16 @@
+# Project Specific Files #
+#Ignore the local configuration file
+thesis_gui/sim.properties
+
+# Gradle Files #
+**/.gradle/
+**/build/
+
 # Eclipes Files #
-.metadata/
-.settings/
-.bin/
+**/.metadata/
+**/.settings/
+**/bin/
+**/.recommenders/
 
 *.class
 

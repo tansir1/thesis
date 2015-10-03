@@ -1,8 +1,4 @@
 # thesis
 Workspace for my thesis
 
-#Build steps
-TODO
-
-#Run steps
-TODO
+See the [wiki](https://github.com/tansir1/thesis/wiki) for how to build and run the simulation.

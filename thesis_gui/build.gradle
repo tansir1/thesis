@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+
+dependencies {
+	compile project(':thesis_core')
+}
+
+
+mainClassName = "thesis.gui.ThesisGUIApp"
+
+
+task deployLocal(type: Copy, dependsOn:'installDist') {
+    from project(':thesis_gui').projectDir.toString() + "/build/install/thesis_gui/"
+    into "../deploy"
+}   
+
