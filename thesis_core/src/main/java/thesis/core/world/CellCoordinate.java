@@ -110,6 +110,18 @@ public class CellCoordinate
       this.row = row;
       this.col = col;
    }
+   
+   /**
+    * Set the row and column indexes.
+    * 
+    * @param copy
+    *           Copy the location from this parameter into the calling CellCoordinate.
+    */
+   public void setCoordinate(CellCoordinate copy)
+   {
+      this.row = copy.row;
+      this.col = copy.col;
+   }
 
    /**
     * Shift the current coordinate position by the specified amount.

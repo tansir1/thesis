@@ -1,6 +1,7 @@
 package thesis.core.world;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -56,8 +57,7 @@ public class World
     * The shared random number generator.
     */
    private Random randGen;
-   
-   
+
    /**
     * All cells containing roads.
     */
@@ -112,9 +112,9 @@ public class World
 
       havens = new HashSet<CellCoordinate>();
       roadLocations = new ArrayList<CellCoordinate>();
-      
-      generateHavens();
+
       generateRoadNetwork();
+      generateHavens();
    }
 
    /**
@@ -176,7 +176,7 @@ public class World
    {
       return roadLocations;
    }
-   
+
    /**
     * Converts a physical world location to a discretized cell location.
     * 
@@ -266,39 +266,201 @@ public class World
       to.setCoordinate(north, east);
    }
 
+   /**
+    * Randomly selects locations along the roads to place havens.
+    */
    private void generateHavens()
    {
       // This percentage of grid cells will contain safe havens for targets
       final double percentHavenCells = 0.05;
-      int numHavens = (int) (numRows * numCols * percentHavenCells);
+      int numHavens = (int) (roadLocations.size() * percentHavenCells);
+      numHavens = Math.max(numHavens, 3);//Require at least 3 havens
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       logger.debug("Generating {} safe havens.", numHavens);
 
-      // Generate the haven locations
+      // Generate the haven locations on the roads
       for (int i = 0; i < numHavens; ++i)
       {
-         int row = randGen.nextInt(numRows);
-         int col = randGen.nextInt(numCols);
-
-         CellCoordinate havenCell = new CellCoordinate(row, col);
+         int index = randGen.nextInt(roadLocations.size());
+         CellCoordinate havenCell = roadLocations.get(index);
          // In case we randomly generate two havens at the same location, move
          // the second one
          while (havens.contains(havenCell))
          {
-            row = randGen.nextInt(numRows);
-            col = randGen.nextInt(numCols);
-            havenCell.setCoordinate(row, col);
+            index = randGen.nextInt(roadLocations.size());
+            havenCell = roadLocations.get(index);
          }
          havens.add(havenCell);
       }
    }
 
+   /**
+    * Generates road connections between the road seeds.
+    * 
+    * @param roadSeeds
+    *           Create connections between these seeds.
+    * @return A set of road connections between the seeds.
+    */
+   private Set<RoadGroup> generateInterRoadSeedConnections(List<CellCoordinate> roadSeeds)
+   {
+      /*
+       * This is a naive algorithm that just connects each seed to the nearest N
+       * seeds. It is possible for multiple small clusters of seeds to exist
+       * such that two separate road graphs are created instead of a single
+       * graph.
+       */
+
+      // The number of destinations to store per origin in the road group
+      final int NUM_DESTINATIONS = 3;
+      Set<RoadGroup> seedConnections = new HashSet<RoadGroup>();
+
+      // This is inefficient because it computes the distances to between nodes
+      // twice
+      // However it doesn't matter too much since this only occurs at world
+      // creation
+      for (CellCoordinate seed : roadSeeds)
+      {
+         WorldCoordinate seedWC = convertCellToWorld(seed);
+
+         // Get the distance from the current seed to all other seeds
+         List<DistanceToCoord> distances = new ArrayList<DistanceToCoord>();
+         for (CellCoordinate otherSeed : roadSeeds)
+         {
+            if (seed == otherSeed)
+            {
+               // The current seed cannot be a destination to itself
+               continue;
+            }
+            DistanceToCoord dtc = new DistanceToCoord();
+            dtc.asCell = otherSeed;
+            dtc.asWorld = convertCellToWorld(otherSeed);
+            dtc.distance = seedWC.distanceTo(dtc.asWorld);
+            distances.add(dtc);
+         }
+
+         Collections.sort(distances);
+
+         // Get the N closest nodes to the origin node
+         RoadGroup rg = new RoadGroup(seed);
+         for (int i = 0; i < NUM_DESTINATIONS; ++i)
+         {
+            rg.addDestination(distances.get(i).asCell);
+         }
+         seedConnections.add(rg);
+      }
+
+      return seedConnections;
+   }
+
+   /**
+    * Fills in the road locations for the edges between road seeds in the road
+    * network graph.
+    * 
+    * @param pt1
+    *           Connect this point to the other point.
+    * @param pt2
+    *           Connect this point to the other point.
+    */
+   private void connectRoadGroupVertices(CellCoordinate pt1, CellCoordinate pt2)
+   {
+      CellCoordinate start = new CellCoordinate(pt1);
+      CellCoordinate end = new CellCoordinate(pt2);
+
+      if (end.getColumn() < start.getColumn())
+      {
+         CellCoordinate temp = new CellCoordinate(start);
+         start.setCoordinate(end);
+         end.setCoordinate(temp);
+      }
+
+      // Bresenham algorithm to generate lines connecting road seed locations
+      float deltaX = end.getColumn() - start.getColumn();
+      float deltaY = end.getRow() - start.getRow();
+      float error = 0;
+
+      if ((end.getColumn() - start.getColumn()) > 0)
+      {
+         float deltaErr = Math.abs(deltaY / deltaX);
+         int y = start.getRow();
+         for (int colWalk = start.getColumn(); colWalk < end.getColumn(); ++colWalk)
+         {
+            roadLocations.add(new CellCoordinate(y, colWalk));
+            error += deltaErr;
+            while (error >= 0.5)
+            {
+               y += (int) (Math.signum(end.getRow() - start.getRow()));
+               roadLocations.add(new CellCoordinate(y, colWalk));
+               error -= 1.0;
+            }
+         }
+      }
+      else// It's a purely vertical road (line)
+      {
+         int lowerRow = end.getRow();
+         int higherRow = start.getRow();
+
+         if (lowerRow > higherRow)
+         {
+            int temp = lowerRow;
+            lowerRow = higherRow;
+            higherRow = temp;
+         }
+
+         for (int rowWalk = lowerRow; rowWalk <= higherRow; ++rowWalk)
+         {
+            roadLocations.add(new CellCoordinate(rowWalk, start.getColumn()));
+         }
+      }
+   }
+
+   /**
+    * Checks if the new cell location satisfies all the rules for new road seed
+    * generation.
+    * 
+    * @param existingCells
+    *           All pre-existing road seed coordinates.
+    * @param newCell
+    *           The potential new seed location to validate.
+    * @return True if the new location is a valid location, false otherwise.
+    */
+   private boolean isValidRoadSeedLocation(List<CellCoordinate> existingCells, CellCoordinate newCell)
+   {
+      boolean valid = true;
+
+      // Prevents the seeds from clustering together
+      double interSeedDistBuffer = Math.min(width, height) * 0.2;
+
+      if (existingCells.contains(newCell))
+      {
+         // Cannot put two seeds on top of each other
+         valid = false;
+      }
+
+      WorldCoordinate newCellWC = convertCellToWorld(newCell);
+      WorldCoordinate otherSeedWC = new WorldCoordinate();
+      for (CellCoordinate otherSeed : existingCells)
+      {
+         convertCellToWorld(otherSeed, otherSeedWC);
+         if (newCellWC.distanceTo(otherSeedWC) < interSeedDistBuffer)
+         {
+            valid = false;
+            break;
+         }
+      }
+
+      return valid;
+   }
+
+   /**
+    * Randomly/procedurally generate a network of roads for the world.
+    */
    private void generateRoadNetwork()
    {
       // This percentage of grid cells will contain road seed locations
-      final double percentRoadCells = 0.01;
+      final double percentRoadCells = 0.001;
       int numSeeds = (int) (numRows * numCols * percentRoadCells);
+      numSeeds = Math.max(numSeeds, 4);
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       logger.debug("Generating road network with {} seeds.", numSeeds);
@@ -311,10 +473,9 @@ public class World
          int col = randGen.nextInt(numCols);
 
          CellCoordinate roadCell = new CellCoordinate(row, col);
-         // In case we randomly generate two road seeds at the same location,
-         // move the second one.
-         while (roadSeeds.contains(roadCell))
+         while (!isValidRoadSeedLocation(roadSeeds, roadCell))
          {
+            // Regenerate a new location until we get a valid one
             row = randGen.nextInt(numRows);
             col = randGen.nextInt(numCols);
             roadCell.setCoordinate(row, col);
@@ -322,78 +483,33 @@ public class World
          logger.debug("Road seed {} at {}.", i, roadCell);
          roadSeeds.add(roadCell);
       }
-      
-      for (int i = 0; i < numSeeds; ++i)
+
+      // Determine which seeds to connect together
+      for (RoadGroup rg : generateInterRoadSeedConnections(roadSeeds))
       {
-         CellCoordinate start = roadSeeds.get(i);
-         CellCoordinate end = null;
-         if(i == (numSeeds - 1))
+         // Generate the road tiles along the seed graph edges
+         for (CellCoordinate destination : rg.getDestinations())
          {
-            //Wrap around to first seed
-            end = roadSeeds.get(0);
+            connectRoadGroupVertices(rg.origin, destination);
          }
-         else
-         {
-            end = roadSeeds.get(i + 1);
-         }
-         
-         float deltaX = end.getColumn() - start.getColumn();
-         float deltaY = end.getRow() - start.getRow();
-         float error = 0;
-         
-         if((end.getColumn() - start.getColumn()) > 0)
-         {
-            //Bresenham algorithm to generate lines connecting road seed locations
-            float deltaErr = Math.abs(deltaY / deltaX);
-            int y = start.getRow();
-            for (int colWalk = start.getColumn(); colWalk <= end.getColumn(); ++colWalk)
-            {
-               roadLocations.add(new CellCoordinate(y, colWalk));
-               error += deltaErr;
-               while(error >= 0.5)
-               {
-                  y += (int) (Math.signum(end.getRow() - start.getRow()));
-                  roadLocations.add(new CellCoordinate(y, colWalk));
-                  error -= 1.0;
-               }
-            }
-         }
-         else//It's a purely vertical road (line)
-         {
-            int lowerRow = end.getRow();
-            int higherRow = start.getRow();
-            
-            if(lowerRow > higherRow)
-            {
-               int temp = lowerRow;
-               lowerRow = higherRow;
-               higherRow = temp;
-            }
-            
-            for(int rowWalk = lowerRow; rowWalk <= higherRow; ++rowWalk)
-            {
-               roadLocations.add(new CellCoordinate(rowWalk, start.getColumn()));   
-            }
-         }
-         
-         
       }
-      
-      
-      /*
-      function line(x0, y0, x1, y1)
-      real deltax := x1 - x0
-      real deltay := y1 - y0
-      real error := 0
-      real deltaerr := abs (deltay / deltax)    // Assume deltax != 0 (line is not vertical),
-            // note that this division needs to be done in a way that preserves the fractional part
-      int y := y0
-      for x from x0 to x1
-          plot(x,y)
-          error := error + deltaerr
-          while error >= 0.5 then
-              plot(x, y)
-              y := y + sign(y1 - y0)
-              error := error - 1.0*/
+   }
+
+   private static class DistanceToCoord implements Comparable<DistanceToCoord>
+   {
+      public CellCoordinate asCell;
+      public double distance;
+      public WorldCoordinate asWorld;
+
+      @Override
+      public int compareTo(DistanceToCoord o)
+      {
+         if (distance < o.distance)
+            return -1;
+         else if (distance > o.distance)
+            return 1;
+         else
+            return 0;
+      }
    }
 }
