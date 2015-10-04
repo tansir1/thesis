@@ -10,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import thesis.core.utilities.LoggerIDs;
 
 /**
- *Conversion routines between discrete grid coordinates and continuous world coordinates.
+ * Conversion routines between discrete grid coordinates and continuous world
+ * coordinates.
  */
 public class World
 {
@@ -43,7 +44,7 @@ public class World
     * The longitudinal (horizontal) distance in kilometers spanned by a column.
     */
    private double distPerCol;
-   
+
    /**
     * The locations of all safe havens for targets.
     */
@@ -53,7 +54,7 @@ public class World
     * The shared random number generator.
     */
    private Random randGen;
-   
+
    /**
     * 
     * @param width
@@ -86,8 +87,8 @@ public class World
       {
          throw new IllegalArgumentException("Number of columns in the world cannot be less than 0.");
       }
-      
-      if(randGen == null)
+
+      if (randGen == null)
       {
          throw new NullPointerException("Random generator cannot be null.");
       }
@@ -100,7 +101,7 @@ public class World
 
       distPerRow = height / (numRows * 1.0);
       distPerCol = width / (numCols * 1.0);
-      
+
       havens = new HashSet<CellCoordinate>();
       generateRoadNetwork();
    }
@@ -143,6 +144,16 @@ public class World
    public int getColumnCount()
    {
       return numCols;
+   }
+
+   /**
+    * Get the location of all safe havens in the world.
+    * 
+    * @return The location of each haven.
+    */
+   public Set<CellCoordinate> getHavenLocations()
+   {
+      return havens;
    }
 
    /**
@@ -233,25 +244,26 @@ public class World
 
       to.setCoordinate(north, east);
    }
-   
+
    private void generateRoadNetwork()
    {
-      //This percentage of grid cells will contain safe havens for targets
+      // This percentage of grid cells will contain safe havens for targets
       final double percentHavenCells = 0.05;
-      int numHavens = (int)(numRows * numCols * percentHavenCells);
-      
+      int numHavens = (int) (numRows * numCols * percentHavenCells);
+
       Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       logger.debug("Generating {} safe havens.", numHavens);
-      
-      //Generate the haven locations
-      for(int i=0; i<numHavens; ++i)
+
+      // Generate the haven locations
+      for (int i = 0; i < numHavens; ++i)
       {
          int row = randGen.nextInt(numRows);
          int col = randGen.nextInt(numCols);
-         
+
          CellCoordinate havenCell = new CellCoordinate(row, col);
-         //In case we randomly generate two havens at the same location, move the second one
-         while(havens.contains(havenCell))
+         // In case we randomly generate two havens at the same location, move
+         // the second one
+         while (havens.contains(havenCell))
          {
             row = randGen.nextInt(numRows);
             col = randGen.nextInt(numCols);
