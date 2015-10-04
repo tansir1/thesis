@@ -1,5 +1,7 @@
 package thesis.core;
 
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +13,12 @@ public class SimModel
 {
    private Logger logger;
    private World world;
+
+   /**
+    * A shared random number generator that is initialized with a known seed
+    * value for reproducible experiments.
+    */
+   private Random randGen;
 
    /**
     * Create an uninitialized world.
@@ -32,7 +40,11 @@ public class SimModel
     */
    public void init(SimModelConfig cfg)
    {
-      world = new World(cfg.getWorldWidth(), cfg.getWorldHeight(), cfg.getNumWorldRows(), cfg.getNumWorldCols());
+      randGen = new Random(cfg.getRandomSeed());
+
+      world = new World(cfg.getWorldWidth(), cfg.getWorldHeight(), cfg.getNumWorldRows(), cfg.getNumWorldCols(),
+            randGen);
+
       logger.debug("Sim model initialized with:\n{}", cfg);
    }
 
@@ -44,5 +56,15 @@ public class SimModel
    public World getWorld()
    {
       return world;
+   }
+
+   /**
+    * Get the shared random number generator.
+    * 
+    * @return The simulation's random number generator.
+    */
+   public Random getRandomGenerator()
+   {
+      return randGen;
    }
 }

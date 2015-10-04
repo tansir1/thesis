@@ -48,5 +48,9 @@ public class WorldCoordinateTests
       testMe.setCoordinate(0, 0);
       WorldCoordinate bearingToMe = new WorldCoordinate(0.5, Math.sqrt(3.0) * 0.5);
       assertEquals("Bearing to incorrect.", 30.0, testMe.bearingTo(bearingToMe), EPS_THRESH);
+      
+      testMe.setCoordinate(10, 20);
+      WorldCoordinate distanceToMe = new WorldCoordinate(15, 30);
+      assertEquals("Distance to incorrect", 11.18033, testMe.distanceTo(distanceToMe), EPS_THRESH);
    }
 }
