@@ -1,6 +1,8 @@
 package thesis.core.world;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -54,6 +56,12 @@ public class World
     * The shared random number generator.
     */
    private Random randGen;
+   
+   
+   /**
+    * All cells containing roads.
+    */
+   private List<CellCoordinate> roadLocations;
 
    /**
     * 
@@ -103,6 +111,9 @@ public class World
       distPerCol = width / (numCols * 1.0);
 
       havens = new HashSet<CellCoordinate>();
+      roadLocations = new ArrayList<CellCoordinate>();
+      
+      generateHavens();
       generateRoadNetwork();
    }
 
@@ -156,6 +167,16 @@ public class World
       return havens;
    }
 
+   /**
+    * Get all cells containing roads.
+    * 
+    * @return All the cells that contain roads.
+    */
+   public List<CellCoordinate> getRoadLocations()
+   {
+      return roadLocations;
+   }
+   
    /**
     * Converts a physical world location to a discretized cell location.
     * 
@@ -245,7 +266,7 @@ public class World
       to.setCoordinate(north, east);
    }
 
-   private void generateRoadNetwork()
+   private void generateHavens()
    {
       // This percentage of grid cells will contain safe havens for targets
       final double percentHavenCells = 0.05;
@@ -271,5 +292,108 @@ public class World
          }
          havens.add(havenCell);
       }
+   }
+
+   private void generateRoadNetwork()
+   {
+      // This percentage of grid cells will contain road seed locations
+      final double percentRoadCells = 0.01;
+      int numSeeds = (int) (numRows * numCols * percentRoadCells);
+
+      Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+      logger.debug("Generating road network with {} seeds.", numSeeds);
+
+      List<CellCoordinate> roadSeeds = new ArrayList<CellCoordinate>();
+      // Generate seed locations
+      for (int i = 0; i < numSeeds; ++i)
+      {
+         int row = randGen.nextInt(numRows);
+         int col = randGen.nextInt(numCols);
+
+         CellCoordinate roadCell = new CellCoordinate(row, col);
+         // In case we randomly generate two road seeds at the same location,
+         // move the second one.
+         while (roadSeeds.contains(roadCell))
+         {
+            row = randGen.nextInt(numRows);
+            col = randGen.nextInt(numCols);
+            roadCell.setCoordinate(row, col);
+         }
+         logger.debug("Road seed {} at {}.", i, roadCell);
+         roadSeeds.add(roadCell);
+      }
+      
+      for (int i = 0; i < numSeeds; ++i)
+      {
+         CellCoordinate start = roadSeeds.get(i);
+         CellCoordinate end = null;
+         if(i == (numSeeds - 1))
+         {
+            //Wrap around to first seed
+            end = roadSeeds.get(0);
+         }
+         else
+         {
+            end = roadSeeds.get(i + 1);
+         }
+         
+         float deltaX = end.getColumn() - start.getColumn();
+         float deltaY = end.getRow() - start.getRow();
+         float error = 0;
+         
+         if((end.getColumn() - start.getColumn()) > 0)
+         {
+            //Bresenham algorithm to generate lines connecting road seed locations
+            float deltaErr = Math.abs(deltaY / deltaX);
+            int y = start.getRow();
+            for (int colWalk = start.getColumn(); colWalk <= end.getColumn(); ++colWalk)
+            {
+               roadLocations.add(new CellCoordinate(y, colWalk));
+               error += deltaErr;
+               while(error >= 0.5)
+               {
+                  y += (int) (Math.signum(end.getRow() - start.getRow()));
+                  roadLocations.add(new CellCoordinate(y, colWalk));
+                  error -= 1.0;
+               }
+            }
+         }
+         else//It's a purely vertical road (line)
+         {
+            int lowerRow = end.getRow();
+            int higherRow = start.getRow();
+            
+            if(lowerRow > higherRow)
+            {
+               int temp = lowerRow;
+               lowerRow = higherRow;
+               higherRow = temp;
+            }
+            
+            for(int rowWalk = lowerRow; rowWalk <= higherRow; ++rowWalk)
+            {
+               roadLocations.add(new CellCoordinate(rowWalk, start.getColumn()));   
+            }
+         }
+         
+         
+      }
+      
+      
+      /*
+      function line(x0, y0, x1, y1)
+      real deltax := x1 - x0
+      real deltay := y1 - y0
+      real error := 0
+      real deltaerr := abs (deltay / deltax)    // Assume deltax != 0 (line is not vertical),
+            // note that this division needs to be done in a way that preserves the fractional part
+      int y := y0
+      for x from x0 to x1
+          plot(x,y)
+          error := error + deltaerr
+          while error >= 0.5 then
+              plot(x, y)
+              y := y + sign(y1 - y0)
+              error := error - 1.0*/
    }
 }

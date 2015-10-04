@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -134,6 +133,7 @@ public class RenderableSimWorldPanel extends JPanel
       {
          drawGridLines(g2d);
          drawCoordinates(g2d);
+         drawRoads(g2d);
          drawHavens(g2d);
       }
       else
@@ -218,6 +218,17 @@ public class RenderableSimWorldPanel extends JPanel
       }
    }
 
+   private void drawRoads(Graphics2D g2d)
+   {
+      g2d.setColor(Color.pink);
+      for(CellCoordinate road : simModel.getWorld().getRoadLocations())
+      {
+         int x = gridCellW * road.getColumn();
+         int y = gridCellH * road.getRow();
+         g2d.fillRect(x, y, gridCellW, gridCellH);
+      }
+   }
+   
    private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener
    {
       private int curX;
