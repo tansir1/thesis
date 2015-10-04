@@ -114,6 +114,18 @@ public class WorldCoordinate
       this.north = north;
       this.east = east;
    }
+   
+   /**
+    * Set the distance north and east from the world origin in kilometers by copying the given coordinate.
+    * 
+    * @param copy
+    *           The position in this coordinate will be copied into the calling coordinate.
+    */
+   public void setCoordinate(WorldCoordinate copy)
+   {
+      this.north = copy.north;
+      this.east = copy.east;
+   }
 
    /**
     * Shift the current coordinate position by the specified amount.
