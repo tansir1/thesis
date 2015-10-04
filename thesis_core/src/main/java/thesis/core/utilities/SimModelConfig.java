@@ -94,9 +94,9 @@ public class SimModelConfig
       sb.append("\n\tHeight (km):");
       sb.append(df.format(worldHeight));
       sb.append("\n\tRows:");
-      sb.append(df.format(numWorldRows));
+      sb.append(numWorldRows);
       sb.append("\n\tCols:");
-      sb.append(df.format(numWorldCols));
+      sb.append(numWorldCols);
       
       return sb.toString();
    }
