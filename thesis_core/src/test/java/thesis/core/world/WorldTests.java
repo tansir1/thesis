@@ -2,6 +2,8 @@ package thesis.core.world;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 public class WorldTests
@@ -11,7 +13,7 @@ public class WorldTests
    public void testCoordinateConversions()
    {
       //100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      World testMe = new World(100, 100, 10, 10);
+      World testMe = new World(100, 100, 10, 10, new Random());
       
       WorldCoordinate wc = new WorldCoordinate(15, 35);
       CellCoordinate cc = testMe.convertWorldToCell(wc);

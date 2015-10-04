@@ -46,7 +46,7 @@ public class WorldCoordinate
       this.north = north;
       this.east = east;
    }
-   
+
    /**
     * Initialize a world coordinate by cloning the given coordinate.
     * 
@@ -114,6 +114,18 @@ public class WorldCoordinate
       this.north = north;
       this.east = east;
    }
+   
+   /**
+    * Set the distance north and east from the world origin in kilometers by copying the given coordinate.
+    * 
+    * @param copy
+    *           The position in this coordinate will be copied into the calling coordinate.
+    */
+   public void setCoordinate(WorldCoordinate copy)
+   {
+      this.north = copy.north;
+      this.east = copy.east;
+   }
 
    /**
     * Shift the current coordinate position by the specified amount.
@@ -130,18 +142,38 @@ public class WorldCoordinate
    }
 
    /**
-    * Get the absolute bearing angle (in degrees) from this coordinate to the given coordinate.
-    * @param wc Find the bearing to this coordinate.
-    * @return The bearing angle in degrees from this coordinate to the given coordinate.
+    * Get the absolute bearing angle (in degrees) from this coordinate to the
+    * given coordinate.
+    * 
+    * @param wc
+    *           Find the bearing to this coordinate.
+    * @return The bearing angle in degrees from this coordinate to the given
+    *         coordinate.
     */
    public double bearingTo(WorldCoordinate wc)
    {
       double delNorth = wc.north - north;
       double delEast = wc.east - east;
-      
+
       return Math.toDegrees(Math.atan2(delNorth, delEast));
    }
-   
+
+   /**
+    * Get the linear distance in kilometers between this coordinate and the
+    * given coordinate.
+    * 
+    * @param wc
+    *           Get the distance to here.
+    * @return The distance between the coordinates in kilometers.
+    */
+   public double distanceTo(WorldCoordinate wc)
+   {
+      double delNorth = wc.north - north;
+      double delEast = wc.east - east;
+
+      return Math.sqrt(delNorth * delNorth + delEast * delEast);
+   }
+
    @Override
    public String toString()
    {

@@ -2,7 +2,7 @@ def jdkHome = System.getenv("JAVA_HOME")
 
 //Load the version number for the version.properties file
 Properties versProps = new Properties()
-versProps.load(new FileInputStream("../thesis_core/src/main/resources/thesis/core/version.properties"))
+versProps.load(new FileInputStream(project(':thesis_core').projectDir.toString() + "/src/main/resources/thesis/core/version.properties"))
 def versionStr = versProps.getProperty("version.major")
 versionStr += "." + versProps.getProperty("version.minor")
 versionStr += "." + versProps.getProperty("version.patch")

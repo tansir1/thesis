@@ -110,6 +110,18 @@ public class CellCoordinate
       this.row = row;
       this.col = col;
    }
+   
+   /**
+    * Set the row and column indexes.
+    * 
+    * @param copy
+    *           Copy the location from this parameter into the calling CellCoordinate.
+    */
+   public void setCoordinate(CellCoordinate copy)
+   {
+      this.row = copy.row;
+      this.col = copy.col;
+   }
 
    /**
     * Shift the current coordinate position by the specified amount.
@@ -129,10 +141,49 @@ public class CellCoordinate
    public String toString()
    {
       StringBuilder sb = new StringBuilder();
-      sb.append("Row: ");
+      sb.append("[");
       sb.append(row);
-      sb.append(" Col: ");
+      sb.append(",");
       sb.append(col);
+      sb.append("]");
       return sb.toString();
    }
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + col;
+      result = prime * result + row;
+      return result;
+   }
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      CellCoordinate other = (CellCoordinate) obj;
+      if (col != other.col)
+         return false;
+      if (row != other.row)
+         return false;
+      return true;
+   }
+
 }
