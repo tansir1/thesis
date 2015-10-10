@@ -21,6 +21,7 @@ import thesis.core.common.Distance;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.Utils;
 import thesis.core.world.RoadSegment;
+import thesis.core.world.WorldCoordinate;
 
 public class WorldConfigFile
 {
@@ -84,6 +85,7 @@ public class WorldConfigFile
          tempCfg.randSeed = Integer.parseInt(randSeedElem.getTextContent());
          
          decodeRoadSegments(tempCfg, (Element)root.getElementsByTagName("RoadSegments").item(0));
+         decodeHavens(tempCfg, (Element)root.getElementsByTagName("Havens").item(0));
          
          //Only initialize the returned world config after successfully parsing all data
          //otherwise we may try to init the world model with incomplete information.
@@ -132,6 +134,22 @@ public class WorldConfigFile
          roadSeg.getStart().setCoordinate(north1, east1);
          roadSeg.getEnd().setCoordinate(north2, east2);
          cfg.roadSegments.add(roadSeg);
+      }
+   }
+   
+   private static void decodeHavens(WorldConfig cfg, Element havensElem)
+   {
+      NodeList haveNodeList = havensElem.getElementsByTagName("Haven");
+      final int numNodes = haveNodeList.getLength();
+      for(int i=0; i<numNodes; ++i)
+      {
+         Element havenElem = (Element)haveNodeList.item(i);
+         int north = Integer.parseInt(havenElem.getAttribute("north"));
+         int east = Integer.parseInt(havenElem.getAttribute("east"));
+         
+         WorldCoordinate havenLocation = new WorldCoordinate();
+         havenLocation.setCoordinate(north, east);
+         cfg.havens.add(havenLocation);
       }
    }
 }

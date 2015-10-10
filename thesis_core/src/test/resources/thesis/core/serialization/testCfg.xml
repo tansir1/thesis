@@ -1,5 +1,19 @@
 <World version="0.0.1">
 	<Size w="1234" h="2222" rows="3" cols="4"/>
 	<RandSeed>66758</RandSeed>
-	<RoadSegments/>
+	<RoadSegments>
+		<RoadSegment north1="34" east1="123" north2="54" east2="76"/>
+		<RoadSegment north1="43" east1="321" north2="45" east2="67"/>
+	</RoadSegments>
+	<Havens>
+		<Haven north="78" east="123"/>
+		<Haven north="7128" east="5123"/>
+	</Havens>
+	<Targets>
+		<Target north="23" east="234" type="6758" orientation="23"/>
+		<Target north="876" east="8535" type="4353" orientation="23"/>
+	</Targets>
+	<UAVs>
+		<UAV type="2" north="54" east="213" orientation="3"/>
+	</UAVs>	
 </World>
