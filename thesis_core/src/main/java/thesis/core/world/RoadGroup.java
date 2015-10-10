@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  *An origin location and the destinations that it connects to.
  */
-class RoadGroup
+public class RoadGroup
 {
    public CellCoordinate origin;
    public Set<CellCoordinate> destinations;

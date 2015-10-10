@@ -1,5 +1,6 @@
 package thesis.gui.simpanel;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -14,6 +15,7 @@ import javax.swing.JPanel;
 
 import thesis.core.SimModel;
 import thesis.core.world.CellCoordinate;
+import thesis.core.world.RoadGroup;
 import thesis.core.world.WorldCoordinate;
 
 @SuppressWarnings("serial")
@@ -149,7 +151,8 @@ public class RenderableSimWorldPanel extends JPanel
       final int pixH = getHeight() - 1;
       final int pixW = getWidth() - 1;
 
-      g2d.setColor(Color.white);
+      //White, half alpha
+      g2d.setColor(new Color(255, 255, 255, 127));
       g2d.drawRect(0, 0, pixW, pixH);
 
       final int numCols = simModel.getWorld().getColumnCount();
@@ -221,12 +224,36 @@ public class RenderableSimWorldPanel extends JPanel
    private void drawRoads(Graphics2D g2d)
    {
       g2d.setColor(Color.pink);
+      g2d.setStroke(new BasicStroke(3f));
+      final int cellHalfW = gridCellW / 2;
+      final int cellHalfH = gridCellH / 2;
+      
+      for(RoadGroup rg : simModel.getWorld().getRoadNetworkEdges())
+      {
+         CellCoordinate start = rg.getOrigin();
+         //Pixels at the center of the cell
+         int xStart = gridCellW * start.getColumn() + cellHalfW;
+         int yStart = gridCellH * start.getRow() + cellHalfH;
+         
+         int xEnd = -1;
+         int yEnd = -1;
+         
+         for(CellCoordinate end : rg.getDestinations())
+         {
+            xEnd = gridCellW * end.getColumn() + cellHalfW;
+            yEnd = gridCellH * end.getRow() + cellHalfH;
+            g2d.drawLine(xStart, yStart, xEnd, yEnd);
+         }
+      }
+      
+      /*
+      g2d.setColor(Color.pink);
       for(CellCoordinate road : simModel.getWorld().getRoadLocations())
       {
          int x = gridCellW * road.getColumn();
          int y = gridCellH * road.getRow();
          g2d.fillRect(x, y, gridCellW, gridCellH);
-      }
+      }*/
    }
    
    private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener

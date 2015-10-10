@@ -64,6 +64,11 @@ public class World
    private List<CellCoordinate> roadLocations;
 
    /**
+    * All of the edges in the road network.
+    */
+   private Set<RoadGroup> roadNetEdges;
+
+   /**
     * 
     * @param width
     *           Width of the rectangular world in kilometers.
@@ -106,6 +111,8 @@ public class World
       this.numRows = numRows;
       this.numCols = numCols;
       this.randGen = randGen;
+
+      this.roadNetEdges = new HashSet<RoadGroup>();
 
       distPerRow = height / (numRows * 1.0);
       distPerCol = width / (numCols * 1.0);
@@ -165,6 +172,16 @@ public class World
    public Set<CellCoordinate> getHavenLocations()
    {
       return havens;
+   }
+
+   /**
+    * Get all the road connection points in the road network.
+    * 
+    * @return An unmodifiable view of all the road intersections and edges.
+    */
+   public Set<RoadGroup> getRoadNetworkEdges()
+   {
+      return Collections.unmodifiableSet(roadNetEdges);
    }
 
    /**
@@ -274,7 +291,7 @@ public class World
       // This percentage of grid cells will contain safe havens for targets
       final double percentHavenCells = 0.05;
       int numHavens = (int) (roadLocations.size() * percentHavenCells);
-      numHavens = Math.max(numHavens, 3);//Require at least 3 havens
+      numHavens = Math.max(numHavens, 3);// Require at least 3 havens
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       logger.debug("Generating {} safe havens.", numHavens);
@@ -295,62 +312,63 @@ public class World
       }
    }
 
-   /**
-    * Generates road connections between the road seeds.
-    * 
-    * @param roadSeeds
-    *           Create connections between these seeds.
-    * @return A set of road connections between the seeds.
-    */
-   private Set<RoadGroup> generateInterRoadSeedConnections(List<CellCoordinate> roadSeeds)
+   private void kdNodeToRoadGroup(KDNode node)
    {
-      /*
-       * This is a naive algorithm that just connects each seed to the nearest N
-       * seeds. It is possible for multiple small clusters of seeds to exist
-       * such that two separate road graphs are created instead of a single
-       * graph.
-       */
+      CellCoordinate root = node.getLocation();
+      KDNode left = node.getLeftChild();
+      KDNode right = node.getRightChild();
 
-      // The number of destinations to store per origin in the road group
-      final int NUM_DESTINATIONS = 3;
-      Set<RoadGroup> seedConnections = new HashSet<RoadGroup>();
+      RoadGroup rootRG = new RoadGroup(root);
 
-      // This is inefficient because it computes the distances to between nodes
-      // twice
-      // However it doesn't matter too much since this only occurs at world
-      // creation
-      for (CellCoordinate seed : roadSeeds)
+      if (left != null)
       {
-         WorldCoordinate seedWC = convertCellToWorld(seed);
+         CellCoordinate intersection = computeRoadFromNode(root, left, node.isVerticalSplit());
 
-         // Get the distance from the current seed to all other seeds
-         List<DistanceToCoord> distances = new ArrayList<DistanceToCoord>();
-         for (CellCoordinate otherSeed : roadSeeds)
-         {
-            if (seed == otherSeed)
-            {
-               // The current seed cannot be a destination to itself
-               continue;
-            }
-            DistanceToCoord dtc = new DistanceToCoord();
-            dtc.asCell = otherSeed;
-            dtc.asWorld = convertCellToWorld(otherSeed);
-            dtc.distance = seedWC.distanceTo(dtc.asWorld);
-            distances.add(dtc);
-         }
+         // Connect root to intermediate road intersection
+         rootRG.addDestination(intersection);
 
-         Collections.sort(distances);
+         // Connect intersection to the node location
+         RoadGroup leftRG = new RoadGroup(intersection);
+         leftRG.addDestination(left.getLocation());
+         roadNetEdges.add(leftRG);
 
-         // Get the N closest nodes to the origin node
-         RoadGroup rg = new RoadGroup(seed);
-         for (int i = 0; i < NUM_DESTINATIONS; ++i)
-         {
-            rg.addDestination(distances.get(i).asCell);
-         }
-         seedConnections.add(rg);
+         // Recursively move down the tree
+         kdNodeToRoadGroup(left);
       }
 
-      return seedConnections;
+      if (right != null)
+      {
+         CellCoordinate intersection = computeRoadFromNode(root, right, node.isVerticalSplit());
+
+         // Connect root to intermediate road intersection
+         rootRG.addDestination(intersection);
+
+         // Connect intersection to the node location
+         RoadGroup rightRG = new RoadGroup(intersection);
+         rightRG.addDestination(right.getLocation());
+         roadNetEdges.add(rightRG);
+
+         // Recursively move down the tree
+         kdNodeToRoadGroup(right);
+      }
+
+      roadNetEdges.add(rootRG);
+   }
+
+   private CellCoordinate computeRoadFromNode(CellCoordinate root, KDNode node, boolean isVertical)
+   {
+      CellCoordinate intersection = null;
+
+      if (isVertical)
+      {
+         intersection = new CellCoordinate(node.getLocation().getRow(), root.getColumn());
+      }
+      else
+      {
+         intersection = new CellCoordinate(root.getRow(), node.getLocation().getColumn());
+      }
+
+      return intersection;
    }
 
    /**
@@ -429,7 +447,7 @@ public class World
       boolean valid = true;
 
       // Prevents the seeds from clustering together
-      double interSeedDistBuffer = Math.min(width, height) * 0.2;
+      double interSeedDistBuffer = Math.min(width, height) * 0.1;
 
       if (existingCells.contains(newCell))
       {
@@ -458,7 +476,7 @@ public class World
    private void generateRoadNetwork()
    {
       // This percentage of grid cells will contain road seed locations
-      final double percentRoadCells = 0.001;
+      final double percentRoadCells = 0.01;
       int numSeeds = (int) (numRows * numCols * percentRoadCells);
       numSeeds = Math.max(numSeeds, 4);
 
@@ -484,32 +502,17 @@ public class World
          roadSeeds.add(roadCell);
       }
 
+      // Generate all the roads (edges) in the road network (tree).
+      kdNodeToRoadGroup(KDTree.generateTree(roadSeeds));
+
       // Determine which seeds to connect together
-      for (RoadGroup rg : generateInterRoadSeedConnections(roadSeeds))
+      for (RoadGroup rg : roadNetEdges)
       {
          // Generate the road tiles along the seed graph edges
          for (CellCoordinate destination : rg.getDestinations())
          {
             connectRoadGroupVertices(rg.origin, destination);
          }
-      }
-   }
-
-   private static class DistanceToCoord implements Comparable<DistanceToCoord>
-   {
-      public CellCoordinate asCell;
-      public double distance;
-      public WorldCoordinate asWorld;
-
-      @Override
-      public int compareTo(DistanceToCoord o)
-      {
-         if (distance < o.distance)
-            return -1;
-         else if (distance > o.distance)
-            return 1;
-         else
-            return 0;
       }
    }
 }
