@@ -1,0 +1,5 @@
+<World version="0.0.1">
+	<Size w="1234" h="2222" rows="3" cols="4"/>
+	<RandSeed>66758</RandSeed>
+	<RoadSegments/>
+</World>
