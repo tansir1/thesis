@@ -10,8 +10,8 @@
 		<Haven north="7128" east="5123"/>
 	</Havens>
 	<Targets>
-		<Target north="23" east="234" type="6758" orientation="23"/>
-		<Target north="876" east="8535" type="4353" orientation="23"/>
+		<Target north="23" east="234" type="6758" orientation="103"/>
+		<Target north="876" east="8535" type="4353" orientation="286"/>
 	</Targets>
 	<UAVs>
 		<UAV type="2" north="54" east="213" orientation="3"/>

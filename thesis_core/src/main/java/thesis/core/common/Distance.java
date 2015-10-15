@@ -5,7 +5,7 @@ import java.text.DecimalFormat;
 /**
  *Generic distance container providing conversions to multiple unit types.
  */
-public class Distance
+public class Distance implements Comparable<Distance>
 {
    private static DecimalFormat decFormat = new DecimalFormat("0.00");
 
@@ -66,5 +66,22 @@ public class Distance
       sb.append(decFormat.format(valueMeters));
       sb.append("m");
       return sb.toString();
+   }
+
+   @Override
+   public int compareTo(Distance o)
+   {
+      if(valueMeters < o.valueMeters)
+      {
+         return -1;
+      }
+      else if(valueMeters > o.valueMeters)
+      {
+         return 1;
+      }
+      else
+      {
+         return 0;
+      }
    }
 }

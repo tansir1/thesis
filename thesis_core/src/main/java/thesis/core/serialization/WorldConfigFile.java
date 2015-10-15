@@ -86,6 +86,7 @@ public class WorldConfigFile
          
          decodeRoadSegments(tempCfg, (Element)root.getElementsByTagName("RoadSegments").item(0));
          decodeHavens(tempCfg, (Element)root.getElementsByTagName("Havens").item(0));
+         decodeTargets(tempCfg, (Element)root.getElementsByTagName("Targets").item(0));
          
          //Only initialize the returned world config after successfully parsing all data
          //otherwise we may try to init the world model with incomplete information.
@@ -152,4 +153,25 @@ public class WorldConfigFile
          cfg.havens.add(havenLocation);
       }
    }
+   
+   private static void decodeTargets(WorldConfig cfg, Element targetsElem)
+   {
+      NodeList targetNodeList = targetsElem.getElementsByTagName("Target");
+      final int numNodes = targetNodeList.getLength();
+      for(int i=0; i<numNodes; ++i)
+      {
+         Element tarElem = (Element)targetNodeList.item(i);
+         int north = Integer.parseInt(tarElem.getAttribute("north"));
+         int east = Integer.parseInt(tarElem.getAttribute("east"));
+         int type = Integer.parseInt(tarElem.getAttribute("type"));
+         double orient = Double.parseDouble(tarElem.getAttribute("orientation"));
+         
+         TargetConfig tarCfg = new TargetConfig();
+         tarCfg.getLocation().setCoordinate(north, east);
+         tarCfg.getOrientation().setAsDegrees(orient);
+         tarCfg.setTargetType(type);
+         
+         cfg.targetCfgs.add(tarCfg);
+      }
+   }   
 }

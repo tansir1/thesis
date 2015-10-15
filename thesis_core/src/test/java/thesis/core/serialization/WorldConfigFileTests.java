@@ -43,6 +43,19 @@ public class WorldConfigFileTests
 
       havenWC = cfg.havens.get(1);
       assertEquals("Failed to read second haven north.", 7128.0, havenWC.getNorth(), distance_tolerance);
-      assertEquals("Failed to read second haven east.", 5123.0, havenWC.getEast(), distance_tolerance);      
+      assertEquals("Failed to read second haven east.", 5123.0, havenWC.getEast(), distance_tolerance);
+      
+      TargetConfig tarCfg = cfg.targetCfgs.get(0);
+      assertEquals("Failed to read first target's north.", 23, tarCfg.getLocation().getNorth(), distance_tolerance);
+      assertEquals("Failed to read first target's east.", 234, tarCfg.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read first target's type.", 6758, tarCfg.getTargetType());
+      assertEquals("Failed to read first target's orientation.", 103, tarCfg.getOrientation().asDegrees(), distance_tolerance);
+      
+      tarCfg = cfg.targetCfgs.get(1);
+      assertEquals("Failed to read second target's north.", 876, tarCfg.getLocation().getNorth(), distance_tolerance);
+      assertEquals("Failed to read second target's east.", 8535, tarCfg.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read second target's type.", 4353, tarCfg.getTargetType());
+      assertEquals("Failed to read second target's orientation.", 286, tarCfg.getOrientation().asDegrees(), distance_tolerance);
+      
    }
 }
