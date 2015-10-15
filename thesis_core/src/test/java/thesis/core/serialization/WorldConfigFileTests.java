@@ -56,6 +56,18 @@ public class WorldConfigFileTests
       assertEquals("Failed to read second target's east.", 8535, tarCfg.getLocation().getEast(), distance_tolerance);
       assertEquals("Failed to read second target's type.", 4353, tarCfg.getTargetType());
       assertEquals("Failed to read second target's orientation.", 286, tarCfg.getOrientation().asDegrees(), distance_tolerance);
+    
       
+      UAVConfig uavCfg = cfg.uavCfgs.get(0);
+      assertEquals("Failed to read first uav's north.", 178, uavCfg.getLocation().getNorth(), distance_tolerance);
+      assertEquals("Failed to read first uav's east.", 6548, uavCfg.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read first uav's type.", 2, uavCfg.getUAVType());
+      assertEquals("Failed to read first uav's orientation.", 153, uavCfg.getOrientation().asDegrees(), distance_tolerance);
+      
+      uavCfg = cfg.uavCfgs.get(1);
+      assertEquals("Failed to read second uav's north.", 265, uavCfg.getLocation().getNorth(), distance_tolerance);
+      assertEquals("Failed to read second uav's east.", 12378, uavCfg.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read second uav's type.", 63, uavCfg.getUAVType());
+      assertEquals("Failed to read second uav's orientation.", 653, uavCfg.getOrientation().asDegrees(), distance_tolerance);
    }
 }

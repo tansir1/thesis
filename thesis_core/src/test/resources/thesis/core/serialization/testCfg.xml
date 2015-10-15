@@ -14,6 +14,7 @@
 		<Target north="876" east="8535" type="4353" orientation="286"/>
 	</Targets>
 	<UAVs>
-		<UAV type="2" north="54" east="213" orientation="3"/>
+		<UAV type="2" north="178" east="6548" orientation="153"/>
+		<UAV type="63" north="265" east="12378" orientation="653"/>
 	</UAVs>	
 </World>

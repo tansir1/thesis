@@ -26,6 +26,8 @@ public class WorldConfig
    
    public List<TargetConfig> targetCfgs;
    
+   public List<UAVConfig> uavCfgs;
+   
    public WorldConfig()
    {
       width = new Distance();
@@ -34,5 +36,6 @@ public class WorldConfig
       roadSegments = new ArrayList<RoadSegment>();
       havens = new ArrayList<WorldCoordinate>();
       targetCfgs = new ArrayList<TargetConfig>();
+      uavCfgs = new ArrayList<UAVConfig>();
    }
 }
