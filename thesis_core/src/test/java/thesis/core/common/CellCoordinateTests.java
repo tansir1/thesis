@@ -1,8 +1,10 @@
-package thesis.core.world;
+package thesis.core.common;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import thesis.core.common.CellCoordinate;
 
 public class CellCoordinateTests
 {

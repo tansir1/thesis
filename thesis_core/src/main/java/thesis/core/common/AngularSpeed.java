@@ -74,4 +74,42 @@ public class AngularSpeed implements Comparable<AngularSpeed>
          return 0;
       }
    }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      long temp;
+      temp = Double.doubleToLongBits(degPerSec);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      return result;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      AngularSpeed other = (AngularSpeed) obj;
+//      if (Double.doubleToLongBits(degPerSec) != Double.doubleToLongBits(other.degPerSec))
+//         return false;
+      
+      final double EPS_THRESHOLD = 0.000001;
+      if(Math.abs(degPerSec - other.degPerSec) > EPS_THRESHOLD)
+         return false;   
+      
+      return true;
+   }
+  
 }

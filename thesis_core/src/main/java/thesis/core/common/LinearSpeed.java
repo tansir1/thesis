@@ -96,4 +96,43 @@ public class LinearSpeed implements Comparable<LinearSpeed>
       sb.append("m/s");
       return sb.toString();
    }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      long temp;
+      temp = Double.doubleToLongBits(valueMpS);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      return result;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      LinearSpeed other = (LinearSpeed) obj;
+      //if (Double.doubleToLongBits(valueMpS) != Double.doubleToLongBits(other.valueMpS))
+         //return false;
+      
+      final double EPS_THRESHOLD = 0.000001;
+      if(Math.abs(valueMpS - other.valueMpS) > EPS_THRESHOLD)
+         return false;      
+      
+      return true;
+   }
+   
+   
 }
