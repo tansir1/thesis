@@ -95,6 +95,40 @@ public class Angle
       return left.asDegrees() < me.asDegrees() && me.asDegrees() < right.asDegrees();
    }
 
+   /**
+    * Add the value of the given angle to the calling angle.
+    * 
+    * @param add
+    *           This amount will be added to the calling angle.
+    */
+   public void add(Angle add)
+   {
+      this.angleDeg += add.angleDeg;
+   }
+
+   /**
+    * Subtract the value of the given angle from the calling angle.
+    * 
+    * @param subtract
+    *           This amount will be subtracted from the calling angle.
+    */
+   public void subtract(Angle subtract)
+   {
+      this.angleDeg -= subtract.angleDeg;
+   }
+
+   /**
+    * Return half the value of this angle.
+    * 
+    * @return The value of this angle divided by 2.
+    */
+   public Angle halfAngle()
+   {
+      Angle half = new Angle(this);
+      half.angleDeg *= 0.5;
+      return half;
+   }
+
    @Override
    public String toString()
    {
@@ -135,12 +169,13 @@ public class Angle
       if (getClass() != obj.getClass())
          return false;
       Angle other = (Angle) obj;
-      //if (Double.doubleToLongBits(angleDeg) != Double.doubleToLongBits(other.angleDeg))
-         //return false;
+      // if (Double.doubleToLongBits(angleDeg) !=
+      // Double.doubleToLongBits(other.angleDeg))
+      // return false;
       final double EPS_THRESHOLD = 0.000000001;
-      if(Math.abs(angleDeg - other.angleDeg) > EPS_THRESHOLD)
+      if (Math.abs(angleDeg - other.angleDeg) > EPS_THRESHOLD)
          return false;
-      
+
       return true;
    }
 

@@ -66,8 +66,6 @@ public class TestUtils
       // Add min range to guarantee max > min
       wt.getMaxRange().setAsMeters(wt.getMinRange().asMeters() + rand.nextDouble() * 2000);
       wt.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
-                                                             // FOV
-      wt.setInitialCount(rand.nextInt(10) + 1);// Min of 1 weapon count
 
       return wt;
    }

@@ -24,7 +24,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import thesis.core.entities.Sensor;
 import thesis.core.entities.SensorType;
+import thesis.core.entities.UAVType;
+import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.Utils;
@@ -109,6 +112,8 @@ public class EntityTypesFile
 
          decodeSensorTypes(tempTypes, (Element) root.getElementsByTagName("SensorTypes").item(0));
          decodeWeaponTypes(tempTypes, (Element) root.getElementsByTagName("WeaponTypes").item(0));
+         //Must be run after decoding weapon and sensor types
+         decodeUAVTypes(tempTypes, (Element) root.getElementsByTagName("UAVTypes").item(0));
 
          // Only initialize the returned entity types after successfully parsing
          // all data otherwise we may try to init the entity types model with
@@ -122,7 +127,6 @@ public class EntityTypesFile
 
       return types;
    }
-   
 
    /**
     * Save the given entity types data into the given file.
@@ -193,6 +197,7 @@ public class EntityTypesFile
 
          root.appendChild(encodeSensorTypes(types, document));
          root.appendChild(encodeWeaponTypes(types, document));
+         root.appendChild(encodeUAVTypes(types, document));
 
          document.appendChild(root);
 
@@ -211,7 +216,7 @@ public class EntityTypesFile
       }
       return success;
    }
-   
+
    private static void decodeSensorTypes(EntityTypes entTypes, Element parentElem)
    {
       NodeList nodeList = parentElem.getElementsByTagName("SensorType");
@@ -225,7 +230,7 @@ public class EntityTypesFile
          double maxRngM = Double.parseDouble(typeElem.getAttribute("maxRng"));
          double fovDeg = Double.parseDouble(typeElem.getAttribute("fov"));
          double slewDegSec = Double.parseDouble(typeElem.getAttribute("maxSlew"));
-         
+
          SensorType st = new SensorType(type);
          st.getMinRange().setAsMeters(minRngM);
          st.getMaxRange().setAsMeters(maxRngM);
@@ -235,11 +240,11 @@ public class EntityTypesFile
          entTypes.getSensorTypes().add(st);
       }
    }
-   
+
    private static Element encodeSensorTypes(EntityTypes entTypes, Document dom)
    {
       Element parentElem = dom.createElement("SensorTypes");
-      for(SensorType st : entTypes.getSensorTypes())
+      for (SensorType st : entTypes.getSensorTypes())
       {
          Element elem = dom.createElement("SensorType");
          elem.setAttribute("type", Integer.toString(st.getTypeID()));
@@ -247,12 +252,12 @@ public class EntityTypesFile
          elem.setAttribute("maxRng", Double.toString(st.getMaxRange().asMeters()));
          elem.setAttribute("fov", Double.toString(st.getFov().asDegrees()));
          elem.setAttribute("maxSlew", Double.toString(st.getMaxSlewRate().asDegreesPerSecond()));
-         
+
          parentElem.appendChild(elem);
       }
       return parentElem;
    }
-   
+
    private static void decodeWeaponTypes(EntityTypes entTypes, Element parentElem)
    {
       NodeList nodeList = parentElem.getElementsByTagName("WeaponType");
@@ -265,31 +270,133 @@ public class EntityTypesFile
          double minRngM = Double.parseDouble(typeElem.getAttribute("minRng"));
          double maxRngM = Double.parseDouble(typeElem.getAttribute("maxRng"));
          double fovDeg = Double.parseDouble(typeElem.getAttribute("fov"));
-         int initCnt = Integer.parseInt(typeElem.getAttribute("initCnt"));
-         
+
          WeaponType wt = new WeaponType(type);
          wt.getMinRange().setAsMeters(minRngM);
          wt.getMaxRange().setAsMeters(maxRngM);
          wt.getFov().setAsDegrees(fovDeg);
-         wt.setInitialCount(initCnt);
 
          entTypes.getWeaponTypes().add(wt);
       }
    }
-   
+
    private static Element encodeWeaponTypes(EntityTypes entTypes, Document dom)
    {
       Element parentElem = dom.createElement("WeaponTypes");
-      for(WeaponType wt : entTypes.getWeaponTypes())
+      for (WeaponType wt : entTypes.getWeaponTypes())
       {
          Element elem = dom.createElement("WeaponType");
          elem.setAttribute("type", Integer.toString(wt.getTypeID()));
          elem.setAttribute("minRng", Double.toString(wt.getMinRange().asMeters()));
          elem.setAttribute("maxRng", Double.toString(wt.getMaxRange().asMeters()));
          elem.setAttribute("fov", Double.toString(wt.getFov().asDegrees()));
-         elem.setAttribute("initCnt", Integer.toString(wt.getInitialCount()));
-         
+
          parentElem.appendChild(elem);
+      }
+      return parentElem;
+   }
+
+   /**
+    * Decode the UAV type data. Must be run AFTER decoding weapons and sensor
+    * types.
+    * 
+    * @param entTypes
+    *           The parsed {@link UAVType} will be loaded into this container.
+    * @param parentElem
+    *           The XML element to parse containing UAV type information.
+    */
+   private static void decodeUAVTypes(EntityTypes entTypes, Element parentElem)
+   {
+      NodeList uavTypesNodeList = parentElem.getElementsByTagName("UAVTypes");
+      for (int i = 0; i < uavTypesNodeList.getLength(); ++i)
+      {
+         Element typeElem = (Element) uavTypesNodeList.item(i);
+
+         // Load UAV type specific data
+         int type = Integer.parseInt(typeElem.getAttribute("type"));
+         double spdM = Double.parseDouble(typeElem.getAttribute("minRng"));
+         double maxTurnRtDegSec = Double.parseDouble(typeElem.getAttribute("maxRng"));
+
+         UAVType uavType = new UAVType(type);
+         uavType.getMaxSpd().setAsMetersPerSecond(spdM);
+         uavType.getMaxTurnRt().setAsDegreesPerSecond(maxTurnRtDegSec);
+
+         // Load sensor data for the uav
+         NodeList sensorsNodeList = typeElem.getElementsByTagName("Sensors");
+         for (int j = 0; j < sensorsNodeList.getLength(); ++j)
+         {
+            Element sensorElem = (Element) sensorsNodeList.item(j);
+            int sensorTypeID = Integer.parseInt(sensorElem.getAttribute("type"));
+            SensorType st = entTypes.getSensorType(sensorTypeID);
+            if (st != null)
+            {
+               uavType.getSensors().add(new Sensor(st));
+            }
+            else
+            {
+               Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
+               logger.error("Referential integrity error.  There is no corresponding sensor type with an ID of {}.",
+                     sensorTypeID);
+            }
+         }
+
+         // Load weapon data for the uav
+         NodeList weaponsNodeList = typeElem.getElementsByTagName("Weapons");
+         for (int j = 0; j < weaponsNodeList.getLength(); ++j)
+         {
+            Element weaponElem = (Element) weaponsNodeList.item(j);
+            int weaponTypeID = Integer.parseInt(weaponElem.getAttribute("type"));
+            int quantity = Integer.parseInt(weaponElem.getAttribute("initQty"));
+
+            WeaponType wt = entTypes.getWeaponType(weaponTypeID);
+            if (wt != null)
+            {
+               Weapon wpn = new Weapon(wt);
+               wpn.setQuantity(quantity);
+               uavType.getWeapons().add(wpn);
+            }
+            else
+            {
+               Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
+               logger.error("Referential integrity error.  There is no corresponding weapon type with an ID of {}.",
+                     weaponTypeID);
+            }
+         }
+
+         entTypes.getUAVTypes().add(uavType);
+      }
+   }
+
+   private static Element encodeUAVTypes(EntityTypes entTypes, Document dom)
+   {
+      Element parentElem = dom.createElement("UAVTypes");
+      for (UAVType uavType : entTypes.getUAVTypes())
+      {
+         Element uavTypeElem = dom.createElement("UAVType");
+         uavTypeElem.setAttribute("type", Integer.toString(uavType.getTypeID()));
+         uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd().asMeterPerSecond()));
+         uavTypeElem.setAttribute("maxTurnRt", Double.toString(uavType.getMaxTurnRt().asDegreesPerSecond()));
+
+         Element sensorsElem = dom.createElement("Sensors");
+         for (Sensor sensor : uavType.getSensors())
+         {
+            Element sensorElem = dom.createElement("Sensor");
+            sensorElem.setAttribute("type", Integer.toString(sensor.getType().getTypeID()));
+            sensorsElem.appendChild(sensorElem);
+         }
+         uavTypeElem.appendChild(sensorsElem);
+
+         Element weaponsElem = dom.createElement("Weapons");
+         for (Weapon weapon : uavType.getWeapons())
+         {
+            Element weaponElem = dom.createElement("Weapon");
+            weaponElem.setAttribute("type", Integer.toString(weapon.getType().getTypeID()));
+            weaponElem.setAttribute("initQty", Integer.toString(weapon.getQuantity()));
+            weaponsElem.appendChild(weaponElem);
+         }
+         uavTypeElem.appendChild(weaponsElem);
+
+         parentElem.appendChild(uavTypeElem);
       }
       return parentElem;
    }

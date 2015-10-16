@@ -12,7 +12,6 @@ public class WeaponType
    private Distance minRange;
    private Distance maxRange;
    private Angle fov;
-   private int initialCount;
 
    public WeaponType(int typeID)
    {
@@ -20,7 +19,6 @@ public class WeaponType
       minRange = new Distance();
       maxRange = new Distance();
       fov = new Angle();
-      initialCount = 0;
    }
 
    /**
@@ -63,29 +61,6 @@ public class WeaponType
       return fov;
    }
 
-   /**
-    * Get the number of munitions that a host UAV will initially carry at
-    * startup for this weapon type.
-    * 
-    * @return The starting count of weapon stores available on the host UAV.
-    */
-   public int getInitialCount()
-   {
-      return initialCount;
-   }
-
-   /**
-    * Set the initial number of munition stores available for this weapon type.
-    * 
-    * @param initialCount
-    *           The host UAV will be able to launch this many instances of the
-    *           weapon type.
-    */
-   public void setInitialCount(int initialCount)
-   {
-      this.initialCount = initialCount;
-   }
-
    /*
     * (non-Javadoc)
     * 
@@ -97,7 +72,6 @@ public class WeaponType
       final int prime = 31;
       int result = 1;
       result = prime * result + ((fov == null) ? 0 : fov.hashCode());
-      result = prime * result + initialCount;
       result = prime * result + ((maxRange == null) ? 0 : maxRange.hashCode());
       result = prime * result + ((minRange == null) ? 0 : minRange.hashCode());
       result = prime * result + typeID;
@@ -125,8 +99,6 @@ public class WeaponType
             return false;
       }
       else if (!fov.equals(other.fov))
-         return false;
-      if (initialCount != other.initialCount)
          return false;
       if (maxRange == null)
       {
