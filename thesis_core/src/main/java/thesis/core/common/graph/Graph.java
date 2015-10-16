@@ -50,31 +50,33 @@ public class Graph<T>
       return find;
    }
    
-   public DirectedEdge<T> createDirectionalEdge(int startVertID, int endVertID)
+   public DirectedEdge<T> createDirectionalEdge(int startVertID, int endVertID, double cost)
    {
       Vertex<T> start = getVertexByID(startVertID);
       Vertex<T> end = getVertexByID(endVertID);
-      return createDirectionalEdge(start, end);
+      return createDirectionalEdge(start, end, cost);
    }
 
-   public DirectedEdge<T> createDirectionalEdge(Vertex<T> start, Vertex<T> end)
+   public DirectedEdge<T> createDirectionalEdge(Vertex<T> start, Vertex<T> end, double cost)
    {
-      DirectedEdge<T> edge = new DirectedEdge<T>(start, end);
+      DirectedEdge<T> edge = new DirectedEdge<T>(start, end, cost);
       edges.add(edge);
+      start.addOutgoingEdge(edge);
+      end.addIncomingEdge(edge);
       return edge;
    }
    
-   public void createBidirectionalEdge(int vertID1, int vertID2)
+   public void createBidirectionalEdge(int vertID1, int vertID2, double cost)
    {
       Vertex<T> vert1 = getVertexByID(vertID1);
       Vertex<T> vert2 = getVertexByID(vertID2);
-      createBidirectionalEdge(vert1, vert2);
+      createBidirectionalEdge(vert1, vert2, cost);
    }
    
-   public void createBidirectionalEdge(Vertex<T> vert1, Vertex<T> vert2)
+   public void createBidirectionalEdge(Vertex<T> vert1, Vertex<T> vert2, double cost)
    {
-      edges.add(new DirectedEdge<T>(vert1, vert2));
-      edges.add(new DirectedEdge<T>(vert2, vert1));
+      createDirectionalEdge(vert1, vert2, cost);
+      createDirectionalEdge(vert2, vert1, cost);
    }
    
    public Vertex<T> getVertexByData(T data)
@@ -93,7 +95,7 @@ public class Graph<T>
       return find;
    }
 
-   public List<DirectedEdge<T>> getPath(final Vertex<T> start, final Vertex<T> end)
+   public List<DirectedEdge<T>> findPath(final Vertex<T> start, final Vertex<T> end)
    {
       for(Vertex<T> vert : vertices)
       {
@@ -103,6 +105,7 @@ public class Graph<T>
       
       //Simple breadth-first-search algorithm
       Queue<Vertex<T>> searchQ = new LinkedList<Vertex<T>>();
+      searchQ.add(start);
       start.searchCost = 0;
       boolean targetFound = false;
       while(!searchQ.isEmpty() && !targetFound)
