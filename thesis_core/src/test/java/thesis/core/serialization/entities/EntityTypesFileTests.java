@@ -4,9 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
 
@@ -44,28 +42,7 @@ public class EntityTypesFileTests
       {
          testMe.getTargetTypes().add(TestUtils.randTargetType());
       }
-      
-      File file = new File("et.xml");
-      
 
-      EntityTypes results = null;
-      try
-      {
-         assertTrue("Failed to write to output stream.", EntityTypesFile.saveTypes(file, testMe));
-         results = EntityTypesFile.loadTypes(file);
-      }
-      catch (FileNotFoundException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
-      catch (IOException e)
-      {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }      
-      
-/*
       //Write the data to a byte buffer
       ByteArrayOutputStream outBuff = new ByteArrayOutputStream();
       assertTrue("Failed to write to output stream.", EntityTypesFile.saveTypes(outBuff, testMe));
@@ -73,7 +50,7 @@ public class EntityTypesFileTests
       //Read in the data buffer and parse it
       ByteArrayInputStream inBuff = new ByteArrayInputStream(outBuff.toByteArray());
       EntityTypes results = EntityTypesFile.loadTypes(inBuff);
-      */
+      
       for(int i=0; i<NUM_SENSORS; ++i)
       {
          assertEquals("Failed to read correct sensor type.", testMe.getSensorTypes().get(i), results.getSensorTypes().get(i));
