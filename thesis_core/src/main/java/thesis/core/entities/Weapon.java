@@ -88,4 +88,14 @@ public class Weapon
       
       return inRange;
    }
+   
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder("Type: ");
+      sb.append(type.getTypeID());
+      sb.append(", Qty: ");
+      sb.append(quantity);
+      return sb.toString();
+   }
 }

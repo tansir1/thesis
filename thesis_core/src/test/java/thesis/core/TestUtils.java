@@ -74,7 +74,7 @@ public class TestUtils
 
       return wt;
    }
-   
+
    /**
     * Generates a random target type.
     * 
@@ -83,10 +83,10 @@ public class TestUtils
    public static TargetType randTargetType()
    {
       TargetType tt = new TargetType(rand.nextInt());
-      tt.getMaxSpeed().setAsMetersPerSecond(rand.nextDouble()*5);
+      tt.getMaxSpeed().setAsMetersPerSecond(rand.nextDouble() * 5);
       return tt;
    }
-   
+
    /**
     * Generates a random UAV type.
     * 
@@ -95,32 +95,26 @@ public class TestUtils
    public static UAVType randUAVType(List<WeaponType> wpns, List<SensorType> sensors)
    {
       UAVType uavType = new UAVType(rand.nextInt());
-      uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble()*20);
-      uavType.getMaxTurnRt().setAsDegreesPerSecond(rand.nextDouble()*5);
-      
-      if(rand.nextBoolean())
+      uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble() * 20);
+      uavType.getMaxTurnRt().setAsDegreesPerSecond(rand.nextDouble() * 5);
+
+      int numWpnTypes = (int) (wpns.size() * rand.nextDouble());
+      for (int i = 0; i < numWpnTypes; ++i)
       {
-         int numWpnTypes = (int)(wpns.size() * 0.2);
-         for(int i=0; i<numWpnTypes; ++i)
-         {
-            WeaponType wpnType = wpns.get(rand.nextInt(wpns.size()));
-            Weapon wpn = new Weapon(wpnType);
-            wpn.setQuantity(rand.nextInt(5)+1);
-            uavType.getWeapons().add(wpn);
-         }
+         WeaponType wpnType = wpns.get(rand.nextInt(wpns.size()));
+         Weapon wpn = new Weapon(wpnType);
+         wpn.setQuantity(rand.nextInt(5) + 1);
+         uavType.getWeapons().add(wpn);
       }
-      
-      if(rand.nextBoolean())
+
+      int numSensorTypes = (int) (sensors.size() * rand.nextDouble());
+      for (int i = 0; i < numSensorTypes; ++i)
       {
-         int numSensorTypes = (int)(sensors.size() * 0.2);
-         for(int i=0; i<numSensorTypes; ++i)
-         {
-            SensorType sensorType = sensors.get(rand.nextInt(sensors.size()));
-            Sensor sensor = new Sensor(sensorType);
-            uavType.getSensors().add(sensor);
-         }
+         SensorType sensorType = sensors.get(rand.nextInt(sensors.size()));
+         Sensor sensor = new Sensor(sensorType);
+         uavType.getSensors().add(sensor);
       }
-      
+
       return uavType;
-   }   
+   }
 }
