@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.world;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -69,7 +69,7 @@ public class WorldConfigFile
     * 
     * @param cfgStream
     *           Data will be read from this stream.
-    * @return A {@link WorldConfig} initialized with the data from the file or
+    * @return A {@link WorldConfig} initialized with the data from the stream or
     *         null if the reading the stream failed.
     */
    public static WorldConfig loadConfig(InputStream cfgStream)
@@ -104,7 +104,7 @@ public class WorldConfigFile
          if (!Utils.loadVersionID().isMatch(root.getAttribute("version")))
          {
             logger.warn(
-                  "Application version and world config file version do not match.  Unexpected errors may occur!");
+                  "Application version and world config version do not match.  Unexpected errors may occur!");
          }
 
          WorldConfig tempCfg = new WorldConfig();

@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.world;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +10,10 @@ import org.junit.Test;
 
 import thesis.core.TestUtils;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.serialization.world.TargetEntityConfig;
+import thesis.core.serialization.world.UAVEntityConfig;
+import thesis.core.serialization.world.WorldConfig;
+import thesis.core.serialization.world.WorldConfigFile;
 import thesis.core.world.RoadSegment;
 
 public class WorldConfigFileTests
@@ -71,13 +75,10 @@ public class WorldConfigFileTests
       
       //Read in the data buffer and parse it
       ByteArrayInputStream inBuff = new ByteArrayInputStream(outBuff.toByteArray());
-      //inBuff.reset();
       WorldConfig results = WorldConfigFile.loadConfig(inBuff);
       
-      final double distance_tolerance = 0.00001;
-      
-      assertEquals("Failed to read world height.", results.height.asMeters(), testMe.height.asMeters(), distance_tolerance);
-      assertEquals("Failed to read world width.", results.width.asMeters(), testMe.width.asMeters(), distance_tolerance);
+      assertEquals("Failed to read world height.", results.height, testMe.height);
+      assertEquals("Failed to read world width.", results.width, testMe.width);
       assertEquals("Failed to read num columns.", results.numColums, testMe.numColums);
       assertEquals("Failed to read num rows.", results.numRows, testMe.numRows);
       assertEquals("Failed to read random seed.", results.randSeed, testMe.randSeed);

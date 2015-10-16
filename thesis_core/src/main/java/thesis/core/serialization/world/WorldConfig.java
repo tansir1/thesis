@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.world;
 
 import java.util.ArrayList;
 import java.util.List;
