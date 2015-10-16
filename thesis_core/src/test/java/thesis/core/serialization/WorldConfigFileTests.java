@@ -8,12 +8,12 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
 
+import thesis.core.TestUtils;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.world.RoadSegment;
-import thesis.core.world.WorldCoordinate;
 
 public class WorldConfigFileTests
 {
-
    @Test
    public void serializeTest()
    {
@@ -27,40 +27,40 @@ public class WorldConfigFileTests
       testMe.randSeed = 546742;
       
       RoadSegment rs = new RoadSegment();
-      rs.getStart().setCoordinate(34.123, 765.345);
-      rs.getEnd().setCoordinate(5673.21, 823945.123);
+      rs.getStart().setCoordinate(TestUtils.randWorldCoord());
+      rs.getEnd().setCoordinate(TestUtils.randWorldCoord());
       testMe.roadSegments.add(rs);
       rs = new RoadSegment();
-      rs.getStart().setCoordinate(6785.456, 940.2134345);
-      rs.getEnd().setCoordinate(8963.21, 9426.5643);
+      rs.getStart().setCoordinate(TestUtils.randWorldCoord());
+      rs.getEnd().setCoordinate(TestUtils.randWorldCoord());
       testMe.roadSegments.add(rs);
       
       WorldCoordinate wc = new WorldCoordinate();
-      wc.setCoordinate(78.652, 618.13);
+      wc.setCoordinate(TestUtils.randWorldCoord());
       testMe.havens.add(wc);
       wc = new WorldCoordinate();
-      wc.setCoordinate(7128.652, 2034.13);
+      wc.setCoordinate(TestUtils.randWorldCoord());
       testMe.havens.add(wc);
       
-      TargetConfig tarCfg = new TargetConfig();
-      tarCfg.getLocation().setCoordinate(8310.15, 4185.325);
+      TargetEntityConfig tarCfg = new TargetEntityConfig();
+      tarCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
       tarCfg.getOrientation().setAsDegrees(34.547);
       tarCfg.setTargetType(76);
       testMe.targetCfgs.add(tarCfg);
-      tarCfg = new TargetConfig();
-      tarCfg.getLocation().setCoordinate(3059.153, 1035.325);
+      tarCfg = new TargetEntityConfig();
+      tarCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
       tarCfg.getOrientation().setAsDegrees(69.547);
       tarCfg.setTargetType(2);
       testMe.targetCfgs.add(tarCfg);
       
       
-      UAVConfig uavCfg = new UAVConfig();
-      uavCfg.getLocation().setCoordinate(4308.15, 96703.325);
+      UAVEntityConfig uavCfg = new UAVEntityConfig();
+      uavCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
       uavCfg.getOrientation().setAsDegrees(63.1547);
       uavCfg.setUAVType(3);
       testMe.uavCfgs.add(uavCfg);
-      uavCfg = new UAVConfig();
-      uavCfg.getLocation().setCoordinate(10354.153, 4358.3525);
+      uavCfg = new UAVEntityConfig();
+      uavCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
       uavCfg.getOrientation().setAsDegrees(206.852);
       uavCfg.setUAVType(22);
       testMe.uavCfgs.add(uavCfg);
@@ -84,55 +84,55 @@ public class WorldConfigFileTests
       
       RoadSegment rsT = testMe.roadSegments.get(0);
       RoadSegment rsR = results.roadSegments.get(0);
-      assertEquals("Failed to read first road segment north1.", rsR.getStart().getNorth(), rsT.getStart().getNorth(), distance_tolerance);
-      assertEquals("Failed to read first road segment north2.", rsR.getEnd().getNorth(), rsT.getEnd().getNorth(), distance_tolerance);
-      assertEquals("Failed to read first road segment east1.", rsR.getStart().getEast(), rsT.getStart().getEast(), distance_tolerance);
-      assertEquals("Failed to read first road segment east2.", rsR.getEnd().getEast(), rsT.getEnd().getEast(), distance_tolerance);
+      assertEquals("Failed to read first road segment north1.", rsR.getStart().getNorth(), rsT.getStart().getNorth());
+      assertEquals("Failed to read first road segment north2.", rsR.getEnd().getNorth(), rsT.getEnd().getNorth());
+      assertEquals("Failed to read first road segment east1.", rsR.getStart().getEast(), rsT.getStart().getEast());
+      assertEquals("Failed to read first road segment east2.", rsR.getEnd().getEast(), rsT.getEnd().getEast());
       
       rsT = testMe.roadSegments.get(1);
       rsR = results.roadSegments.get(1);
-      assertEquals("Failed to read second road segment north1.", rsR.getStart().getNorth(), rsT.getStart().getNorth(), distance_tolerance);
-      assertEquals("Failed to read second road segment north2.", rsR.getEnd().getNorth(), rsT.getEnd().getNorth(), distance_tolerance);
-      assertEquals("Failed to read second road segment east1.", rsR.getStart().getEast(), rsT.getStart().getEast(), distance_tolerance);
-      assertEquals("Failed to read second road segment east2.", rsR.getEnd().getEast(), rsT.getEnd().getEast(), distance_tolerance);
+      assertEquals("Failed to read second road segment north1.", rsR.getStart().getNorth(), rsT.getStart().getNorth());
+      assertEquals("Failed to read second road segment north2.", rsR.getEnd().getNorth(), rsT.getEnd().getNorth());
+      assertEquals("Failed to read second road segment east1.", rsR.getStart().getEast(), rsT.getStart().getEast());
+      assertEquals("Failed to read second road segment east2.", rsR.getEnd().getEast(), rsT.getEnd().getEast());
       
       WorldCoordinate havenWCT = testMe.havens.get(0);
       WorldCoordinate havenWCR = results.havens.get(0);
-      assertEquals("Failed to read first haven north.", havenWCR.getNorth(), havenWCT.getNorth(), distance_tolerance);
-      assertEquals("Failed to read first haven east.", havenWCR.getEast(), havenWCT.getEast(), distance_tolerance);
+      assertEquals("Failed to read first haven north.", havenWCR.getNorth(), havenWCT.getNorth());
+      assertEquals("Failed to read first haven east.", havenWCR.getEast(), havenWCT.getEast());
 
       havenWCT = testMe.havens.get(1);
       havenWCR = results.havens.get(1);
-      assertEquals("Failed to read second haven north.", havenWCR.getNorth(), havenWCT.getNorth(), distance_tolerance);
-      assertEquals("Failed to read second haven east.", havenWCR.getEast(), havenWCT.getEast(), distance_tolerance);
+      assertEquals("Failed to read second haven north.", havenWCR.getNorth(), havenWCT.getNorth());
+      assertEquals("Failed to read second haven east.", havenWCR.getEast(), havenWCT.getEast());
       
-      TargetConfig tarCfgT = testMe.targetCfgs.get(0);
-      TargetConfig tarCfgR = results.targetCfgs.get(0);
-      assertEquals("Failed to read first target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth(), distance_tolerance);
-      assertEquals("Failed to read first target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast(), distance_tolerance);
+      TargetEntityConfig tarCfgT = testMe.targetCfgs.get(0);
+      TargetEntityConfig tarCfgR = results.targetCfgs.get(0);
+      assertEquals("Failed to read first target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth());
+      assertEquals("Failed to read first target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast());
       assertEquals("Failed to read first target's type.", tarCfgR.getTargetType(), tarCfgT.getTargetType());
-      assertEquals("Failed to read first target's orientation.", tarCfgR.getOrientation().asDegrees(), tarCfgT.getOrientation().asDegrees(), distance_tolerance);
+      assertEquals("Failed to read first target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation());
       
       tarCfgT = testMe.targetCfgs.get(1);
       tarCfgR = results.targetCfgs.get(1);
-      assertEquals("Failed to read second target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth(), distance_tolerance);
-      assertEquals("Failed to read second target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read second target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth());
+      assertEquals("Failed to read second target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast());
       assertEquals("Failed to read second target's type.", tarCfgR.getTargetType(), tarCfgT.getTargetType());
-      assertEquals("Failed to read second target's orientation.", tarCfgR.getOrientation().asDegrees(), tarCfgT.getOrientation().asDegrees(), distance_tolerance);
+      assertEquals("Failed to read second target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation());
     
       
-      UAVConfig uavCfgT = testMe.uavCfgs.get(0);
-      UAVConfig uavCfgR = results.uavCfgs.get(0);
-      assertEquals("Failed to read first uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth(), distance_tolerance);
-      assertEquals("Failed to read first uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast(), distance_tolerance);
+      UAVEntityConfig uavCfgT = testMe.uavCfgs.get(0);
+      UAVEntityConfig uavCfgR = results.uavCfgs.get(0);
+      assertEquals("Failed to read first uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth());
+      assertEquals("Failed to read first uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast());
       assertEquals("Failed to read first uav's type.", uavCfgR.getUAVType(), uavCfgT.getUAVType());
-      assertEquals("Failed to read first uav's orientation.", uavCfgR.getOrientation().asDegrees(), uavCfgT.getOrientation().asDegrees(), distance_tolerance);
+      assertEquals("Failed to read first uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation());
       
       uavCfgT = testMe.uavCfgs.get(1);
       uavCfgR = results.uavCfgs.get(1);
-      assertEquals("Failed to read second uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth(), distance_tolerance);
-      assertEquals("Failed to read second uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast(), distance_tolerance);
+      assertEquals("Failed to read second uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth());
+      assertEquals("Failed to read second uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast());
       assertEquals("Failed to read second uav's type.", uavCfgR.getUAVType(), uavCfgT.getUAVType());
-      assertEquals("Failed to read second uav's orientation.", uavCfgR.getOrientation().asDegrees(), uavCfgT.getOrientation().asDegrees(), distance_tolerance);
+      assertEquals("Failed to read second uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation());
    }
 }

@@ -1,19 +1,18 @@
 package thesis.core.serialization;
 
 import thesis.core.common.Angle;
-import thesis.core.common.LinearSpeed;
-import thesis.core.world.WorldCoordinate;
+import thesis.core.common.WorldCoordinate;
 
 /**
  * Configuration data required to initialize a target.
  */
-public class TargetConfig
+public class TargetEntityConfig
 {
    private int type;
    private WorldCoordinate location;
    private Angle orientation;
    
-   public TargetConfig()
+   public TargetEntityConfig()
    {
       type = -1;
       location = new WorldCoordinate();

@@ -25,10 +25,10 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import thesis.core.common.Distance;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.Utils;
 import thesis.core.world.RoadSegment;
-import thesis.core.world.WorldCoordinate;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -257,14 +257,11 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element roadSegElem = (Element) segNodeList.item(i);
-         double north1 = Double.parseDouble(roadSegElem.getAttribute("north1"));
-         double north2 = Double.parseDouble(roadSegElem.getAttribute("north2"));
-         double east1 = Double.parseDouble(roadSegElem.getAttribute("east1"));
-         double east2 = Double.parseDouble(roadSegElem.getAttribute("east2"));
 
          RoadSegment roadSeg = new RoadSegment();
-         roadSeg.getStart().setCoordinate(north1, east1);
-         roadSeg.getEnd().setCoordinate(north2, east2);
+         roadSeg.getStart().setCoordinate(coordFromAttr(roadSegElem.getAttribute("north1"), roadSegElem.getAttribute("east1")));
+         roadSeg.getEnd().setCoordinate(coordFromAttr(roadSegElem.getAttribute("north2"), roadSegElem.getAttribute("east2")));
+         
          cfg.roadSegments.add(roadSeg);
       }
    }
@@ -276,10 +273,10 @@ public class WorldConfigFile
       for (RoadSegment rs : cfg.roadSegments)
       {
          Element roadSegElem = dom.createElement("RoadSegment");
-         roadSegElem.setAttribute("north1", Double.toString(rs.getStart().getNorth()));
-         roadSegElem.setAttribute("east1", Double.toString(rs.getStart().getEast()));
-         roadSegElem.setAttribute("north2", Double.toString(rs.getEnd().getNorth()));
-         roadSegElem.setAttribute("east2", Double.toString(rs.getEnd().getEast()));
+         roadSegElem.setAttribute("north1", Double.toString(rs.getStart().getNorth().asMeters()));
+         roadSegElem.setAttribute("east1", Double.toString(rs.getStart().getEast().asMeters()));
+         roadSegElem.setAttribute("north2", Double.toString(rs.getEnd().getNorth().asMeters()));
+         roadSegElem.setAttribute("east2", Double.toString(rs.getEnd().getEast().asMeters()));
          roadSegsElem.appendChild(roadSegElem);
       }
       return roadSegsElem;
@@ -292,12 +289,7 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element havenElem = (Element) haveNodeList.item(i);
-         double north = Double.parseDouble(havenElem.getAttribute("north"));
-         double east = Double.parseDouble(havenElem.getAttribute("east"));
-
-         WorldCoordinate havenLocation = new WorldCoordinate();
-         havenLocation.setCoordinate(north, east);
-         cfg.havens.add(havenLocation);
+         cfg.havens.add(coordFromAttr(havenElem));
       }
    }
 
@@ -308,8 +300,8 @@ public class WorldConfigFile
       for (WorldCoordinate havenCoord : cfg.havens)
       {
          Element havenElem = dom.createElement("Haven");
-         havenElem.setAttribute("north", Double.toString(havenCoord.getNorth()));
-         havenElem.setAttribute("east", Double.toString(havenCoord.getEast()));
+         havenElem.setAttribute("north", Double.toString(havenCoord.getNorth().asMeters()));
+         havenElem.setAttribute("east", Double.toString(havenCoord.getEast().asMeters()));
          havens.appendChild(havenElem);
       }
       return havens;
@@ -322,13 +314,11 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element tarElem = (Element) targetNodeList.item(i);
-         double north = Double.parseDouble(tarElem.getAttribute("north"));
-         double east = Double.parseDouble(tarElem.getAttribute("east"));
          int type = Integer.parseInt(tarElem.getAttribute("type"));
          double orient = Double.parseDouble(tarElem.getAttribute("orientation"));
 
-         TargetConfig tarCfg = new TargetConfig();
-         tarCfg.getLocation().setCoordinate(north, east);
+         TargetEntityConfig tarCfg = new TargetEntityConfig();
+         tarCfg.getLocation().setCoordinate(coordFromAttr(tarElem));
          tarCfg.getOrientation().setAsDegrees(orient);
          tarCfg.setTargetType(type);
 
@@ -340,11 +330,11 @@ public class WorldConfigFile
    {
       Element targets = dom.createElement("Targets");
 
-      for (TargetConfig tarCfg : cfg.targetCfgs)
+      for (TargetEntityConfig tarCfg : cfg.targetCfgs)
       {
          Element tarElem = dom.createElement("Target");
-         tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth()));
-         tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast()));
+         tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth().asMeters()));
+         tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast().asMeters()));
          tarElem.setAttribute("type", Integer.toString(tarCfg.getTargetType()));
          tarElem.setAttribute("orientation", Double.toString(tarCfg.getOrientation().asDegrees()));
          targets.appendChild(tarElem);
@@ -359,13 +349,11 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element uavElem = (Element) uavNodeList.item(i);
-         double north = Double.parseDouble(uavElem.getAttribute("north"));
-         double east = Double.parseDouble(uavElem.getAttribute("east"));
          int type = Integer.parseInt(uavElem.getAttribute("type"));
          double orient = Double.parseDouble(uavElem.getAttribute("orientation"));
 
-         UAVConfig uavCfg = new UAVConfig();
-         uavCfg.getLocation().setCoordinate(north, east);
+         UAVEntityConfig uavCfg = new UAVEntityConfig();
+         uavCfg.getLocation().setCoordinate(coordFromAttr(uavElem));
          uavCfg.getOrientation().setAsDegrees(orient);
          uavCfg.setUAVType(type);
 
@@ -377,15 +365,36 @@ public class WorldConfigFile
    {
       Element uavs = dom.createElement("UAVs");
 
-      for (UAVConfig uavCfg : cfg.uavCfgs)
+      for (UAVEntityConfig uavCfg : cfg.uavCfgs)
       {
          Element uavElem = dom.createElement("UAV");
-         uavElem.setAttribute("north", Double.toString(uavCfg.getLocation().getNorth()));
-         uavElem.setAttribute("east", Double.toString(uavCfg.getLocation().getEast()));
+         uavElem.setAttribute("north", Double.toString(uavCfg.getLocation().getNorth().asMeters()));
+         uavElem.setAttribute("east", Double.toString(uavCfg.getLocation().getEast().asMeters()));
          uavElem.setAttribute("type", Integer.toString(uavCfg.getUAVType()));
          uavElem.setAttribute("orientation", Double.toString(uavCfg.getOrientation().asDegrees()));
          uavs.appendChild(uavElem);
       }
       return uavs;
+   }
+   
+   private static WorldCoordinate coordFromAttr(Element coordElem)
+   {
+      return coordFromAttr(coordElem.getAttribute("north"), coordElem.getAttribute("east"));
+   }
+   
+   private static WorldCoordinate coordFromAttr(String northAttr, String eastAttr)
+   {
+      double northM = Double.parseDouble(northAttr);
+      double eastM = Double.parseDouble(eastAttr);
+      
+      Distance north = new Distance();
+      Distance east = new Distance();
+      
+      north.setAsMeters(northM);
+      east.setAsMeters(eastM);
+      
+      WorldCoordinate wc = new WorldCoordinate();
+      wc.setCoordinate(north, east);
+      return wc;
    }
 }

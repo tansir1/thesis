@@ -10,6 +10,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.common.CellCoordinate;
+import thesis.core.common.Distance;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.utilities.LoggerIDs;
 
 /**
@@ -19,14 +22,14 @@ import thesis.core.utilities.LoggerIDs;
 public class World
 {
    /**
-    * Width of the rectangular world in kilometers.
+    * Width of the rectangular world.
     */
-   private double width;
+   private Distance width;
 
    /**
-    * Height of the rectangular world in kilometers.
+    * Height of the rectangular world.
     */
-   private double height;
+   private Distance height;
 
    /**
     * The world is divided into this many rows.
@@ -39,14 +42,14 @@ public class World
    private int numCols;
 
    /**
-    * The lateral (vertical) distance in kilometers spanned by a row.
+    * The lateral (vertical) distance spanned by a row.
     */
-   private double distPerRow;
+   private Distance distPerRow;
 
    /**
-    * The longitudinal (horizontal) distance in kilometers spanned by a column.
+    * The longitudinal (horizontal) distance spanned by a column.
     */
-   private double distPerCol;
+   private Distance distPerCol;
 
    /**
     * The locations of all safe havens for targets.
@@ -71,22 +74,32 @@ public class World
    /**
     * 
     * @param width
-    *           Width of the rectangular world in kilometers.
+    *           Width of the rectangular world.
     * @param height
-    *           Height of the rectangular world in kilometers.
+    *           Height of the rectangular world.
     * @param numRows
     *           Divide the world into this many rows.
     * @param numCols
     *           Divide the world in this many columns.
     */
-   public World(double width, double height, int numRows, int numCols, Random randGen)
+   public World(Distance width, Distance height, int numRows, int numCols, Random randGen)
    {
-      if (width < 0)
+      if(width == null)
+      {
+         throw new NullPointerException("World width cannot be null.");
+      }
+
+      if(height == null)
+      {
+         throw new NullPointerException("World height cannot be null.");
+      }
+
+      if (width.asFeet() < 0)
       {
          throw new IllegalArgumentException("World width cannot be less than 0km.");
       }
 
-      if (height < 0)
+      if (height.asFeet() < 0)
       {
          throw new IllegalArgumentException("World height cannot be less than 0km.");
       }
@@ -106,16 +119,18 @@ public class World
          throw new NullPointerException("Random generator cannot be null.");
       }
 
-      this.width = width;
-      this.height = height;
+      this.width = new Distance(width);
+      this.height = new Distance(height);
       this.numRows = numRows;
       this.numCols = numCols;
       this.randGen = randGen;
 
       this.roadNetEdges = new HashSet<RoadGroup>();
 
-      distPerRow = height / (numRows * 1.0);
-      distPerCol = width / (numCols * 1.0);
+      distPerRow = new Distance();
+      distPerCol = new Distance();
+      distPerRow.setAsMeters(height.asMeters() / (numRows * 1.0));
+      distPerCol.setAsMeters(width.asMeters() / (numCols * 1.0));
 
       havens = new HashSet<CellCoordinate>();
       roadLocations = new ArrayList<CellCoordinate>();
@@ -127,9 +142,9 @@ public class World
    /**
     * Get the physical width of the world.
     * 
-    * @return Width of the world in kilometers.
+    * @return Width of the world.
     */
-   public double getWidth()
+   public Distance getWidth()
    {
       return width;
    }
@@ -137,9 +152,9 @@ public class World
    /**
     * Get the physical height of the world.
     * 
-    * @return Height of the world in kilometers.
+    * @return Height of the world.
     */
-   public double getHeight()
+   public Distance getHeight()
    {
       return height;
    }
@@ -232,8 +247,8 @@ public class World
          throw new NullPointerException("from cannot be null.");
       }
 
-      int row = (int) (from.getNorth() / distPerRow);
-      int col = (int) (from.getEast() / distPerCol);
+      int row = (int) (from.getNorth().asMeters() / distPerRow.asMeters());
+      int col = (int) (from.getEast().asMeters() / distPerCol.asMeters());
 
       to.setCoordinate(row, col);
    }
@@ -277,8 +292,14 @@ public class World
          throw new NullPointerException("from cannot be null");
       }
 
-      double north = from.getRow() * distPerRow + (distPerRow * 0.5);
-      double east = from.getColumn() * distPerCol + (distPerCol * 0.5);
+      double northM = from.getRow() * distPerRow.asMeters() + (distPerRow.asMeters() * 0.5);
+      double eastM = from.getColumn() * distPerCol.asMeters() + (distPerCol.asMeters() * 0.5);
+
+      Distance north = new Distance();
+      Distance east = new Distance();
+
+      north.setAsMeters(northM);
+      east.setAsMeters(eastM);
 
       to.setCoordinate(north, east);
    }
@@ -447,7 +468,7 @@ public class World
       boolean valid = true;
 
       // Prevents the seeds from clustering together
-      double interSeedDistBuffer = Math.min(width, height) * 0.1;
+      double interSeedDistBuffer = Math.min(width.asMeters(), height.asMeters()) * 0.1;
 
       if (existingCells.contains(newCell))
       {
@@ -460,7 +481,7 @@ public class World
       for (CellCoordinate otherSeed : existingCells)
       {
          convertCellToWorld(otherSeed, otherSeedWC);
-         if (newCellWC.distanceTo(otherSeedWC) < interSeedDistBuffer)
+         if (newCellWC.distanceTo(otherSeedWC).asMeters() < interSeedDistBuffer)
          {
             valid = false;
             break;

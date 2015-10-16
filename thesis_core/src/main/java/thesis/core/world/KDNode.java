@@ -1,5 +1,7 @@
 package thesis.core.world;
 
+import thesis.core.common.CellCoordinate;
+
 public class KDNode
 {
    private CellCoordinate location;

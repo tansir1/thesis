@@ -1,18 +1,18 @@
 package thesis.core.serialization;
 
 import thesis.core.common.Angle;
-import thesis.core.world.WorldCoordinate;
+import thesis.core.common.WorldCoordinate;
 
 /**
  * Configuration data required to initialize a UAV.
  */
-public class UAVConfig
+public class UAVEntityConfig
 {
    private int type;
    private WorldCoordinate location;
    private Angle orientation;
    
-   public UAVConfig()
+   public UAVEntityConfig()
    {
       type = -1;
       location = new WorldCoordinate();

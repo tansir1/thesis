@@ -54,8 +54,8 @@ public class SimModelConfigLoader
 
    private void loadWorldData(PropertiesLoader props)
    {
-      cfg.setWorldWidth(props.getDouble("world.width", 100.0));
-      cfg.setWorldHeight(props.getDouble("world.height", 100.0));
+      cfg.getWorldWidth().setAsMeters(props.getDouble("world.width", 100.0));
+      cfg.getWorldHeight().setAsMeters(props.getDouble("world.height", 100.0));
       cfg.setNumWorldRows(props.getInt("world.rows", 10));
       cfg.setNumWorldCols(props.getInt("world.cols", 10));
    }
