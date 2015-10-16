@@ -1,10 +1,15 @@
 package thesis.core;
 
+import java.util.List;
 import java.util.Random;
 
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.entities.Sensor;
 import thesis.core.entities.SensorType;
+import thesis.core.entities.TargetType;
+import thesis.core.entities.UAVType;
+import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
 
 /**
@@ -69,4 +74,53 @@ public class TestUtils
 
       return wt;
    }
+   
+   /**
+    * Generates a random target type.
+    * 
+    * @return A random target type.
+    */
+   public static TargetType randTargetType()
+   {
+      TargetType tt = new TargetType(rand.nextInt());
+      tt.getMaxSpeed().setAsMetersPerSecond(rand.nextDouble()*5);
+      return tt;
+   }
+   
+   /**
+    * Generates a random UAV type.
+    * 
+    * @return A random UAV type.
+    */
+   public static UAVType randUAVType(List<WeaponType> wpns, List<SensorType> sensors)
+   {
+      UAVType uavType = new UAVType(rand.nextInt());
+      uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble()*20);
+      uavType.getMaxTurnRt().setAsDegreesPerSecond(rand.nextDouble()*5);
+      
+      if(rand.nextBoolean())
+      {
+         int numWpnTypes = (int)(wpns.size() * 0.2);
+         for(int i=0; i<numWpnTypes; ++i)
+         {
+            WeaponType wpnType = wpns.get(rand.nextInt(wpns.size()));
+            Weapon wpn = new Weapon(wpnType);
+            wpn.setQuantity(rand.nextInt(5)+1);
+            uavType.getWeapons().add(wpn);
+         }
+      }
+      
+      if(rand.nextBoolean())
+      {
+         int numSensorTypes = (int)(sensors.size() * 0.2);
+         for(int i=0; i<numSensorTypes; ++i)
+         {
+            SensorType sensorType = sensors.get(rand.nextInt(sensors.size()));
+            Sensor sensor = new Sensor(sensorType);
+            uavType.getSensors().add(sensor);
+         }
+      }
+      
+      return uavType;
+   }   
 }

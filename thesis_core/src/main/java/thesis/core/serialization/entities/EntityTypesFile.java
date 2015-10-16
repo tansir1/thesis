@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import thesis.core.entities.Sensor;
 import thesis.core.entities.SensorType;
+import thesis.core.entities.TargetType;
 import thesis.core.entities.UAVType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
@@ -112,6 +113,7 @@ public class EntityTypesFile
 
          decodeSensorTypes(tempTypes, (Element) root.getElementsByTagName("SensorTypes").item(0));
          decodeWeaponTypes(tempTypes, (Element) root.getElementsByTagName("WeaponTypes").item(0));
+         decodeTargetTypes(tempTypes, (Element) root.getElementsByTagName("TargetTypes").item(0));
          //Must be run after decoding weapon and sensor types
          decodeUAVTypes(tempTypes, (Element) root.getElementsByTagName("UAVTypes").item(0));
 
@@ -197,6 +199,7 @@ public class EntityTypesFile
 
          root.appendChild(encodeSensorTypes(types, document));
          root.appendChild(encodeWeaponTypes(types, document));
+         root.appendChild(encodeTargetTypes(types, document));
          root.appendChild(encodeUAVTypes(types, document));
 
          document.appendChild(root);
@@ -307,22 +310,23 @@ public class EntityTypesFile
     */
    private static void decodeUAVTypes(EntityTypes entTypes, Element parentElem)
    {
-      NodeList uavTypesNodeList = parentElem.getElementsByTagName("UAVTypes");
+      NodeList uavTypesNodeList = parentElem.getElementsByTagName("UAVType");
       for (int i = 0; i < uavTypesNodeList.getLength(); ++i)
       {
          Element typeElem = (Element) uavTypesNodeList.item(i);
 
          // Load UAV type specific data
          int type = Integer.parseInt(typeElem.getAttribute("type"));
-         double spdM = Double.parseDouble(typeElem.getAttribute("minRng"));
-         double maxTurnRtDegSec = Double.parseDouble(typeElem.getAttribute("maxRng"));
+         double spdM = Double.parseDouble(typeElem.getAttribute("maxSpd"));
+         double maxTurnRtDegSec = Double.parseDouble(typeElem.getAttribute("maxTurnRt"));
 
          UAVType uavType = new UAVType(type);
          uavType.getMaxSpd().setAsMetersPerSecond(spdM);
          uavType.getMaxTurnRt().setAsDegreesPerSecond(maxTurnRtDegSec);
 
          // Load sensor data for the uav
-         NodeList sensorsNodeList = typeElem.getElementsByTagName("Sensors");
+         Element sensorsElem = (Element) typeElem.getElementsByTagName("Sensors").item(0);
+         NodeList sensorsNodeList = sensorsElem.getElementsByTagName("Sensor");
          for (int j = 0; j < sensorsNodeList.getLength(); ++j)
          {
             Element sensorElem = (Element) sensorsNodeList.item(j);
@@ -341,7 +345,8 @@ public class EntityTypesFile
          }
 
          // Load weapon data for the uav
-         NodeList weaponsNodeList = typeElem.getElementsByTagName("Weapons");
+         Element weaponsElem = (Element) typeElem.getElementsByTagName("Weapons").item(0);
+         NodeList weaponsNodeList = weaponsElem.getElementsByTagName("Weapon");
          for (int j = 0; j < weaponsNodeList.getLength(); ++j)
          {
             Element weaponElem = (Element) weaponsNodeList.item(j);
@@ -397,6 +402,38 @@ public class EntityTypesFile
          uavTypeElem.appendChild(weaponsElem);
 
          parentElem.appendChild(uavTypeElem);
+      }
+      return parentElem;
+   }
+   
+   private static void decodeTargetTypes(EntityTypes entTypes, Element parentElem)
+   {
+      NodeList nodeList = parentElem.getElementsByTagName("TargetType");
+      final int numNodes = nodeList.getLength();
+      for (int i = 0; i < numNodes; ++i)
+      {
+         Element typeElem = (Element) nodeList.item(i);
+
+         int type = Integer.parseInt(typeElem.getAttribute("type"));
+         double maxSpd = Double.parseDouble(typeElem.getAttribute("maxSpd"));
+
+         TargetType tt = new TargetType(type);
+         tt.getMaxSpeed().setAsMetersPerSecond(maxSpd);
+
+         entTypes.getTargetTypes().add(tt);
+      }
+   }
+
+   private static Element encodeTargetTypes(EntityTypes entTypes, Document dom)
+   {
+      Element parentElem = dom.createElement("TargetTypes");
+      for (TargetType tt : entTypes.getTargetTypes())
+      {
+         Element elem = dom.createElement("TargetType");
+         elem.setAttribute("type", Integer.toString(tt.getTypeID()));
+         elem.setAttribute("maxSpd", Double.toString(tt.getMaxSpeed().asMeterPerSecond()));
+
+         parentElem.appendChild(elem);
       }
       return parentElem;
    }

@@ -93,27 +93,6 @@ public class WeaponType
       if (getClass() != obj.getClass())
          return false;
       WeaponType other = (WeaponType) obj;
-      if (fov == null)
-      {
-         if (other.fov != null)
-            return false;
-      }
-      else if (!fov.equals(other.fov))
-         return false;
-      if (maxRange == null)
-      {
-         if (other.maxRange != null)
-            return false;
-      }
-      else if (!maxRange.equals(other.maxRange))
-         return false;
-      if (minRange == null)
-      {
-         if (other.minRange != null)
-            return false;
-      }
-      else if (!minRange.equals(other.minRange))
-         return false;
       if (typeID != other.typeID)
          return false;
       return true;

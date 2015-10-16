@@ -107,34 +107,6 @@ public class SensorType
       if (getClass() != obj.getClass())
          return false;
       SensorType other = (SensorType) obj;
-      if (fov == null)
-      {
-         if (other.fov != null)
-            return false;
-      }
-      else if (!fov.equals(other.fov))
-         return false;
-      if (maxRange == null)
-      {
-         if (other.maxRange != null)
-            return false;
-      }
-      else if (!maxRange.equals(other.maxRange))
-         return false;
-      if (maxSlewRate == null)
-      {
-         if (other.maxSlewRate != null)
-            return false;
-      }
-      else if (!maxSlewRate.equals(other.maxSlewRate))
-         return false;
-      if (minRange == null)
-      {
-         if (other.minRange != null)
-            return false;
-      }
-      else if (!minRange.equals(other.minRange))
-         return false;
       if (typeID != other.typeID)
          return false;
       return true;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.entities.SensorType;
+import thesis.core.entities.TargetType;
 import thesis.core.entities.UAVType;
 import thesis.core.entities.WeaponType;
 
@@ -12,12 +13,14 @@ public class EntityTypes
    private List<SensorType> sensorTypes;
    private List<WeaponType> weaponTypes;
    private List<UAVType> uavTypes;
+   private List<TargetType> targetTypes;
 
    public EntityTypes()
    {
       sensorTypes = new ArrayList<SensorType>();
       weaponTypes = new ArrayList<WeaponType>();
       uavTypes = new ArrayList<UAVType>();
+      targetTypes = new ArrayList<TargetType>();
    }
 
    /**
@@ -50,6 +53,16 @@ public class EntityTypes
       return uavTypes;
    }
 
+   /**
+    * Get a modifiable list of all known target types.
+    * 
+    * @return The list of known target types.
+    */
+   public List<TargetType> getTargetTypes()
+   {
+      return targetTypes;
+   }
+   
    /**
     * Retrieve the {@link SensorType} corresponding to the given type ID.
     * 
