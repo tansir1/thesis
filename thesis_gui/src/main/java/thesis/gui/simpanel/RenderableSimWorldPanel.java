@@ -14,9 +14,10 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
 import thesis.core.SimModel;
-import thesis.core.world.CellCoordinate;
+import thesis.core.common.CellCoordinate;
+import thesis.core.common.Distance;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.world.RoadGroup;
-import thesis.core.world.WorldCoordinate;
 
 @SuppressWarnings("serial")
 public class RenderableSimWorldPanel extends JPanel
@@ -96,12 +97,14 @@ public class RenderableSimWorldPanel extends JPanel
       double xPercent = (x * 1.0) / (1.0 * getWidth());
       double yPercent = (y * 1.0) / (1.0 * getHeight());
 
-      double worldH = simModel.getWorld().getHeight();
-      double worldW = simModel.getWorld().getWidth();
+      Distance worldH = new Distance(simModel.getWorld().getHeight());
+      Distance worldW = new Distance(simModel.getWorld().getWidth());
 
       // TODO Probably need to invert the y axis depending on where origin is
       // placed in sim model
-      return new WorldCoordinate(yPercent * worldH, xPercent * worldW);
+      worldH.scale(yPercent);
+      worldW.scale(xPercent);
+      return new WorldCoordinate(worldH, worldW);
    }
 
    /**

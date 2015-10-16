@@ -1,6 +1,6 @@
 package thesis.core.utilities;
 
-import java.text.DecimalFormat;
+import thesis.core.common.Distance;
 
 /**
  * Contains all the configuration parameters for the simulation model.
@@ -10,8 +10,8 @@ public class SimModelConfig
    int randomSeed;
 
    // World map model values
-   private double worldWidth;
-   private double worldHeight;
+   private Distance worldWidth;
+   private Distance worldHeight;
    private int numWorldRows;
    private int numWorldCols;
 
@@ -19,30 +19,20 @@ public class SimModelConfig
    {
       randomSeed = 0;
 
-      worldWidth = 0;
-      worldHeight = 0;
+      worldWidth = new Distance();
+      worldHeight = new Distance();
       numWorldCols = 0;
       numWorldRows = 0;
    }
 
-   public double getWorldWidth()
+   public Distance getWorldWidth()
    {
       return worldWidth;
    }
 
-   public void setWorldWidth(double worldWidth)
-   {
-      this.worldWidth = worldWidth;
-   }
-
-   public double getWorldHeight()
+   public Distance getWorldHeight()
    {
       return worldHeight;
-   }
-
-   public void setWorldHeight(double worldHeight)
-   {
-      this.worldHeight = worldHeight;
    }
 
    public int getNumWorldRows()
@@ -78,26 +68,24 @@ public class SimModelConfig
    @Override
    public String toString()
    {
-      DecimalFormat df = new DecimalFormat("0.000");
-      
       StringBuilder sb = new StringBuilder();
-      
-      //Generic sim parameters
+
+      // Generic sim parameters
       sb.append("-Sim-");
       sb.append("\n\tRandom seed: ");
       sb.append(randomSeed);
-      
-      //World parameters
+
+      // World parameters
       sb.append("\n-World-");
-      sb.append("\n\tWidth (km):");
-      sb.append(df.format(worldWidth));
-      sb.append("\n\tHeight (km):");
-      sb.append(df.format(worldHeight));
+      sb.append("\n\tWidth:");
+      sb.append(worldWidth);
+      sb.append("\n\tHeight:");
+      sb.append(worldHeight);
       sb.append("\n\tRows:");
       sb.append(numWorldRows);
       sb.append("\n\tCols:");
       sb.append(numWorldCols);
-      
+
       return sb.toString();
    }
 }

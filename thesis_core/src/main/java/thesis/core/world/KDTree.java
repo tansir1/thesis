@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import thesis.core.common.CellCoordinate;
+
 /**
  *A naive KDTree implementation to partition the world space.
  */

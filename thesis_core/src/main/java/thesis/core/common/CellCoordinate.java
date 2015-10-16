@@ -1,4 +1,4 @@
-package thesis.core.world;
+package thesis.core.common;
 
 /**
  * A discretized row and column position within the world.
