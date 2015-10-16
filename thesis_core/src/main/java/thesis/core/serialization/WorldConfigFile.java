@@ -11,6 +11,11 @@ import java.io.OutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +30,22 @@ import thesis.core.utilities.Utils;
 import thesis.core.world.RoadSegment;
 import thesis.core.world.WorldCoordinate;
 
+/**
+ * Static class wrapping serialization utilities for reading and writing a
+ * {@link WorldConfig} to streams.
+ */
 public class WorldConfigFile
 {
+   /**
+    * Attempt to load a {@link WorldConfig} from disk.
+    * 
+    * @param cfgFile
+    *           The config data file to read from disk.
+    * @return A {@link WorldConfig} initialized with the data from the file or
+    *         null if the reading the file failed.
+    * @throws FileNotFoundException
+    *            Thrown if <i>cfgFile</i> does not point to an existing file.
+    */
    public static WorldConfig loadConfig(File cfgFile) throws FileNotFoundException
    {
       if (cfgFile == null)
@@ -45,7 +64,15 @@ public class WorldConfigFile
       return loadConfig(new FileInputStream(cfgFile));
    }
 
-   public static WorldConfig loadConfig(InputStream cfgFile)
+   /**
+    * Attempt to load a {@link WorldConfig} from an input stream.
+    * 
+    * @param cfgStream
+    *           Data will be read from this stream.
+    * @return A {@link WorldConfig} initialized with the data from the file or
+    *         null if the reading the stream failed.
+    */
+   public static WorldConfig loadConfig(InputStream cfgStream)
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
       WorldConfig cfg = null;
@@ -54,7 +81,7 @@ public class WorldConfigFile
       {
          DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
          DocumentBuilder builder = factory.newDocumentBuilder();
-         Document document = builder.parse(cfgFile);
+         Document document = builder.parse(cfgStream);
 
          // TODO Define schema
          // Schema schema = null;
@@ -74,7 +101,7 @@ public class WorldConfigFile
 
          Element root = document.getDocumentElement();
 
-         if (Utils.loadVersionID().isMatch(root.getAttribute("version")))
+         if (!Utils.loadVersionID().isMatch(root.getAttribute("version")))
          {
             logger.warn(
                   "Application version and world config file version do not match.  Unexpected errors may occur!");
@@ -98,14 +125,14 @@ public class WorldConfigFile
       }
       catch (ParserConfigurationException | SAXException | IOException e)
       {
-         logger.error("Failed to load {}.  Details: {}", cfgFile, e.getLocalizedMessage());
+         logger.error("Failed to load {}.  Details: {}", cfgStream, e.getLocalizedMessage());
       }
 
       return cfg;
    }
 
    /**
-    * Save the given configuration into the given file.
+    * Save the given configuration data into the given file.
     * 
     * @param cfgFile
     *           Where to save the data.
@@ -114,7 +141,7 @@ public class WorldConfigFile
     * @throws IOException
     * @return True upon successfully writing the data, false otherwise.
     */
-   public boolean saveConfig(File cfgFile, WorldConfig cfg) throws IOException
+   public static boolean saveConfig(File cfgFile, WorldConfig cfg) throws IOException
    {
       if (cfgFile == null)
       {
@@ -133,15 +160,15 @@ public class WorldConfigFile
    }
 
    /**
-    * Save the given configuration into the given stream.
+    * Save the given configuration data into the given stream.
     * 
-    * @param cfgFile
-    *           The data to save.
-    * @param cfg
+    * @param outStream
     *           The data will be written to this stream.
+    * @param cfg
+    *           The data to save.
     * @return True upon successfully writing the data, false otherwise.
     */
-   public boolean saveConfig(OutputStream cfgFile, WorldConfig cfg)
+   public static boolean saveConfig(OutputStream outStream, WorldConfig cfg)
    {
       boolean success = true;
       Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
@@ -176,17 +203,25 @@ public class WorldConfigFile
          root.appendChild(randSeedElem);
 
          root.appendChild(encodeSizeElement(cfg, document));
-         encodeRoadSegments(cfg, document);
-         encodeHavens(cfg, document);
-         encodeTargets(cfg, document);
-         encodeUAVs(cfg, document);
+         root.appendChild(encodeRoadSegments(cfg, document));
+         root.appendChild(encodeHavens(cfg, document));
+         root.appendChild(encodeTargets(cfg, document));
+         root.appendChild(encodeUAVs(cfg, document));
 
          document.appendChild(root);
+
+         // Write the document to the outputstream
+         TransformerFactory tFactory = TransformerFactory.newInstance();
+         Transformer transformer = tFactory.newTransformer();
+
+         DOMSource source = new DOMSource(document);
+         StreamResult result = new StreamResult(outStream);
+         transformer.transform(source, result);
       }
-      catch (ParserConfigurationException e)
+      catch (ParserConfigurationException | TransformerException e)
       {
          success = false;
-         logger.error("Failed to save {}.  Details: {}", cfgFile, e.getLocalizedMessage());
+         logger.error("Failed to save {}.  Details: {}", outStream, e.getLocalizedMessage());
       }
       return success;
    }
@@ -196,8 +231,8 @@ public class WorldConfigFile
       Distance width = new Distance();
       Distance height = new Distance();
 
-      width.setAsMeters(Integer.parseInt(sizeElem.getAttribute("w")));
-      height.setAsMeters(Integer.parseInt(sizeElem.getAttribute("h")));
+      width.setAsMeters(Double.parseDouble(sizeElem.getAttribute("w")));
+      height.setAsMeters(Double.parseDouble(sizeElem.getAttribute("h")));
       cfg.numRows = Integer.parseInt(sizeElem.getAttribute("rows"));
       cfg.numColums = Integer.parseInt(sizeElem.getAttribute("cols"));
 
@@ -257,8 +292,8 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element havenElem = (Element) haveNodeList.item(i);
-         int north = Integer.parseInt(havenElem.getAttribute("north"));
-         int east = Integer.parseInt(havenElem.getAttribute("east"));
+         double north = Double.parseDouble(havenElem.getAttribute("north"));
+         double east = Double.parseDouble(havenElem.getAttribute("east"));
 
          WorldCoordinate havenLocation = new WorldCoordinate();
          havenLocation.setCoordinate(north, east);
@@ -307,7 +342,7 @@ public class WorldConfigFile
 
       for (TargetConfig tarCfg : cfg.targetCfgs)
       {
-         Element tarElem = dom.createElement("Haven");
+         Element tarElem = dom.createElement("Target");
          tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth()));
          tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast()));
          tarElem.setAttribute("type", Integer.toString(tarCfg.getTargetType()));
