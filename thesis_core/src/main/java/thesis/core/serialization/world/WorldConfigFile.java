@@ -233,20 +233,20 @@ public class WorldConfigFile
 
       width.setAsMeters(Double.parseDouble(sizeElem.getAttribute("w")));
       height.setAsMeters(Double.parseDouble(sizeElem.getAttribute("h")));
-      cfg.numRows = Integer.parseInt(sizeElem.getAttribute("rows"));
-      cfg.numColums = Integer.parseInt(sizeElem.getAttribute("cols"));
+      cfg.setNumRows(Integer.parseInt(sizeElem.getAttribute("rows")));
+      cfg.setNumColumns(Integer.parseInt(sizeElem.getAttribute("cols")));
 
-      cfg.width = width;
-      cfg.height = height;
+      cfg.getWorldWidth().copy(width);
+      cfg.getWorldHeight().copy(height);
    }
 
    private static Element encodeSizeElement(WorldConfig cfg, Document dom)
    {
       Element sizeElem = dom.createElement("Size");
-      sizeElem.setAttribute("w", Double.toString(cfg.width.asMeters()));
-      sizeElem.setAttribute("h", Double.toString(cfg.height.asMeters()));
-      sizeElem.setAttribute("rows", Integer.toString(cfg.numRows));
-      sizeElem.setAttribute("cols", Integer.toString(cfg.numColums));
+      sizeElem.setAttribute("w", Double.toString(cfg.getWorldWidth().asMeters()));
+      sizeElem.setAttribute("h", Double.toString(cfg.getWorldHeight().asMeters()));
+      sizeElem.setAttribute("rows", Integer.toString(cfg.getNumRows()));
+      sizeElem.setAttribute("cols", Integer.toString(cfg.getNumColumns()));
       return sizeElem;
    }
 
