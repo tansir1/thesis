@@ -1,0 +1,9 @@
+def jdkHome = System.getenv("JAVA_HOME")
+
+apply plugin: 'java'
+
+dependencies {
+	compile project(':thesis_core')
+
+    //testCompile 'junit:junit:4.12'
+}

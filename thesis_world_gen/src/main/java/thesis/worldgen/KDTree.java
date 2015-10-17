@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import thesis.core.common.CellCoordinate;
+import thesis.core.common.WorldCoordinate;
 
 /**
  *A naive KDTree implementation to partition the world space.
@@ -19,12 +19,12 @@ public class KDTree
     *           The world is partitioned based on these locations.
     * @return The root node of the generated tree.
     */
-   public static KDNode generateTree(List<CellCoordinate> nodes)
+   public static KDNode generateTree(List<WorldCoordinate> nodes)
    {
       return generateTree(nodes, 0);
    }
 
-   private static KDNode generateTree(List<CellCoordinate> nodes, int depth)
+   private static KDNode generateTree(List<WorldCoordinate> nodes, int depth)
    {
       if (nodes.isEmpty()) // Occurs when the final leaf element in the tree is
                            // processed
@@ -34,11 +34,11 @@ public class KDTree
 
       int axis = depth % 2;// Assumes we only use a cartesian coordinate plane
 
-      Collections.sort(nodes, new CellComparator(axis == 0));
+      Collections.sort(nodes, new CoordComparator(axis == 0));
 
       int median = nodes.size() / 2;
 
-      CellCoordinate location = nodes.get(median);
+      WorldCoordinate location = nodes.get(median);
 
       KDNode leftChild = null;
       KDNode rightChild = null;
@@ -52,27 +52,27 @@ public class KDTree
       return new KDNode(location, leftChild, rightChild, axis == 0);
    }
 
-   private static class CellComparator implements Comparator<CellCoordinate>
+   private static class CoordComparator implements Comparator<WorldCoordinate>
    {
       private boolean sortVertically;
 
-      public CellComparator(boolean sortVertically)
+      public CoordComparator(boolean sortVertically)
       {
          this.sortVertically = sortVertically;
       }
 
       @Override
-      public int compare(CellCoordinate o1, CellCoordinate o2)
+      public int compare(WorldCoordinate o1, WorldCoordinate o2)
       {
          int retVal = 0;
 
          if (sortVertically)
          {
-            if (o1.getRow() < o2.getRow())
+            if (o1.getNorth().asMeters() < o2.getNorth().asMeters())
             {
                retVal = -1;
             }
-            else if (o1.getRow() == o2.getRow())
+            else if (o1.getNorth().equals(o2.getNorth()))
             {
                retVal = 0;
             }
@@ -83,11 +83,11 @@ public class KDTree
          }
          else
          {
-            if (o1.getColumn() < o2.getColumn())
+            if (o1.getEast().asMeters() < o2.getEast().asMeters())
             {
                retVal = -1;
             }
-            else if (o1.getColumn() == o2.getColumn())
+            else if (o1.getEast().equals(o2.getEast()))
             {
                retVal = 0;
             }
