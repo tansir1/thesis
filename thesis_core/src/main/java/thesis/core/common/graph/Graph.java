@@ -1,7 +1,9 @@
 package thesis.core.common.graph;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,28 +19,80 @@ import java.util.Set;
 public class Graph<T>
 {
    private Set<DirectedEdge<T>> edges;
-   private Set<Vertex<T>> vertices;
-   private int idCounter = 0;
+   private HashMap<Integer, Vertex<T>> vertices;
+   private int idCounter;
 
    public Graph()
    {
+      idCounter = 0;
       edges = new HashSet<DirectedEdge<T>>();
-      vertices = new HashSet<Vertex<T>>();
+      vertices = new HashMap<Integer, Vertex<T>>();
    }
 
+   /**
+    * Create a new vertex with no user data.
+    *
+    * @return The new vertex.
+    */
    public Vertex<T> createVertex()
    {
-      Vertex<T> vert = new Vertex<T>(idCounter);
-      vertices.add(vert);
-      ++idCounter;
+      while (vertices.containsKey(idCounter))
+      {
+         ++idCounter;
+      }
+      return createVertex(idCounter, null);
+   }
+
+   /**
+    * Create a new vertex with the specified user data.
+    *
+    * @param data
+    *           This user data will be attached to the new vertex.
+    * @return The new vertex.
+    */
+   public Vertex<T> createVertex(T data)
+   {
+      Vertex<T> vert = createVertex();
+      vert.setUserData(data);
       return vert;
    }
 
-   public Vertex<T> createVertex(T data)
+   /**
+    * Create a new vertex with the requested ID and no user data.
+    *
+    * @param id
+    *           The ID for the new vertex.
+    * @return The new vertex.
+    * @throws IllegalArgumentException
+    *            Occurs when the requested ID is already being used by another
+    *            vertex.
+    */
+   public Vertex<T> createVertex(int id)
    {
-      Vertex<T> vert = new Vertex<T>(idCounter, data);
-      vertices.add(vert);
-      ++idCounter;
+      return createVertex(id, null);
+   }
+
+   /**
+    * Create a new vertex with the requested ID and attached user data.
+    *
+    * @param id
+    *           The ID for the new vertex.
+    * @param data
+    *           The user data to attach to the vertex.
+    * @return The new vertex.
+    * @throws IllegalArgumentException
+    *            Occurs when the requested ID is already being used by another
+    *            vertex.
+    */
+   public Vertex<T> createVertex(int id, T data)
+   {
+      if (vertices.containsKey(id))
+      {
+         throw new IllegalArgumentException("Vertex ID is already in use.");
+      }
+
+      Vertex<T> vert = new Vertex<T>(id, data);
+      vertices.put(id, vert);
       return vert;
    }
 
@@ -46,9 +100,9 @@ public class Graph<T>
     *
     * @return An unmodifiable view of the vertices in the graph.
     */
-   public Set<Vertex<T>> getVertices()
+   public Collection<Vertex<T>> getVertices()
    {
-      return Collections.unmodifiableSet(vertices);
+      return Collections.unmodifiableCollection(vertices.values());
    }
 
    public int getNumVertices()
@@ -70,19 +124,15 @@ public class Graph<T>
       return Collections.unmodifiableSet(edges);
    }
 
+   /**
+    *
+    * @param id
+    *           Get the vertex with this ID value.
+    * @return The requested vertex or null if no such vertex exists.
+    */
    public Vertex<T> getVertexByID(int id)
    {
-      Vertex<T> find = null;
-      // Brute force search. Could be better by keeping vertices sorted
-      for (Vertex<T> vert : vertices)
-      {
-         if (vert.getID() == id)
-         {
-            find = vert;
-            break;
-         }
-      }
-      return find;
+      return vertices.get(id);
    }
 
    public DirectedEdge<T> createDirectionalEdge(int startVertID, int endVertID, double cost)
@@ -114,11 +164,19 @@ public class Graph<T>
       createDirectionalEdge(vert2, vert1, cost);
    }
 
+   /**
+    *
+    * @param data
+    *           Search the vertices for a vertex with this user data (compared
+    *           using T.equals(T)).
+    * @return The vertex containing the requested user data or null if no such
+    *         vertex is found.
+    */
    public Vertex<T> getVertexByData(T data)
    {
       Vertex<T> find = null;
       // Brute force search.
-      for (Vertex<T> vert : vertices)
+      for (Vertex<T> vert : vertices.values())
       {
          if (vert.getUserData() != null && vert.getUserData().equals(data))
          {
@@ -142,7 +200,7 @@ public class Graph<T>
     */
    public List<DirectedEdge<T>> findPath(final Vertex<T> start, final Vertex<T> end)
    {
-      for (Vertex<T> vert : vertices)
+      for (Vertex<T> vert : vertices.values())
       {
          vert.searchCost = Integer.MAX_VALUE;
          vert.searchParent = null;
@@ -210,4 +268,56 @@ public class Graph<T>
       }
       return path;
    }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((edges == null) ? 0 : edges.hashCode());
+      result = prime * result + ((vertices == null) ? 0 : vertices.hashCode());
+      return result;
+   }
+
+   /* (non-Javadoc)
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @SuppressWarnings("rawtypes")
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      Graph other = (Graph) obj;
+      if (edges == null)
+      {
+         if (other.edges != null)
+            return false;
+      }
+      else if (edges.size() != other.edges.size())
+      {
+         return false;
+      }
+
+      if(!edges.containsAll(other.edges))
+         return false;
+
+      if (vertices == null)
+      {
+         if (other.vertices != null)
+            return false;
+      }
+      else if (!vertices.equals(other.vertices))
+         return false;
+      return true;
+   }
+
+
 }

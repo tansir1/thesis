@@ -2,7 +2,7 @@ package thesis.core.common.graph;
 
 /**
  * A unidirectional edge in a graph.
- * 
+ *
  * @param <T>
  */
 public class DirectedEdge<T>
@@ -14,7 +14,7 @@ public class DirectedEdge<T>
 
    /**
     * Create a zero cost edge from the start vertex to the end vertex.
-    * 
+    *
     * @param start
     *           The edge will start here.
     * @param end
@@ -40,7 +40,7 @@ public class DirectedEdge<T>
    /**
     * Create an edge from the start vertex to the end vertex with the specified
     * cost.
-    * 
+    *
     * @param start
     *           The edge will start here.
     * @param end
@@ -74,14 +74,71 @@ public class DirectedEdge<T>
    {
       return end;
    }
-   
+
    public double getCost()
    {
       return cost;
    }
-   
+
    public void setCost(double cost)
    {
       this.cost = cost;
    }
+
+   /*
+    * (non-Javadoc)
+    *
+    * @see java.lang.Object#hashCode()
+    */
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      long temp;
+      temp = Double.doubleToLongBits(cost);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      result = prime * result + ((end == null) ? 0 : end.hashCode());
+      result = prime * result + ((start == null) ? 0 : start.hashCode());
+      return result;
+   }
+
+   /*
+    * (non-Javadoc)
+    *
+    * @see java.lang.Object#equals(java.lang.Object)
+    */
+   @SuppressWarnings("rawtypes")
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      DirectedEdge other = (DirectedEdge) obj;
+      //if (Double.doubleToLongBits(cost) != Double.doubleToLongBits(other.cost))
+         //return false;
+      if(Math.abs(cost - other.cost) > 0.000000001)
+         return false;
+
+      if (end == null)
+      {
+         if (other.end != null)
+            return false;
+      }
+      else if (!end.equals(other.end))
+         return false;
+      if (start == null)
+      {
+         if (other.start != null)
+            return false;
+      }
+      else if (!start.equals(other.start))
+         return false;
+      return true;
+   }
+
 }
