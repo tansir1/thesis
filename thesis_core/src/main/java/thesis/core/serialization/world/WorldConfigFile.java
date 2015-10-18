@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -26,9 +27,11 @@ import org.xml.sax.SAXException;
 
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.graph.DirectedEdge;
+import thesis.core.common.graph.Graph;
+import thesis.core.common.graph.Vertex;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.Utils;
-import thesis.core.world.RoadSegment;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -38,7 +41,7 @@ public class WorldConfigFile
 {
    /**
     * Attempt to load a {@link WorldConfig} from disk.
-    * 
+    *
     * @param cfgFile
     *           The config data file to read from disk.
     * @return A {@link WorldConfig} initialized with the data from the file or
@@ -66,7 +69,7 @@ public class WorldConfigFile
 
    /**
     * Attempt to load a {@link WorldConfig} from an input stream.
-    * 
+    *
     * @param cfgStream
     *           Data will be read from this stream.
     * @return A {@link WorldConfig} initialized with the data from the stream or
@@ -103,18 +106,14 @@ public class WorldConfigFile
 
          if (!Utils.loadVersionID().isMatch(root.getAttribute("version")))
          {
-            logger.warn(
-                  "Application version and world config version do not match.  Unexpected errors may occur!");
+            logger.warn("Application version and world config version do not match.  Unexpected errors may occur!");
          }
 
          WorldConfig tempCfg = new WorldConfig();
 
          decodeSizeElement(tempCfg, (Element) root.getElementsByTagName("Size").item(0));
 
-         Element randSeedElem = (Element) root.getElementsByTagName("RandSeed").item(0);
-         tempCfg.randSeed = Integer.parseInt(randSeedElem.getTextContent());
-
-         decodeRoadSegments(tempCfg, (Element) root.getElementsByTagName("RoadSegments").item(0));
+         decodeRoadNetwork(tempCfg, (Element) root.getElementsByTagName("RoadNetwork").item(0));
          decodeHavens(tempCfg, (Element) root.getElementsByTagName("Havens").item(0));
          decodeTargets(tempCfg, (Element) root.getElementsByTagName("Targets").item(0));
          decodeUAVs(tempCfg, (Element) root.getElementsByTagName("UAVs").item(0));
@@ -133,7 +132,7 @@ public class WorldConfigFile
 
    /**
     * Save the given configuration data into the given file.
-    * 
+    *
     * @param cfgFile
     *           Where to save the data.
     * @param cfg
@@ -161,7 +160,7 @@ public class WorldConfigFile
 
    /**
     * Save the given configuration data into the given stream.
-    * 
+    *
     * @param outStream
     *           The data will be written to this stream.
     * @param cfg
@@ -198,12 +197,8 @@ public class WorldConfigFile
          Element root = document.createElement("World");
          root.setAttribute("version", Utils.loadVersionID().toString());
 
-         Element randSeedElem = document.createElement("RandSeed");
-         randSeedElem.setTextContent(Integer.toString(cfg.randSeed));
-         root.appendChild(randSeedElem);
-
          root.appendChild(encodeSizeElement(cfg, document));
-         root.appendChild(encodeRoadSegments(cfg, document));
+         root.appendChild(encodeRoadNetwork(cfg, document));
          root.appendChild(encodeHavens(cfg, document));
          root.appendChild(encodeTargets(cfg, document));
          root.appendChild(encodeUAVs(cfg, document));
@@ -213,6 +208,8 @@ public class WorldConfigFile
          // Write the document to the outputstream
          TransformerFactory tFactory = TransformerFactory.newInstance();
          Transformer transformer = tFactory.newTransformer();
+         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "3");
 
          DOMSource source = new DOMSource(document);
          StreamResult result = new StreamResult(outStream);
@@ -250,36 +247,117 @@ public class WorldConfigFile
       return sizeElem;
    }
 
-   private static void decodeRoadSegments(WorldConfig cfg, Element roadSegsElem)
+   private static void decodeRoadNetwork(WorldConfig cfg, Element roadNetElem)
    {
-      NodeList segNodeList = roadSegsElem.getElementsByTagName("RoadSegment");
-      final int numNodes = segNodeList.getLength();
+      Graph<WorldCoordinate> roadNet = new Graph<WorldCoordinate>();
+      decodeRoadVertices(roadNet, roadNetElem);
+      decodeRoadEdges(roadNet, roadNetElem);
+      cfg.setRoadNetwork(roadNet);
+   }
+
+   /**
+    * Scan the road network element for all vertices.
+    *
+    * @param roadNet
+    *           Vertices will be added to this graph.
+    * @param roadNetElem
+    *           Scan this element and its children for vertex data.
+    */
+   private static void decodeRoadVertices(Graph<WorldCoordinate> roadNet, Element roadNetElem)
+   {
+      NodeList vertexNodeList = roadNetElem.getElementsByTagName("Vertex");
+      final int numNodes = vertexNodeList.getLength();
       for (int i = 0; i < numNodes; ++i)
       {
-         Element roadSegElem = (Element) segNodeList.item(i);
+         Element vertexElem = (Element) vertexNodeList.item(i);
 
-         RoadSegment roadSeg = new RoadSegment();
-         roadSeg.getStart().setCoordinate(coordFromAttr(roadSegElem.getAttribute("north1"), roadSegElem.getAttribute("east1")));
-         roadSeg.getEnd().setCoordinate(coordFromAttr(roadSegElem.getAttribute("north2"), roadSegElem.getAttribute("east2")));
-         
-         cfg.roadSegments.add(roadSeg);
+         int id = Integer.parseInt(vertexElem.getAttribute("id"));
+         Vertex<WorldCoordinate> vert = roadNet.createVertex(id);
+         vert.setUserData(coordFromAttr(vertexElem));
       }
    }
 
-   private static Element encodeRoadSegments(WorldConfig cfg, Document dom)
+   /**
+    * Scan the road network element for all the edges connecting the vertices.
+    * Must be called AFTER
+    * {@link WorldConfigFile#decodeRoadVertices(Graph, Element)} otherwise edge
+    * construction will fail because the vertex end points do not yet exist.
+    *
+    * @param roadNet
+    *           Edges will be added to this graph.
+    * @param roadNetElem
+    *           Scan this element and its children for edge data.
+    * @see WorldConfigFile#decodeRoadVertices(Graph, Element)
+    */
+   private static void decodeRoadEdges(Graph<WorldCoordinate> roadNet, Element roadNetElem)
    {
-      Element roadSegsElem = dom.createElement("RoadSegments");
-
-      for (RoadSegment rs : cfg.roadSegments)
+      NodeList vertexNodeList = roadNetElem.getElementsByTagName("Vertex");
+      final int numNodes = vertexNodeList.getLength();
+      for (int i = 0; i < numNodes; ++i)
       {
-         Element roadSegElem = dom.createElement("RoadSegment");
-         roadSegElem.setAttribute("north1", Double.toString(rs.getStart().getNorth().asMeters()));
-         roadSegElem.setAttribute("east1", Double.toString(rs.getStart().getEast().asMeters()));
-         roadSegElem.setAttribute("north2", Double.toString(rs.getEnd().getNorth().asMeters()));
-         roadSegElem.setAttribute("east2", Double.toString(rs.getEnd().getEast().asMeters()));
-         roadSegsElem.appendChild(roadSegElem);
+         Element vertexElem = (Element) vertexNodeList.item(i);
+         int vertID = Integer.parseInt(vertexElem.getAttribute("id"));
+
+         Element incomingEdgesElem = (Element) vertexElem.getElementsByTagName("IncomingEdges").item(0);
+         NodeList incomingNodeList = incomingEdgesElem.getElementsByTagName("IncomingEdge");
+         final int numIncoming = incomingNodeList.getLength();
+         for (int j = 0; j < numIncoming; ++j)
+         {
+            Element edgeElem = (Element) incomingNodeList.item(j);
+            double cost = Double.parseDouble(edgeElem.getAttribute("cost"));
+            int startID = Integer.parseInt(edgeElem.getAttribute("startID"));
+            roadNet.createDirectionalEdge(startID, vertID, cost);
+         }
+
+         Element outgoingEdgesElem = (Element) vertexElem.getElementsByTagName("OutgoingEdges").item(0);
+         NodeList outgoingNodeList = outgoingEdgesElem.getElementsByTagName("OutgoingEdge");
+         final int numOutgoing = outgoingNodeList.getLength();
+         for (int j = 0; j < numOutgoing; ++j)
+         {
+            Element edgeElem = (Element) outgoingNodeList.item(j);
+            double cost = Double.parseDouble(edgeElem.getAttribute("cost"));
+            int endID = Integer.parseInt(edgeElem.getAttribute("endID"));
+            roadNet.createDirectionalEdge(vertID, endID, cost);
+         }
       }
-      return roadSegsElem;
+   }
+
+   private static Element encodeRoadNetwork(WorldConfig cfg, Document dom)
+   {
+      Element roadNetElem = dom.createElement("RoadNetwork");
+
+      for (Vertex<WorldCoordinate> vert : cfg.getRoadNetwork().getVertices())
+      {
+         Element vertElem = dom.createElement("Vertex");
+         vertElem.setAttribute("id", Integer.toString(vert.getID()));
+         vertElem.setAttribute("north", Double.toString(vert.getUserData().getNorth().asMeters()));
+         vertElem.setAttribute("east", Double.toString(vert.getUserData().getEast().asMeters()));
+         roadNetElem.appendChild(vertElem);
+
+         Element incomingEdges = dom.createElement("IncomingEdges");
+         for (DirectedEdge<WorldCoordinate> incoming : vert.getIncomingEdges())
+         {
+            Element edge = dom.createElement("IncomingEdge");
+            edge.setAttribute("startID", Integer.toString(incoming.getStartVertex().getID()));
+            edge.setAttribute("cost", Double.toString(incoming.getCost()));
+
+            incomingEdges.appendChild(edge);
+         }
+         vertElem.appendChild(incomingEdges);
+
+         Element outgoingEdges = dom.createElement("OutgoingEdges");
+         for (DirectedEdge<WorldCoordinate> outgoing : vert.getOutgoingEdges())
+         {
+            Element edge = dom.createElement("OutgoingEdge");
+            edge.setAttribute("endID", Integer.toString(outgoing.getEndVertex().getID()));
+            edge.setAttribute("cost", Double.toString(outgoing.getCost()));
+
+            outgoingEdges.appendChild(edge);
+         }
+         vertElem.appendChild(outgoingEdges);
+      }
+
+      return roadNetElem;
    }
 
    private static void decodeHavens(WorldConfig cfg, Element havensElem)
@@ -289,7 +367,7 @@ public class WorldConfigFile
       for (int i = 0; i < numNodes; ++i)
       {
          Element havenElem = (Element) haveNodeList.item(i);
-         cfg.havens.add(coordFromAttr(havenElem));
+         cfg.getHavens().add(coordFromAttr(havenElem));
       }
    }
 
@@ -297,7 +375,7 @@ public class WorldConfigFile
    {
       Element havens = dom.createElement("Havens");
 
-      for (WorldCoordinate havenCoord : cfg.havens)
+      for (WorldCoordinate havenCoord : cfg.getHavens())
       {
          Element havenElem = dom.createElement("Haven");
          havenElem.setAttribute("north", Double.toString(havenCoord.getNorth().asMeters()));
@@ -376,23 +454,23 @@ public class WorldConfigFile
       }
       return uavs;
    }
-   
+
    private static WorldCoordinate coordFromAttr(Element coordElem)
    {
       return coordFromAttr(coordElem.getAttribute("north"), coordElem.getAttribute("east"));
    }
-   
+
    private static WorldCoordinate coordFromAttr(String northAttr, String eastAttr)
    {
       double northM = Double.parseDouble(northAttr);
       double eastM = Double.parseDouble(eastAttr);
-      
+
       Distance north = new Distance();
       Distance east = new Distance();
-      
+
       north.setAsMeters(northM);
       east.setAsMeters(eastM);
-      
+
       WorldCoordinate wc = new WorldCoordinate();
       wc.setCoordinate(north, east);
       return wc;
