@@ -3,9 +3,9 @@ package thesis.core.serialization.world;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 import org.junit.Test;
 
@@ -72,13 +72,13 @@ public class WorldConfigFileTests
       testMe.uavCfgs.add(uavCfg);
 
       //Write the data to a byte buffer
-      //ByteArrayOutputStream outBuff = new ByteArrayOutputStream();
-      FileOutputStream outBuff = new FileOutputStream("worldCfgTest.xml");
+      ByteArrayOutputStream outBuff = new ByteArrayOutputStream();
+      //FileOutputStream outBuff = new FileOutputStream("worldCfgTest.xml");
       assertTrue("Failed to write to output stream.", WorldConfigFile.saveConfig(outBuff, testMe));
 
       //Read in the data buffer and parse it
-      //ByteArrayInputStream inBuff = new ByteArrayInputStream(outBuff.toByteArray());
-      FileInputStream inBuff = new FileInputStream("worldCfgTest.xml");
+      ByteArrayInputStream inBuff = new ByteArrayInputStream(outBuff.toByteArray());
+      //FileInputStream inBuff = new FileInputStream("worldCfgTest.xml");
       WorldConfig results = WorldConfigFile.loadConfig(inBuff);
 
       assertEquals("Failed to read world height.", results.getWorldHeight(), testMe.getWorldHeight());

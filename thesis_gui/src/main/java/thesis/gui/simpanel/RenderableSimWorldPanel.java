@@ -17,7 +17,7 @@ import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.world.RoadGroup;
+import thesis.core.common.graph.DirectedEdge;
 
 @SuppressWarnings("serial")
 public class RenderableSimWorldPanel extends JPanel
@@ -34,6 +34,10 @@ public class RenderableSimWorldPanel extends JPanel
     * The height of grid cells in pixels.
     */
    private int gridCellH;
+
+   private double pixelsPerMeterH;
+
+   private double pixelsPerMeterW;
 
    public RenderableSimWorldPanel()
    {
@@ -75,17 +79,22 @@ public class RenderableSimWorldPanel extends JPanel
 
          gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
          gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
+
+         pixelsPerMeterH = (pixH * 1.0) / simModel.getWorld().getHeight().asMeters();
+         pixelsPerMeterW = (pixW * 1.0) / simModel.getWorld().getWidth().asMeters();
       }
       else
       {
          gridCellW = 1;
          gridCellH = 1;
+         pixelsPerMeterH = 1;
+         pixelsPerMeterW = 1;
       }
    }
 
    /**
     * Converts the given pixel coordinate into simulation world coordinates.
-    * 
+    *
     * @param x
     *           The horizontal pixel location.
     * @param y
@@ -109,7 +118,7 @@ public class RenderableSimWorldPanel extends JPanel
 
    /**
     * Converts the given pixel coordinate into simulation cell coordinates.
-    * 
+    *
     * @param x
     *           The horizontal pixel location.
     * @param y
@@ -193,7 +202,7 @@ public class RenderableSimWorldPanel extends JPanel
    /**
     * Draws a rectangle that fills half the grid cell to represent a safe haven
     * location.
-    * 
+    *
     * @param g2d
     *           Draw on this graphics object.
     */
@@ -206,8 +215,10 @@ public class RenderableSimWorldPanel extends JPanel
       final int halfGridW = (int) (gridCellW * 0.5);
       final int halfGridH = (int) (gridCellH * 0.5);
 
-      for (CellCoordinate cell : simModel.getWorld().getHavenLocations())
+      for (WorldCoordinate wc : simModel.getWorld().getHavenLocations())
       {
+         CellCoordinate cell = simModel.getWorld().convertWorldToCell(wc);
+
          g2d.setColor(Color.ORANGE);
          int x = gridCellW * cell.getColumn();
          int y = gridCellH * cell.getRow();
@@ -228,37 +239,22 @@ public class RenderableSimWorldPanel extends JPanel
    {
       g2d.setColor(Color.pink);
       g2d.setStroke(new BasicStroke(3f));
-      final int cellHalfW = gridCellW / 2;
-      final int cellHalfH = gridCellH / 2;
-      
-      for(RoadGroup rg : simModel.getWorld().getRoadNetworkEdges())
+
+      for(DirectedEdge<WorldCoordinate> edge : simModel.getWorld().getRoadNetwork().getEdges())
       {
-         CellCoordinate start = rg.getOrigin();
-         //Pixels at the center of the cell
-         int xStart = gridCellW * start.getColumn() + cellHalfW;
-         int yStart = gridCellH * start.getRow() + cellHalfH;
-         
-         int xEnd = -1;
-         int yEnd = -1;
-         
-         for(CellCoordinate end : rg.getDestinations())
-         {
-            xEnd = gridCellW * end.getColumn() + cellHalfW;
-            yEnd = gridCellH * end.getRow() + cellHalfH;
-            g2d.drawLine(xStart, yStart, xEnd, yEnd);
-         }
+         WorldCoordinate start = edge.getStartVertex().getUserData();
+         WorldCoordinate end = edge.getEndVertex().getUserData();
+
+         int xStart = (int)(pixelsPerMeterW * start.getEast().asMeters());
+         int yStart = (int)(pixelsPerMeterH * start.getNorth().asMeters());
+
+         int xEnd = (int)(pixelsPerMeterW * end.getEast().asMeters());
+         int yEnd = (int)(pixelsPerMeterH * end.getNorth().asMeters());
+
+         g2d.drawLine(xStart, yStart, xEnd, yEnd);
       }
-      
-      /*
-      g2d.setColor(Color.pink);
-      for(CellCoordinate road : simModel.getWorld().getRoadLocations())
-      {
-         int x = gridCellW * road.getColumn();
-         int y = gridCellH * road.getRow();
-         g2d.fillRect(x, y, gridCellW, gridCellH);
-      }*/
    }
-   
+
    private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener
    {
       private int curX;

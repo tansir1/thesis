@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<EntityTypes version="0.0.1">
+   <SensorTypes>
+      <SensorType fov="45" maxRng="2000" maxSlew="5" minRng="100" type="1"/>
+      <SensorType fov="90" maxRng="1000" maxSlew="10" minRng="100" type="2"/>
+   </SensorTypes>
+   <WeaponTypes>
+      <WeaponType fov="24" maxRng="500" minRng="100" type="1"/>
+      <WeaponType fov="52" maxRng="500" minRng="100" type="2"/>
+   </WeaponTypes>
+   <TargetTypes>
+      <TargetType maxSpd="0" type="1"/>
+      <TargetType maxSpd="10" type="2"/>
+   </TargetTypes>
+   <UAVTypes>
+      <UAVType maxSpd="15" maxTurnRt="10" type="1">
+         <Sensors>
+            <Sensor type="1"/>
+            <Sensor type="2"/>
+         </Sensors>
+         <Weapons/>
+      </UAVType>
+      <UAVType maxSpd="25" maxTurnRt="15" type="2">
+         <Sensors>
+            <Sensor type="1"/>
+         </Sensors>
+         <Weapons>
+            <Weapon initQty="5" type="1"/>
+            <Weapon initQty="5" type="2"/>
+         </Weapons>
+      </UAVType>
+   </UAVTypes>
+</EntityTypes>

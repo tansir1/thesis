@@ -5,6 +5,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.serialization.entities.EntityTypes;
+import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.world.World;
@@ -22,10 +24,10 @@ public class SimModel
 
    /**
     * Create an uninitialized world.
-    * 
+    *
     * The world must be initialized after being constructed.
-    * 
-    * @see #init(SimModelConfig)
+    *
+    * @see #reset(SimModelConfig)
     */
    public SimModel()
    {
@@ -34,23 +36,34 @@ public class SimModel
 
    /**
     * Initialize the model with the necessary configuration parameters.
-    * 
+    *
     * @param cfg
     *           Configuration values will be read from this object.
     */
-   public void init(SimModelConfig cfg)
+   /**
+    * Initialize the model with the necessary configuration parameters.
+    *
+    * @param randomSeed
+    *           Initialize the random number generator with this value.
+    * @param worldCfg
+    *           Configuration data for the world.
+    * @param entTypes
+    *           The types of entities within the world.
+    */
+   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes)
    {
-      randGen = new Random(cfg.getRandomSeed());
+      randGen = new Random(randomSeed);
 
-      world = new World(cfg.getWorldWidth(), cfg.getWorldHeight(), cfg.getNumWorldRows(), cfg.getNumWorldCols(),
-            randGen);
+      logger.debug("EntityTypes initialized with:\n{}", entTypes);
+      logger.debug("World model intiliazed with:\n{}", worldCfg);
 
-      logger.debug("Sim model initialized with:\n{}", cfg);
+      world = new World(worldCfg);
+      //TODO Entity types
    }
 
    /**
     * Get the world map submodel.
-    * 
+    *
     * @return The world map of the simulation.
     */
    public World getWorld()
@@ -60,7 +73,7 @@ public class SimModel
 
    /**
     * Get the shared random number generator.
-    * 
+    *
     * @return The simulation's random number generator.
     */
    public Random getRandomGenerator()
