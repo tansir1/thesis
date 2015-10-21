@@ -16,7 +16,7 @@ import thesis.core.common.graph.Vertex;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
 
-public class WorldGen
+public class WorldGenerator
 {
 	private Random randGen;
 
@@ -40,7 +40,8 @@ public class WorldGen
 	 */
 	private int numCols;
 
-	public WorldGen(int randSeed, Distance width, Distance height, int numRows, int numCols) {
+	public WorldGenerator(int randSeed, Distance width, Distance height, int numRows, int numCols)
+	{
 		if (width == null)
 		{
 			throw new NullPointerException("World width cannot be null.");
@@ -77,6 +78,11 @@ public class WorldGen
 		WorldCoordinate root = node.getLocation();
 		KDNode left = node.getLeftChild();
 		KDNode right = node.getRightChild();
+
+		if(left == null && right == null)
+		{
+			return;//End of the tree branch
+		}
 
 		// RoadGroup rootRG = new RoadGroup(root);
 		Vertex<WorldCoordinate> rootVert = roadNet.createVertex(root);
@@ -188,7 +194,7 @@ public class WorldGen
 		int numSeeds = (int) (numRows * numCols * percentRoadCells);
 		numSeeds = Math.max(numSeeds, 4);
 
-		Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+		Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 		logger.debug("Generating road network with {} seeds.", numSeeds);
 
 		List<WorldCoordinate> roadSeeds = new ArrayList<WorldCoordinate>();
@@ -208,7 +214,9 @@ public class WorldGen
 				// Regenerate a new location until we get a valid one
 				north.setAsMeters(randGen.nextDouble() * height.asMeters());
 				east.setAsMeters(randGen.nextDouble() * width.asMeters());
+				seedCoord.setCoordinate(north, east);
 			}
+
 			logger.debug("Road seed {} at {}.", i, seedCoord);
 			roadSeeds.add(seedCoord);
 		}
@@ -231,7 +239,7 @@ public class WorldGen
 		int numHavens = (int) (numVertices * percentHavenCells);
 		numHavens = Math.max(numHavens, 3);// Require at least 3 havens
 
-		Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+		Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 		logger.debug("Generating {} safe havens.", numHavens);
 
 		// Generate the haven locations on the roads

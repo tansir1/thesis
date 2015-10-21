@@ -19,7 +19,7 @@ public class WorldCoordinate
 
    /**
     * Formatter for printing coordinate data in toString().
-    * 
+    *
     * @see toString
     */
    static final DecimalFormat s_PRINT_FORMAT = new DecimalFormat("0.000");
@@ -35,11 +35,11 @@ public class WorldCoordinate
 
    /**
     * Initialize a world coordinate at the given location.
-    * 
+    *
     * @param north
-    *           The distance north from the world origin.
+    *           The distance north from the world origin.  The value is copied.
     * @param east
-    *           The distance east from the world origin.
+    *           The distance east from the world origin.  The value is copied.
     */
    public WorldCoordinate(Distance north, Distance east)
    {
@@ -51,7 +51,7 @@ public class WorldCoordinate
 
    /**
     * Initialize a world coordinate by cloning the given coordinate.
-    * 
+    *
     * @param wc
     *           Clone this coordinate.
     */
@@ -65,7 +65,7 @@ public class WorldCoordinate
 
    /**
     * Get the distance north from the world origin.
-    * 
+    *
     * @return Distance north.
     */
    public Distance getNorth()
@@ -75,7 +75,7 @@ public class WorldCoordinate
 
    /**
     * Get the distance east from the world origin.
-    * 
+    *
     * @return Distance east.
     */
    public Distance getEast()
@@ -85,7 +85,7 @@ public class WorldCoordinate
 
    /**
     * Set the distance north from the world origin.
-    * 
+    *
     * @param north
     *           Distance north.
     */
@@ -96,7 +96,7 @@ public class WorldCoordinate
 
    /**
     * Set the distance east from the world origin.
-    * 
+    *
     * @param north
     *           Distance east.
     */
@@ -107,7 +107,7 @@ public class WorldCoordinate
 
    /**
     * Set the distance north and east from the world origin.
-    * 
+    *
     * @param north
     *           Distance north.
     * @param east
@@ -122,7 +122,7 @@ public class WorldCoordinate
    /**
     * Set the distance north and east from the world origin by copying the given
     * coordinate.
-    * 
+    *
     * @param copy
     *           The position in this coordinate will be copied into the calling
     *           coordinate.
@@ -135,7 +135,7 @@ public class WorldCoordinate
 
    /**
     * Shift the current coordinate position by the specified amount.
-    * 
+    *
     * @param deltaNorth
     *           Move the coordinate north by this far.
     * @param deltaEast
@@ -150,7 +150,7 @@ public class WorldCoordinate
    /**
     * Get the absolute bearing angle (in degrees) from this coordinate to the
     * given coordinate.
-    * 
+    *
     * @param wc
     *           Find the bearing to this coordinate.
     * @return The bearing angle in degrees from this coordinate to the given
@@ -172,7 +172,7 @@ public class WorldCoordinate
    /**
     * Get the linear distance in kilometers between this coordinate and the
     * given coordinate.
-    * 
+    *
     * @param wc
     *           Get the distance to here.
     * @return The distance between the coordinates in kilometers.
@@ -204,7 +204,7 @@ public class WorldCoordinate
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#hashCode()
     */
    @Override
@@ -219,7 +219,7 @@ public class WorldCoordinate
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#equals(java.lang.Object)
     */
    @Override
