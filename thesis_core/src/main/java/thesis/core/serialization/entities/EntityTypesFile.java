@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -41,7 +42,7 @@ public class EntityTypesFile
 {
    /**
     * Attempt to load a {@link EntityTypes} from disk.
-    * 
+    *
     * @param typesFile
     *           The type data file to read from disk.
     * @return A {@link EntityTypes} initialized with the data from the file or
@@ -69,7 +70,7 @@ public class EntityTypesFile
 
    /**
     * Attempt to load a {@link EntityTypes} from an input stream.
-    * 
+    *
     * @param typesStream
     *           Data will be read from this stream.
     * @return A {@link EntityTypes} initialized with the data from the stream or
@@ -132,7 +133,7 @@ public class EntityTypesFile
 
    /**
     * Save the given entity types data into the given file.
-    * 
+    *
     * @param typesFile
     *           Where to save the data.
     * @param types
@@ -160,7 +161,7 @@ public class EntityTypesFile
 
    /**
     * Save the given entity types data into the given stream.
-    * 
+    *
     * @param outStream
     *           The data will be written to this stream.
     * @param types
@@ -207,6 +208,8 @@ public class EntityTypesFile
          // Write the document to the outputstream
          TransformerFactory tFactory = TransformerFactory.newInstance();
          Transformer transformer = tFactory.newTransformer();
+         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "3");
 
          DOMSource source = new DOMSource(document);
          StreamResult result = new StreamResult(outStream);
@@ -302,7 +305,7 @@ public class EntityTypesFile
    /**
     * Decode the UAV type data. Must be run AFTER decoding weapons and sensor
     * types.
-    * 
+    *
     * @param entTypes
     *           The parsed {@link UAVType} will be loaded into this container.
     * @param parentElem
@@ -405,7 +408,7 @@ public class EntityTypesFile
       }
       return parentElem;
    }
-   
+
    private static void decodeTargetTypes(EntityTypes entTypes, Element parentElem)
    {
       NodeList nodeList = parentElem.getElementsByTagName("TargetType");

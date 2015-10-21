@@ -1,58 +1,22 @@
 package thesis.core.utilities;
 
-import thesis.core.common.Distance;
+import java.io.File;
 
 /**
  * Contains all the configuration parameters for the simulation model.
  */
 public class SimModelConfig
 {
-   int randomSeed;
+   private int randomSeed;
+   private File worldFile;
+   private File entityTypesFile;
 
-   // World map model values
-   private Distance worldWidth;
-   private Distance worldHeight;
-   private int numWorldRows;
-   private int numWorldCols;
 
    public SimModelConfig()
    {
       randomSeed = 0;
-
-      worldWidth = new Distance();
-      worldHeight = new Distance();
-      numWorldCols = 0;
-      numWorldRows = 0;
-   }
-
-   public Distance getWorldWidth()
-   {
-      return worldWidth;
-   }
-
-   public Distance getWorldHeight()
-   {
-      return worldHeight;
-   }
-
-   public int getNumWorldRows()
-   {
-      return numWorldRows;
-   }
-
-   public void setNumWorldRows(int numWorldRows)
-   {
-      this.numWorldRows = numWorldRows;
-   }
-
-   public int getNumWorldCols()
-   {
-      return numWorldCols;
-   }
-
-   public void setNumWorldCols(int numWorldCols)
-   {
-      this.numWorldCols = numWorldCols;
+      worldFile = null;
+      entityTypesFile = null;
    }
 
    public int getRandomSeed()
@@ -65,26 +29,46 @@ public class SimModelConfig
       this.randomSeed = randomSeed;
    }
 
+   public File getWorldFile()
+   {
+      return worldFile;
+   }
+
+   public void setWorldFile(File file)
+   {
+      if(file == null)
+      {
+         throw new NullPointerException("World file cannot be null.");
+      }
+      this.worldFile = file;
+   }
+
+   public File getEntityTypeFile()
+   {
+      return entityTypesFile;
+   }
+
+   public void setEntityTypeFile(File file)
+   {
+      if(file == null)
+      {
+         throw new NullPointerException("Entity Type file cannot be null.");
+      }
+      this.entityTypesFile = file;
+   }
+
    @Override
    public String toString()
    {
       StringBuilder sb = new StringBuilder();
 
       // Generic sim parameters
-      sb.append("-Sim-");
-      sb.append("\n\tRandom seed: ");
+      sb.append("Random seed: ");
       sb.append(randomSeed);
-
-      // World parameters
-      sb.append("\n-World-");
-      sb.append("\n\tWidth:");
-      sb.append(worldWidth);
-      sb.append("\n\tHeight:");
-      sb.append(worldHeight);
-      sb.append("\n\tRows:");
-      sb.append(numWorldRows);
-      sb.append("\n\tCols:");
-      sb.append(numWorldCols);
+      sb.append("\nWorld: ");
+      sb.append(worldFile.getAbsolutePath());
+      sb.append("\nEntity Types: ");
+      sb.append(entityTypesFile.getAbsolutePath());
 
       return sb.toString();
    }

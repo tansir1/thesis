@@ -2,13 +2,12 @@ package thesis.core.world;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Random;
-
 import org.junit.Test;
 
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.serialization.world.WorldConfig;
 
 public class WorldTests
 {
@@ -20,8 +19,14 @@ public class WorldTests
       oneHundredKM.setAsKilometers(100);
 
       //100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      World testMe = new World(oneHundredKM, oneHundredKM, 10, 10, new Random());
-      
+      WorldConfig cfg = new WorldConfig();
+      cfg.setNumColumns(10);
+      cfg.setNumRows(10);
+      cfg.getWorldHeight().setAsKilometers(100);
+      cfg.getWorldWidth().setAsKilometers(100);
+
+      World testMe = new World(cfg);
+
       final Distance fifteenKM = new Distance();
       fifteenKM.setAsKilometers(15);
       final Distance thirtyFiveKM = new Distance();
@@ -45,6 +50,6 @@ public class WorldTests
       //Column 2 should be 20-0km range, middle of that is 25km
       assertEquals("Invalid cell row to world conversion.", twentyFiveKM, wc.getEast());
       //Row 6 should be 60-70km range, middle of that is 65km
-      assertEquals("Invalid cell row to world conversion.", sixtyFiveKM, wc.getNorth());      
+      assertEquals("Invalid cell row to world conversion.", sixtyFiveKM, wc.getNorth());
    }
 }

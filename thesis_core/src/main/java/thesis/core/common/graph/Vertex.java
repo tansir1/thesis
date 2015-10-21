@@ -1,12 +1,12 @@
 package thesis.core.common.graph;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * A vertex in a graph that can hold arbitrary user data.
- * 
+ *
  * @param <T>
  *           Arbitrary user data.
  */
@@ -19,25 +19,25 @@ public class Vertex<T>
 
    private T data;
 
-   private Set<DirectedEdge<T>> inEdges, outEdges;
+   private List<DirectedEdge<T>> inEdges, outEdges;
 
    protected Vertex<T> searchParent;
    protected int searchCost;
-   
+
    public Vertex(int id)
    {
       this.id = id;
       data = null;
-      inEdges = new HashSet<DirectedEdge<T>>();
-      outEdges = new HashSet<DirectedEdge<T>>();
+      inEdges = new ArrayList<DirectedEdge<T>>();
+      outEdges = new ArrayList<DirectedEdge<T>>();
    }
 
    public Vertex(int id, T data)
    {
       this.id = id;
       this.data = data;
-      inEdges = new HashSet<DirectedEdge<T>>();
-      outEdges = new HashSet<DirectedEdge<T>>();
+      inEdges = new ArrayList<DirectedEdge<T>>();
+      outEdges = new ArrayList<DirectedEdge<T>>();
    }
 
    public T getUserData()
@@ -57,22 +57,22 @@ public class Vertex<T>
 
    /**
     * Get an unmodifiable view of the incoming edges.
-    * 
+    *
     * @return
     */
-   public Set<DirectedEdge<T>> getIncomingEdges()
+   public List<DirectedEdge<T>> getIncomingEdges()
    {
-      return Collections.unmodifiableSet(inEdges);
+      return Collections.unmodifiableList(inEdges);
    }
 
    /**
     * Get an unmodifiable view of the outgoing edges.
-    * 
+    *
     * @return
     */
-   public Set<DirectedEdge<T>> getOutgoingEdges()
+   public List<DirectedEdge<T>> getOutgoingEdges()
    {
-      return Collections.unmodifiableSet(outEdges);
+      return Collections.unmodifiableList(outEdges);
    }
 
    public void addOutgoingEdge(DirectedEdge<T> edge)
@@ -97,7 +97,7 @@ public class Vertex<T>
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#hashCode()
     */
    @Override
@@ -111,7 +111,7 @@ public class Vertex<T>
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#equals(java.lang.Object)
     */
    @SuppressWarnings("unchecked")
