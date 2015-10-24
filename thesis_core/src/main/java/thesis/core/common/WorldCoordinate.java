@@ -195,10 +195,11 @@ public class WorldCoordinate
    public String toString()
    {
       StringBuilder sb = new StringBuilder();
-      sb.append("N");
+      sb.append("[N");
       sb.append(north);
       sb.append(", E");
       sb.append(east);
+      sb.append("]");
       return sb.toString();
    }
 
