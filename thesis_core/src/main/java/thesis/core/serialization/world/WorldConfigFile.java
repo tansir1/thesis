@@ -154,8 +154,10 @@ public class WorldConfigFile
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
       logger.info("Saving world config file {}", cfgFile);
-
-      return saveConfig(new FileOutputStream(cfgFile), cfg);
+      FileOutputStream fos = new FileOutputStream(cfgFile);
+      boolean success = saveConfig(fos, cfg);
+      fos.close();
+      return success;
    }
 
    /**
