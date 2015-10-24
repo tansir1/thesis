@@ -24,6 +24,8 @@ public class MainWindow
    private JFrame frame;
    private RenderableSimWorldPanel simPanel;
 
+   private Actions actions;
+
    public MainWindow()
    {
       frame = new JFrame("Thesis Simulator");
@@ -37,17 +39,20 @@ public class MainWindow
          }
       });
 
-      MenuBar menuBar = new MenuBar(this);
+      simPanel = new RenderableSimWorldPanel();
+      actions = new Actions(frame, simPanel);
+
+      MenuBar menuBar = new MenuBar(this, actions);
       frame.setJMenuBar(menuBar.getMenuBar());
 
       buildGUI();
+
       frame.pack();
       frame.setVisible(true);
    }
 
    private void buildGUI()
    {
-      simPanel = new RenderableSimWorldPanel();
       frame.setLayout(new BorderLayout());
       frame.add(simPanel, BorderLayout.CENTER);
 

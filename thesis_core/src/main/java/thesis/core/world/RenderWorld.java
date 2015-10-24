@@ -102,6 +102,23 @@ public class RenderWorld
 	}
 
 	/**
+	 *
+	 * @return The current width of the rendering space in pixels.
+	 */
+	public int getRenderWidth()
+	{
+		return bounds.width;
+	}
+
+	/**
+	 * @return The current height of the rendering space in pixels.
+	 */
+	public int getRenderHeight()
+	{
+		return bounds.height;
+	}
+
+	/**
 	 * Render the world to the given graphics device.
 	 *
 	 * @param gfx
@@ -257,6 +274,18 @@ public class RenderWorld
 		{
 			g2d.drawLine(bounds.x, i * gridCellH, pixW, i * gridCellH);
 		}
+	}
+
+	/**
+	 * Convenience function to render the world into an image.
+	 *
+	 * @return An image with the world rendered into it.
+	 */
+	public BufferedImage renderToImage()
+	{
+		BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_3BYTE_BGR);
+		render(img.createGraphics());
+		return img;
 	}
 
 	/**

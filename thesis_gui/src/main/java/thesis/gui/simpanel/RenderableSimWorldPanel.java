@@ -93,6 +93,11 @@ public class RenderableSimWorldPanel extends JPanel
       }
    }
 
+   public RenderWorld getWorldRenderer()
+   {
+	   return renderWorld;
+   }
+
    private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener
    {
       private int curX;
