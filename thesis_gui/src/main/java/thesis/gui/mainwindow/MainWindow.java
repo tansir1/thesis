@@ -1,11 +1,16 @@
 package thesis.gui.mainwindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import thesis.core.SimModel;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
@@ -45,6 +50,19 @@ public class MainWindow
       simPanel = new RenderableSimWorldPanel();
       frame.setLayout(new BorderLayout());
       frame.add(simPanel, BorderLayout.CENTER);
+
+      JPanel temp = new JPanel();
+      temp.add(new JLabel("temp"));
+      frame.add(temp, BorderLayout.LINE_START);
+
+      JPanel statusPanel = new JPanel();
+      statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+      statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
+      statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+
+      statusPanel.add(new JLabel("Status"));
+
+      frame.add(statusPanel, BorderLayout.SOUTH);
    }
 
    protected void onClose()
@@ -63,7 +81,7 @@ public class MainWindow
 
    /**
     * Get a reference to the main window's frame for passing into dialogs.
-    * 
+    *
     * @return The main window's frame.
     */
    protected JFrame getParentFrame()
@@ -73,7 +91,7 @@ public class MainWindow
 
    /**
     * Connect the event listeners of the GUI to the event triggers in the model.
-    * 
+    *
     * @param simModel
     *           The model to listen to and to render.
     */
