@@ -137,6 +137,7 @@ public class WorldGenApp
 			File worldFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".xml");
 			File screenShotFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".png");
 
+			logger.debug("-------------------------------------------------");
 			logger.debug("Generating world {}", i);
 			WorldConfig world = worldGen.generateWorld();
 

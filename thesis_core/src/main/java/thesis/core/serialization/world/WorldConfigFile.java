@@ -31,7 +31,7 @@ import thesis.core.common.graph.DirectedEdge;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.utilities.Utils;
+import thesis.core.utilities.CoreUtils;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -104,7 +104,7 @@ public class WorldConfigFile
 
          Element root = document.getDocumentElement();
 
-         if (!Utils.loadVersionID().isMatch(root.getAttribute("version")))
+         if (!CoreUtils.loadVersionID().isMatch(root.getAttribute("version")))
          {
             logger.warn("Application version and world config version do not match.  Unexpected errors may occur!");
          }
@@ -197,7 +197,7 @@ public class WorldConfigFile
          // validator.validate(new DOMSource(document));
 
          Element root = document.createElement("World");
-         root.setAttribute("version", Utils.loadVersionID().toString());
+         root.setAttribute("version", CoreUtils.loadVersionID().toString());
 
          root.appendChild(encodeSizeElement(cfg, document));
          root.appendChild(encodeRoadNetwork(cfg, document));

@@ -32,7 +32,7 @@ import thesis.core.entities.UAVType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.utilities.Utils;
+import thesis.core.utilities.CoreUtils;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -105,7 +105,7 @@ public class EntityTypesFile
 
          Element root = document.getDocumentElement();
 
-         if (!Utils.loadVersionID().isMatch(root.getAttribute("version")))
+         if (!CoreUtils.loadVersionID().isMatch(root.getAttribute("version")))
          {
             logger.warn("Application version and entity types version do not match.  Unexpected errors may occur!");
          }
@@ -196,7 +196,7 @@ public class EntityTypesFile
          // validator.validate(new DOMSource(document));
 
          Element root = document.createElement("EntityTypes");
-         root.setAttribute("version", Utils.loadVersionID().toString());
+         root.setAttribute("version", CoreUtils.loadVersionID().toString());
 
          root.appendChild(encodeSensorTypes(types, document));
          root.appendChild(encodeWeaponTypes(types, document));

@@ -6,15 +6,16 @@ import java.io.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.CoreRsrcPaths;
 import thesis.core.SimModel;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.entities.EntityTypesFile;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.serialization.world.WorldConfigFile;
+import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.utilities.SimModelConfigLoader;
-import thesis.core.utilities.Utils;
 import thesis.gui.mainwindow.MainWindow;
 
 public class ThesisGUIApp
@@ -39,7 +40,7 @@ public class ThesisGUIApp
       if (!cfgFile.exists())
       {
          logger.warn("Could not find sim.properties.  Exporting default properties.");
-         if (!Utils.exportResource("thesis/core/sim.properties", new File("sim.properties")))
+         if (!CoreUtils.exportResource(CoreRsrcPaths.DFLT_SIM_PATH, new File("sim.properties")))
          {
             logger.error("Could not export the default sim.properties file.");
          }
@@ -68,7 +69,7 @@ public class ThesisGUIApp
    public static void main(String[] args)
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      logger.info("Starting simulation version {}", Utils.loadVersionID());
+      logger.info("Starting simulation version {}", CoreUtils.loadVersionID());
 
       boolean abort = false;
 

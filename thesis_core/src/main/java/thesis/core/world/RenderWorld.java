@@ -2,17 +2,34 @@ package thesis.core.world;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
+import thesis.core.CoreRsrcPaths;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.DirectedEdge;
+import thesis.core.utilities.CoreUtils;
 
 public class RenderWorld
 {
+	/**
+	 * Pixel size of the square that represents road intersections (road graph
+	 * vertices) is proportional to the percentage of the min(gridCellW,
+	 * gridCellH).
+	 */
+	private static final float INTERSECTION_SZ_VS_GRID_PERCENT = 0.2f;
+
+	/**
+	 * The pixel width of roads is proportional to the percentage of the
+	 * min(gridCellW, gridCellH).
+	 */
+	private static final float ROAD_WIDTH_VS_GRID_PERCENT = 0.1f;
+
 	/**
 	 * The width of grid cells in pixels.
 	 */
@@ -27,9 +44,24 @@ public class RenderWorld
 
 	private double pixelsPerMeterW;
 
+	/**
+	 * Stroke for drawing roads. Proportional to the size of grid cells.
+	 *
+	 * @see #ROAD_WIDTH_VS_GRID_PERCENT
+	 */
+	private BasicStroke roadStroke;
+
 	private World world;
 
 	private Rectangle bounds;
+
+	/**
+	 * Pixel size of the square representing road intersections (graph vertices).
+	 */
+	private int roadInterSectionSz;
+
+	private BufferedImage rawHavenImg;
+	private BufferedImage scaledHavenImg;
 
 	/**
 	 * Initialize a renderer with a bounds size of zero.
@@ -49,6 +81,8 @@ public class RenderWorld
 
 		this.world = render;
 		bounds = new Rectangle();
+		roadStroke = new BasicStroke(1f);
+		rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
 	}
 
 	/**
@@ -76,6 +110,8 @@ public class RenderWorld
 
 		this.world = render;
 		bounds = new Rectangle();
+		roadStroke = new BasicStroke(1f);
+		rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
 	}
 
 	/**
@@ -135,6 +171,11 @@ public class RenderWorld
 		gfx.setColor(Color.BLACK);
 		gfx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
+		// Increase the default font size
+		Font currentFont = gfx.getFont();
+		Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.4f);
+		gfx.setFont(newFont);
+
 		drawGridLines(gfx);
 		drawRoads(gfx);
 		drawHavens(gfx);
@@ -193,61 +234,77 @@ public class RenderWorld
 
 		pixelsPerMeterH = (pixH * 1.0) / world.getHeight().asMeters();
 		pixelsPerMeterW = (pixW * 1.0) / world.getWidth().asMeters();
+
+		roadStroke = new BasicStroke(Math.min(gridCellH, gridCellW) * ROAD_WIDTH_VS_GRID_PERCENT);
+		roadInterSectionSz = (int) (Math.min(gridCellH, gridCellW) * INTERSECTION_SZ_VS_GRID_PERCENT);
+
+		if(rawHavenImg != null)
+		{
+			scaledHavenImg = new BufferedImage(roadInterSectionSz, roadInterSectionSz, BufferedImage.TYPE_INT_RGB);
+
+			Graphics g = scaledHavenImg.createGraphics();
+			g.drawImage(rawHavenImg, 0, 0, roadInterSectionSz, roadInterSectionSz, null);
+			g.dispose();
+		}
 	}
 
 	/**
-	 * Draws a rectangle that fills half the grid cell to represent a safe haven
-	 * location.
+	 * Draws the haven graphic over all vertices (intersections) that are havens.
 	 *
 	 * @param g2d
 	 *            Draw on this graphics object.
 	 */
 	private void drawHavens(Graphics2D g2d)
 	{
-		final int quarterGridW = (int) (gridCellW * 0.25);
-		final int quarterGridH = (int) (gridCellH * 0.25);
-		final int thirdGridW = (int) (gridCellW * 0.33);
-		final int thirdGridH = (int) (gridCellH * 0.33);
-		final int halfGridW = (int) (gridCellW * 0.5);
-		final int halfGridH = (int) (gridCellH * 0.5);
+		if(scaledHavenImg == null)
+		{
+			//Failed to load the resource, do not render
+			return;
+		}
 
+		//Overlay the haven graphic over all road intersections that are also havens
+		final int halfRdSz = roadInterSectionSz / 2;
 		for (WorldCoordinate wc : world.getHavenLocations())
 		{
-			CellCoordinate cell = world.convertWorldToCell(wc);
-
-			g2d.setColor(Color.ORANGE);
-			int x = gridCellW * cell.getColumn();
-			int y = gridCellH * cell.getRow();
-			g2d.fillRect(x + quarterGridW, y + quarterGridH, halfGridW, halfGridH);
-
-			g2d.setColor(Color.black);
-			// Left vertical line of H
-			g2d.drawLine(x + thirdGridW, y + thirdGridH, x + thirdGridW, y + thirdGridH + thirdGridH);
-			// Right vertical line of H
-			g2d.drawLine(x + thirdGridW + thirdGridW, y + thirdGridH, x + thirdGridW + thirdGridW,
-					y + thirdGridH + thirdGridH);
-			// Horizontal line of H
-			g2d.drawLine(x + thirdGridW, y + halfGridH, x + thirdGridW + thirdGridW, y + halfGridH);
+			final int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
+			final int y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+			g2d.drawImage(scaledHavenImg, x - halfRdSz, y - halfRdSz, null);
 		}
 	}
 
 	private void drawRoads(Graphics2D g2d)
 	{
 		g2d.setColor(Color.pink);
-		g2d.setStroke(new BasicStroke(3f));
+		g2d.setStroke(roadStroke);
+
+		final int halfRdSz = roadInterSectionSz / 2;
 
 		for (DirectedEdge<WorldCoordinate> edge : world.getRoadNetwork().getEdges())
 		{
 			WorldCoordinate start = edge.getStartVertex().getUserData();
 			WorldCoordinate end = edge.getEndVertex().getUserData();
 
-			int xStart = (int) (pixelsPerMeterW * start.getEast().asMeters());
-			int yStart = (int) (pixelsPerMeterH * start.getNorth().asMeters());
+			final int xStart = (int) (pixelsPerMeterW * start.getEast().asMeters());
+			final int yStart = (int) (pixelsPerMeterH * start.getNorth().asMeters());
 
-			int xEnd = (int) (pixelsPerMeterW * end.getEast().asMeters());
-			int yEnd = (int) (pixelsPerMeterH * end.getNorth().asMeters());
+			final int xEnd = (int) (pixelsPerMeterW * end.getEast().asMeters());
+			final int yEnd = (int) (pixelsPerMeterH * end.getNorth().asMeters());
 
+			// Draw a line representing the road
+			g2d.setColor(Color.pink);
 			g2d.drawLine(xStart, yStart, xEnd, yEnd);
+
+			// Draw squares over the road intersections (road graph vertices)
+			g2d.fillRect(xStart - halfRdSz, yStart - halfRdSz, roadInterSectionSz, roadInterSectionSz);
+			g2d.fillRect(xEnd - halfRdSz, yEnd - halfRdSz, roadInterSectionSz, roadInterSectionSz);
+
+			// Draw the road intersection/vertex IDs above and to the left of the intersection
+			g2d.setColor(Color.GREEN);
+			g2d.drawString(Integer.toString(edge.getStartVertex().getID()), xStart - roadInterSectionSz,
+					yStart - roadInterSectionSz);
+			g2d.drawString(Integer.toString(edge.getEndVertex().getID()), xEnd - roadInterSectionSz,
+					yEnd - roadInterSectionSz);
+
 		}
 	}
 

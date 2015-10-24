@@ -19,6 +19,9 @@ import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.RenderWorld;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
+/**
+ *An action that saves a screenshot of the world.
+ */
 @SuppressWarnings("serial")
 public class ScreenShotAction extends AbstractAction
 {

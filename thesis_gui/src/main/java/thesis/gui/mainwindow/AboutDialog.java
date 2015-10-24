@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import thesis.core.utilities.Utils;
+import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.VersionID;
 
 @SuppressWarnings("serial")
@@ -37,7 +37,7 @@ public class AboutDialog extends JDialog
       add(new JLabel("Version: "), gbc);
       gbc.gridx++;
       gbc.ipadx = 10;
-      VersionID version = Utils.loadVersionID();
+      VersionID version = CoreUtils.loadVersionID();
       add(new JLabel(version.toString()), gbc);
 
       gbc.gridx = 0;
