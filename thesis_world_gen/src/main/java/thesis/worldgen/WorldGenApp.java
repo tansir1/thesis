@@ -1,8 +1,11 @@
 package thesis.worldgen;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -17,6 +20,8 @@ import org.slf4j.LoggerFactory;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.serialization.world.WorldConfigFile;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.world.RenderWorld;
+import thesis.core.world.World;
 
 public class WorldGenApp
 {
@@ -130,6 +135,8 @@ public class WorldGenApp
 		{
 
 			File worldFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".xml");
+			File screenShotFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".png");
+
 			logger.debug("Generating world {}", i);
 			WorldConfig world = worldGen.generateWorld();
 
@@ -141,6 +148,10 @@ public class WorldGenApp
 					logger.error("Failed to save world {} into {}", i, worldFile.getAbsolutePath());
 					System.exit(1);
 				}
+
+				logger.debug("Saving world {} screenshot into {}", i, screenShotFile.getAbsolutePath());
+				BufferedImage img = RenderWorld.renderToImage(new World(world), 640, 480);
+				ImageIO.write(img, "png", screenShotFile);
 			}
 			catch (IOException e)
 			{
