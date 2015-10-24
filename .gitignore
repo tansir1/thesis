@@ -1,6 +1,8 @@
 # Project Specific Files #
 #Ignore the local configuration file
 thesis_gui/sim.properties
+thesis_gui/worlds/*
+thesis_world_gen/worlds/*
 
 # Gradle Files #
 **/.gradle/
