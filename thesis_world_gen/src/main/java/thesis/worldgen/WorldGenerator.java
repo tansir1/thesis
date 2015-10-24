@@ -84,7 +84,6 @@ public class WorldGenerator
 			return;//End of the tree branch
 		}
 
-		// RoadGroup rootRG = new RoadGroup(root);
 		Vertex<WorldCoordinate> rootVert = roadNet.createVertex(root);
 
 		if (left != null)
@@ -92,16 +91,12 @@ public class WorldGenerator
 			WorldCoordinate intersection = computeRoadFromNode(root, left, node.isVerticalSplit());
 
 			// Connect root to intermediate road intersection
-			// rootRG.addDestination(intersection);
 			Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
 			roadNet.createBidirectionalEdge(rootVert, vertInter, root.distanceTo(intersection).asMeters());
 
 			// Connect intersection to the node location
 			Vertex<WorldCoordinate> vertEnd = roadNet.createVertex(left.getLocation());
 			roadNet.createBidirectionalEdge(vertInter, vertEnd, intersection.distanceTo(left.getLocation()).asMeters());
-			// RoadGroup leftRG = new RoadGroup(intersection);
-			// leftRG.addDestination(left.getLocation());
-			// roadNetEdges.add(leftRG);
 
 			// Recursively move down the tree
 			kdNodeToRoadGroup(left, roadNet);
@@ -112,7 +107,6 @@ public class WorldGenerator
 			WorldCoordinate intersection = computeRoadFromNode(root, right, node.isVerticalSplit());
 
 			// Connect root to intermediate road intersection
-			// rootRG.addDestination(intersection);
 			Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
 			roadNet.createBidirectionalEdge(rootVert, vertInter, root.distanceTo(intersection).asMeters());
 
@@ -120,15 +114,10 @@ public class WorldGenerator
 			Vertex<WorldCoordinate> vertEnd = roadNet.createVertex(right.getLocation());
 			roadNet.createBidirectionalEdge(vertInter, vertEnd,
 					intersection.distanceTo(right.getLocation()).asMeters());
-					// RoadGroup rightRG = new RoadGroup(intersection);
-					// rightRG.addDestination(right.getLocation());
-					// roadNetEdges.add(rightRG);
 
 			// Recursively move down the tree
 			kdNodeToRoadGroup(right, roadNet);
 		}
-
-		// roadNetEdges.add(rootRG);
 	}
 
 	private WorldCoordinate computeRoadFromNode(WorldCoordinate root, KDNode node, boolean isVertical)
@@ -141,7 +130,7 @@ public class WorldGenerator
 		}
 		else
 		{
-			intersection = new WorldCoordinate(root.getEast(), node.getLocation().getNorth());
+			intersection = new WorldCoordinate(root.getNorth(), node.getLocation().getEast());
 		}
 
 		return intersection;
@@ -193,6 +182,7 @@ public class WorldGenerator
 		final double percentRoadCells = 0.01;
 		int numSeeds = (int) (numRows * numCols * percentRoadCells);
 		numSeeds = Math.max(numSeeds, 4);
+		//numSeeds = Math.max(numSeeds, 3);
 
 		Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 		logger.debug("Generating road network with {} seeds.", numSeeds);
@@ -248,8 +238,7 @@ public class WorldGenerator
 			int index = randGen.nextInt(numVertices);
 			WorldCoordinate havenCoord = roadNet.getVertexByID(index).getUserData();
 			// In case we randomly generate two havens at the same location,
-			// move
-			// the second one
+			// move the second one
 			while (havens.contains(havenCoord))
 			{
 				index = randGen.nextInt(numVertices);

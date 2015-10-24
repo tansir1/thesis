@@ -130,4 +130,25 @@ public class Vertex<T>
       return true;
    }
 
+   @Override
+   public String toString()
+   {
+	   StringBuilder sb = new StringBuilder("ID: ");
+	   sb.append(Integer.toString(id));
+	   sb.append(", NumIn: ");
+	   sb.append(Integer.toString(inEdges.size()));
+	   sb.append(", NumOut: ");
+	   sb.append(Integer.toString(outEdges.size()));
+	   sb.append(", UserData: ");
+	   if(data != null)
+	   {
+		   sb.append(data);
+	   }
+	   else
+	   {
+		   sb.append("null");
+	   }
+	   return sb.toString();
+   }
+
 }
