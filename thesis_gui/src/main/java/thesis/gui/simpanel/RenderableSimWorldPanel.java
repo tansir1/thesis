@@ -1,6 +1,5 @@
 package thesis.gui.simpanel;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -15,29 +14,15 @@ import javax.swing.JPanel;
 
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.common.graph.DirectedEdge;
+import thesis.core.world.RenderWorld;
 
 @SuppressWarnings("serial")
 public class RenderableSimWorldPanel extends JPanel
 {
-   private SimModel simModel;
    private MouseMoveListenerProxy mouseState;
 
-   /**
-    * The width of grid cells in pixels.
-    */
-   private int gridCellW;
-
-   /**
-    * The height of grid cells in pixels.
-    */
-   private int gridCellH;
-
-   private double pixelsPerMeterH;
-
-   private double pixelsPerMeterW;
+   private RenderWorld renderWorld;
 
    public RenderableSimWorldPanel()
    {
@@ -46,90 +31,27 @@ public class RenderableSimWorldPanel extends JPanel
       setPreferredSize(minSz);
 
       mouseState = new MouseMoveListenerProxy();
+      renderWorld = null;
 
-      this.addComponentListener(new ComponentAdapter()
-      {
+      this.addComponentListener(new ComponentAdapter() {
          @Override
          public void componentResized(ComponentEvent e)
          {
-            recomputeCellPixelSize();
+            if (renderWorld != null)
+            {
+               renderWorld.setBounds(0, 0, getWidth(), getHeight());
+            }
          }
       });
-      recomputeCellPixelSize();
    }
 
    public void connectSimModel(SimModel simModel)
    {
-      this.simModel = simModel;
+      renderWorld = new RenderWorld(simModel.getWorld());
       this.addMouseListener(mouseState);
       this.addMouseMotionListener(mouseState);
-      recomputeCellPixelSize();
+      renderWorld.setBounds(0, 0, getWidth(), getHeight());
       repaint();
-   }
-
-   private void recomputeCellPixelSize()
-   {
-      if (simModel != null)
-      {
-         int pixW = getWidth() - 1;
-         int pixH = getHeight() - 1;
-
-         int numCols = simModel.getWorld().getColumnCount();
-         int numRows = simModel.getWorld().getRowCount();
-
-         gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
-         gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
-
-         pixelsPerMeterH = (pixH * 1.0) / simModel.getWorld().getHeight().asMeters();
-         pixelsPerMeterW = (pixW * 1.0) / simModel.getWorld().getWidth().asMeters();
-      }
-      else
-      {
-         gridCellW = 1;
-         gridCellH = 1;
-         pixelsPerMeterH = 1;
-         pixelsPerMeterW = 1;
-      }
-   }
-
-   /**
-    * Converts the given pixel coordinate into simulation world coordinates.
-    *
-    * @param x
-    *           The horizontal pixel location.
-    * @param y
-    *           The vertical pixel location.
-    * @return The pixel location converted into a world coordinate.
-    */
-   private WorldCoordinate pixelsToWorldCoordinate(int x, int y)
-   {
-      double xPercent = (x * 1.0) / (1.0 * getWidth());
-      double yPercent = (y * 1.0) / (1.0 * getHeight());
-
-      Distance worldH = new Distance(simModel.getWorld().getHeight());
-      Distance worldW = new Distance(simModel.getWorld().getWidth());
-
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      worldH.scale(yPercent);
-      worldW.scale(xPercent);
-      return new WorldCoordinate(worldH, worldW);
-   }
-
-   /**
-    * Converts the given pixel coordinate into simulation cell coordinates.
-    *
-    * @param x
-    *           The horizontal pixel location.
-    * @param y
-    *           The vertical pixel location.
-    * @return The pixel location converted into a cell coordinate.
-    */
-   private CellCoordinate pixelsToCellCoordinate(int x, int y)
-   {
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      return new CellCoordinate(y / gridCellH, x / gridCellW);
    }
 
    @Override
@@ -139,48 +61,20 @@ public class RenderableSimWorldPanel extends JPanel
       Graphics2D g2d = (Graphics2D) g;
 
       // Wipe out previous rendering and draw the background
-      g2d.setColor(Color.BLACK);
+      g2d.setColor(Color.WHITE);
       g2d.fillRect(0, 0, getWidth(), getHeight());
 
-      // Draw nothing if the world isn't ready yet
-      if (simModel != null)
+      if (renderWorld != null)
       {
-         drawGridLines(g2d);
+         renderWorld.render(g2d);
          drawCoordinates(g2d);
-         drawRoads(g2d);
-         drawHavens(g2d);
       }
       else
       {
-         g2d.setColor(Color.WHITE);
+         g2d.setColor(Color.BLACK);
          g2d.drawString("Simulation initializing", getWidth() / 2, getHeight() / 2);
       }
 
-   }
-
-   private void drawGridLines(Graphics2D g2d)
-   {
-      final int pixH = getHeight() - 1;
-      final int pixW = getWidth() - 1;
-
-      //White, half alpha
-      g2d.setColor(new Color(255, 255, 255, 127));
-      g2d.drawRect(0, 0, pixW, pixH);
-
-      final int numCols = simModel.getWorld().getColumnCount();
-      final int numRows = simModel.getWorld().getRowCount();
-
-      // 0th border line is handled by the border rectangle
-      for (int i = 1; i < numCols; ++i)
-      {
-         g2d.drawLine(i * gridCellW, 0, i * gridCellW, pixH);
-      }
-
-      // 0th border line is handled by the border rectangle
-      for (int i = 1; i < numRows; ++i)
-      {
-         g2d.drawLine(0, i * gridCellH, pixW, i * gridCellH);
-      }
    }
 
    private void drawCoordinates(Graphics2D g2d)
@@ -190,68 +84,12 @@ public class RenderableSimWorldPanel extends JPanel
          int x = mouseState.getMouseX();
          int y = mouseState.getMouseY();
 
-         WorldCoordinate wc = pixelsToWorldCoordinate(x, y);
-         CellCoordinate cc = pixelsToCellCoordinate(x, y);
+         WorldCoordinate wc = renderWorld.pixelsToWorldCoordinate(x, y);
+         CellCoordinate cc = renderWorld.pixelsToCellCoordinate(x, y);
 
-         String locationTxt = wc.toString() + " - " + cc.toString();
+         String locationTxt = wc.toString() + " - " + cc.toString() + " - " + Integer.toString(x) + "," + Integer.toString(y);
          g2d.setColor(Color.YELLOW);
          g2d.drawString(locationTxt, 5, getHeight() - 10);
-      }
-   }
-
-   /**
-    * Draws a rectangle that fills half the grid cell to represent a safe haven
-    * location.
-    *
-    * @param g2d
-    *           Draw on this graphics object.
-    */
-   private void drawHavens(Graphics2D g2d)
-   {
-      final int quarterGridW = (int) (gridCellW * 0.25);
-      final int quarterGridH = (int) (gridCellH * 0.25);
-      final int thirdGridW = (int) (gridCellW * 0.33);
-      final int thirdGridH = (int) (gridCellH * 0.33);
-      final int halfGridW = (int) (gridCellW * 0.5);
-      final int halfGridH = (int) (gridCellH * 0.5);
-
-      for (WorldCoordinate wc : simModel.getWorld().getHavenLocations())
-      {
-         CellCoordinate cell = simModel.getWorld().convertWorldToCell(wc);
-
-         g2d.setColor(Color.ORANGE);
-         int x = gridCellW * cell.getColumn();
-         int y = gridCellH * cell.getRow();
-         g2d.fillRect(x + quarterGridW, y + quarterGridH, halfGridW, halfGridH);
-
-         g2d.setColor(Color.black);
-         // Left vertical line of H
-         g2d.drawLine(x + thirdGridW, y + thirdGridH, x + thirdGridW, y + thirdGridH + thirdGridH);
-         // Right vertical line of H
-         g2d.drawLine(x + thirdGridW + thirdGridW, y + thirdGridH, x + thirdGridW + thirdGridW,
-               y + thirdGridH + thirdGridH);
-         // Horizontal line of H
-         g2d.drawLine(x + thirdGridW, y + halfGridH, x + thirdGridW + thirdGridW, y + halfGridH);
-      }
-   }
-
-   private void drawRoads(Graphics2D g2d)
-   {
-      g2d.setColor(Color.pink);
-      g2d.setStroke(new BasicStroke(3f));
-
-      for(DirectedEdge<WorldCoordinate> edge : simModel.getWorld().getRoadNetwork().getEdges())
-      {
-         WorldCoordinate start = edge.getStartVertex().getUserData();
-         WorldCoordinate end = edge.getEndVertex().getUserData();
-
-         int xStart = (int)(pixelsPerMeterW * start.getEast().asMeters());
-         int yStart = (int)(pixelsPerMeterH * start.getNorth().asMeters());
-
-         int xEnd = (int)(pixelsPerMeterW * end.getEast().asMeters());
-         int yEnd = (int)(pixelsPerMeterH * end.getNorth().asMeters());
-
-         g2d.drawLine(xStart, yStart, xEnd, yEnd);
       }
    }
 
