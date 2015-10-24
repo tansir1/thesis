@@ -18,6 +18,12 @@ import thesis.core.utilities.LoggerIDs;
 
 public class WorldGenerator
 {
+	/**
+	 * The minimum allowed distance between two intersections is proportional to
+	 * the min(width,height) * this percentage.
+	 */
+	private static final double MIN_INTERSECTION_SPACING_PERCENT = 0.15f;
+
 	private Random randGen;
 
 	/**
@@ -73,54 +79,67 @@ public class WorldGenerator
 		return world;
 	}
 
-	private void kdNodeToRoadGroup(KDNode node, Graph<WorldCoordinate> roadNet)
+	private void kdNodeToRoadGroup(Vertex<WorldCoordinate> vertex, KDNode node, Graph<WorldCoordinate> roadNet)
 	{
-		WorldCoordinate root = node.getLocation();
 		KDNode left = node.getLeftChild();
 		KDNode right = node.getRightChild();
 
-		if(left == null && right == null)
+		if (left == null && right == null)
 		{
-			return;//End of the tree branch
+			return;// End of the tree branch
 		}
 
-		Vertex<WorldCoordinate> rootVert = roadNet.createVertex(root);
+		//Vertex<WorldCoordinate> rootVert = roadNet.createVertex(node.getLocation());
 
 		if (left != null)
 		{
-			WorldCoordinate intersection = computeRoadFromNode(root, left, node.isVerticalSplit());
-
-			// Connect root to intermediate road intersection
-			Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
-			roadNet.createBidirectionalEdge(rootVert, vertInter, root.distanceTo(intersection).asMeters());
-
-			// Connect intersection to the node location
-			Vertex<WorldCoordinate> vertEnd = roadNet.createVertex(left.getLocation());
-			roadNet.createBidirectionalEdge(vertInter, vertEnd, intersection.distanceTo(left.getLocation()).asMeters());
-
-			// Recursively move down the tree
-			kdNodeToRoadGroup(left, roadNet);
+			insertIntermediateVertices(roadNet, vertex, left, node.isVerticalSplit());
 		}
 
 		if (right != null)
 		{
-			WorldCoordinate intersection = computeRoadFromNode(root, right, node.isVerticalSplit());
-
-			// Connect root to intermediate road intersection
-			Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
-			roadNet.createBidirectionalEdge(rootVert, vertInter, root.distanceTo(intersection).asMeters());
-
-			// Connect intersection to the node location
-			Vertex<WorldCoordinate> vertEnd = roadNet.createVertex(right.getLocation());
-			roadNet.createBidirectionalEdge(vertInter, vertEnd,
-					intersection.distanceTo(right.getLocation()).asMeters());
-
-			// Recursively move down the tree
-			kdNodeToRoadGroup(right, roadNet);
+			insertIntermediateVertices(roadNet, vertex, right, node.isVerticalSplit());
 		}
 	}
 
-	private WorldCoordinate computeRoadFromNode(WorldCoordinate root, KDNode node, boolean isVertical)
+	private void insertIntermediateVertices(Graph<WorldCoordinate> roadNet, Vertex<WorldCoordinate> startVert, KDNode endNode, boolean isVertSplit)
+	{
+		final double minVertexDistBuf = Math.min(width.asMeters(), height.asMeters())
+				* MIN_INTERSECTION_SPACING_PERCENT;
+
+		WorldCoordinate intersection = computeRoadIntersectionFromNode(startVert.getUserData(), endNode, isVertSplit);
+
+		final double distStartToInter = intersection.distanceTo(startVert.getUserData()).asMeters();
+		final double distInterToEnd = intersection.distanceTo(endNode.getLocation()).asMeters();
+
+		Vertex<WorldCoordinate> endVert = null;
+
+		if (distStartToInter > minVertexDistBuf && distInterToEnd > minVertexDistBuf)
+		{
+			// Connect root to intermediate road intersection
+			Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
+			roadNet.createBidirectionalEdge(startVert, vertInter, distStartToInter);
+
+			// Connect intersection to the node location
+			endVert = roadNet.createVertex(endNode.getLocation());
+			roadNet.createBidirectionalEdge(vertInter, endVert, distInterToEnd);
+		}
+		else
+		{
+			// Either the start or ending vertex is too close to the
+			// intersection, so drop the intersection and draw a diagonal line
+			// between the two vertices instead of the manhattan line connecting them
+
+			// Connect start to the end vertex
+			endVert = roadNet.createVertex(endNode.getLocation());
+			roadNet.createBidirectionalEdge(startVert, endVert, distInterToEnd);
+		}
+
+		// Recursively move down the tree
+		kdNodeToRoadGroup(endVert, endNode, roadNet);
+	}
+
+	private WorldCoordinate computeRoadIntersectionFromNode(WorldCoordinate root, KDNode node, boolean isVertical)
 	{
 		WorldCoordinate intersection = null;
 
@@ -151,7 +170,7 @@ public class WorldGenerator
 		boolean valid = true;
 
 		// Prevents the seeds from clustering together
-		double interSeedDistBuffer = Math.min(width.asMeters(), height.asMeters()) * 0.1;
+		double interSeedDistBuffer = Math.min(width.asMeters(), height.asMeters()) * MIN_INTERSECTION_SPACING_PERCENT;
 
 		if (existingLocations.contains(newLocation))
 		{
@@ -182,7 +201,7 @@ public class WorldGenerator
 		final double percentRoadCells = 0.01;
 		int numSeeds = (int) (numRows * numCols * percentRoadCells);
 		numSeeds = Math.max(numSeeds, 4);
-		//numSeeds = Math.max(numSeeds, 3);
+		// numSeeds = Math.max(numSeeds, 3);
 
 		Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 		logger.debug("Generating road network with {} seeds.", numSeeds);
@@ -212,7 +231,9 @@ public class WorldGenerator
 		}
 
 		// Generate all the roads (edges) in the road network (tree).
-		kdNodeToRoadGroup(KDTree.generateTree(roadSeeds), roadNet);
+		KDNode rootNode = KDTree.generateTree(roadSeeds);
+		Vertex<WorldCoordinate> rootVert = roadNet.createVertex(rootNode.getLocation());
+		kdNodeToRoadGroup(rootVert, rootNode, roadNet);
 		return roadNet;
 	}
 
