@@ -58,7 +58,7 @@ public class UAV
       easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cosNorthUp());
       // north distance = time * speed * north component
       northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sinNorthUp());
-System.out.print("N: " + northing + " E: " + easting + "\n");
+
       position.translate(northing, easting);
    }
 }

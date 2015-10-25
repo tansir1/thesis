@@ -212,7 +212,7 @@ public class WorldGenerator
       // This percentage of grid cells will contain road seed locations
       final double percentRoadCells = 0.01;
       int numSeeds = (int) (numRows * numCols * percentRoadCells);
-      numSeeds = Math.max(numSeeds, 4);
+      numSeeds = Math.max(numSeeds, 6);
       // numSeeds = Math.max(numSeeds, 3);
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);

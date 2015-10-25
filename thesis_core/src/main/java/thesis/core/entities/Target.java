@@ -56,10 +56,10 @@ public class Target
 			double deltaSeconds = deltaTimeMS / 1000.0;
 			LinearSpeed spd = type.getMaxSpeed();
 
-			//east distance = time * speed * east component
-			easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cos());
-			//north distance = time * speed * north component
-			northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sin());
+	      // east distance = time * speed * east component
+	      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cosNorthUp());
+	      // north distance = time * speed * north component
+	      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sinNorthUp());
 
 			position.translate(northing, easting);
 		}
