@@ -6,12 +6,12 @@ import java.io.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.CoreRsrcPaths;
 import thesis.core.SimModel;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.entities.EntityTypesFile;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.serialization.world.WorldConfigFile;
+import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;

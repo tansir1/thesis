@@ -1,4 +1,4 @@
-package thesis.core;
+package thesis.core.utilities;
 
 /**
  *Collection of strings containing the fully qualified paths to embedded resources.
