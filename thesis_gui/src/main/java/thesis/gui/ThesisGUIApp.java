@@ -45,8 +45,7 @@ public class ThesisGUIApp
             logger.error("Could not export the default sim.properties file.");
          }
       }
-
-      if (cfgFile.exists())
+      else
       {
          SimModelConfigLoader cfgLdr = new SimModelConfigLoader();
          if (!cfgLdr.loadFile(cfgFile))
@@ -57,10 +56,6 @@ public class ThesisGUIApp
          {
             cfg = cfgLdr.getConfigData();
          }
-      }
-      else
-      {
-         logger.error("Failed to load exported sim.properties file.");
       }
 
       return cfg;
