@@ -143,7 +143,7 @@ public class WorldGenApp
 			logger.debug("-------------------------------------------------");
 			logger.debug("Generating world {}", i);
 			WorldConfig world = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
-					genCfg.getNumStaticTargets());
+					genCfg.getNumStaticTargets(), genCfg.getNumUAVs());
 
 			try
 			{
