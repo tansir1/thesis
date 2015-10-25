@@ -27,3 +27,8 @@ subprojects {
     
     version = versionStr
 }
+
+task deployLocal(type: Copy, dependsOn: deployDefaultWorlds) {
+    from "../EntityTypes.xml"
+    into "../deploy"
+}
