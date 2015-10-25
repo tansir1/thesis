@@ -56,7 +56,15 @@ public class GeneratorConfigLoader
 				success = false;
 			}
 
-			loadWorldCfg(propsLdr, logger);
+			if (success)
+			{
+				success = loadWorldCfg(propsLdr, logger);
+			}
+
+			if (success)
+			{
+				success = loadTargetCfg(propsLdr, logger);
+			}
 
 		}
 
@@ -87,6 +95,23 @@ public class GeneratorConfigLoader
 
 			cfg.setWorldWidth(width);
 			cfg.setWorldHeight(height);
+		}
+		catch (Exception e)
+		{
+			logger.debug(e.getMessage());
+			success = false;
+		}
+		return success;
+	}
+
+	private boolean loadTargetCfg(PropertiesLoader propsLdr, Logger logger)
+	{
+		boolean success = true;
+
+		try
+		{
+			cfg.setNumMobileTargets((propsLdr.getInt("targets.numMobile")));
+			cfg.setNumStaticTargets((propsLdr.getInt("targets.numStatic")));
 		}
 		catch (Exception e)
 		{

@@ -84,7 +84,8 @@ public class WorldGenApp
 				File cfgFile = new File(line.getOptionValue("cfg"));
 				if (!cfgFile.exists())
 				{
-					logger.error("Configuration file does not exist at " + cfgFile.getAbsolutePath() + " Aborting generation.");
+					logger.error("Configuration file does not exist at " + cfgFile.getAbsolutePath()
+							+ " Aborting generation.");
 					throw new FileNotFoundException();
 				}
 
@@ -141,7 +142,8 @@ public class WorldGenApp
 
 			logger.debug("-------------------------------------------------");
 			logger.debug("Generating world {}", i);
-			WorldConfig world = worldGen.generateWorld();
+			WorldConfig world = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
+					genCfg.getNumStaticTargets());
 
 			try
 			{

@@ -16,6 +16,9 @@ public class GeneratorConfig
 	private int numRows;
 	private int numColumns;
 
+	private int numMobileTargets;
+	private int numStaticTargets;
+
 	public GeneratorConfig()
 	{
 
@@ -31,6 +34,8 @@ public class GeneratorConfig
 		worldHeight = copy.worldHeight;
 		numRows = copy.numRows;
 		numColumns = copy.numColumns;
+		numMobileTargets = copy.numMobileTargets;
+		numStaticTargets = copy.numStaticTargets;
 	}
 
 	public int getNumWorlds()
@@ -111,6 +116,26 @@ public class GeneratorConfig
 	public void setNumColumns(int numColumns)
 	{
 		this.numColumns = numColumns;
+	}
+
+	public int getNumMobileTargets()
+	{
+		return numMobileTargets;
+	}
+
+	public void setNumMobileTargets(int numMobileTargets)
+	{
+		this.numMobileTargets = numMobileTargets;
+	}
+
+	public int getNumStaticTargets()
+	{
+		return numStaticTargets;
+	}
+
+	public void setNumStaticTargets(int numStaticTargets)
+	{
+		this.numStaticTargets = numStaticTargets;
 	}
 
 }
