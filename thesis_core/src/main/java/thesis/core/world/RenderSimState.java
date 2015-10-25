@@ -6,16 +6,20 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
+import thesis.core.SimModel;
+import thesis.core.common.Angle;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.DirectedEdge;
+import thesis.core.entities.Target;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 
-public class RenderWorld
+public class RenderSimState
 {
 	/**
 	 * Pixel size of the square that represents road intersections (road graph
@@ -51,7 +55,7 @@ public class RenderWorld
 	 */
 	private BasicStroke roadStroke;
 
-	private World world;
+	private SimModel model;
 
 	private Rectangle bounds;
 
@@ -63,33 +67,41 @@ public class RenderWorld
 	private BufferedImage rawHavenImg;
 	private BufferedImage scaledHavenImg;
 
+	private BufferedImage rawRedMobileImg;
+	private BufferedImage scaledRedMobileImg;
+
+	private BufferedImage rawRedStaticImg;
+	private BufferedImage scaledRedStaticImg;
+
 	/**
 	 * Initialize a renderer with a bounds size of zero.
 	 *
 	 * This world cannot be correctly rendered until the rendering size is set
 	 * via {@link #setBounds(int, int, int, int)}.
 	 *
-	 * @param render
-	 *            The world to render.
+	 * @param model
+	 *            The model to render.
 	 */
-	public RenderWorld(World render)
+	public RenderSimState(SimModel model)
 	{
-		if (render == null)
+		if (model == null)
 		{
-			throw new NullPointerException("World to render cannot be null.");
+			throw new NullPointerException("SimModel to render cannot be null.");
 		}
 
-		this.world = render;
+		this.model = model;
 		bounds = new Rectangle();
 		roadStroke = new BasicStroke(1f);
 		rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
+		rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
+		rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
 	}
 
 	/**
 	 * Initialize a renderer with the specified bounds size.
 	 *
 	 * @param render
-	 *            The world to render.
+	 *            The model to render.
 	 * @param minX
 	 *            The minimum X pixel coordinate for the world will start here.
 	 *            This allows the user to offset the rendering.
@@ -101,17 +113,19 @@ public class RenderWorld
 	 * @param height
 	 *            The height of the rendering space in pixels.
 	 */
-	public RenderWorld(World render, int minX, int minY, int width, int height)
+	public RenderSimState(SimModel model, int minX, int minY, int width, int height)
 	{
-		if (render == null)
+		if (model == null)
 		{
-			throw new NullPointerException("World to render cannot be null.");
+			throw new NullPointerException("SimModel to render cannot be null.");
 		}
 
-		this.world = render;
+		this.model = model;
 		bounds = new Rectangle();
 		roadStroke = new BasicStroke(1f);
 		rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
+		rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
+		rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
 	}
 
 	/**
@@ -134,7 +148,7 @@ public class RenderWorld
 		bounds.y = minY;
 		bounds.width = width;
 		bounds.height = height;
-		recomputeCellPixelSize();
+		recomputeScalingSizes();
 	}
 
 	/**
@@ -179,6 +193,7 @@ public class RenderWorld
 		drawGridLines(gfx);
 		drawRoads(gfx);
 		drawHavens(gfx);
+		drawTargets(gfx);
 	}
 
 	/**
@@ -195,8 +210,8 @@ public class RenderWorld
 		double xPercent = (x * 1.0) / (1.0 * bounds.width);
 		double yPercent = (y * 1.0) / (1.0 * bounds.height);
 
-		Distance worldH = new Distance(world.getHeight());
-		Distance worldW = new Distance(world.getWidth());
+		Distance worldH = new Distance(model.getWorld().getHeight());
+		Distance worldW = new Distance(model.getWorld().getWidth());
 
 		// TODO Probably need to invert the y axis depending on where origin is
 		// placed in sim model
@@ -221,30 +236,50 @@ public class RenderWorld
 		return new CellCoordinate(y / gridCellH, x / gridCellW);
 	}
 
-	private void recomputeCellPixelSize()
+	private void recomputeScalingSizes()
 	{
 		int pixW = bounds.width - 1;
 		int pixH = bounds.height - 1;
 
-		int numCols = world.getColumnCount();
-		int numRows = world.getRowCount();
+		int numCols = model.getWorld().getColumnCount();
+		int numRows = model.getWorld().getRowCount();
 
 		gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
 		gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
 
-		pixelsPerMeterH = (pixH * 1.0) / world.getHeight().asMeters();
-		pixelsPerMeterW = (pixW * 1.0) / world.getWidth().asMeters();
+		pixelsPerMeterH = (pixH * 1.0) / model.getWorld().getHeight().asMeters();
+		pixelsPerMeterW = (pixW * 1.0) / model.getWorld().getWidth().asMeters();
 
 		roadStroke = new BasicStroke(Math.min(gridCellH, gridCellW) * ROAD_WIDTH_VS_GRID_PERCENT);
 		roadInterSectionSz = (int) (Math.min(gridCellH, gridCellW) * INTERSECTION_SZ_VS_GRID_PERCENT);
 
 		if(rawHavenImg != null)
 		{
-			scaledHavenImg = new BufferedImage(roadInterSectionSz, roadInterSectionSz, BufferedImage.TYPE_INT_RGB);
+			scaledHavenImg = new BufferedImage(roadInterSectionSz, roadInterSectionSz, BufferedImage.TYPE_INT_ARGB);
 
 			Graphics g = scaledHavenImg.createGraphics();
 			g.drawImage(rawHavenImg, 0, 0, roadInterSectionSz, roadInterSectionSz, null);
 			g.dispose();
+		}
+
+		if(rawRedMobileImg != null)
+		{
+			scaledRedMobileImg = rawRedMobileImg;
+//			scaledRedMobileImg = new BufferedImage(rawRedMobileImg.getWidth()*2, rawRedMobileImg.getHeight()*2, BufferedImage.TYPE_INT_ARGB);
+//
+//			Graphics g = scaledRedMobileImg.createGraphics();
+//			g.drawImage(rawRedMobileImg, 0, 0, rawRedMobileImg.getWidth()*2, rawRedMobileImg.getHeight()*2, null);
+//			g.dispose();
+		}
+
+		if(rawRedStaticImg != null)
+		{
+			scaledRedStaticImg = rawRedStaticImg;
+//			scaledRedStaticImg = new BufferedImage(rawRedStaticImg.getWidth()*2, rawRedStaticImg.getHeight()*2, BufferedImage.TYPE_INT_ARGB);
+//
+//			Graphics g = scaledRedStaticImg.createGraphics();
+//			g.drawImage(rawRedStaticImg, 0, 0, rawRedStaticImg.getWidth()*2, rawRedStaticImg.getHeight()*2, null);
+//			g.dispose();
 		}
 	}
 
@@ -264,7 +299,7 @@ public class RenderWorld
 
 		//Overlay the haven graphic over all road intersections that are also havens
 		final int halfRdSz = roadInterSectionSz / 2;
-		for (WorldCoordinate wc : world.getHavenLocations())
+		for (WorldCoordinate wc : model.getWorld().getHavenLocations())
 		{
 			final int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
 			final int y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
@@ -279,7 +314,7 @@ public class RenderWorld
 
 		final int halfRdSz = roadInterSectionSz / 2;
 
-		for (DirectedEdge<WorldCoordinate> edge : world.getRoadNetwork().getEdges())
+		for (DirectedEdge<WorldCoordinate> edge : model.getWorld().getRoadNetwork().getEdges())
 		{
 			WorldCoordinate start = edge.getStartVertex().getUserData();
 			WorldCoordinate end = edge.getEndVertex().getUserData();
@@ -317,8 +352,8 @@ public class RenderWorld
 		g2d.setColor(Color.blue);
 		g2d.drawRect(bounds.x + 1, bounds.y + 1, pixW, pixH);
 		g2d.setColor(new Color(255, 255, 255, 127));
-		final int numCols = world.getColumnCount();
-		final int numRows = world.getRowCount();
+		final int numCols = model.getWorld().getColumnCount();
+		final int numRows = model.getWorld().getRowCount();
 
 		// 0th border line is handled by the border rectangle
 		for (int i = 1; i < numCols; ++i)
@@ -333,6 +368,57 @@ public class RenderWorld
 		}
 	}
 
+	private void drawTargets(Graphics2D g2d)
+	{
+		WorldCoordinate wc = null;
+		Angle angle = null;
+
+		int x = -1;
+		int y = -1;
+		int halfImgW = -1;
+		int halfImgH = -1;
+
+		AffineTransform trans = new AffineTransform();
+
+		for(Target tgt : model.getTargetManager().getAllTargets())
+		{
+			trans.setToIdentity();
+
+			wc = tgt.getCoordinate();
+			angle = tgt.getOrientation();
+
+			x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
+			y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+
+			if(tgt.getType().isMobile())
+			{
+				if(scaledRedMobileImg != null)
+				{
+					halfImgW = scaledRedMobileImg.getWidth();
+					halfImgH = scaledRedMobileImg.getHeight();
+
+					trans.translate(x - halfImgW, y - halfImgH);
+					trans.rotate(angle.asRadians());
+
+					g2d.drawImage(scaledRedMobileImg, trans, null);
+				}
+			}
+			else
+			{
+				if(scaledRedStaticImg != null)
+				{
+					halfImgW = scaledRedStaticImg.getWidth();
+					halfImgH = scaledRedStaticImg.getHeight();
+
+					trans.translate(x - halfImgW, y - halfImgH);
+					trans.rotate(angle.asRadians());
+
+					g2d.drawImage(scaledRedStaticImg, x - halfImgW, y - halfImgH, null);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Convenience function to render the world into an image.
 	 *
@@ -340,7 +426,7 @@ public class RenderWorld
 	 */
 	public BufferedImage renderToImage()
 	{
-		BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_INT_ARGB);
 		render(img.createGraphics());
 		return img;
 	}
@@ -349,23 +435,23 @@ public class RenderWorld
 	 * Convenience wrapper function to render the given world into an image of
 	 * the specified size. This provides a screenshot of the world.
 	 *
-	 * @param world
-	 *            The world to render.
+	 * @param model
+	 *            The model to render.
 	 * @param imgW
 	 *            The width of the final image in pixels.
 	 * @param imgH
 	 *            The height of the final image in pixels.
 	 * @return The world rendered into the image.
 	 */
-	public static BufferedImage renderToImage(World world, int imgW, int imgH)
+	public static BufferedImage renderToImage(SimModel model, int imgW, int imgH)
 	{
-		if (world == null)
+		if (model == null)
 		{
-			throw new NullPointerException("World cannot be null.");
+			throw new NullPointerException("SimModel cannot be null.");
 		}
 
-		BufferedImage img = new BufferedImage(imgW, imgH, BufferedImage.TYPE_3BYTE_BGR);
-		RenderWorld render = new RenderWorld(world);
+		BufferedImage img = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
+		RenderSimState render = new RenderSimState(model);
 		render.setBounds(0, 0, imgW, imgH);
 		render.render(img.createGraphics());
 		return img;

@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.world.RenderWorld;
+import thesis.core.world.RenderSimState;
 import thesis.gui.utilities.ListenerSupport;
 
 @SuppressWarnings("serial")
@@ -23,7 +23,7 @@ public class RenderableSimWorldPanel extends JPanel
 {
 	private MouseMoveListenerProxy mouseState;
 
-	private RenderWorld renderWorld;
+	private RenderSimState renderWorld;
 
 	private ListenerSupport<IMapMouseListener> listeners;
 
@@ -57,7 +57,7 @@ public class RenderableSimWorldPanel extends JPanel
 
 	public void connectSimModel(SimModel simModel)
 	{
-		renderWorld = new RenderWorld(simModel.getWorld());
+		renderWorld = new RenderSimState(simModel);
 		this.addMouseListener(mouseState);
 		this.addMouseMotionListener(mouseState);
 		renderWorld.setBounds(0, 0, getWidth(), getHeight());
@@ -104,7 +104,7 @@ public class RenderableSimWorldPanel extends JPanel
 	// }
 	// }
 
-	public RenderWorld getWorldRenderer()
+	public RenderSimState getWorldRenderer()
 	{
 		return renderWorld;
 	}
