@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
 import thesis.core.SimModel;
@@ -30,6 +31,8 @@ public class MainWindow implements IMapMouseListener
 
 	private JLabel statusLbl;
 
+	private SimTimer simTimer;
+
 	public MainWindow()
 	{
 		frame = new JFrame("Thesis Simulator");
@@ -42,8 +45,9 @@ public class MainWindow implements IMapMouseListener
 			}
 		});
 
+		simTimer = new SimTimer();
 		simPanel = new RenderableSimWorldPanel();
-		actions = new Actions(frame, simPanel);
+		actions = new Actions(frame, simPanel, simTimer);
 
 		MenuBar menuBar = new MenuBar(this, actions);
 		frame.setJMenuBar(menuBar.getMenuBar());
@@ -62,6 +66,8 @@ public class MainWindow implements IMapMouseListener
 	{
 		frame.setLayout(new BorderLayout());
 		frame.add(simPanel, BorderLayout.CENTER);
+
+		frame.add(buildToolbar(), BorderLayout.NORTH);
 
 		JPanel statusPanel = new JPanel();
 		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -96,6 +102,17 @@ public class MainWindow implements IMapMouseListener
 		return frame;
 	}
 
+	private JToolBar buildToolbar()
+	{
+		JToolBar toolbar = new JToolBar();
+		toolbar.setFloatable(false);
+		toolbar.add(actions.getPlayAction());
+		toolbar.add(actions.getPauseAction());
+		toolbar.add(actions.getStepSimAction());
+		toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
+		return toolbar;
+	}
+
 	/**
 	 * Connect the event listeners of the GUI to the event triggers in the
 	 * model.
@@ -106,6 +123,7 @@ public class MainWindow implements IMapMouseListener
 	public void connectSimModel(SimModel simModel)
 	{
 		simPanel.connectSimModel(simModel);
+		simTimer.reset(simModel);
 	}
 
 	@Override

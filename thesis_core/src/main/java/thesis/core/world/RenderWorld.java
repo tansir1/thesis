@@ -8,11 +8,11 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
-import thesis.core.CoreRsrcPaths;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.DirectedEdge;
+import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 
 public class RenderWorld
