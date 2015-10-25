@@ -16,14 +16,14 @@ public class EntityTypes
 {
 	private List<SensorType> sensorTypes;
 	private List<WeaponType> weaponTypes;
-	private List<UAVType> uavTypes;
+	private Map<Integer, UAVType> uavTypes;
 	private Map<Integer, TargetType> targetTypes;
 
 	public EntityTypes()
 	{
 		sensorTypes = new ArrayList<SensorType>();
 		weaponTypes = new ArrayList<WeaponType>();
-		uavTypes = new ArrayList<UAVType>();
+		uavTypes = new HashMap<Integer, UAVType>();
 		targetTypes = new HashMap<Integer, TargetType>();
 	}
 
@@ -31,7 +31,11 @@ public class EntityTypes
 	{
 		sensorTypes.addAll(copy.sensorTypes);
 		weaponTypes.addAll(copy.weaponTypes);
-		uavTypes.addAll(copy.uavTypes);
+
+      for(UAVType uavType : copy.uavTypes.values())
+      {
+         uavTypes.put(uavType.getTypeID(), uavType);
+      }
 
 		for(TargetType tt : copy.targetTypes.values())
 		{
@@ -59,15 +63,38 @@ public class EntityTypes
 		return weaponTypes;
 	}
 
-	/**
-	 * Get a modifiable list of all known UAV types.
-	 *
-	 * @return The list of known UAV types.
-	 */
-	public List<UAVType> getUAVTypes()
-	{
-		return uavTypes;
-	}
+   /**
+    * Retrieve a specific uav type.
+    *
+    * @param typeID
+    *            The ID of the type to retrieve.
+    * @return The requested uav type or null if no such type exists.
+    */
+   public UAVType getUAVType(int typeID)
+   {
+      return uavTypes.get(typeID);
+   }
+
+   /**
+    * Store a new type of UAV.
+    *
+    * @param type
+    *            This data will be stored.
+    */
+   public void addUAVType(UAVType type)
+   {
+      uavTypes.put(type.getTypeID(), type);
+   }
+
+   /**
+    * Get an unmodifiable view of all the known UAV types.
+    *
+    * @return
+    */
+   public Collection<UAVType> getAllUAVTypes()
+   {
+      return Collections.unmodifiableCollection(uavTypes.values());
+   }
 
 	/**
 	 * Retrieve a specific target type.

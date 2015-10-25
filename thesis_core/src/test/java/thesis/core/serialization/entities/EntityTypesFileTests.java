@@ -36,7 +36,7 @@ public class EntityTypesFileTests
 
       for (int i = 0; i < NUM_UAVS; ++i)
       {
-         testMe.getUAVTypes().add(TestUtils.randUAVType(testMe.getWeaponTypes(), testMe.getSensorTypes()));
+         testMe.addUAVType(TestUtils.randUAVType(testMe.getWeaponTypes(), testMe.getSensorTypes()));
       }
 
       for (int i=0; i<NUM_TARGETS; ++i)
@@ -66,7 +66,7 @@ public class EntityTypesFileTests
 
       for(int i=0; i<NUM_UAVS; ++i)
       {
-         assertEquals("Failed to read correct UAV type.", testMe.getUAVTypes().get(i), results.getUAVTypes().get(i));
+         assertEquals("Failed to read correct UAV type.", testMe.getUAVType(i), results.getUAVType(i));
       }
 
       for(int i=0; i<NUM_TARGETS; ++i)

@@ -49,6 +49,7 @@ public class GeneratorConfigLoader
 			{
 				cfg.setRandSeed(propsLdr.getInt("randomSeed"));
 				cfg.setNumWorlds(propsLdr.getInt("numWorlds"));
+				cfg.setNumUAVs(propsLdr.getInt("numUAVs"));
 			}
 			catch (Exception e)
 			{

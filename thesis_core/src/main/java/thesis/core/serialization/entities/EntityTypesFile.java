@@ -371,14 +371,14 @@ public class EntityTypesFile
             }
          }
 
-         entTypes.getUAVTypes().add(uavType);
+         entTypes.addUAVType(uavType);
       }
    }
 
    private static Element encodeUAVTypes(EntityTypes entTypes, Document dom)
    {
       Element parentElem = dom.createElement("UAVTypes");
-      for (UAVType uavType : entTypes.getUAVTypes())
+      for (UAVType uavType : entTypes.getAllUAVTypes())
       {
          Element uavTypeElem = dom.createElement("UAVType");
          uavTypeElem.setAttribute("type", Integer.toString(uavType.getTypeID()));
