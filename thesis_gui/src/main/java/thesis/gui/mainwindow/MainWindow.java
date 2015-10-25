@@ -123,6 +123,7 @@ public class MainWindow implements IMapMouseListener
 	public void connectSimModel(SimModel simModel)
 	{
 		simPanel.connectSimModel(simModel);
+		simTimer.reset(simModel);
 	}
 
 	@Override

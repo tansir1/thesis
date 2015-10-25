@@ -89,6 +89,6 @@ public class SimModel
 	 */
 	public void stepSimulation(long deltaTimeMS)
 	{
-
+		logger.debug("-------------------Simulation stepping.-----------------");
 	}
 }

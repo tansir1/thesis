@@ -5,7 +5,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import thesis.core.SimModel;
+import thesis.core.utilities.LoggerIDs;
 
 public class SimTimer
 {
@@ -20,6 +24,8 @@ public class SimTimer
 	private SimModel model;
 	private ScheduledFuture<?> future;
 
+	private Logger logger;
+
 	/**
 	 * Initialize a timer to drive the simulation. Does nothing without a
 	 * simulation model being set.
@@ -28,6 +34,7 @@ public class SimTimer
 	 */
 	public SimTimer()
 	{
+		logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 		execSvc = Executors.newSingleThreadScheduledExecutor();
 
 		timeStepMS = 16;// 60hz update rate
@@ -45,17 +52,23 @@ public class SimTimer
 
 	public void step()
 	{
-		pause();
 		if (model != null)
 		{
+			if(future != null)
+			{
+				future.cancel(false);
+			}
+
+			logger.info("Stepping simulation.");
 			model.stepSimulation(timeStepMS);
 		}
 	}
 
 	public void pause()
 	{
-		if (future != null)
+		if (model != null && future != null)
 		{
+			logger.info("Simulation paused.");
 			future.cancel(false);
 		}
 	}
@@ -67,17 +80,21 @@ public class SimTimer
 			future.cancel(false);
 		}
 
-		future = execSvc.scheduleAtFixedRate(new Runnable() {
+		if (model != null)
+		{
+			logger.info("Free running simulation");
+			future = execSvc.scheduleAtFixedRate(new Runnable() {
 
-			@Override
-			public void run()
-			{
-				if (model != null)
+				@Override
+				public void run()
 				{
-					model.stepSimulation(timeStepMS);
+					if (model != null)
+					{
+						model.stepSimulation(timeStepMS);
+					}
 				}
-			}
-		}, 0, timeStepMS, TimeUnit.MILLISECONDS);
+			}, 0, timeStepMS, TimeUnit.MILLISECONDS);
+		}
 	}
 
 }
