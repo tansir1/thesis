@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.world.RenderWorld;
+import thesis.core.world.RenderSimState;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 /**
@@ -65,7 +65,7 @@ public class ScreenShotAction extends AbstractAction
 			Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
 
 			File saveFile = fileChooser.getSelectedFile();
-			RenderWorld render = simPanel.getWorldRenderer();
+			RenderSimState render = simPanel.getWorldRenderer();
 			if (render == null)
 			{
 				logger.error("World renderer is not yet initialized.  Cannot save screenshot.");

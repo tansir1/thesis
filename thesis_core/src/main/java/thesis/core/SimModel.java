@@ -5,6 +5,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.entities.TargetMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -15,6 +16,8 @@ public class SimModel
 {
 	private Logger logger;
 	private World world;
+
+	private TargetMgr tgtMgr;
 
 	/**
 	 * A shared random number generator that is initialized with a known seed
@@ -32,6 +35,7 @@ public class SimModel
 	public SimModel()
 	{
 		logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+		tgtMgr = new TargetMgr();
 	}
 
 	/**
@@ -59,6 +63,7 @@ public class SimModel
 
 		world = new World(worldCfg);
 		// TODO Entity types
+		tgtMgr.reset(entTypes, worldCfg);
 	}
 
 	/**
@@ -69,6 +74,11 @@ public class SimModel
 	public World getWorld()
 	{
 		return world;
+	}
+
+	public TargetMgr getTargetManager()
+	{
+		return tgtMgr;
 	}
 
 	/**
@@ -90,5 +100,6 @@ public class SimModel
 	public void stepSimulation(long deltaTimeMS)
 	{
 		logger.debug("-------------------Simulation stepping.-----------------");
+		tgtMgr.stepSimulation(deltaTimeMS);
 	}
 }

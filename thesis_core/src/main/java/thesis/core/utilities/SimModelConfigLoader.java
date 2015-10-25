@@ -63,7 +63,7 @@ public class SimModelConfigLoader
       }
       catch (Exception e)
       {
-         logger.debug(e.getLocalizedMessage());
+         logger.debug(e.getMessage());
          success = false;
       }
       return success;
