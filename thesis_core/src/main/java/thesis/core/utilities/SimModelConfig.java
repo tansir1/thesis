@@ -1,68 +1,22 @@
 package thesis.core.utilities;
 
-import java.text.DecimalFormat;
+import java.io.File;
 
 /**
  * Contains all the configuration parameters for the simulation model.
  */
 public class SimModelConfig
 {
-   int randomSeed;
+   private int randomSeed;
+   private File worldFile;
+   private File entityTypesFile;
 
-   // World map model values
-   private double worldWidth;
-   private double worldHeight;
-   private int numWorldRows;
-   private int numWorldCols;
 
    public SimModelConfig()
    {
       randomSeed = 0;
-
-      worldWidth = 0;
-      worldHeight = 0;
-      numWorldCols = 0;
-      numWorldRows = 0;
-   }
-
-   public double getWorldWidth()
-   {
-      return worldWidth;
-   }
-
-   public void setWorldWidth(double worldWidth)
-   {
-      this.worldWidth = worldWidth;
-   }
-
-   public double getWorldHeight()
-   {
-      return worldHeight;
-   }
-
-   public void setWorldHeight(double worldHeight)
-   {
-      this.worldHeight = worldHeight;
-   }
-
-   public int getNumWorldRows()
-   {
-      return numWorldRows;
-   }
-
-   public void setNumWorldRows(int numWorldRows)
-   {
-      this.numWorldRows = numWorldRows;
-   }
-
-   public int getNumWorldCols()
-   {
-      return numWorldCols;
-   }
-
-   public void setNumWorldCols(int numWorldCols)
-   {
-      this.numWorldCols = numWorldCols;
+      worldFile = null;
+      entityTypesFile = null;
    }
 
    public int getRandomSeed()
@@ -75,29 +29,47 @@ public class SimModelConfig
       this.randomSeed = randomSeed;
    }
 
+   public File getWorldFile()
+   {
+      return worldFile;
+   }
+
+   public void setWorldFile(File file)
+   {
+      if(file == null)
+      {
+         throw new NullPointerException("World file cannot be null.");
+      }
+      this.worldFile = file;
+   }
+
+   public File getEntityTypeFile()
+   {
+      return entityTypesFile;
+   }
+
+   public void setEntityTypeFile(File file)
+   {
+      if(file == null)
+      {
+         throw new NullPointerException("Entity Type file cannot be null.");
+      }
+      this.entityTypesFile = file;
+   }
+
    @Override
    public String toString()
    {
-      DecimalFormat df = new DecimalFormat("0.000");
-      
       StringBuilder sb = new StringBuilder();
-      
-      //Generic sim parameters
-      sb.append("-Sim-");
-      sb.append("\n\tRandom seed: ");
+
+      // Generic sim parameters
+      sb.append("Random seed: ");
       sb.append(randomSeed);
-      
-      //World parameters
-      sb.append("\n-World-");
-      sb.append("\n\tWidth (km):");
-      sb.append(df.format(worldWidth));
-      sb.append("\n\tHeight (km):");
-      sb.append(df.format(worldHeight));
-      sb.append("\n\tRows:");
-      sb.append(df.format(numWorldRows));
-      sb.append("\n\tCols:");
-      sb.append(df.format(numWorldCols));
-      
+      sb.append("\nWorld: ");
+      sb.append(worldFile.getAbsolutePath());
+      sb.append("\nEntity Types: ");
+      sb.append(entityTypesFile.getAbsolutePath());
+
       return sb.toString();
    }
 }

@@ -1,19 +1,28 @@
 package thesis.core.world;
 
+import java.util.List;
+
+import thesis.core.common.CellCoordinate;
+import thesis.core.common.Distance;
+import thesis.core.common.WorldCoordinate;
+import thesis.core.common.graph.Graph;
+import thesis.core.serialization.world.WorldConfig;
+
 /**
- *Conversion routines between discrete grid coordinates and continuous world coordinates.
+ * Conversion routines between discrete grid coordinates and continuous world
+ * coordinates.
  */
 public class World
 {
    /**
-    * Width of the rectangular world in kilometers.
+    * Width of the rectangular world.
     */
-   private double width;
+   private Distance width;
 
    /**
-    * Height of the rectangular world in kilometers.
+    * Height of the rectangular world.
     */
-   private double height;
+   private Distance height;
 
    /**
     * The world is divided into this many rows.
@@ -26,80 +35,81 @@ public class World
    private int numCols;
 
    /**
-    * The lateral (vertical) distance in kilometers spanned by a row.
+    * The lateral (vertical) distance spanned by a row.
     */
-   private double distPerRow;
+   private Distance distPerRow;
 
    /**
-    * The longitudinal (horizontal) distance in kilometers spanned by a column.
+    * The longitudinal (horizontal) distance spanned by a column.
     */
-   private double distPerCol;
+   private Distance distPerCol;
 
    /**
-    * 
-    * @param width
-    *           Width of the rectangular world in kilometers.
-    * @param height
-    *           Height of the rectangular world in kilometers.
-    * @param numRows
-    *           Divide the world into this many rows.
-    * @param numCols
-    *           Divide the world in this many columns.
+    * The locations of all safe havens for targets.
     */
-   public World(double width, double height, int numRows, int numCols)
+   private List<WorldCoordinate> havens;
+
+   /**
+    * All cells containing roads.
+    */
+   //private List<CellCoordinate> roadLocations;
+
+   /**
+    * The road network graph.
+    */
+   private Graph<WorldCoordinate> roadNet;
+
+   /**
+    *
+    * @param cfg
+    *           Configuration data describing the world.
+    */
+   public World(WorldConfig cfg)
    {
-      if (width < 0)
+      if(cfg == null)
       {
-         throw new IllegalArgumentException("World width cannot be less than 0km.");
+         throw new NullPointerException("World configuration data cannot be null.");
       }
 
-      if (height < 0)
-      {
-         throw new IllegalArgumentException("World height cannot be less than 0km.");
-      }
+      this.width = new Distance(cfg.getWorldWidth());
+      this.height = new Distance(cfg.getWorldHeight());
+      this.numRows = cfg.getNumRows();
+      this.numCols = cfg.getNumColumns();
 
-      if (numRows < 0)
-      {
-         throw new IllegalArgumentException("Number of rows in the world cannot be less than 0.");
-      }
+      this.roadNet = cfg.getRoadNetwork();
 
-      if (numCols < 0)
-      {
-         throw new IllegalArgumentException("Number of columns in the world cannot be less than 0.");
-      }
+      distPerRow = new Distance();
+      distPerCol = new Distance();
+      distPerRow.setAsMeters(height.asMeters() / (numRows * 1.0));
+      distPerCol.setAsMeters(width.asMeters() / (numCols * 1.0));
 
-      this.width = width;
-      this.height = height;
-      this.numRows = numRows;
-      this.numCols = numCols;
-
-      distPerRow = height / (numRows * 1.0);
-      distPerCol = width / (numCols * 1.0);
+      havens = cfg.getHavens();
+      //roadLocations = new ArrayList<CellCoordinate>();
    }
 
    /**
     * Get the physical width of the world.
-    * 
-    * @return Width of the world in kilometers.
+    *
+    * @return Width of the world.
     */
-   public double getWidth()
+   public Distance getWidth()
    {
       return width;
    }
 
    /**
     * Get the physical height of the world.
-    * 
-    * @return Height of the world in kilometers.
+    *
+    * @return Height of the world.
     */
-   public double getHeight()
+   public Distance getHeight()
    {
       return height;
    }
 
    /**
     * Get how many rows exist in the world.
-    * 
+    *
     * @return The world is divided into this many rows.
     */
    public int getRowCount()
@@ -109,7 +119,7 @@ public class World
 
    /**
     * Get how many columns exist in the world.
-    * 
+    *
     * @return The world is divided into this many columns.
     */
    public int getColumnCount()
@@ -118,10 +128,40 @@ public class World
    }
 
    /**
+    * Get the location of all safe havens in the world.
+    *
+    * @return The location of each haven.
+    */
+   public List<WorldCoordinate> getHavenLocations()
+   {
+      return havens;
+   }
+
+   /**
+    * Get the graph representing the road network.  Graph vertices are intersections or dead ends.  Edges are roads.
+    *
+    * @return A graph representing the road network.
+    */
+   public Graph<WorldCoordinate> getRoadNetwork()
+   {
+      return roadNet;
+   }
+
+   /**
+    * Get all cells containing roads.
+    *
+    * @return All the cells that contain roads.
+    */
+   /*public List<CellCoordinate> getRoadLocations()
+   {
+      return roadLocations;
+   }*/
+
+   /**
     * Converts a physical world location to a discretized cell location.
-    * 
+    *
     * This allocates a new CellCoordinate.
-    * 
+    *
     * @param wc
     *           Convert this world location.
     * @return The discretized cell coordinates encapsulating the given world
@@ -141,7 +181,7 @@ public class World
 
    /**
     * Converts a physical world location to a discretized cell location.
-    * 
+    *
     * @param from
     *           Convert this world coordinate into a cell coordinate.
     * @param to
@@ -155,8 +195,8 @@ public class World
          throw new NullPointerException("from cannot be null.");
       }
 
-      int row = (int) (from.getNorth() / distPerRow);
-      int col = (int) (from.getEast() / distPerCol);
+      int row = (int) (from.getNorth().asMeters() / distPerRow.asMeters());
+      int col = (int) (from.getEast().asMeters() / distPerCol.asMeters());
 
       to.setCoordinate(row, col);
    }
@@ -164,9 +204,9 @@ public class World
    /**
     * Converts the given cell location to a world location. The world location
     * will be at the center of the cell.
-    * 
+    *
     * This allocates a new WorldCoordinate.
-    * 
+    *
     * @param cc
     *           The coordinate to convert.
     * @return The center of the cell in world coordinates.
@@ -186,7 +226,7 @@ public class World
    /**
     * Converts the given cell location to a world location. The world location
     * will be at the center of the cell.
-    * 
+    *
     * @param from
     *           The coordinate to convert.
     * @param to
@@ -200,9 +240,18 @@ public class World
          throw new NullPointerException("from cannot be null");
       }
 
-      double north = from.getRow() * distPerRow + (distPerRow * 0.5);
-      double east = from.getColumn() * distPerCol + (distPerCol * 0.5);
+      double northM = from.getRow() * distPerRow.asMeters() + (distPerRow.asMeters() * 0.5);
+      double eastM = from.getColumn() * distPerCol.asMeters() + (distPerCol.asMeters() * 0.5);
+
+      Distance north = new Distance();
+      Distance east = new Distance();
+
+      north.setAsMeters(northM);
+      east.setAsMeters(eastM);
 
       to.setCoordinate(north, east);
    }
+
+
+
 }

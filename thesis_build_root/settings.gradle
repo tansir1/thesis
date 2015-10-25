@@ -1,9 +1,11 @@
 //Declare all subprojects
 include 'thesis_core'
 include 'thesis_gui'
+include 'thesis_world_gen'
 
 //rootProject.name = 'thesis_build_root'
 rootProject.name = 'thesis'
 
 project(':thesis_core').projectDir = new File('../thesis_core')
 project(':thesis_gui').projectDir = new File('../thesis_gui')
+project(':thesis_world_gen').projectDir = new File('../thesis_world_gen')

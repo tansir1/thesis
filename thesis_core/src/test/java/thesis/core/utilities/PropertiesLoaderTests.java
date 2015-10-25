@@ -34,7 +34,7 @@ public class PropertiesLoaderTests
       InputStream testFile = this.getClass().getResourceAsStream("propsLoaderTest.properties");
       PropertiesLoader testMe = new PropertiesLoader();
       testMe.loadFile(testFile);
-      assertEquals("Failed to load double", 3.14159, testMe.getDouble("test.double", 123.456), 0.00001);
+      assertEquals("Failed to load double", 123.456, testMe.getDouble("test.double", 96.354), 0.00001);
    }
 
    @Test

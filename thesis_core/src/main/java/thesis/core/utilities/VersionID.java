@@ -25,6 +25,12 @@ public class VersionID
    {
       return patch;
    }
+   
+   public boolean isMatch(String version)
+   {
+      String myVersion = toString();
+      return myVersion.equals(version);
+   }
 
    @Override
    public String toString()

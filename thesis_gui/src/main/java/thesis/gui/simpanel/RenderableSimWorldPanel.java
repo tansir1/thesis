@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -11,213 +13,195 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.JPanel;
 
 import thesis.core.SimModel;
-import thesis.core.world.CellCoordinate;
-import thesis.core.world.WorldCoordinate;
+import thesis.core.common.CellCoordinate;
+import thesis.core.common.WorldCoordinate;
+import thesis.core.world.RenderSimState;
+import thesis.gui.utilities.ListenerSupport;
 
 @SuppressWarnings("serial")
 public class RenderableSimWorldPanel extends JPanel
 {
-   private SimModel simModel;
-   private MouseMoveListenerProxy mouseState;
+	private MouseMoveListenerProxy mouseState;
 
-   public RenderableSimWorldPanel()
-   {
-      Dimension minSz = new Dimension(640, 480);
-      setMinimumSize(minSz);
-      setPreferredSize(minSz);
+	private RenderSimState renderWorld;
 
-      mouseState = new MouseMoveListenerProxy();
-   }
+	private ListenerSupport<IMapMouseListener> listeners;
 
-   public void connectSimModel(SimModel simModel)
-   {
-      this.simModel = simModel;
-      this.addMouseListener(mouseState);
-      this.addMouseMotionListener(mouseState);
-   }
+	public RenderableSimWorldPanel()
+	{
+		Dimension minSz = new Dimension(640, 480);
+		setMinimumSize(minSz);
+		setPreferredSize(minSz);
 
-   /**
-    * Converts the given pixel coordinate into simulation world coordinates.
-    * 
-    * @param x
-    *           The horizontal pixel location.
-    * @param y
-    *           The vertical pixel location.
-    * @return The pixel location converted into a world coordinate.
-    */
-   private WorldCoordinate pixelsToWorldCoordinate(int x, int y)
-   {
-      double xPercent = (x * 1.0) / (1.0 * getWidth());
-      double yPercent = (y * 1.0) / (1.0 * getHeight());
+		mouseState = this.new MouseMoveListenerProxy();
+		renderWorld = null;
 
-      double worldH = simModel.getWorld().getHeight();
-      double worldW = simModel.getWorld().getWidth();
+		listeners = new ListenerSupport<IMapMouseListener>();
 
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      return new WorldCoordinate(yPercent * worldH, xPercent * worldW);
-   }
+		this.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e)
+			{
+				if (renderWorld != null)
+				{
+					renderWorld.setBounds(0, 0, getWidth(), getHeight());
+				}
+			}
+		});
+	}
 
-   /**
-    * Converts the given pixel coordinate into simulation cell coordinates.
-    * 
-    * @param x
-    *           The horizontal pixel location.
-    * @param y
-    *           The vertical pixel location.
-    * @return The pixel location converted into a cell coordinate.
-    */
-   private CellCoordinate pixelsToCellCoordinate(int x, int y)
-   {
-      final int numCols = simModel.getWorld().getColumnCount();
-      final int numRows = simModel.getWorld().getRowCount();
+	public ListenerSupport<IMapMouseListener> getListenerSupport()
+	{
+		return listeners;
+	}
 
-      final int colW = (int) Math.round((getWidth() * 1.0) / (numCols * 1.0));
-      final int rowH = (int) Math.round((getHeight() * 1.0) / (numRows * 1.0));      
-      
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      return new CellCoordinate(y / rowH, x / colW);
-   }
+	public void connectSimModel(SimModel simModel)
+	{
+		renderWorld = new RenderSimState(simModel);
+		this.addMouseListener(mouseState);
+		this.addMouseMotionListener(mouseState);
+		renderWorld.setBounds(0, 0, getWidth(), getHeight());
+		repaint();
+	}
 
-   @Override
-   public void paintComponent(Graphics g)
-   {
-      super.paintComponent(g);
-      Graphics2D g2d = (Graphics2D) g;
+	@Override
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		Graphics2D g2d = (Graphics2D) g;
 
-      // Wipe out previous rendering and draw the background
-      g2d.setColor(Color.BLACK);
-      g2d.fillRect(0, 0, getWidth(), getHeight());
+		// Wipe out previous rendering and draw the background
+		g2d.setColor(Color.WHITE);
+		g2d.fillRect(0, 0, getWidth(), getHeight());
 
-      // Draw nothing if the world isn't ready yet
-      if (simModel != null)
-      {
-         drawGridLines(g2d);
-         drawCoordinates(g2d);
-      }
-      else
-      {
-         g2d.setColor(Color.WHITE);
-         g2d.drawString("Simulation initializing", getWidth() / 2, getHeight() / 2);
-      }
+		if (renderWorld != null)
+		{
+			renderWorld.render(g2d);
+			// drawCoordinates(g2d);
+		}
+		else
+		{
+			g2d.setColor(Color.BLACK);
+			g2d.drawString("Simulation initializing", getWidth() / 2, getHeight() / 2);
+		}
 
-   }
+	}
 
-   private void drawGridLines(Graphics2D g2d)
-   {
-      final int pixH = getHeight() - 1;
-      final int pixW = getWidth() - 1;
+	// private void drawCoordinates(Graphics2D g2d)
+	// {
+	// if (mouseState.isMouseOverPanel())
+	// {
+	// int x = mouseState.getMouseX();
+	// int y = mouseState.getMouseY();
+	//
+	// WorldCoordinate wc = renderWorld.pixelsToWorldCoordinate(x, y);
+	// CellCoordinate cc = renderWorld.pixelsToCellCoordinate(x, y);
+	//
+	// String locationTxt = wc.toString() + " - " + cc.toString() + " - " +
+	// Integer.toString(x) + "," + Integer.toString(y);
+	// g2d.setColor(Color.YELLOW);
+	// g2d.drawString(locationTxt, 5, getHeight() - 10);
+	// }
+	// }
 
-      g2d.drawRect(0, 0, pixW, pixH);
-      final int numCols = simModel.getWorld().getColumnCount();
-      final int numRows = simModel.getWorld().getRowCount();
+	public RenderSimState getWorldRenderer()
+	{
+		return renderWorld;
+	}
 
-      final int colW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
-      final int rowH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
+	private void updateMapMouseListeners()
+	{
+		if (mouseState.isMouseOverPanel())
+		{
+			MapMouseData data = mouseState.getData();
+			for (IMapMouseListener l : listeners.getListeners())
+			{
+				l.onMapMouseUpdate(data);
+			}
+		}
+	}
 
-      g2d.setColor(Color.white);
+	private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener
+	{
+		private int curX;
+		private int curY;
+		private boolean mouseOver;
 
-      // 0th border line is handled by the border rectangle
-      for (int i = 1; i < numCols; ++i)
-      {
-         g2d.drawLine(i * colW, 0, i * colW, pixH);
-      }
+		public MouseMoveListenerProxy()
+		{
+			curX = -1;
+			curY = -1;
+			mouseOver = false;
+		}
 
-      // 0th border line is handled by the border rectangle
-      for (int i = 1; i < numRows; ++i)
-      {
-         g2d.drawLine(0, i * rowH, pixW, i * rowH);
-      }
-   }
+		public MapMouseData getData()
+		{
+			WorldCoordinate wc = renderWorld.pixelsToWorldCoordinate(curX, curY);
+			CellCoordinate cc = renderWorld.pixelsToCellCoordinate(curX, curY);
 
-   private void drawCoordinates(Graphics2D g2d)
-   {
-      if (mouseState.isMouseOverPanel())
-      {
-         int x = mouseState.getMouseX();
-         int y = mouseState.getMouseY();
+			MapMouseData data = new MapMouseData(wc, cc, curX, curY);
+			return data;
+		}
 
-         WorldCoordinate wc = pixelsToWorldCoordinate(x, y);
-         CellCoordinate cc = pixelsToCellCoordinate(x, y);
-         
-         String locationTxt = wc.toString() + " - " + cc.toString();
-         g2d.setColor(Color.YELLOW);
-         g2d.drawString(locationTxt, 5, getHeight() - 10);
-      }
-   }
+		public boolean isMouseOverPanel()
+		{
+			return mouseOver;
+		}
 
-   private class MouseMoveListenerProxy implements MouseMotionListener, MouseListener
-   {
-      private int curX;
-      private int curY;
-      private boolean mouseOver;
+		// public int getMouseX()
+		// {
+		// return curX;
+		// }
+		//
+		// public int getMouseY()
+		// {
+		// return curY;
+		// }
 
-      public MouseMoveListenerProxy()
-      {
-         curX = -1;
-         curY = -1;
-         mouseOver = false;
-      }
+		@Override
+		public void mouseDragged(MouseEvent evt)
+		{
+			// Do nothing for now
+		}
 
-      public boolean isMouseOverPanel()
-      {
-         return mouseOver;
-      }
+		@Override
+		public void mouseMoved(MouseEvent evt)
+		{
+			curX = evt.getX();
+			curY = evt.getY();
+			// RenderableSimWorldPanel.this.repaint();
+			updateMapMouseListeners();
+		}
 
-      public int getMouseX()
-      {
-         return curX;
-      }
+		@Override
+		public void mouseClicked(MouseEvent evt)
+		{
+			// Do nothing for now
+		}
 
-      public int getMouseY()
-      {
-         return curY;
-      }
+		@Override
+		public void mouseEntered(MouseEvent evt)
+		{
+			mouseOver = true;
+		}
 
-      @Override
-      public void mouseDragged(MouseEvent evt)
-      {
-         // Do nothing for now
-      }
+		@Override
+		public void mouseExited(MouseEvent evt)
+		{
+			mouseOver = false;
+		}
 
-      @Override
-      public void mouseMoved(MouseEvent evt)
-      {
-         curX = evt.getX();
-         curY = evt.getY();
-         RenderableSimWorldPanel.this.repaint();
-      }
+		@Override
+		public void mousePressed(MouseEvent evt)
+		{
+			// Do nothing for now
+		}
 
-      @Override
-      public void mouseClicked(MouseEvent evt)
-      {
-         // Do nothing for now
-      }
+		@Override
+		public void mouseReleased(MouseEvent evt)
+		{
+			// Do nothing for now
+		}
 
-      @Override
-      public void mouseEntered(MouseEvent evt)
-      {
-         mouseOver = true;
-      }
-
-      @Override
-      public void mouseExited(MouseEvent evt)
-      {
-         mouseOver = false;
-      }
-
-      @Override
-      public void mousePressed(MouseEvent evt)
-      {
-         // Do nothing for now
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent evt)
-      {
-         // Do nothing for now
-      }
-
-   }
+	}
 }

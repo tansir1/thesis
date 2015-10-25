@@ -22,7 +22,7 @@ public class SimModelConfigLoader
 
    /**
     * Load a simulation configuration file.
-    * 
+    *
     * @param propFile
     *           The properties file on disk to load.
     * @return True if the file was loaded successfully, false otherwise.
@@ -38,7 +38,7 @@ public class SimModelConfigLoader
       {
          logger.debug("Loading simulation configuration from {}.", propFile);
 
-         loadWorldData(propsLdr);
+         //loadWorldData(propsLdr);
 
          success = loadGenericSimData(propsLdr, logger);
 
@@ -52,24 +52,18 @@ public class SimModelConfigLoader
       return success;
    }
 
-   private void loadWorldData(PropertiesLoader props)
-   {
-      cfg.setWorldWidth(props.getDouble("world.width", 100.0));
-      cfg.setWorldHeight(props.getDouble("world.height", 100.0));
-      cfg.setNumWorldRows(props.getInt("world.rows", 10));
-      cfg.setNumWorldCols(props.getInt("world.cols", 10));
-   }
-
    private boolean loadGenericSimData(PropertiesLoader props, Logger logger)
    {
       boolean success = true;
       try
       {
          cfg.setRandomSeed(props.getInt("sim.randomseed"));
+         cfg.setWorldFile(new File(props.getString("sim.worldFile", "FILE_NOT_SPECIFIED")));
+         cfg.setEntityTypeFile(new File(props.getString("sim.entityFile", "FILE_NOT_SPECIFIED")));
       }
       catch (Exception e)
       {
-         logger.debug(e.getLocalizedMessage());
+         logger.debug(e.getMessage());
          success = false;
       }
       return success;
@@ -77,7 +71,7 @@ public class SimModelConfigLoader
 
    /**
     * Get the configuration data.  Only useful after parsing a configuration file via {@link #loadFile(File)}.
-    * 
+    *
     * @return The configuration data.
     */
    public SimModelConfig getConfigData()
