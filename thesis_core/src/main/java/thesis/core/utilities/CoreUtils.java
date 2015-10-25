@@ -23,7 +23,7 @@ public class CoreUtils
 	 *
 	 * @param rscPath
 	 *            Fully qualified path to the resource.
-	 * @return The path to the exported resource
+	 * @return True if the file exported successfully.
 	 * @throws Exception
 	 */
 	public static boolean exportResource(String rscPath, File outputFile)

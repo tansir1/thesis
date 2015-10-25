@@ -65,8 +65,14 @@ public class WorldGenerator
 		this.numCols = numCols;
 	}
 
+	//public WorldConfig generateWorld(EntityTypes entTypes, int numMobileTgts, int numStaticTgts)
 	public WorldConfig generateWorld()
-	{
+	{/*
+		if(entTypes == null)
+		{
+			throw new NullPointerException("EntityTypes cannot be null.");
+		}
+*/
 		WorldConfig world = new WorldConfig();
 		world.getWorldHeight().copy(height);
 		world.getWorldWidth().copy(width);
@@ -88,8 +94,6 @@ public class WorldGenerator
 		{
 			return;// End of the tree branch
 		}
-
-		//Vertex<WorldCoordinate> rootVert = roadNet.createVertex(node.getLocation());
 
 		if (left != null)
 		{
@@ -269,4 +273,12 @@ public class WorldGenerator
 		}
 		return havens;
 	}
+/*
+	private void generateTargets()
+	{
+		TargetEntityConfig tgtCfg = new TargetEntityConfig();
+		tgtCfg.getLocation();
+		tgtCfg.getOrientation();
+		tgtCfg.setTargetType(type);
+	}*/
 }
