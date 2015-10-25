@@ -31,8 +31,8 @@ import thesis.core.entities.TargetType;
 import thesis.core.entities.UAVType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
-import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.CoreUtils;
+import thesis.core.utilities.LoggerIDs;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -59,7 +59,7 @@ public class EntityTypesFile
 
       if (!typesFile.exists())
       {
-         throw new FileNotFoundException("Types file does not exist. File: " + typesFile.getAbsolutePath());
+         throw new FileNotFoundException("Entity Types file does not exist. File: " + typesFile.getAbsolutePath());
       }
 
       Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
@@ -423,14 +423,14 @@ public class EntityTypesFile
          TargetType tt = new TargetType(type);
          tt.getMaxSpeed().setAsMetersPerSecond(maxSpd);
 
-         entTypes.getTargetTypes().add(tt);
+         entTypes.addTargetType(tt);
       }
    }
 
    private static Element encodeTargetTypes(EntityTypes entTypes, Document dom)
    {
       Element parentElem = dom.createElement("TargetTypes");
-      for (TargetType tt : entTypes.getTargetTypes())
+      for (TargetType tt : entTypes.getAllTargetTypes())
       {
          Element elem = dom.createElement("TargetType");
          elem.setAttribute("type", Integer.toString(tt.getTypeID()));

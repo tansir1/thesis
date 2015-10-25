@@ -2,6 +2,7 @@ package thesis.worldgen;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 
@@ -12,111 +13,113 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.SimModel;
+import thesis.core.serialization.entities.EntityTypes;
+import thesis.core.serialization.entities.EntityTypesFile;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.serialization.world.WorldConfigFile;
+import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.world.RenderWorld;
-import thesis.core.world.World;
+import thesis.core.utilities.VersionID;
+import thesis.core.world.RenderSimState;
+import thesis.worldgen.utilities.GeneratorConfig;
+import thesis.worldgen.utilities.GeneratorConfigLoader;
+import thesis.worldgen.utilities.WorldGenRsrcPaths;
 
 public class WorldGenApp
 {
-
-	private static boolean parseCmdLine(String[] args, WorldConfig baseCfgs, GenConfig genCfg)
+	private static boolean parseCmdLine(String[] args, GeneratorConfig genCfg) throws FileNotFoundException
 	{
 		boolean success = true;
+		final String helpFmt = "thesis_world_gen -cfg path/to/worldGen.properties";
 		Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 
-		Option heightOpt = Option.builder("h").longOpt("height").desc("Height of the worlds in meters.").hasArg()
-				.required().build();
+		Option helpOpt = Option.builder("h").longOpt("help").desc("Display this text output.").build();
 
-		Option widthOpt = Option.builder("w").longOpt("width").desc("Width of the worlds in meters.").hasArg()
-				.required().build();
+		Option versionOpt = Option.builder("v").longOpt("version").desc("Display the version number.").build();
 
-		Option rowOpt = Option.builder("r").longOpt("rows").desc("Number of rows in the worlds.").hasArg().required()
-				.build();
+		Option cfgFileOpt = Option.builder("cfg").longOpt("configFile")
+				.desc("Path to the generation configuration file.").hasArg().build();
 
-		Option colOpt = Option.builder("c").longOpt("columns").desc("Number of columns in the worlds.").hasArg()
-				.required().build();
+		Option exportDfltFileOpt = Option.builder("dflt").longOpt("default")
+				.desc("Export the default generation configuration file.").build();
 
-		Option numWorldsOpt = Option.builder("wc").longOpt("worldCnt")
-				.desc("Number of worlds to generate (world count)").hasArg().build();
-
-		Option outputDirOpt = Option.builder("out").longOpt("outputDir")
-				.desc("Directory where generated world files should be placed").hasArg().build();
-
-		Option seedOpt = Option.builder("seed").desc("Number to be used as the seed for the random number generator")
-				.hasArg().build();
+		OptionGroup cfgFileOpts = new OptionGroup();
+		cfgFileOpts.addOption(cfgFileOpt);
+		cfgFileOpts.addOption(exportDfltFileOpt);
+		cfgFileOpts.setRequired(true);
 
 		Options options = new Options();
-		options.addOption(heightOpt);
-		options.addOption(widthOpt);
-		options.addOption(rowOpt);
-		options.addOption(colOpt);
-		options.addOption(numWorldsOpt);
-		options.addOption(outputDirOpt);
-		options.addOption(seedOpt);
+		options.addOption(helpOpt);
+		options.addOption(versionOpt);
+		options.addOptionGroup(cfgFileOpts);
 
 		try
 		{
 			CommandLineParser parser = new DefaultParser();
 			CommandLine line = parser.parse(options, args);
 
-			// Required options
 			if (line.hasOption("h"))
 			{
-				double height = Double.parseDouble(line.getOptionValue("h"));
-				baseCfgs.getWorldHeight().setAsMeters(height);
+				HelpFormatter formatter = new HelpFormatter();
+				formatter.printHelp(helpFmt, options);
+				success = false;
 			}
 
-			if (line.hasOption("w"))
+			if (line.hasOption("v"))
 			{
-				double width = Double.parseDouble(line.getOptionValue("w"));
-				baseCfgs.getWorldWidth().setAsMeters(width);
+				VersionID version = CoreUtils.loadVersionID();
+				System.out.println("Thesis project version " + version);
+				success = false;
 			}
 
-			if (line.hasOption("r"))
+			if (line.hasOption("cfg"))
 			{
-				baseCfgs.setNumRows(Integer.parseInt(line.getOptionValue("r")));
+				File cfgFile = new File(line.getOptionValue("cfg"));
+				if (!cfgFile.exists())
+				{
+					logger.error("Configuration file does not exist at " + cfgFile.getAbsolutePath()
+							+ " Aborting generation.");
+					throw new FileNotFoundException();
+				}
+
+				GeneratorConfigLoader loader = new GeneratorConfigLoader();
+				if (loader.loadFile(cfgFile))
+				{
+					genCfg.copy(loader.getConfigData());
+				}
+				else
+				{
+					success = false;
+					logger.error("Failed to load generation configuration.");
+				}
 			}
 
-			if (line.hasOption("c"))
+			if (line.hasOption("dflt"))
 			{
-				baseCfgs.setNumColumns(Integer.parseInt(line.getOptionValue("c")));
-			}
-
-			// Optional generator config options
-			if (line.hasOption("wc"))
-			{
-				genCfg.setNumWorlds(Integer.parseInt(line.getOptionValue("wc")));
-			}
-
-			if (line.hasOption("out"))
-			{
-				genCfg.setOutputDir(new File(line.getOptionValue("out")));
-			}
-
-			if (line.hasOption("seed"))
-			{
-				genCfg.setRandSeed(Integer.parseInt(line.getOptionValue("seed")));
+				File cfgFile = new File("worldGen.properties");
+				logger.info("Exporting default world generation configuration file to {}", cfgFile.getAbsolutePath());
+				CoreUtils.exportResource(WorldGenRsrcPaths.DFLT_WORLD_GEN_CFG, cfgFile);
+				success = false;
 			}
 		}
 		catch (ParseException e)
 		{
 			logger.error("Error: {}", e.getMessage());
 			HelpFormatter formatter = new HelpFormatter();
-			// FIXME Get the correct script call for this
-			formatter.printHelp("thesis_world_gen -w 10000 -h 20000 -r 10 -c 20", options);
+			formatter.printHelp(helpFmt, options);
 			success = false;
 		}
 		return success;
 	}
 
-	public static void generateWorlds(WorldConfig baseWorldCfg, GenConfig genCfg)
+	public static void generateWorlds(GeneratorConfig genCfg, EntityTypes entTypes)
 	{
 		if (!genCfg.getOutputDir().exists())
 		{
@@ -127,8 +130,8 @@ public class WorldGenApp
 		logger.info("Generating {} worlds into directory: {}", genCfg.getNumWorlds(),
 				genCfg.getOutputDir().getAbsolutePath());
 
-		final WorldGenerator worldGen = new WorldGenerator(genCfg.getRandSeed(), baseWorldCfg.getWorldWidth(),
-				baseWorldCfg.getWorldHeight(), baseWorldCfg.getNumRows(), baseWorldCfg.getNumColumns());
+		final WorldGenerator worldGen = new WorldGenerator(genCfg.getRandSeed(), genCfg.getWorldWidth(),
+				genCfg.getWorldHeight(), genCfg.getNumRows(), genCfg.getNumColumns());
 
 		final DecimalFormat numFrmt = new DecimalFormat("00");
 		for (int i = 0; i < genCfg.getNumWorlds(); ++i)
@@ -139,7 +142,8 @@ public class WorldGenApp
 
 			logger.debug("-------------------------------------------------");
 			logger.debug("Generating world {}", i);
-			WorldConfig world = worldGen.generateWorld();
+			WorldConfig world = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
+					genCfg.getNumStaticTargets());
 
 			try
 			{
@@ -151,7 +155,10 @@ public class WorldGenApp
 				}
 
 				logger.debug("Saving world {} screenshot into {}", i, screenShotFile.getAbsolutePath());
-				BufferedImage img = RenderWorld.renderToImage(new World(world), 640, 480);
+				SimModel model = new SimModel();
+				model.reset(0, world, entTypes);
+
+				BufferedImage img = RenderSimState.renderToImage(model, 640, 480);
 				ImageIO.write(img, "png", screenShotFile);
 			}
 			catch (IOException e)
@@ -165,17 +172,20 @@ public class WorldGenApp
 
 	public static void main(String[] args)
 	{
-		final WorldConfig baseWorldCfg = new WorldConfig();
 
-		// Set default generation options
-		final GenConfig genCfg = new GenConfig();
-		genCfg.setOutputDir(new File("worlds"));
-		genCfg.setNumWorlds(10);
-		genCfg.setRandSeed(42);
-
-		if (parseCmdLine(args, baseWorldCfg, genCfg))
+		GeneratorConfig genCfg = new GeneratorConfig();
+		try
 		{
-			generateWorlds(baseWorldCfg, genCfg);
+			if (parseCmdLine(args, genCfg))
+			{
+				EntityTypes entTypes = EntityTypesFile.loadTypes(genCfg.getEntityTypesFile());
+				generateWorlds(genCfg, entTypes);
+			}
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

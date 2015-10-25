@@ -3,6 +3,8 @@
 thesis_gui/sim.properties
 thesis_gui/worlds/*
 thesis_world_gen/worlds/*
+thesis_world_gen/worldGen.properties
+worlds/*
 *.png
 
 # Gradle Files #

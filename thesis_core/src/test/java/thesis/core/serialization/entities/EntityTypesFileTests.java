@@ -41,7 +41,7 @@ public class EntityTypesFileTests
 
       for (int i=0; i<NUM_TARGETS; ++i)
       {
-         testMe.getTargetTypes().add(TestUtils.randTargetType());
+         testMe.addTargetType(TestUtils.randTargetType());
       }
 
       //Write the data to a byte buffer
@@ -71,7 +71,7 @@ public class EntityTypesFileTests
 
       for(int i=0; i<NUM_TARGETS; ++i)
       {
-         assertEquals("Failed to read correct target type.", testMe.getTargetTypes().get(i), results.getTargetTypes().get(i));
+         assertEquals("Failed to read correct target type.", testMe.getTargetType(i), results.getTargetType(i));
       }
    }
 

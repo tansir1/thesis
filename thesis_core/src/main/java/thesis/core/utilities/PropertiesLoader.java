@@ -26,7 +26,7 @@ public class PropertiesLoader
 
    /**
     * Load a properties file.
-    * 
+    *
     * @param propStream
     *           The properties file input stream to load.
     * @return True if the stream was loaded successfully, false otherwise.
@@ -48,7 +48,7 @@ public class PropertiesLoader
 
    /**
     * Load a properties file.
-    * 
+    *
     * @param propFile
     *           The properties file on disk to load.
     * @return True if the file was loaded successfully, false otherwise.
@@ -74,7 +74,7 @@ public class PropertiesLoader
 
    /**
     * Read an integer value from the properties file.
-    * 
+    *
     * @param key
     *           The key to the property to read.
     * @param dfltVal
@@ -91,7 +91,7 @@ public class PropertiesLoader
    /**
     * Read an integer value from the properties file and throw an exception if
     * the value is not found.
-    * 
+    *
     * @param key
     *           The key to the property to read.
     * @return The parsed value from the file.
@@ -111,8 +111,30 @@ public class PropertiesLoader
    }
 
    /**
+    * Read a double value from the properties file and throw an exception if
+    * the value is not found.
+    *
+    * @param key
+    *           The key to the property to read.
+    * @return The parsed value from the file.
+    * @throws RuntimeException
+    *            Thrown if the specified key is not found in the properties
+    *            file.
+    */
+   public double getDouble(String key) throws Exception
+   {
+      String propsVal = props.getProperty(key);
+      if (propsVal == null)
+      {
+         throw new RuntimeException("No value found for key: " + key);
+      }
+
+      return Double.parseDouble(propsVal);
+   }
+
+   /**
     * Read a double value from the properties file.
-    * 
+    *
     * @param key
     *           The key to the property to read.
     * @param dfltVal
@@ -128,7 +150,7 @@ public class PropertiesLoader
 
    /**
     * Read a string value from the properties file.
-    * 
+    *
     * @param key
     *           The key to the property to read.
     * @param dfltVal

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<EntityTypes version="0.0.1">
+<EntityTypes version="0.0.2">
    <SensorTypes>
       <SensorType fov="45" maxRng="2000" maxSlew="5" minRng="100" type="1"/>
       <SensorType fov="90" maxRng="1000" maxSlew="10" minRng="100" type="2"/>

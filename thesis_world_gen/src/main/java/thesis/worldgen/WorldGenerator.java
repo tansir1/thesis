@@ -13,6 +13,9 @@ import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
+import thesis.core.entities.TargetType;
+import thesis.core.serialization.entities.EntityTypes;
+import thesis.core.serialization.world.TargetEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
 
@@ -65,8 +68,13 @@ public class WorldGenerator
 		this.numCols = numCols;
 	}
 
-	public WorldConfig generateWorld()
+	public WorldConfig generateWorld(EntityTypes entTypes, int numMobileTgts, int numStaticTgts)
 	{
+		if(entTypes == null)
+		{
+			throw new NullPointerException("EntityTypes cannot be null.");
+		}
+
 		WorldConfig world = new WorldConfig();
 		world.getWorldHeight().copy(height);
 		world.getWorldWidth().copy(width);
@@ -75,6 +83,8 @@ public class WorldGenerator
 
 		world.setRoadNetwork(generateRoadNetwork());
 		world.getHavens().addAll(generateHavens(world.getRoadNetwork()));
+
+		generateTargets(world, entTypes, numMobileTgts, numStaticTgts);
 
 		return world;
 	}
@@ -89,8 +99,6 @@ public class WorldGenerator
 			return;// End of the tree branch
 		}
 
-		//Vertex<WorldCoordinate> rootVert = roadNet.createVertex(node.getLocation());
-
 		if (left != null)
 		{
 			insertIntermediateVertices(roadNet, vertex, left, node.isVerticalSplit());
@@ -102,7 +110,8 @@ public class WorldGenerator
 		}
 	}
 
-	private void insertIntermediateVertices(Graph<WorldCoordinate> roadNet, Vertex<WorldCoordinate> startVert, KDNode endNode, boolean isVertSplit)
+	private void insertIntermediateVertices(Graph<WorldCoordinate> roadNet, Vertex<WorldCoordinate> startVert,
+			KDNode endNode, boolean isVertSplit)
 	{
 		final double minVertexDistBuf = Math.min(width.asMeters(), height.asMeters())
 				* MIN_INTERSECTION_SPACING_PERCENT;
@@ -128,7 +137,8 @@ public class WorldGenerator
 		{
 			// Either the start or ending vertex is too close to the
 			// intersection, so drop the intersection and draw a diagonal line
-			// between the two vertices instead of the manhattan line connecting them
+			// between the two vertices instead of the manhattan line connecting
+			// them
 
 			// Connect start to the end vertex
 			endVert = roadNet.createVertex(endNode.getLocation());
@@ -268,5 +278,89 @@ public class WorldGenerator
 			havens.add(havenCoord);
 		}
 		return havens;
+	}
+
+	/**
+	 * Randomly generate targets across the world.
+	 * @param world Targets will be generated in this world.
+	 * @param entTypes The types of entities that can be randomly placed in the world.
+	 * @param numMobileTgts The number of mobile targets to generate.
+	 * @param numStaticTgts The number of static tarets to generate.
+	 */
+	private void generateTargets(WorldConfig world, EntityTypes entTypes, int numMobileTgts, int numStaticTgts)
+	{
+		final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
+		final List<TargetType> mobileTypes = new ArrayList<TargetType>();
+		final List<TargetType> staticTypes = new ArrayList<TargetType>();
+
+		//Sort the target types between static and mobile targets
+		for (TargetType tt : entTypes.getAllTargetTypes())
+		{
+			if (tt.isMobile())
+			{
+				mobileTypes.add(tt);
+			}
+			else
+			{
+				staticTypes.add(tt);
+			}
+		}
+
+		if(numMobileTgts > 0 && mobileTypes.size() == 0)
+		{
+			logger.error("{} mobile targets requested but there are not mobile entity types to use. Skipping mobile target requests.", numMobileTgts);
+			numMobileTgts = 0;
+		}
+
+		if(numStaticTgts > 0 && staticTypes.size() == 0)
+		{
+			logger.error("{} static targets requested but there are not mobile entity types to use. Skipping mobile target requests.", numMobileTgts);
+			numStaticTgts = 0;
+		}
+
+		//Generate static targets
+		for (int i = 0; i < numStaticTgts; ++i)
+		{
+			final int typeIndex = randGen.nextInt(staticTypes.size());
+
+			TargetEntityConfig tgtCfg = generateRandomTarget(world);
+			tgtCfg.setTargetType(staticTypes.get(typeIndex).getTypeID());
+
+			world.targetCfgs.add(tgtCfg);
+		}
+
+		//Generate mobile targets
+		for (int i = 0; i < numMobileTgts; ++i)
+		{
+			final int typeIndex = randGen.nextInt(mobileTypes.size());
+
+			TargetEntityConfig tgtCfg = generateRandomTarget(world);
+			tgtCfg.setTargetType(mobileTypes.get(typeIndex).getTypeID());
+
+			world.targetCfgs.add(tgtCfg);
+		}
+
+	}
+
+	/**
+	 * Generates a target entity configuration at a random location and
+	 * orientation. The caller must still set the target type.
+	 *
+	 * @param world
+	 *            Configuration data about the world. Used to bound the random
+	 *            location.
+	 * @return A randomly generated tareget entity configuration.
+	 */
+	private TargetEntityConfig generateRandomTarget(WorldConfig world)
+	{
+		final double maxEastM = world.getWorldWidth().asMeters();
+		final double maxNorthM = world.getWorldHeight().asMeters();
+
+		TargetEntityConfig tgtCfg = new TargetEntityConfig();
+		tgtCfg.getLocation().getNorth().setAsMeters(randGen.nextDouble() * maxNorthM);
+		tgtCfg.getLocation().getEast().setAsMeters(randGen.nextDouble() * maxEastM);
+		tgtCfg.getOrientation().setAsDegrees(randGen.nextDouble() * 360);
+
+		return tgtCfg;
 	}
 }
