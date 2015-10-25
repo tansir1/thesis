@@ -48,7 +48,6 @@ public class UAV
     */
    public void stepSimulation(long deltaTimeMS)
    {
-
       Distance northing = new Distance();
       Distance easting = new Distance();
 
@@ -56,9 +55,10 @@ public class UAV
       LinearSpeed spd = type.getMaxSpd();
 
       // east distance = time * speed * east component
-      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cos());
+      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cosNorthUp());
       // north distance = time * speed * north component
-      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sin());
+      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sinNorthUp());
 
+      position.translate(northing, easting);
    }
 }

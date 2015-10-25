@@ -45,8 +45,8 @@ public class MainWindow implements IMapMouseListener
 			}
 		});
 
-		simTimer = new SimTimer();
 		simPanel = new RenderableSimWorldPanel();
+		simTimer = new SimTimer(simPanel);
 		actions = new Actions(frame, simPanel, simTimer);
 
 		MenuBar menuBar = new MenuBar(this, actions);

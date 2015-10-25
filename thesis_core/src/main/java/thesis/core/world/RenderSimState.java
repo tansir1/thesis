@@ -186,6 +186,9 @@ public class RenderSimState
          throw new NullPointerException("Graphics to paint with cannot be null.");
       }
 
+      // gfx.translate(0.0, -bounds.height);// Move the origin to the lower left
+      // gfx.scale(1.0, 1.0);//Make moving up the screen positive
+
       // Clear the image canvas
       gfx.setColor(Color.BLACK);
       gfx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -213,14 +216,15 @@ public class RenderSimState
     */
    public WorldCoordinate pixelsToWorldCoordinate(int x, int y)
    {
-      double xPercent = (x * 1.0) / (1.0 * bounds.width);
-      double yPercent = (y * 1.0) / (1.0 * bounds.height);
+      // Invert the y axis so that "north" is at the top of the screen.
+      y = bounds.height - y;
 
-      Distance worldH = new Distance(model.getWorld().getHeight());
-      Distance worldW = new Distance(model.getWorld().getWidth());
+      final double xPercent = (x * 1.0) / (1.0 * bounds.width);
+      final double yPercent = (y * 1.0) / (1.0 * bounds.height);
 
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
+      final Distance worldH = new Distance(model.getWorld().getHeight());
+      final Distance worldW = new Distance(model.getWorld().getWidth());
+
       worldH.scale(yPercent);
       worldW.scale(xPercent);
       return new WorldCoordinate(worldH, worldW);
@@ -237,9 +241,19 @@ public class RenderSimState
     */
    public CellCoordinate pixelsToCellCoordinate(int x, int y)
    {
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      return new CellCoordinate(y / gridCellH, x / gridCellW);
+      // Invert the y axis so that "north" is at the top of the screen.
+      final int rows = model.getWorld().getRowCount() - 1;
+      final int rawRow = y / gridCellH;
+      final int invertedRows = rows - rawRow;
+      return new CellCoordinate(invertedRows, x / gridCellW);
+   }
+
+   public int WorldCoordinateToYPixel(final WorldCoordinate wc)
+   {
+      final double meters = wc.getNorth().asMeters();
+      int y = (int) (pixelsPerMeterH * meters);
+      y = bounds.height - y;
+      return y;
    }
 
    private void recomputeScalingSizes()
@@ -319,7 +333,8 @@ public class RenderSimState
       for (WorldCoordinate wc : model.getWorld().getHavenLocations())
       {
          final int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
-         final int y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+         // Invert the y axis so that "north" is at the top of the screen.
+         final int y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
          g2d.drawImage(scaledHavenImg, x - halfRdSz, y - halfRdSz, null);
       }
    }
@@ -337,10 +352,12 @@ public class RenderSimState
          WorldCoordinate end = edge.getEndVertex().getUserData();
 
          final int xStart = (int) (pixelsPerMeterW * start.getEast().asMeters());
-         final int yStart = (int) (pixelsPerMeterH * start.getNorth().asMeters());
+         // Invert the y axis so that "north" is at the top of the screen.
+         final int yStart = bounds.height - (int) (pixelsPerMeterH * start.getNorth().asMeters());
 
          final int xEnd = (int) (pixelsPerMeterW * end.getEast().asMeters());
-         final int yEnd = (int) (pixelsPerMeterH * end.getNorth().asMeters());
+         // Invert the y axis so that "north" is at the top of the screen.
+         final int yEnd = bounds.height - (int) (pixelsPerMeterH * end.getNorth().asMeters());
 
          // Draw a line representing the road
          g2d.setColor(Color.pink);
@@ -405,16 +422,18 @@ public class RenderSimState
 
          x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
          y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+         // Invert the y axis so that "north" is at the top of the screen.
+         y = bounds.height - y;
 
          if (tgt.getType().isMobile())
          {
             if (scaledRedMobileImg != null)
             {
-               halfImgW = scaledRedMobileImg.getWidth();
-               halfImgH = scaledRedMobileImg.getHeight();
+               halfImgW = scaledRedMobileImg.getWidth() / 2;
+               halfImgH = scaledRedMobileImg.getHeight() / 2;
 
                trans.translate(x - halfImgW, y - halfImgH);
-               trans.rotate(tgt.getOrientation().asRadians());
+               trans.rotate(-tgt.getOrientation().asRadians());
 
                g2d.drawImage(scaledRedMobileImg, trans, null);
             }
@@ -423,13 +442,13 @@ public class RenderSimState
          {
             if (scaledRedStaticImg != null)
             {
-               halfImgW = scaledRedStaticImg.getWidth();
-               halfImgH = scaledRedStaticImg.getHeight();
+               halfImgW = scaledRedStaticImg.getWidth() / 2;
+               halfImgH = scaledRedStaticImg.getHeight() / 2;
 
                trans.translate(x - halfImgW, y - halfImgH);
-               trans.rotate(tgt.getOrientation().asRadians());
+               trans.rotate(-tgt.getOrientation().asRadians());
 
-               g2d.drawImage(scaledRedStaticImg, x - halfImgW, y - halfImgH, null);
+               g2d.drawImage(scaledRedStaticImg, trans, null);
             }
          }
       }
@@ -446,8 +465,8 @@ public class RenderSimState
 
       int x = -1;
       int y = -1;
-      final int halfImgW = scaledBlueMobileImg.getWidth();
-      final int halfImgH = scaledBlueMobileImg.getHeight();
+      final int halfImgW = scaledBlueMobileImg.getWidth() / 2;
+      final int halfImgH = scaledBlueMobileImg.getHeight() / 2;
 
       AffineTransform trans = new AffineTransform();
 
@@ -459,9 +478,11 @@ public class RenderSimState
 
          x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
          y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+         // Invert the y axis so that "north" is at the top of the screen.
+         y = bounds.height - y;
 
          trans.translate(x - halfImgW, y - halfImgH);
-         trans.rotate(uav.getOrientation().asRadians());
+         trans.rotate(-uav.getOrientation().asRadians());
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);
       }
