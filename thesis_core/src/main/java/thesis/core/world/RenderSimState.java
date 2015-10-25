@@ -186,6 +186,9 @@ public class RenderSimState
          throw new NullPointerException("Graphics to paint with cannot be null.");
       }
 
+      // gfx.translate(0.0, -bounds.height);// Move the origin to the lower left
+      // gfx.scale(1.0, 1.0);//Make moving up the screen positive
+
       // Clear the image canvas
       gfx.setColor(Color.BLACK);
       gfx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -213,11 +216,14 @@ public class RenderSimState
     */
    public WorldCoordinate pixelsToWorldCoordinate(int x, int y)
    {
-      double xPercent = (x * 1.0) / (1.0 * bounds.width);
-      double yPercent = (y * 1.0) / (1.0 * bounds.height);
+      // Invert the y axis so that "north" is at the top of the screen.
+      y = bounds.height - y;
 
-      Distance worldH = new Distance(model.getWorld().getHeight());
-      Distance worldW = new Distance(model.getWorld().getWidth());
+      final double xPercent = (x * 1.0) / (1.0 * bounds.width);
+      final double yPercent = (y * 1.0) / (1.0 * bounds.height);
+
+      final Distance worldH = new Distance(model.getWorld().getHeight());
+      final Distance worldW = new Distance(model.getWorld().getWidth());
 
       // TODO Probably need to invert the y axis depending on where origin is
       // placed in sim model
@@ -237,9 +243,19 @@ public class RenderSimState
     */
    public CellCoordinate pixelsToCellCoordinate(int x, int y)
    {
-      // TODO Probably need to invert the y axis depending on where origin is
-      // placed in sim model
-      return new CellCoordinate(y / gridCellH, x / gridCellW);
+      // Invert the y axis so that "north" is at the top of the screen.
+      final int rows = model.getWorld().getRowCount() - 1;
+      final int rawRow = y / gridCellH;
+      final int invertedRows = rows - rawRow;
+      return new CellCoordinate(invertedRows, x / gridCellW);
+   }
+
+   public int WorldCoordinateToYPixel(final WorldCoordinate wc)
+   {
+      final double meters = wc.getNorth().asMeters();
+      int y = (int)(pixelsPerMeterH * meters);
+      y = bounds.height - y;
+      return y;
    }
 
    private void recomputeScalingSizes()
@@ -461,6 +477,7 @@ public class RenderSimState
          y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
 
          trans.translate(x - halfImgW, y - halfImgH);
+         // trans.rotate(Math.toRadians(90));
          trans.rotate(uav.getOrientation().asRadians());
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);

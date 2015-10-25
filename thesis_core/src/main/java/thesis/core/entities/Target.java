@@ -61,6 +61,7 @@ public class Target
 			//north distance = time * speed * north component
 			northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sin());
 
+			position.translate(northing, easting);
 		}
 
 	}
