@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.entities.TargetMgr;
+import thesis.core.entities.UAVMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -18,6 +19,7 @@ public class SimModel
 	private World world;
 
 	private TargetMgr tgtMgr;
+	private UAVMgr uavMgr;
 
 	/**
 	 * A shared random number generator that is initialized with a known seed
@@ -36,14 +38,9 @@ public class SimModel
 	{
 		logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
 		tgtMgr = new TargetMgr();
+		uavMgr = new UAVMgr();
 	}
 
-	/**
-	 * Initialize the model with the necessary configuration parameters.
-	 *
-	 * @param cfg
-	 *            Configuration values will be read from this object.
-	 */
 	/**
 	 * Initialize the model with the necessary configuration parameters.
 	 *
@@ -64,6 +61,7 @@ public class SimModel
 		world = new World(worldCfg);
 		// TODO Entity types
 		tgtMgr.reset(entTypes, worldCfg);
+		uavMgr.reset(entTypes, worldCfg);
 	}
 
 	/**
@@ -79,6 +77,11 @@ public class SimModel
 	public TargetMgr getTargetManager()
 	{
 		return tgtMgr;
+	}
+
+	public UAVMgr getUAVManager()
+	{
+	   return uavMgr;
 	}
 
 	/**
@@ -101,5 +104,6 @@ public class SimModel
 	{
 		logger.debug("-------------------Simulation stepping.-----------------");
 		tgtMgr.stepSimulation(deltaTimeMS);
+		uavMgr.stepSimulation(deltaTimeMS);
 	}
 }

@@ -1,6 +1,8 @@
 package thesis.core.entities;
 
 import thesis.core.common.Angle;
+import thesis.core.common.Distance;
+import thesis.core.common.LinearSpeed;
 import thesis.core.common.WorldCoordinate;
 
 public class Target
@@ -48,7 +50,18 @@ public class Target
 	{
 		if(type.isMobile())
 		{
+			Distance northing = new Distance();
+			Distance easting = new Distance();
+
+			double deltaSeconds = deltaTimeMS / 1000.0;
+			LinearSpeed spd = type.getMaxSpeed();
+
+			//east distance = time * speed * east component
+			easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cos());
+			//north distance = time * speed * north component
+			northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sin());
 
 		}
+
 	}
 }
