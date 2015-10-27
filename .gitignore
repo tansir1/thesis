@@ -1,12 +1,15 @@
 # Project Specific Files #
-#Ignore the local configuration file
+*.png
+deploy/*
+dissertation/.idea/
+dissertation/bin/
 thesis_gui/sim.properties
 thesis_gui/worlds/*
 thesis_world_gen/worlds/*
 thesis_world_gen/worldGen.properties
 worlds/*
-*.png
-deploy/*
+
+
 
 # Gradle Files #
 **/.gradle/
