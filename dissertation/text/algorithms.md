@@ -7,6 +7,13 @@ Contract net variant, no sub tasks??? No response back to task manager/originato
 Put this in another file?
 
 ##Search Task ##
+This may or may not be a top-level task.  By making it a top-level task it gets
+trumped by more active tasks so searching gets deprioritized.  Look into
+converting search into a sub-function of the other tasks so that if the currently
+active task cannot be performed immediately do search instead.  If nothing else
+at least scan the visible range around the UAV; the UAV flight path does not need
+to be altered in that case.
+
 ~~~{.numberLines}
 Input: host_uav, world, sensor
 
@@ -14,10 +21,12 @@ Input: host_uav, world, sensor
 cells_in_fov = world.getCellsInFOV(sensor)
 
 for each cell in cells_in_fov
-  target_type = world.targetAt(cell)
-  //Target type can be null if there is no target at the specified cell location
-  if target_type is not null
-    if sensor.probability_detect(target_type) > random[0,1]
+  target = world.targetAt(cell)
+  //Target can be null if there is no target at the specified cell location
+  if target is not null
+    //probability_detect() does account for the angle difference 
+    //between the sensor and target heading
+    if sensor.probability_detect(target) > random[0,1]
       //Sensor has detected the target
       
       //Check if this is the first time the target has been seen
@@ -35,10 +44,55 @@ Confirm identity of target type, requires multiple scans, Start track or Attack
 Very similar to confirm, but follow a moving target. Start attack
 
 ##Attack Task##
+If the target is unmobile align the UAV with the preferred attack angle
+ and deploy a weapon.  If the target is mobile attempt to approach from
+ the preferred attack angle but do not require it for deployment.
+Align the UAV with the 
 self explanatory, Start BDA
 
+~~~{.numberLines}
+Input: uav, target, weapon, world
+
+dist_to_target = uav.location.distanceTo(target.location)
+if dist_to_target > weapon.range
+  Keep flying towards target
+else
+  //The UAV just reached weapon range of the target
+  preferred_angle = target.heading - weapon.preferredAngle(target.type)
+  preferred_angle_delta = uav.heading - preferred_angle
+  
+  target_cell = world.toCell(target.location))
+  
+  if(math.abs(preferred_angle_delta)) < weapon.launch_angle
+    //Weapon and target are ideally aligned, deploy the weapon
+  
+    //deploy() accounts for probability of destruction given relative 
+    //angles between the weapon and target
+    weapon.deploy(target)
+    uav.task.status = Complete
+    uav.task.statusChangeTime = current_time
+    uav.startTaskAllocation(target.type, target_cell, BDA)
+  else if not target.isMobile
+    //Target is a building.  Keep flying until the preferred angle is reached.
+  else
+    //The target is mobile and not near the preferred launch angle.
+  
+    //Computes the time to reach a launch acceptability region given the 
+    //UAV's flight performance, weapon characteristics, and the target's velocity.
+    time_to_LAR = uav.timeToIntercept(target, weapon)
+    if time_to_LAR < 0
+      //Not possible to intercept, deploy weapon anyway
+      weapon.deploy(target)
+      uav.task.status = Complete
+      uav.task.statusChangeTime = current_time
+      uav.startTaskAllocation(target.type, target_cell, BDA)
+    else
+      //Keep flying until the preferred angle is reached 
+~~~
+
+
 ##Battle Damage Assessment (BDA)##
-Focused scans to confirm if target actually destroyed.  Enqueue another track/attack as needed
+Focused scans to confirm if target actually destroyed.  Enqueue another track/attack as needed.
 
 ~~~{.numberLines}
 Input: uav, target, sensor, world
@@ -68,9 +122,12 @@ else if uav.task.status == InProgress
       target_cell = world.toCell(target.location))
       
       //Current UAV is likely to win the task allocation process, but not guaranteed
-      host_uav.startTaskAllocation(target.type, target_cell, ATTACK)
+      if target.isMobile()
+        host_uav.startTaskAllocation(target.type, target_cell, TRACK)
+      else
+        host_uav.startTaskAllocation(target.type, target_cell, ATTACK)
     else
-      //Target destroyed
+      //Target destroyed, revert to only searching
       uav.task = SEARCH
       
 ~~~
