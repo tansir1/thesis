@@ -47,6 +47,74 @@ update(delta_time, world)
       self.location.translate(position_delta_north, position_delta_east)
 ~~~
 
+##UAV Update Loop##
+~~~{.numberLines}
+update(delta_time, world)
+
+  //If the UAV is at a waypoint, turn towards the next one
+  if self.location == self.route.to_waypoint()
+    //Turning rate limits are accounted for in route generation, no need to
+    //check them here.
+    self.heading = self.location.bearingTo(self.route.getNextWaypoint())
+    self.route.iterateWaypoint()
+  
+  position_delta_east = cos(self.heading) * self.speed
+  position_delta_north = sin(self.heading) * self.speed)
+  self.location.translate(position_delta_north, position_delta_east)
+  
+  //Check the receiving queue for messages, propagate them out to all other UAVs in range
+  //Uses Probabilistic Flooding algorithm to determine whether a message is sent or not
+  self.processCommunicationsRelay()
+  
+  //Process all belief state updates from neighboring UAVs (if any)
+  for belief_update in self.recv_queue.getAllBeliefUpdates()
+    self.mergeBeliefUpdate(belief)
+
+  //Respond to all contract_announcements  
+  for contract_announce in self.recv_queue.getAllAnnouncements()
+    bid = self.computeBid(contract_announce) 
+    if bid >>> self.task.bid or self.task == SEARCH
+      self.sendBid(bid, contract_announce)
+      self.pendingBids += bid
+      //TODO The Search task can get starved because of this logic
+    else
+      //Inform the sender this uav is not interested
+      self.sendBid(NULL_BID, contract_announce)
+   
+  for contract_bid in self.recv_queue.getAllBids()
+    //Store all bids until bidding closes
+    self.processBid(contract_bid)
+  //If the bidding times out notify the winner and losers of contracts this
+  //uav is managing.
+  self.closeOutCompetingContracts(delta_time)
+   
+  //Clear pending bids for contracts that have been lost
+  for loss in self.recv_queue.getAllLosses()
+    self.pendingBids -= loss
+   
+  //It's an edge case but it's possible that a UAV wins multiple contracts simultaneously
+  contract_wins = self.recv_queue.getAllWins()
+  
+  preferred_contract = contract with max benefit from contract_wins
+  remaining_contracts = contract_wins - preferred_contract
+  if(self.task not SEARCH)
+    //The uav is switching it's current task, so the old one must be re-assigned
+    remaining_contracts += self.task
+    
+  //Re-compete contracts as needed
+  for contract in remaining_contracts
+    self.startTaskAllocation(contract)
+
+  //Task updates can trigger new flight paths
+  self.task.update(delta_time)
+ 
+  //Send the current belief state out to neighboring UAVs if it changed
+  if self.belief.isChanged()
+    //Reset the internal change flag
+    self.belief.clearChanged()
+    self.transmitBelief()
+~~~
+
 ##Task Allocation##
 Contract net variant, no sub tasks??? No response back to task manager/originator
 Put this in another file?
@@ -150,7 +218,7 @@ The tracking task can be a cooperative task.  One UAV can track the target while
 UAV is flying into position in order to attack.
 
 ##Attack Task##
-If the target is unmobile align the UAV with the preferred attack angle
+If the target is immobile align the UAV with the preferred attack angle
  and deploy a weapon.  If the target is mobile attempt to approach from
  the preferred attack angle but do not require it for deployment.
 
