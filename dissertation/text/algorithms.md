@@ -31,14 +31,63 @@ for each cell in cells_in_fov
       
       //Check if this is the first time the target has been seen
       if not host_uav.getBelief().isTargetAt(cell)
-        host_uav.getBelief().setTargetAt(target_type, cell)
+      
+        //Computes a set of {target_type, probability} pairs given sensor
+        //characteristics, world truth data, and relative angles between the
+        //sensor and target.
+        types_and_probs = sensor.estimateTargetType(target.location, world)
+        uav.getBelief().updateTypeEstimate(target.location, types_and_probs)
+        
         host_uav.startTaskAllocation(target_type, cell, CONFIRM)
-
-    TODO: Add probability of target mis-classification
 ~~~
 
 ##Confirm Task##
-Confirm identity of target type, requires multiple scans, Start track or Attack
+Confirm identity of target type and the target's heading, requires multiple scans over a period of time.
+
+~~~{.numberLines}
+Input: uav, target, sensor, world
+
+dist_to_target = uav.location.distanceTo(target.location)
+if dist_to_target > sensor.range
+  Keep flying towards target
+else if uav.task.status == EnRoute
+  //The UAV just reached sensor range of the target
+  uav.task.status = InProgress
+  uav.task.statusChangeTime = current_time
+  
+  //Request the host UAV to fly a loiter pattern around the target 
+  uav.loiter(target.location, sensor.range)
+else if uav.task.status == InProgress
+  //The UAV is loitering around the target
+  sensor.pointAt(target.location)
+
+  //Computes a set of {target_type, probability} pairs given sensor
+  //characteristics, world truth data, and relative angles between the
+  //sensor and target.
+  types_and_probs = sensor.estimateTargetType(target.location, world)
+  //Averages the new set of estimates with previously estimated values
+  uav.getBelief().updateTypeEstimate(target.location, types_and_probs)
+  
+  
+  //Estimates the target's heading based on relative angles.  Random
+  //noise is injected in the estimation to more accurately simulate
+  //real world sensors.
+  estimated_hdg = sensor.estimateHeading(target)
+  
+  //Averages the given heading with previously estimated headings
+  uav.getBelief().updateHeading(target, estimated_hdg)
+  
+  //For simulation purposes assume Confirmation always takes 5 seconds
+  if (current_time - uav.task.statusChangeTime) > 5 seconds
+    //No matter the result of the Confirmation, the task is completed
+    uav.task.status = Complete
+    uav.task.statusChangeTime = current_time      
+    
+  //TODO: Would it make the simulation better to keep 'confirming' until
+  //the change in estimation between scans falls below a threshold?  Would
+  //require some kind of gradient descent mechanism in the truth versus
+  //estimation detection model.
+~~~
 
 ##Track Task##
 Very similar to confirm, but follow a moving target. Start attack
