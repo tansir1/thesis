@@ -1,9 +1,16 @@
 import argparse
 import subprocess
 
-sources = ['text/doc_root.md',
-           'text/title.md',
-           'text/intro.md']
+'''
+sources = ['text/algorithms.md',
+           'text/abstract.md',
+           'text/intro.md',
+           'text/task_alloc.md']
+'''
+
+sources = ['text/algorithms.md']
+
+markdown_from = '--from=markdown+fenced_code_blocks'
 
 
 def pdf():
@@ -15,9 +22,9 @@ def pdf():
     cmds = ['pandoc']
     cmds.extend(sources)
 
-    options = ['-s', '-o', './bin/thesis.pdf']
+    options = [markdown_from, '--to=latex', '-s', '-o', './bin/thesis.pdf']
     cmds.extend(options)
-
+    print("Executing: " + ' '.join(cmds))
     print(subprocess.run(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
 
 
@@ -30,7 +37,7 @@ def html():
     cmds = ['pandoc']
     cmds.extend(sources)
 
-    options = ['-s', '-o', './bin/thesis.html']
+    options = [markdown_from, '--to=html', '-s', '-o', './bin/thesis.html']
     cmds.extend(options)
 
     print(subprocess.run(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
@@ -45,7 +52,7 @@ def docx():
     cmds = ['pandoc']
     cmds.extend(sources)
 
-    options = ['-s', '-o', './bin/thesis.docx']
+    options = [markdown_from, '--to=docx', '-s', '-o', './bin/thesis.docx']
     cmds.extend(options)
 
     print(subprocess.run(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE))
