@@ -1,6 +1,6 @@
 
 #Algorithms #
-Create a state diagram of the task states (Dot, graphviz?)
+TODO: Create a state diagram of the task states (Dot, graphviz?)
 
 ##Main Simulation Loop##
 ~~~{.numberLines}
@@ -116,8 +116,11 @@ update(delta_time, world)
 ~~~
 
 ##Task Allocation##
-Contract net variant, no sub tasks??? No response back to task manager/originator
-Put this in another file?
+TODO: Variant of Contract Net.  Sub tasks are not contracted out (except maybe 
+cooperative tracking and attack???).  Once a contract (task) is complete results
+are not sent back to the Contract originator...which makes this sound like an
+auction again instead of a Contract Net.
+
 
 ##Search Task ##
 This may or may not be a top-level task.  By making it a top-level task it gets
@@ -211,10 +214,12 @@ This seems redundant considering the attack task will require a UAV to move into
 weapons range.  If this is a separate task then a new bidding process will
 occur when the task is complete.  This means when tracking is 'done' another UAV
 might win the attack task and have to fly to the target which is still moving.  This
-is redundant.  However, this could be a separate 'ending' task requiring UAVs to
+is redundant.  
+
+TODO: Should tracking be an 'ending' task requiring UAVs to
 keep an active eye on the target throughout the mission instead of destroying it.
 
-The tracking task can be a cooperative task.  One UAV can track the target while another
+TODO: Could/Should this task be a cooperative task?  One UAV can track the target while another
 UAV is flying into position in order to attack.
 
 ##Attack Task##
