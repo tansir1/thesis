@@ -2,6 +2,51 @@
 #Algorithms #
 Create a state diagram of the task states (Dot, graphviz?)
 
+##Main Simulation Loop##
+~~~{.numberLines}
+simTime += SIM_STEP_RATE
+
+for target in world.getAllTargets()
+  //Mobile targets will move during the update
+  target.update(SIM_STEP_RATE)
+for uav in world.getAllUAVs()
+  uav.update()
+~~~
+
+##Target Update Loop##
+Targets have an 'update(delta_time, world)' method that gets invoked by the main 
+simulation loop.  Only mobile targets do any actions during the update.
+
+~~~{.numberLines}
+update(delta_time, world)
+  if self.isMobile
+    if self.location == self.route.endWaypoint()
+      //Target is sitting inside a haven
+      
+      if self.havenTimer == 0
+        //Target just arrived at the haven.  Sit here for some time.
+        self.havenTimer = current_time
+        self.havenTimeLimit = random[5,30]//Random 5-30 seconds 
+      else
+        //Target has been sitting at the haven for a while.  See if it's time to leave.
+        self.havenTimer += delta_time
+        if self.havenTimer >= self.haveTimeLimit
+          self.havenTimer = 0
+          do
+            haven = world.getRandomHaven()
+          while haven.location == self.location
+          self.route = world.findRoute(self.location, haven.location)
+    else if self.location == road intersection
+      //Road intersections serve as routing waypoints
+      nextWypt = self.route.getNextWaypoint()
+      self.heading = self.location.bearingTo(nextWypt)
+    else
+      //Target is moving along a road
+      position_delta_east = cos(self.heading) * self.speed
+      position_delta_north = sin(self.heading) * self.speed)
+      self.location.translate(position_delta_north, position_delta_east)
+~~~
+
 ##Task Allocation##
 Contract net variant, no sub tasks??? No response back to task manager/originator
 Put this in another file?
@@ -82,6 +127,10 @@ else if uav.task.status == InProgress
     //No matter the result of the Confirmation, the task is completed
     uav.task.status = Complete
     uav.task.statusChangeTime = current_time      
+    if uav.getBelief().getBestTypeEstimate(target.location).isMobile()
+      uav.startTaskAllocation(target.type, target_cell, TRACK)
+    else
+      uav.startTaskAllocation(target.type, target_cell, ATTACK)
     
   //TODO: Would it make the simulation better to keep 'confirming' until
   //the change in estimation between scans falls below a threshold?  Would
@@ -90,14 +139,20 @@ else if uav.task.status == InProgress
 ~~~
 
 ##Track Task##
-Very similar to confirm, but follow a moving target. Start attack
+This seems redundant considering the attack task will require a UAV to move into
+weapons range.  If this is a separate task then a new bidding process will
+occur when the task is complete.  This means when tracking is 'done' another UAV
+might win the attack task and have to fly to the target which is still moving.  This
+is redundant.  However, this could be a separate 'ending' task requiring UAVs to
+keep an active eye on the target throughout the mission instead of destroying it.
+
+The tracking task can be a cooperative task.  One UAV can track the target while another
+UAV is flying into position in order to attack.
 
 ##Attack Task##
 If the target is unmobile align the UAV with the preferred attack angle
  and deploy a weapon.  If the target is mobile attempt to approach from
  the preferred attack angle but do not require it for deployment.
-Align the UAV with the 
-self explanatory, Start BDA
 
 ~~~{.numberLines}
 Input: uav, target, weapon, world
