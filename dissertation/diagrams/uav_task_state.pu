@@ -1,0 +1,30 @@
+@startuml
+
+title UAV Task Transitions
+[*] -right-> Search
+Search -up-> Confirm : Target found
+Search : Moving towards regions\nof uncertainty.\nScanning all cells in FOV
+
+Confirm : Focused scans of\ntarget cell only
+Confirm -down-> Search : Lost target
+Confirm -right-> Track : Found mobile Target
+Confirm -right-> Attack : Found immobile Target
+
+Track : Follow target\nfor X time
+Track -> Attack
+Track -down-> Search : Lost target
+
+note top of Track
+Is this state redundant since the attack task can be allocated to another UAV?
+end note
+
+Attack : Moving towards weapon\nrange and launch angle
+Attack -down-> BDA : Weapon deployed
+
+BDA : Focused scans of\ntarget cell only
+BDA -up-> Attack : Target still active
+BDA -left-> Search : Target destroyed
+
+
+
+@enduml
