@@ -2,7 +2,8 @@ import os
 import argparse
 import subprocess
 
-puSourceFiles = ['uav_task_state.pu']
+puSourceFiles = ['uav_task_state.pu',
+                 'belief_class.pu']
 
 def generateDiagrams(puJarPath):
 
