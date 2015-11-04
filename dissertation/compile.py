@@ -61,6 +61,7 @@ def docx():
 def main():
     parser = argparse.ArgumentParser(description="Compile the Markdown files into an output format via Pandoc.")
     build_type = parser.add_mutually_exclusive_group(required=True)
+    build_type.add_argument("--all", action="store_true", help="Generate all supported formats.")
     build_type.add_argument("--html", action="store_true", help="Generate a stand alone html site.")
     build_type.add_argument("--pdf", action="store_true", help="Generate a single pdf file.")
     build_type.add_argument("--docx", action="store_true", help="Generate a MS Word docx file.")
@@ -71,6 +72,10 @@ def main():
     elif args.pdf:
         pdf()
     elif args.docx:
+        docx()
+    elif args.all:
+        html()
+        pdf()
         docx()
 
 

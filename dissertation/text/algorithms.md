@@ -1,6 +1,6 @@
 
 #Algorithms #
-TODO: Create a state diagram of the task states (Dot, graphviz?)
+![UAV task state machine](./diagrams/uav_task_state.png)
 
 ##Main Simulation Loop##
 ~~~{.numberLines}
