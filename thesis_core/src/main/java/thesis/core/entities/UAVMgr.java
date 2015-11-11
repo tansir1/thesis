@@ -50,8 +50,8 @@ public class UAVMgr
 			{
 				UAV uav = new UAV(type);
 				uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
-				uav.getOrientation().copy(uavEntCfg.getOrientation());
-				uav.getOrientation().normalize360();
+				uav.getHeading().copy(uavEntCfg.getOrientation());
+				uav.getHeading().normalize360();
 				uavs.add(uav);
 			}
 			else

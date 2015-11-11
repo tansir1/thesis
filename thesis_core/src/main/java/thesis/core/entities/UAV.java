@@ -4,13 +4,12 @@ import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 
 public class UAV
 {
    private UAVType type;
-   private WorldCoordinate position;
-
-   private Angle orientation;
+   private WorldPose pose;
 
    public UAV(UAVType type)
    {
@@ -20,9 +19,6 @@ public class UAV
       }
 
       this.type = type;
-
-      position = new WorldCoordinate();
-      orientation = new Angle();
    }
 
    public UAVType getType()
@@ -32,14 +28,19 @@ public class UAV
 
    public WorldCoordinate getCoordinate()
    {
-      return position;
+      return pose.getCoordinate();
    }
 
-   public Angle getOrientation()
+   public Angle getHeading()
    {
-      return orientation;
+      return pose.getHeading();
    }
 
+   public WorldPose getPose()
+   {
+      return pose;
+   }
+   
    /**
     * Step the simulation forward by the requested amount of time.
     *
@@ -54,11 +55,13 @@ public class UAV
       double deltaSeconds = deltaTimeMS / 1000.0;
       LinearSpeed spd = type.getMaxSpd();
 
+      Angle hdg = pose.getHeading();
+      
       // east distance = time * speed * east component
-      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cosNorthUp());
+      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * hdg.cosNorthUp());
       // north distance = time * speed * north component
-      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sinNorthUp());
+      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * hdg.sinNorthUp());
 
-      position.translate(northing, easting);
+      pose.getCoordinate().translate(northing, easting);
    }
 }

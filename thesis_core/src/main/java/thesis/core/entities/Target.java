@@ -4,13 +4,12 @@ import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 
 public class Target
 {
    private TargetType type;
-   private WorldCoordinate position;
-
-   private Angle orientation;
+   private WorldPose pose;
 
    public Target(TargetType type)
    {
@@ -21,8 +20,7 @@ public class Target
 
       this.type = type;
 
-      position = new WorldCoordinate();
-      orientation = new Angle();
+      pose = new WorldPose();
    }
 
    public TargetType getType()
@@ -32,12 +30,12 @@ public class Target
 
    public WorldCoordinate getCoordinate()
    {
-      return position;
+      return pose.getCoordinate();
    }
 
-   public Angle getOrientation()
+   public Angle getHeading()
    {
-	   return orientation;
+	   return pose.getHeading();
    }
 
 	/**
@@ -57,11 +55,11 @@ public class Target
 			LinearSpeed spd = type.getMaxSpeed();
 
 	      // east distance = time * speed * east component
-	      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.cosNorthUp());
+	      easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().cosNorthUp());
 	      // north distance = time * speed * north component
-	      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * orientation.sinNorthUp());
+	      northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().sinNorthUp());
 
-			position.translate(northing, easting);
+			pose.getCoordinate().translate(northing, easting);
 		}
 
 	}

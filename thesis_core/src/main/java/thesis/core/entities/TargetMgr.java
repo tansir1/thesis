@@ -50,8 +50,8 @@ public class TargetMgr
 			{
 				Target tgt = new Target(type);
 				tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
-				tgt.getOrientation().copy(tarEntCfg.getOrientation());
-				tgt.getOrientation().normalize360();
+				tgt.getHeading().copy(tarEntCfg.getOrientation());
+				tgt.getHeading().normalize360();
 				targets.add(tgt);
 			}
 			else

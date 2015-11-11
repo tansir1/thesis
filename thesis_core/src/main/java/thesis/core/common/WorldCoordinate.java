@@ -37,9 +37,9 @@ public class WorldCoordinate
     * Initialize a world coordinate at the given location.
     *
     * @param north
-    *           The distance north from the world origin.  The value is copied.
+    *           The distance north from the world origin. The value is copied.
     * @param east
-    *           The distance east from the world origin.  The value is copied.
+    *           The distance east from the world origin. The value is copied.
     */
    public WorldCoordinate(Distance north, Distance east)
    {
@@ -148,13 +148,12 @@ public class WorldCoordinate
    }
 
    /**
-    * Get the absolute bearing angle (in degrees) from this coordinate to the
-    * given coordinate.
+    * Get the absolute bearing angle from this coordinate to the given
+    * coordinate.
     *
     * @param wc
     *           Find the bearing to this coordinate.
-    * @return The bearing angle in degrees from this coordinate to the given
-    *         coordinate.
+    * @return The bearing angle from this coordinate to the given coordinate.
     */
    public Angle bearingTo(WorldCoordinate wc)
    {
@@ -170,8 +169,18 @@ public class WorldCoordinate
    }
 
    /**
-    * Get the linear distance in kilometers between this coordinate and the
-    * given coordinate.
+    * Get the absolute bearing from the origin to this coordinate.
+    * 
+    * @return The bearing angle from the origin to this coordinate.
+    */
+   public Angle bearingFromOrigin()
+   {
+      WorldCoordinate origin = new WorldCoordinate();
+      return origin.bearingTo(this);
+   }
+
+   /**
+    * Get the linear distance between this coordinate and the given coordinate.
     *
     * @param wc
     *           Get the distance to here.
