@@ -1,10 +1,12 @@
-package thesis.core.entities;
+package thesis.core.entities.uav;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import thesis.core.common.AngularSpeed;
 import thesis.core.common.LinearSpeed;
+import thesis.core.entities.Sensor;
+import thesis.core.entities.Weapon;
 
 /**
  * Performance specification data for a specific type of UAV.

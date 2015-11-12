@@ -14,7 +14,7 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
 import thesis.core.entities.TargetType;
-import thesis.core.entities.UAVType;
+import thesis.core.entities.uav.UAVType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.TargetEntityConfig;
 import thesis.core.serialization.world.UAVEntityConfig;

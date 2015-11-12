@@ -15,7 +15,7 @@ import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
-import thesis.core.entities.UAV;
+import thesis.core.entities.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 

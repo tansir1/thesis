@@ -1,4 +1,7 @@
-package thesis.core.common;
+package thesis.core.entities.uav;
+
+import thesis.core.common.Distance;
+import thesis.core.common.WorldCoordinate;
 
 public class PathSegment
 {

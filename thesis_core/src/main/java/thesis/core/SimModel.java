@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.entities.TargetMgr;
-import thesis.core.entities.UAVMgr;
+import thesis.core.entities.uav.UAVMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
