@@ -1,4 +1,4 @@
-package thesis.core.entities.uav;
+package thesis.core.entities.uav.dubins;
 
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;

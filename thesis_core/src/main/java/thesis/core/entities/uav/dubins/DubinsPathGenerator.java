@@ -7,11 +7,28 @@ import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.PathSegment;
 
+/**
+ * Generates Dubin's Curves for UAVs to follow from waypoint to waypoint.
+ *
+ *This is a largely a port of the C++ code found here:
+ *https://github.com/gieseanw/Dubins 
+ */
 public class DubinsPathGenerator
 {
 
+   /**
+    * Generate a path from the start to the ending pose with the given
+    * constraints.
+    * 
+    * @param minTurnRadius
+    *           The minimum radius required for the uav to turn around.
+    * @param start
+    *           The starting position and orientation of the path.
+    * @param end
+    *           The ending position and orientation of the path.
+    * @return A path satisfying the given constraints.
+    */
    public static DubinsPath generate(final Distance minTurnRadius, final WorldPose start, final WorldPose end)
    {
       Circle startLeft = new Circle();
@@ -61,6 +78,10 @@ public class DubinsPathGenerator
       {
          path = temp;
       }
+
+      path.getStartPose().copy(start);
+      path.getEndPose().copy(end);
+
       return path;
    }
 
@@ -111,7 +132,7 @@ public class DubinsPathGenerator
 
          double delNorth = endRight.getCenter().getNorth().asMeters() - startRight.getCenter().getNorth().asMeters();
          double delEast = endRight.getCenter().getEast().asMeters() - startRight.getCenter().getEast().asMeters();
-         
+
          theta += Math.atan2(delNorth, delEast);
 
          path = genRLRPath(theta, startRight, endRight, minTurnRadius, start, end);
@@ -124,7 +145,7 @@ public class DubinsPathGenerator
 
          double delNorth = endLeft.getCenter().getNorth().asMeters() - startLeft.getCenter().getNorth().asMeters();
          double delEast = endLeft.getCenter().getEast().asMeters() - startLeft.getCenter().getEast().asMeters();
-         
+
          theta += Math.atan2(delNorth, delEast);
 
          DubinsPath temp = genLRLPath(theta, startLeft, endLeft, minTurnRadius, start, end);
@@ -211,8 +232,8 @@ public class DubinsPathGenerator
     *           True if this is the length for a left turn.
     * @return The arc length of the path.
     */
-   private static Distance computeArcLength(final WorldCoordinate center, final WorldCoordinate lhs, final WorldCoordinate rhs,
-         final Distance radius, final boolean left)
+   private static Distance computeArcLength(final WorldCoordinate center, final WorldCoordinate lhs,
+         final WorldCoordinate rhs, final Distance radius, final boolean left)
    {
       Angle leftAngle = center.bearingTo(lhs);
       Angle rightAngle = center.bearingTo(lhs);
@@ -240,15 +261,17 @@ public class DubinsPathGenerator
       {
          path.type = PathType.RSR;
 
-         path.waypoint1.setCoordinate(rrTangents.get(0).getStart());
-         path.waypoint2.setCoordinate(rrTangents.get(0).getEnd());
+         path.getWaypoint1().setCoordinate(rrTangents.get(0).getStart());
+         path.getWaypoint2().setCoordinate(rrTangents.get(0).getEnd());
 
          // tangent pts function returns outer tangents for RR connection first
-         Distance arcL1 = computeArcLength(startRight.getCenter(), startPose.getCoordinate(), rrTangents.get(0).getStart(), minTurnRadius, false);
+         Distance arcL1 = computeArcLength(startRight.getCenter(), startPose.getCoordinate(),
+               rrTangents.get(0).getStart(), minTurnRadius, false);
 
          Distance arcL2 = rrTangents.get(0).getStart().distanceTo(rrTangents.get(0).getEnd());
 
-         Distance arcL3 = computeArcLength(endRight.getCenter(), rrTangents.get(0).getEnd(), endPose.getCoordinate(), minTurnRadius, false);
+         Distance arcL3 = computeArcLength(endRight.getCenter(), rrTangents.get(0).getEnd(), endPose.getCoordinate(),
+               minTurnRadius, false);
 
          path.segmentLengths[0].copy(arcL1);
          path.segmentLengths[1].copy(arcL2);
@@ -266,13 +289,15 @@ public class DubinsPathGenerator
       {
          path.type = PathType.LSL;
 
-         path.waypoint1 = llTangents.get(1).getStart();
-         path.waypoint2 = llTangents.get(1).getEnd();
+         path.getWaypoint1().setCoordinate(llTangents.get(1).getStart());
+         path.getWaypoint2().setCoordinate(llTangents.get(1).getEnd());
 
          // tangent pts function returns outer tangents for LL connection second
-         Distance arcL1 = computeArcLength(startLeft.getCenter(), startPose.getCoordinate(), llTangents.get(1).getStart(), minTurnRadius, true);
+         Distance arcL1 = computeArcLength(startLeft.getCenter(), startPose.getCoordinate(),
+               llTangents.get(1).getStart(), minTurnRadius, true);
          Distance arcL2 = llTangents.get(1).getStart().distanceTo(llTangents.get(1).getEnd());
-         Distance arcL3 = computeArcLength(endLeft.getCenter(), llTangents.get(1).getEnd(), endPose.getCoordinate(), minTurnRadius, true);
+         Distance arcL3 = computeArcLength(endLeft.getCenter(), llTangents.get(1).getEnd(), endPose.getCoordinate(),
+               minTurnRadius, true);
 
          path.segmentLengths[0].copy(arcL1);
          path.segmentLengths[1].copy(arcL2);
@@ -290,13 +315,15 @@ public class DubinsPathGenerator
       {
          path.type = PathType.RSL;
 
-         path.waypoint1 = rlTangents.get(2).getStart();
-         path.waypoint2 = rlTangents.get(2).getEnd();
+         path.getWaypoint1().setCoordinate(rlTangents.get(2).getStart());
+         path.getWaypoint2().setCoordinate(rlTangents.get(2).getEnd());
 
          // tangent pts function returns inner tangents for RL connection third
-         Distance arcL1 = computeArcLength(startRight.getCenter(), startPose.getCoordinate(), rlTangents.get(2).getStart(), minTurnRadius, false);
+         Distance arcL1 = computeArcLength(startRight.getCenter(), startPose.getCoordinate(),
+               rlTangents.get(2).getStart(), minTurnRadius, false);
          Distance arcL2 = rlTangents.get(2).getStart().distanceTo(rlTangents.get(2).getEnd());
-         Distance arcL3 = computeArcLength(endLeft.getCenter(), rlTangents.get(2).getEnd(), endPose.getCoordinate(), minTurnRadius, true);
+         Distance arcL3 = computeArcLength(endLeft.getCenter(), rlTangents.get(2).getEnd(), endPose.getCoordinate(),
+               minTurnRadius, true);
 
          path.segmentLengths[0].copy(arcL1);
          path.segmentLengths[1].copy(arcL2);
@@ -314,13 +341,15 @@ public class DubinsPathGenerator
       {
          path.type = PathType.LSR;
 
-         path.waypoint1 = lrTangents.get(3).getStart();
-         path.waypoint2 = lrTangents.get(3).getEnd();
+         path.getWaypoint1().setCoordinate(lrTangents.get(3).getStart());
+         path.getWaypoint2().setCoordinate(lrTangents.get(3).getEnd());
 
          // tangent pts function returns inner tangents for LR connection fourth
-         Distance arcL1 = computeArcLength(startLeft.getCenter(), startPose.getCoordinate(), lrTangents.get(3).getStart(), minTurnRadius, true);
+         Distance arcL1 = computeArcLength(startLeft.getCenter(), startPose.getCoordinate(),
+               lrTangents.get(3).getStart(), minTurnRadius, true);
          Distance arcL2 = lrTangents.get(3).getStart().distanceTo(lrTangents.get(3).getEnd());
-         Distance arcL3 = computeArcLength(endRight.getCenter(), lrTangents.get(3).getEnd(), endPose.getCoordinate(), minTurnRadius, false);
+         Distance arcL3 = computeArcLength(endRight.getCenter(), lrTangents.get(3).getEnd(), endPose.getCoordinate(),
+               minTurnRadius, false);
 
          path.segmentLengths[0].copy(arcL1);
          path.segmentLengths[1].copy(arcL2);
@@ -334,7 +363,7 @@ public class DubinsPathGenerator
    {
       DubinsPath path = new DubinsPath();
       path.type = PathType.LRL;
-
+//FIXME Waypoints!
       WorldCoordinate startTan = new WorldCoordinate();
       WorldCoordinate endTan = new WorldCoordinate();
 
@@ -345,36 +374,39 @@ public class DubinsPathGenerator
       // between agent and query circles
       Distance offsetEast = new Distance(minTurnRadius);
       Distance offsetNorth = new Distance(minTurnRadius);
-      
+
       offsetEast.scale(2).scale(Math.cos(_interiorTheta));
       offsetNorth.scale(2).scale(Math.sin(_interiorTheta));
-      
+
       offsetEast.add(startLeft.getCenter().getEast());
       offsetNorth.add(startLeft.getCenter().getNorth());
-      
+
       rCircle.getCenter().setCoordinate(offsetNorth, offsetEast);
 
       // compute tangent points given tangent circle
       offsetEast = new Distance(rCircle.getCenter().getEast());
       offsetEast.add(startLeft.getCenter().getEast());
       offsetEast.scale(0.5);
-      
+
       offsetNorth = new Distance(rCircle.getCenter().getNorth());
       offsetNorth.add(startLeft.getCenter().getNorth());
       offsetNorth.scale(0.5);
-      
+
       startTan.setCoordinate(offsetNorth, offsetEast);
 
       offsetEast = new Distance(rCircle.getCenter().getEast());
       offsetEast.add(endLeft.getCenter().getEast());
       offsetEast.scale(0.5);
-      
+
       offsetNorth = new Distance(rCircle.getCenter().getNorth());
       offsetNorth.add(endLeft.getCenter().getNorth());
-      offsetNorth.scale(0.5);      
-      
+      offsetNorth.scale(0.5);
+
       endTan.setCoordinate(offsetNorth, offsetEast);
 
+      path.getWaypoint1().setCoordinate(startTan);
+      path.getWaypoint2().setCoordinate(endTan);
+      
       Distance arcL1 = computeArcLength(startLeft.getCenter(), start.getCoordinate(), startTan, minTurnRadius, true);
       Distance arcL2 = computeArcLength(rCircle.getCenter(), startTan, endTan, minTurnRadius, false);
       Distance arcL3 = computeArcLength(endLeft.getCenter(), endTan, end.getCoordinate(), minTurnRadius, true);
@@ -382,7 +414,7 @@ public class DubinsPathGenerator
       path.segmentLengths[0].copy(arcL1);
       path.segmentLengths[1].copy(arcL2);
       path.segmentLengths[2].copy(arcL3);
-      
+
       return path;
    }
 
@@ -391,7 +423,7 @@ public class DubinsPathGenerator
    {
       DubinsPath path = new DubinsPath();
       path.type = PathType.RLR;
-
+//FIXME Waypoints!
       WorldCoordinate startTan = new WorldCoordinate();
       WorldCoordinate endTan = new WorldCoordinate();
 
@@ -402,37 +434,38 @@ public class DubinsPathGenerator
       // between agent and query circles
       Distance offsetEast = new Distance(minTurnRadius);
       Distance offsetNorth = new Distance(minTurnRadius);
-      
+
       offsetEast.scale(2).scale(Math.cos(_interiorTheta));
       offsetNorth.scale(2).scale(Math.sin(_interiorTheta));
-      
+
       offsetEast.add(startRight.getCenter().getEast());
       offsetNorth.add(startRight.getCenter().getNorth());
-      
-      lCircle.getCenter().setCoordinate(offsetNorth, offsetEast);      
-      
-      
+
+      lCircle.getCenter().setCoordinate(offsetNorth, offsetEast);
+
       // compute tangent points given tangent circle
       offsetEast = new Distance(lCircle.getCenter().getEast());
       offsetEast.add(startRight.getCenter().getEast());
       offsetEast.scale(0.5);
-      
+
       offsetNorth = new Distance(lCircle.getCenter().getNorth());
       offsetNorth.add(startRight.getCenter().getNorth());
       offsetNorth.scale(0.5);
-      
+
       startTan.setCoordinate(offsetNorth, offsetEast);
 
       offsetEast = new Distance(lCircle.getCenter().getEast());
       offsetEast.add(endRight.getCenter().getEast());
       offsetEast.scale(0.5);
-      
+
       offsetNorth = new Distance(lCircle.getCenter().getNorth());
       offsetNorth.add(endRight.getCenter().getNorth());
-      offsetNorth.scale(0.5);      
-      
-      endTan.setCoordinate(offsetNorth, offsetEast);      
-      
+      offsetNorth.scale(0.5);
+
+      endTan.setCoordinate(offsetNorth, offsetEast);
+
+      path.getWaypoint1().setCoordinate(startTan);
+      path.getWaypoint2().setCoordinate(endTan);      
       
       Distance arcL1 = computeArcLength(startRight.getCenter(), start.getCoordinate(), startTan, minTurnRadius, false);
       Distance arcL2 = computeArcLength(lCircle.getCenter(), startTan, endTan, minTurnRadius, true);
@@ -441,7 +474,7 @@ public class DubinsPathGenerator
       path.segmentLengths[0].copy(arcL1);
       path.segmentLengths[1].copy(arcL2);
       path.segmentLengths[2].copy(arcL3);
-      
+
       return path;
    }
 
