@@ -326,6 +326,7 @@ public class EntityTypesFile
          UAVType uavType = new UAVType(type);
          uavType.getMaxSpd().setAsMetersPerSecond(spdM);
          uavType.getMaxTurnRt().setAsDegreesPerSecond(maxTurnRtDegSec);
+         uavType.init();
 
          // Load sensor data for the uav
          Element sensorsElem = (Element) typeElem.getElementsByTagName("Sensors").item(0);

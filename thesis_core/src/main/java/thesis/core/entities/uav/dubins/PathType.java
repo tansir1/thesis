@@ -12,14 +12,24 @@ public enum PathType
    
    private SegmentType[] types;
 
-   public SegmentType getSegmentType(int segment)
+   public SegmentType getSegmentType(PathPhase phase)
    {
-      if (segment < 0 || segment > 3)
+      SegmentType type = null;
+      
+      switch(phase)
       {
-         throw new IllegalArgumentException("Invalid segment index: " + Integer.toString(segment));
+      case Phase1:
+         type = types[0];
+         break;
+      case Phase2:
+         type = types[1];
+         break;
+      case Phase3:
+         type = types[2];
+         break;
       }
       
-      return types[segment];
+      return type;
    }
    
    private PathType(SegmentType type1, SegmentType type2, SegmentType type3)

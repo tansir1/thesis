@@ -43,16 +43,19 @@ public class UAVMgr
 
 		uavs.clear();
 
+		int uavID = 0;
 		for (UAVEntityConfig uavEntCfg : worldCfg.uavCfgs)
 		{
 			UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
 			if (type != null)
 			{
-				UAV uav = new UAV(type);
+				UAV uav = new UAV(type, uavID);
 				uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
 				uav.getHeading().copy(uavEntCfg.getOrientation());
 				uav.getHeading().normalize360();
 				uavs.add(uav);
+				
+				++uavID;
 			}
 			else
 			{

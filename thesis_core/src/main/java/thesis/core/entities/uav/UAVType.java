@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import thesis.core.common.AngularSpeed;
+import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.entities.Sensor;
 import thesis.core.entities.Weapon;
@@ -16,6 +17,9 @@ public class UAVType
    private int typeID;
    private LinearSpeed maxSpd;
    private AngularSpeed maxTurnRt;
+   private Distance minTurnRadius;
+   private Distance wyptReachTolerance;
+
    private Set<Sensor> sensors;
    private Set<Weapon> weapons;
 
@@ -27,6 +31,9 @@ public class UAVType
 
       sensors = new HashSet<Sensor>();
       weapons = new HashSet<Weapon>();
+
+      minTurnRadius = new Distance();
+      wyptReachTolerance = new Distance();
    }
 
    /**
@@ -50,6 +57,17 @@ public class UAVType
    }
 
    /**
+    * Get the minimum radius required for the UAV to turn 180 degrees at max
+    * speed.
+    * 
+    * @return The distance required to turn around at max speed.
+    */
+   public Distance getMinTurnRadius()
+   {
+      return minTurnRadius;
+   }
+
+   /**
     * Get the maximum turning rate for the UAV.
     * 
     * @return The maximum turning rate.
@@ -57,6 +75,17 @@ public class UAVType
    public AngularSpeed getMaxTurnRt()
    {
       return maxTurnRt;
+   }
+
+   /**
+    * If the distance between the UAV and its waypoint is less than this value
+    * then the UAV has reached the waypoint.
+    * 
+    * @return
+    */
+   public Distance getWaypointReachTolerance()
+   {
+      return wyptReachTolerance;
    }
 
    /**
@@ -113,4 +142,16 @@ public class UAVType
       return true;
    }
 
+   public void init()
+   {
+      final double timeToTurnAround = Math.PI / maxTurnRt.asRadiansPerSecond();
+      final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
+      minTurnRadius.setAsMeters(arcLength / Math.PI);
+      
+      
+      //If the UAV is within this timespan from reaching a waypoint it is
+      //considered to have hit the waypoint
+      final double timeToWyptThreshold = 0.5;//half second
+      wyptReachTolerance.setAsMeters(maxSpd.asMeterPerSecond() * timeToWyptThreshold);
+   }
 }
