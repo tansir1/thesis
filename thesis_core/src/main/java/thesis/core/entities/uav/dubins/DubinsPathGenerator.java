@@ -12,7 +12,7 @@ import thesis.core.common.WorldPose;
  * Generates Dubin's Curves for UAVs to follow from waypoint to waypoint.
  *
  *This is a largely a port of the C++ code found here:
- *https://github.com/gieseanw/Dubins 
+ *https://github.com/gieseanw/Dubins
  */
 public class DubinsPathGenerator
 {
@@ -20,7 +20,7 @@ public class DubinsPathGenerator
    /**
     * Generate a path from the start to the ending pose with the given
     * constraints.
-    * 
+    *
     * @param minTurnRadius
     *           The minimum radius required for the uav to turn around.
     * @param start
@@ -74,7 +74,8 @@ public class DubinsPathGenerator
 
       DubinsPath path = genCSCPath(startLeft, startRight, endLeft, endRight, minTurnRadius, start, end);
       DubinsPath temp = genCCCPath(startLeft, startRight, endLeft, endRight, minTurnRadius, start, end);
-      if (temp.getPathLength().asMeters() < path.getPathLength().asMeters())
+      if ((temp.getPathType() != PathType.NO_PATH && temp.getPathLength().asMeters() < path.getPathLength().asMeters()) ||
+    		  (path.getPathType() == PathType.NO_PATH && temp.getPathType() != PathType.NO_PATH))
       {
          path = temp;
       }
@@ -96,22 +97,13 @@ public class DubinsPathGenerator
       DubinsPath path = genRSRPath(rrTangents, startRight, endRight, start, end, minTurnRadius);
 
       DubinsPath temp = genLSLPath(llTangents, startLeft, endLeft, start, end, minTurnRadius);
-      if (temp.getPathLength().asMeters() < path.getPathLength().asMeters())
-      {
-         path = temp;
-      }
+      path = shorterValidPath(path, temp);
 
       temp = genRSLPath(rlTangents, startRight, endLeft, start, end, minTurnRadius);
-      if (temp.getPathLength().asMeters() < path.getPathLength().asMeters())
-      {
-         path = temp;
-      }
+      path = shorterValidPath(path, temp);
 
       temp = genLSRPath(lrTangents, startLeft, endRight, start, end, minTurnRadius);
-      if (temp.getPathLength().asMeters() < path.getPathLength().asMeters())
-      {
-         path = temp;
-      }
+      path = shorterValidPath(path, temp);
 
       return path;
    }
@@ -149,17 +141,14 @@ public class DubinsPathGenerator
          theta += Math.atan2(delNorth, delEast);
 
          DubinsPath temp = genLRLPath(theta, startLeft, endLeft, minTurnRadius, start, end);
-         if (path != null && temp.getPathLength().asMeters() < path.getPathLength().asMeters())
-         {
-            path = temp;
-         }
+         path = shorterValidPath(path, temp);
       }
       return path;
    }
 
    /**
     * Compute all tangent line permutations between the two given circles.
-    * 
+    *
     * @param c1
     * @param c2
     * @return A list of all tangent lines between the two circles.
@@ -223,7 +212,7 @@ public class DubinsPathGenerator
 
    /**
     * Compute the arc length from lhs to rhs with a circle centered at 'center.'
-    * 
+    *
     * @param center
     * @param lhs
     * @param rhs
@@ -406,7 +395,7 @@ public class DubinsPathGenerator
 
       path.getWaypoint1().setCoordinate(startTan);
       path.getWaypoint2().setCoordinate(endTan);
-      
+
       Distance arcL1 = computeArcLength(startLeft.getCenter(), start.getCoordinate(), startTan, minTurnRadius, true);
       Distance arcL2 = computeArcLength(rCircle.getCenter(), startTan, endTan, minTurnRadius, false);
       Distance arcL3 = computeArcLength(endLeft.getCenter(), endTan, end.getCoordinate(), minTurnRadius, true);
@@ -465,8 +454,8 @@ public class DubinsPathGenerator
       endTan.setCoordinate(offsetNorth, offsetEast);
 
       path.getWaypoint1().setCoordinate(startTan);
-      path.getWaypoint2().setCoordinate(endTan);      
-      
+      path.getWaypoint2().setCoordinate(endTan);
+
       Distance arcL1 = computeArcLength(startRight.getCenter(), start.getCoordinate(), startTan, minTurnRadius, false);
       Distance arcL2 = computeArcLength(lCircle.getCenter(), startTan, endTan, minTurnRadius, true);
       Distance arcL3 = computeArcLength(endRight.getCenter(), endTan, end.getCoordinate(), minTurnRadius, false);
@@ -476,6 +465,40 @@ public class DubinsPathGenerator
       path.segmentLengths[2].copy(arcL3);
 
       return path;
+   }
+
+   private static DubinsPath shorterValidPath(DubinsPath path1, DubinsPath path2)
+   {
+	   DubinsPath betterPath = null;
+	   if(path1 != null && path2 == null)
+	   {
+		   betterPath = path1;
+	   }
+	   else if(path1 == null && path2 != null)
+	   {
+		   betterPath = path2;
+	   }
+	   else if(path1 == null && path2 == null)
+	   {
+		   //Do nothing
+	   }
+	   else if(path1.getPathType() != PathType.NO_PATH && path2.getPathType() == PathType.NO_PATH)
+	   {
+		   betterPath = path1;
+	   }
+	   else if(path1.getPathType() == PathType.NO_PATH && path2.getPathType() != PathType.NO_PATH)
+	   {
+		   betterPath = path2;
+	   }
+	   else if(path1.getPathLength().asMeters() < path2.getPathLength().asMeters())
+	   {
+		   betterPath = path1;
+	   }
+	   else
+	   {
+		   betterPath = path2;
+	   }
+	   return betterPath;
    }
 
 }

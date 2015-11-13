@@ -36,7 +36,7 @@ public class UAV
       this.id = id;
       this.type = type;
       pathPhase = null;
-
+      pose = new WorldPose();
       pathPhaseTraveled = new Distance();
    }
 
@@ -92,18 +92,19 @@ public class UAV
    private void stepPhysics(long deltaTimeMS)
    {
       final Angle hdg = pose.getHeading();
+      final double deltaSeconds = deltaTimeMS / 1000.0;
 
       switch (path.getPathType().getSegmentType(pathPhase))
       {
       case Left:
       {
-         double angularDelta = type.getMaxTurnRt().asRadiansPerSecond() * deltaTimeMS;
+         double angularDelta = type.getMaxTurnRt().asRadiansPerSecond() * deltaSeconds;
          hdg.setAsRadians(hdg.asRadians() + angularDelta);
       }
          break;
       case Right:
       {
-         double angularDelta = type.getMaxTurnRt().asRadiansPerSecond() * deltaTimeMS;
+         double angularDelta = type.getMaxTurnRt().asRadiansPerSecond() * deltaSeconds;
          hdg.setAsRadians(hdg.asRadians() - angularDelta);
       }
          break;
@@ -116,7 +117,6 @@ public class UAV
       final Distance northing = new Distance();
       final Distance easting = new Distance();
 
-      final double deltaSeconds = deltaTimeMS / 1000.0;
       final LinearSpeed spd = type.getMaxSpd();
 
       double metersTraveled = spd.asMeterPerSecond() * deltaSeconds;
@@ -133,7 +133,7 @@ public class UAV
    /**
     * This is a temporary method for development testing purposes. It will be
     * deleted once aircraft have a means of selecting their own destinations.
-    * 
+    *
     * @param flyTo
     */
    public void TEMP_setDestination(final WorldPose flyTo)
