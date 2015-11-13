@@ -1,5 +1,8 @@
 package thesis.core.entities.uav;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +20,13 @@ import thesis.core.utilities.LoggerIDs;
 public class UAV
 {
    private static Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+   /**
+    * When this amount of simulation time elapses the UAV will record its
+    * current pose.
+    * 
+    * @see #pathTrail
+    */
+   private static long TRAIL_SAMPLE_INTERVAL_MS = 250;
 
    private UAVType type;
    private WorldPose pose;
@@ -25,6 +35,9 @@ public class UAV
    private DubinsPath path;
    private PathPhase pathPhase;
    private Distance pathPhaseTraveled;
+
+   private long lastTrailSampleTimeAccumulator;
+   private List<WorldPose> pathTrail;
 
    public UAV(UAVType type, int id)
    {
@@ -38,6 +51,8 @@ public class UAV
       pathPhase = null;
       pose = new WorldPose();
       pathPhaseTraveled = new Distance();
+      pathTrail = new ArrayList<WorldPose>();
+      lastTrailSampleTimeAccumulator = 0;
    }
 
    public int getID()
@@ -69,17 +84,26 @@ public class UAV
    {
       return pathPhase;
    }
-   
+
    /**
     * Step the simulation forward by the requested amount of time.
     *
     * @param deltaTimeMS
     *           Advance the simulation forward by this many milliseconds.
     */
-   public void stepSimulation(long deltaTimeMS)
+   public void stepSimulation(final long deltaTimeMS)
    {
       // Move the aircraft according to its speed, heading, and turn rate
       stepPhysics(deltaTimeMS);
+
+      lastTrailSampleTimeAccumulator += deltaTimeMS;
+      if (lastTrailSampleTimeAccumulator > TRAIL_SAMPLE_INTERVAL_MS)
+      {
+         lastTrailSampleTimeAccumulator = 0;
+         WorldPose curPose = new WorldPose(pose);
+         pathTrail.add(curPose);
+      }
+
       // Check if the aircraft needs to start heading towards a new location
       checkPathPhaseTransition();
    }
@@ -88,7 +112,18 @@ public class UAV
    {
       return path;
    }
-   
+
+   /**
+    * Get a list of poses that the UAV has reached while following its current
+    * flight path.
+    * 
+    * @return The poses the UAV reached sampled along its current flight path.
+    */
+   public List<WorldPose> getFlightHistoryTrail()
+   {
+      return pathTrail;
+   }
+
    private void stepPhysics(long deltaTimeMS)
    {
       final Angle hdg = pose.getHeading();
@@ -148,6 +183,8 @@ public class UAV
       {
          pathPhase = PathPhase.Phase1;
          pathPhaseTraveled.setAsMeters(0);
+         pathTrail.clear();
+         lastTrailSampleTimeAccumulator = 0;
       }
       else
       {

@@ -18,112 +18,136 @@ import thesis.core.world.World;
 
 public class SimModel
 {
-	private Logger logger;
-	private World world;
+   
+   /**
+    * The time in milliseconds between simulation frames.
+    */
+   public static long SIM_STEP_RATE_MS = 16;//60Hz update rate
+   
+   private Logger logger;
+   private World world;
 
-	private TargetMgr tgtMgr;
-	private UAVMgr uavMgr;
+   private TargetMgr tgtMgr;
+   private UAVMgr uavMgr;
 
-	/**
-	 * A shared random number generator that is initialized with a known seed
-	 * value for reproducible experiments.
-	 */
-	private Random randGen;
+   private EntityTypes entTypes;
+   private WorldConfig worldCfg;
 
-	/**
-	 * Create an uninitialized world.
-	 *
-	 * The world must be initialized after being constructed.
-	 *
-	 * @see #reset(SimModelConfig)
-	 */
-	public SimModel()
-	{
-		logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
-		tgtMgr = new TargetMgr();
-		uavMgr = new UAVMgr();
-	}
+   /**
+    * A shared random number generator that is initialized with a known seed
+    * value for reproducible experiments.
+    */
+   private Random randGen;
 
-	/**
-	 * Initialize the model with the necessary configuration parameters.
-	 *
-	 * @param randomSeed
-	 *            Initialize the random number generator with this value.
-	 * @param worldCfg
-	 *            Configuration data for the world.
-	 * @param entTypes
-	 *            The types of entities within the world.
-	 */
-	public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes)
-	{
-		randGen = new Random(randomSeed);
+   /**
+    * Create an uninitialized world.
+    *
+    * The world must be initialized after being constructed.
+    *
+    * @see #reset(SimModelConfig)
+    */
+   public SimModel()
+   {
+      logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
+      tgtMgr = new TargetMgr();
+      uavMgr = new UAVMgr();
+   }
 
-		logger.debug("EntityTypes initialized with:\n{}", entTypes);
-		logger.debug("World model intiliazed with:\n{}", worldCfg);
+   /**
+    * Initialize the model with the necessary configuration parameters.
+    *
+    * @param randomSeed
+    *           Initialize the random number generator with this value.
+    * @param worldCfg
+    *           Configuration data for the world.
+    * @param entTypes
+    *           The types of entities within the world.
+    */
+   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes)
+   {
+      randGen = new Random(randomSeed);
 
-		world = new World(worldCfg);
-		// TODO Entity types
-		tgtMgr.reset(entTypes, worldCfg);
-		uavMgr.reset(entTypes, worldCfg);
-		
-		
-		//TEMPORARY! Initializes all UAVs with a pose to fly to for development
-		//testing purposes.
-		for(UAV uav : uavMgr.getAllUAVs())
-		{
-	      WorldPose pose = new WorldPose();
-	      Distance north = new Distance();
-	      Distance east = new Distance();
+      this.entTypes = entTypes;
+      this.worldCfg = worldCfg;
 
-	      north.setAsMeters(randGen.nextDouble() * world.getWidth().asMeters());
-	      east.setAsMeters(randGen.nextDouble() * world.getHeight().asMeters());
+      logger.debug("EntityTypes initialized with:\n{}", entTypes);
+      logger.debug("World model intiliazed with:\n{}", worldCfg);
 
-	      pose.getCoordinate().setCoordinate(north, east);
-		   pose.getHeading().setAsDegrees(randGen.nextInt(360));
-		   uav.TEMP_setDestination(pose);
-		}
-	}
+      world = new World(worldCfg);
+      tgtMgr.reset(entTypes, worldCfg);
+      uavMgr.reset(entTypes, worldCfg);
 
-	/**
-	 * Get the world map submodel.
-	 *
-	 * @return The world map of the simulation.
-	 */
-	public World getWorld()
-	{
-		return world;
-	}
+      // TEMPORARY! Initializes all UAVs with a pose to fly to for development
+      // testing purposes.
+      /*for (UAV uav : uavMgr.getAllUAVs())
+      {
+         WorldPose pose = new WorldPose();
+         Distance north = new Distance();
+         Distance east = new Distance();
 
-	public TargetMgr getTargetManager()
-	{
-		return tgtMgr;
-	}
+         north.setAsMeters(randGen.nextDouble() * world.getWidth().asMeters());
+         east.setAsMeters(randGen.nextDouble() * world.getHeight().asMeters());
 
-	public UAVMgr getUAVManager()
-	{
-	   return uavMgr;
-	}
+         pose.getCoordinate().setCoordinate(north, east);
+         pose.getHeading().setAsDegrees(randGen.nextInt(360));
+         uav.TEMP_setDestination(pose);
+      }*/
+   }
 
-	/**
-	 * Get the shared random number generator.
-	 *
-	 * @return The simulation's random number generator.
-	 */
-	public Random getRandomGenerator()
-	{
-		return randGen;
-	}
+   /**
+    * Get the world map submodel.
+    *
+    * @return The world map of the simulation.
+    */
+   public World getWorld()
+   {
+      return world;
+   }
 
-	/**
-	 * Step the simulation forward by the requested amount of time.
-	 *
-	 * @param deltaTimeMS
-	 *            Advance the simulation forward by this many milliseconds.
-	 */
-	public void stepSimulation(long deltaTimeMS)
-	{
-		logger.debug("-------------------Simulation stepping.-----------------");
-		tgtMgr.stepSimulation(deltaTimeMS);
-		uavMgr.stepSimulation(deltaTimeMS);
-	}
+   public TargetMgr getTargetManager()
+   {
+      return tgtMgr;
+   }
+
+   public UAVMgr getUAVManager()
+   {
+      return uavMgr;
+   }
+
+   /**
+    * Get the shared random number generator.
+    *
+    * @return The simulation's random number generator.
+    */
+   public Random getRandomGenerator()
+   {
+      return randGen;
+   }
+
+   /**
+    * Step the simulation forward by the requested amount of time.
+    *
+    * @param deltaTimeMS
+    *           Advance the simulation forward by this many milliseconds.
+    */
+   public void stepSimulation(long deltaTimeMS)
+   {
+      logger.debug("-------------------Simulation stepping.-----------------");
+      tgtMgr.stepSimulation(deltaTimeMS);
+      uavMgr.stepSimulation(deltaTimeMS);
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public WorldConfig getWorldConfig()
+   {
+      return worldCfg;
+   }
+   
+   public EntityTypes getEntityTypes()
+   {
+      return entTypes;
+   }
 }

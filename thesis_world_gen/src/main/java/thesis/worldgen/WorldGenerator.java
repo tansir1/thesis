@@ -83,7 +83,7 @@ public class WorldGenerator
       world.setNumColumns(numCols);
       world.setNumRows(numRows);
 
-      world.setRoadNetwork(generateRoadNetwork());
+      generateRoadNetwork(world.getRoadNetwork());
       world.getHavens().addAll(generateHavens(world.getRoadNetwork()));
 
       generateTargets(world, entTypes, numMobileTgts, numStaticTgts);
@@ -204,10 +204,12 @@ public class WorldGenerator
 
    /**
     * Randomly/procedurally generate a network of roads for the world.
+    * 
+    * @param roadNet
+    *           Generated roads will be stored here.
     */
-   private Graph<WorldCoordinate> generateRoadNetwork()
+   private void generateRoadNetwork(Graph<WorldCoordinate> roadNet)
    {
-      Graph<WorldCoordinate> roadNet = new Graph<WorldCoordinate>();
 
       // This percentage of grid cells will contain road seed locations
       final double percentRoadCells = 0.01;
@@ -246,7 +248,6 @@ public class WorldGenerator
       KDNode rootNode = KDTree.generateTree(roadSeeds);
       Vertex<WorldCoordinate> rootVert = roadNet.createVertex(rootNode.getLocation());
       kdNodeToRoadGroup(rootVert, rootNode, roadNet);
-      return roadNet;
    }
 
    /**

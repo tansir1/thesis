@@ -17,10 +17,9 @@ import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
 import thesis.core.entities.uav.UAV;
-import thesis.core.entities.uav.dubins.DubinsPath;
-import thesis.core.entities.uav.dubins.PathPhase;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
+import thesis.core.world.RenderOptions.RenderOption;
 
 public class RenderSimState
 {
@@ -79,7 +78,7 @@ public class RenderSimState
    private BufferedImage rawBlueMobileImg;
    private BufferedImage scaledBlueMobileImg;
 
-   private boolean drawUavPaths;
+   private RenderOptions renderOpts;
 
    /**
     * Initialize a renderer with a bounds size of zero.
@@ -98,14 +97,13 @@ public class RenderSimState
       }
 
       this.model = model;
+      renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
-
-      drawUavPaths = false;
    }
 
    /**
@@ -132,6 +130,7 @@ public class RenderSimState
       }
 
       this.model = model;
+      renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
@@ -205,16 +204,35 @@ public class RenderSimState
       Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.4f);
       gfx.setFont(newFont);
 
-      drawGridLines(gfx);
-      drawRoads(gfx);
-      drawHavens(gfx);
-      drawTargets(gfx);
-
-      if (drawUavPaths)
+      if (renderOpts.isOptionEnabled(RenderOption.Graticule))
       {
-         drawUAVPaths(gfx);
+         drawGridLines(gfx);
       }
-      drawUAVs(gfx);
+
+      if (renderOpts.isOptionEnabled(RenderOption.Roads))
+      {
+         drawRoads(gfx);
+      }
+
+      if (renderOpts.isOptionEnabled(RenderOption.Havens))
+      {
+         drawHavens(gfx);
+      }
+
+      if (renderOpts.isOptionEnabled(RenderOption.Targets))
+      {
+         drawTargets(gfx);
+      }
+
+      if (renderOpts.isOptionEnabled(RenderOption.UavHistoryTrail))
+      {
+         drawUAVHistoryTrails(gfx);
+      }
+
+      if (renderOpts.isOptionEnabled(RenderOption.UAVs))
+      {
+         drawUAVs(gfx);
+      }
    }
 
    /**
@@ -269,14 +287,15 @@ public class RenderSimState
    }
 
    /**
-    * Toggle whether or not UAV flight paths are drawn.
+    * Retrieve the rendering options.
     * 
-    * @param drawPaths
-    *           True if the paths should be drawn.
+    * Changes made to this option set will affect the next frame of rendering.
+    * 
+    * @return A reference to the rendering options.
     */
-   public void setDrawUAVPaths(boolean drawPaths)
+   public RenderOptions getRenderOptions()
    {
-      this.drawUavPaths = drawPaths;
+      return renderOpts;
    }
 
    private void recomputeScalingSizes()
@@ -511,54 +530,50 @@ public class RenderSimState
       }
    }
 
-   private void drawUAVPaths(Graphics2D g2d)
+   /**
+    * Draw a series of connected dots at each recorded location of all UAV's
+    * history trails.
+    * 
+    * @param g2d
+    */
+   private void drawUAVHistoryTrails(Graphics2D g2d)
    {
+      if (scaledBlueMobileImg == null)
+      {
+         return;
+      }
+
+      final int width = scaledBlueMobileImg.getWidth() / 2;
+      final int height = scaledBlueMobileImg.getHeight() / 2;
+
       g2d.setColor(Color.blue);
+      int prevX = -1;
+      int prevY = -1;
+      int curX = 0;
+      int curY = 0;
+
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
-         DubinsPath path = uav.getFlightPath();
-         WorldPose start = path.getStartPose();
-         WorldPose end = path.getEndPose();
-
-         WorldCoordinate startPt = null;
-         WorldCoordinate endPt = null;
-
-         for (PathPhase phase : PathPhase.values())
+         for (WorldPose pose : uav.getFlightHistoryTrail())
          {
-            switch (path.getPathType().getSegmentType(phase))
+            curX = (int) (pixelsPerMeterW * pose.getCoordinate().getEast().asMeters());
+            curY = (int) (pixelsPerMeterH * pose.getCoordinate().getNorth().asMeters());
+            // Invert the y axis so that "north" is at the top of the screen.
+            curY = bounds.height - curY;
+
+            // Center the circle over the location
+            curX -= width / 2;
+            curY -= width / 2;
+
+            g2d.drawOval(curX, curY, width, height);
+
+            if (prevX != -1 && prevY != -1)
             {
-
-            case Left:
-            {
-               //g2d.draw
-               //g2d.drawArc(x, y, width, height, startAngle, arcAngle);
+               g2d.drawLine(prevX, prevY, curX, curY);
             }
-               break;
-            case Right:
-            {
 
-               //g2d.drawArc(x, y, width, height, startAngle, arcAngle);
-            }
-               break;
-            case Straight:
-            {
-               WorldCoordinate curLocation = uav.getCoordinate();
-
-               int x1 = (int) (pixelsPerMeterW * curLocation.getEast().asMeters());
-               int y1 = (int) (pixelsPerMeterH * curLocation.getNorth().asMeters());
-               // Invert the y axis so that "north" is at the top of the screen.
-               y1 = bounds.height - y1;
-
-               WorldCoordinate wypt = path.getWaypoint(phase);
-               int x2 = (int) (pixelsPerMeterW * wypt.getEast().asMeters());
-               int y2 = (int) (pixelsPerMeterH * wypt.getNorth().asMeters());
-               // Invert the y axis so that "north" is at the top of the screen.
-               y2 = bounds.height - y2;
-
-               g2d.drawLine(x1, y1, x2, y2);
-            }
-               break;
-            }
+            prevX = curX;
+            prevY = curY;
          }
       }
    }
@@ -585,9 +600,11 @@ public class RenderSimState
     *           The width of the final image in pixels.
     * @param imgH
     *           The height of the final image in pixels.
+    * @param opts
+    *           Custom rendering options to apply to the rendered image.
     * @return The world rendered into the image.
     */
-   public static BufferedImage renderToImage(SimModel model, int imgW, int imgH)
+   public static BufferedImage renderToImage(SimModel model, int imgW, int imgH, RenderOptions opts)
    {
       if (model == null)
       {
@@ -596,8 +613,33 @@ public class RenderSimState
 
       BufferedImage img = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
       RenderSimState render = new RenderSimState(model);
+
+      if (opts != null)
+      {
+         render.getRenderOptions().copy(opts);
+      }
+
       render.setBounds(0, 0, imgW, imgH);
       render.render(img.createGraphics());
       return img;
    }
+
+   /**
+    * Convenience wrapper function to render the given world into an image of
+    * the specified size. This provides a screenshot of the world using default
+    * rendering options.
+    *
+    * @param model
+    *           The model to render.
+    * @param imgW
+    *           The width of the final image in pixels.
+    * @param imgH
+    *           The height of the final image in pixels.
+    * @return The world rendered into the image.
+    */
+   public static BufferedImage renderToImage(SimModel model, int imgW, int imgH)
+   {
+      return renderToImage(model, imgW, imgH, null);
+   }
+
 }

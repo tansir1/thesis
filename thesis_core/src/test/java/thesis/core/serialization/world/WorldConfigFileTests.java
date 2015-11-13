@@ -16,9 +16,8 @@ import thesis.core.common.graph.Vertex;
 
 public class WorldConfigFileTests
 {
-   private Graph<WorldCoordinate> createRoadNet()
+   private void createRoadNet(Graph<WorldCoordinate> roadNet)
    {
-      Graph<WorldCoordinate> roadNet = new Graph<WorldCoordinate>();
       Vertex<WorldCoordinate> vert1 = roadNet.createVertex(TestUtils.randWorldCoord());
       Vertex<WorldCoordinate> vert2 = roadNet.createVertex(TestUtils.randWorldCoord());
       Vertex<WorldCoordinate> vert3 = roadNet.createVertex(TestUtils.randWorldCoord());
@@ -26,8 +25,6 @@ public class WorldConfigFileTests
       roadNet.createBidirectionalEdge(vert1, vert2, 1);
       roadNet.createBidirectionalEdge(vert2, vert3, 2);
       roadNet.createBidirectionalEdge(vert3, vert1, 3);
-
-      return roadNet;
    }
 
    @Test
@@ -39,7 +36,7 @@ public class WorldConfigFileTests
       testMe.getWorldWidth().setAsKilometers(654.432);
       testMe.setNumColumns(4);
       testMe.setNumRows(34);
-      testMe.setRoadNetwork(createRoadNet());
+      createRoadNet(testMe.getRoadNetwork());
 
       WorldCoordinate wc = new WorldCoordinate();
       wc.setCoordinate(TestUtils.randWorldCoord());

@@ -17,6 +17,17 @@ public class WorldPose
       coord = new WorldCoordinate();
       heading = new Angle();
    }
+   
+   /**
+    * Initialize a new pose by copying the given pose.
+    * 
+    * @param copy Copy the values of this pose into the new pose.
+    */
+   public WorldPose(final WorldPose copy)
+   {
+      coord = new WorldCoordinate(copy.getCoordinate());
+      heading = new Angle(copy.getHeading());
+   }
 
    /**
     * Initialize the pose with the specified location and heading.
