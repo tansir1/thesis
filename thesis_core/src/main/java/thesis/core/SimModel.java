@@ -5,10 +5,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.Distance;
-import thesis.core.common.WorldPose;
 import thesis.core.entities.TargetMgr;
-import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
@@ -125,16 +122,18 @@ public class SimModel
    }
 
    /**
-    * Step the simulation forward by the requested amount of time.
+    * Step the simulation forward by one frame's worth of time.
     *
     * @param deltaTimeMS
     *           Advance the simulation forward by this many milliseconds.
+    *           
+    * @see #SIM_STEP_RATE_MS           
     */
-   public void stepSimulation(long deltaTimeMS)
+   public void stepSimulation()
    {
       logger.debug("-------------------Simulation stepping.-----------------");
-      tgtMgr.stepSimulation(deltaTimeMS);
-      uavMgr.stepSimulation(deltaTimeMS);
+      tgtMgr.stepSimulation();
+      uavMgr.stepSimulation();
    }
    
    /**

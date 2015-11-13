@@ -25,20 +25,20 @@ public class UAVKinematicsTest
       WorldConfig worldCfg = new WorldConfig();
       worldCfg.setNumColumns(10);
       worldCfg.setNumRows(10);
-      worldCfg.getWorldHeight().setAsKilometers(100);
-      worldCfg.getWorldWidth().setAsKilometers(100);
+      worldCfg.getWorldHeight().setAsKilometers(10);
+      worldCfg.getWorldWidth().setAsKilometers(10);
       
       UAVType uavType = new UAVType(1);
       uavType.getMaxSpd().setAsMetersPerSecond(10);
-      uavType.getMaxTurnRt().setAsDegreesPerSecond(18);
+      uavType.getMinTurnRadius().setAsMeters(250);
       uavType.init();
       
       EntityTypes entTypes = new EntityTypes();
       entTypes.addUAVType(uavType);      
       
       UAVEntityConfig uavEntCfg = new UAVEntityConfig();
-      WorldCoordinate.setCoordinateAsMeters(uavEntCfg.getLocation(), 45000, 5000);
-      uavEntCfg.getOrientation().setAsDegrees(-90);
+      WorldCoordinate.setCoordinateAsMeters(uavEntCfg.getLocation(), 2000, 3000);
+      uavEntCfg.getOrientation().setAsDegrees(180);
       uavEntCfg.setUAVType(uavType.getTypeID());
       worldCfg.uavCfgs.add(uavEntCfg);
       
@@ -48,24 +48,26 @@ public class UAVKinematicsTest
       UAV uav = sim.getUAVManager().getUAV(0);
       
       WorldPose flyTo = new WorldPose();
-      WorldCoordinate.setCoordinateAsMeters(flyTo.getCoordinate(), 40000, 64000);
-      flyTo.getHeading().setAsDegrees(180);
+      WorldCoordinate.setCoordinateAsMeters(flyTo.getCoordinate(), 7000, 6000);
+      flyTo.getHeading().setAsDegrees(-135);
       uav.TEMP_setDestination(flyTo);
 
-      final int runTimeMS = 10 * 1000;
+      final int runTimeMS = 700 * 1000;
       for(int simTime = 0; simTime < runTimeMS; simTime += SimModel.SIM_STEP_RATE_MS)
       {
-         sim.stepSimulation(SimModel.SIM_STEP_RATE_MS);   
+         sim.stepSimulation();   
       }
       
-      
-      for(WorldPose pose : uav.getFlightHistoryTrail())
+      /*
+      List<WorldPose> history = new ArrayList<WorldPose>();
+      uav.getFlightHistoryTrail(history);
+      for(WorldPose pose : history)
       {
          double east = pose.getEast().asMeters();
          double north = pose.getNorth().asMeters();
          System.out.format("%.2f,%.2f,%.2f\n", east, north, pose.getHeading().asDegrees());   
       }
-      
+      */
       
       try
       {
@@ -79,6 +81,7 @@ public class UAVKinematicsTest
       {
          // TODO Auto-generated catch block
          e.printStackTrace();
-      }   
+      }
+      System.out.println("Test complete.");
    }
 }

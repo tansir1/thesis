@@ -58,8 +58,8 @@ public class DubinsPathGenerator
       if (theta > Math.PI)
          theta -= 2.0 * Math.PI;
 
-      endLeft.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
-      endLeft.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
+      endLeft.getCenter().getEast().setAsMeters(end.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      endLeft.getCenter().getNorth().setAsMeters(end.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       endLeft.getRadius().copy(minTurnRadius);
 
       theta = end.getHeading().asRadians();
@@ -67,8 +67,8 @@ public class DubinsPathGenerator
       if (theta < -Math.PI)
          theta += 2.0 * Math.PI;
 
-      endRight.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
-      endRight.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
+      endRight.getCenter().getEast().setAsMeters(end.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      endRight.getCenter().getNorth().setAsMeters(end.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       endRight.getRadius().copy(minTurnRadius);
 
       DubinsPath path = genCSCPath(startLeft, startRight, endLeft, endRight, minTurnRadius, start, end);
@@ -248,6 +248,10 @@ public class DubinsPathGenerator
       Distance arcLen = new Distance();
       arcLen.copy(radius);
       arcLen.scale(theta);
+      if(arcLen.asMeters() < 0)
+      {
+         arcLen.scale(-1.0);
+      }
       return arcLen;
    }
 

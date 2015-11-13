@@ -8,6 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
@@ -17,6 +19,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
 import thesis.core.entities.uav.UAV;
+import thesis.core.entities.uav.dubins.PathPhase;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -425,23 +428,53 @@ public class RenderSimState
       final int pixH = bounds.height - 1;
       final int pixW = bounds.width - 1;
 
-      // White, half alpha
       g2d.setColor(Color.blue);
       g2d.drawRect(bounds.x + 1, bounds.y + 1, pixW, pixH);
-      g2d.setColor(new Color(255, 255, 255, 127));
+
+      // White, half alpha
+      final Color lineColor = new Color(255, 255, 255, 127);
       final int numCols = model.getWorld().getColumnCount();
       final int numRows = model.getWorld().getRowCount();
 
+      g2d.setColor(Color.yellow);
+      g2d.drawString(Integer.toString(0), bounds.x + 1, bounds.height - 1);
+
+      // ----Major grind lines----
       // 0th border line is handled by the border rectangle
       for (int i = 1; i < numCols; ++i)
       {
+         g2d.setColor(Color.yellow);
+         g2d.drawString(Integer.toString(i), i * gridCellW, bounds.height - 1);
+         g2d.setColor(lineColor);
          g2d.drawLine(i * gridCellW, bounds.y, i * gridCellW, pixH);
       }
 
       // 0th border line is handled by the border rectangle
       for (int i = 1; i < numRows; ++i)
       {
+         g2d.setColor(Color.yellow);
+         g2d.drawString(Integer.toString(numRows - i), bounds.x + 1, i * gridCellH);
+         g2d.setColor(lineColor);
          g2d.drawLine(bounds.x, i * gridCellH, pixW, i * gridCellH);
+      }
+
+      // ----Minor grind lines----
+      g2d.setColor(lineColor);
+      float dashSpacing[] = { 15.0f };
+      BasicStroke dashed = new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, dashSpacing,
+            0.0f);
+      g2d.setStroke(dashed);
+
+      final int halfCellW = gridCellW / 2;
+      final int halfCellH = gridCellH / 2;
+      for (int i = 0; i < numCols; ++i)
+      {
+         g2d.drawLine(i * gridCellW + halfCellW, bounds.y, i * gridCellW + halfCellW, pixH);
+      }
+
+      for (int i = 0; i < numRows; ++i)
+      {
+         g2d.drawLine(bounds.x, i * gridCellH + halfCellH, pixW, i * gridCellH + halfCellH);
       }
    }
 
@@ -547,14 +580,32 @@ public class RenderSimState
       final int height = scaledBlueMobileImg.getHeight() / 2;
 
       g2d.setColor(Color.blue);
-      int prevX = -1;
-      int prevY = -1;
       int curX = 0;
       int curY = 0;
 
+      List<WorldPose> history = new ArrayList<WorldPose>();
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
-         for (WorldPose pose : uav.getFlightHistoryTrail())
+         int prevX = -1;
+         int prevY = -1;
+
+         if (uav.getFlightPath() != null)
+         {
+            for (PathPhase phase : PathPhase.values())
+            {
+               WorldCoordinate wc = uav.getFlightPath().getWaypoint(phase);
+               int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
+               int y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+               // Invert the y axis so that "north" is at the top of the screen.
+               y = bounds.height - y;
+
+               g2d.drawImage(scaledHavenImg, x, y, null);
+            }
+         }
+
+         history.clear();
+         uav.getFlightHistoryTrail(history);
+         for (WorldPose pose : history)
          {
             curX = (int) (pixelsPerMeterW * pose.getCoordinate().getEast().asMeters());
             curY = (int) (pixelsPerMeterH * pose.getCoordinate().getNorth().asMeters());

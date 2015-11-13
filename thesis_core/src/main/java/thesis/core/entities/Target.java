@@ -1,5 +1,6 @@
 package thesis.core.entities;
 
+import thesis.core.SimModel;
 import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
@@ -39,19 +40,16 @@ public class Target
    }
 
 	/**
-	 * Step the simulation forward by the requested amount of time.
-	 *
-	 * @param deltaTimeMS
-	 *            Advance the simulation forward by this many milliseconds.
-	 */
-	public void stepSimulation(long deltaTimeMS)
+	 * Step the simulation forward by {@link SimModel#SIM_STEP_RATE_MS} amount of time.
+	 	 */
+	public void stepSimulation()
 	{
 		if(type.isMobile())
 		{
 			Distance northing = new Distance();
 			Distance easting = new Distance();
 
-			double deltaSeconds = deltaTimeMS / 1000.0;
+			double deltaSeconds = SimModel.SIM_STEP_RATE_MS / 1000.0;
 			LinearSpeed spd = type.getMaxSpeed();
 
 	      // east distance = time * speed * east component

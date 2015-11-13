@@ -3,6 +3,7 @@ package thesis.core.entities.uav;
 import java.util.HashSet;
 import java.util.Set;
 
+import thesis.core.SimModel;
 import thesis.core.common.AngularSpeed;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
@@ -16,12 +17,14 @@ public class UAVType
 {
    private int typeID;
    private LinearSpeed maxSpd;
-   private AngularSpeed maxTurnRt;
    private Distance minTurnRadius;
-   private Distance wyptReachTolerance;
 
    private Set<Sensor> sensors;
    private Set<Weapon> weapons;
+
+   // Derived parameters
+   private AngularSpeed maxTurnRt;
+   private LinearSpeed frameSpd;
 
    public UAVType(int typeID)
    {
@@ -33,7 +36,7 @@ public class UAVType
       weapons = new HashSet<Weapon>();
 
       minTurnRadius = new Distance();
-      wyptReachTolerance = new Distance();
+      frameSpd = new LinearSpeed();
    }
 
    /**
@@ -57,6 +60,16 @@ public class UAVType
    }
 
    /**
+    * Get the speed of the UAV per frame of the simulation.
+    * 
+    * @return The speed of the UAV scaled to simulation frame rate.
+    */
+   public LinearSpeed getFrameSpd()
+   {
+      return frameSpd;
+   }
+
+   /**
     * Get the minimum radius required for the UAV to turn 180 degrees at max
     * speed.
     * 
@@ -75,17 +88,6 @@ public class UAVType
    public AngularSpeed getMaxTurnRt()
    {
       return maxTurnRt;
-   }
-
-   /**
-    * If the distance between the UAV and its waypoint is less than this value
-    * then the UAV has reached the waypoint.
-    * 
-    * @return
-    */
-   public Distance getWaypointReachTolerance()
-   {
-      return wyptReachTolerance;
    }
 
    /**
@@ -144,14 +146,14 @@ public class UAVType
 
    public void init()
    {
-      final double timeToTurnAround = Math.PI / maxTurnRt.asRadiansPerSecond();
-      final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
-      minTurnRadius.setAsMeters(arcLength / Math.PI);
-      
-      
-      //If the UAV is within this timespan from reaching a waypoint it is
-      //considered to have hit the waypoint
-      final double timeToWyptThreshold = 0.5;//half second
-      wyptReachTolerance.setAsMeters(maxSpd.asMeterPerSecond() * timeToWyptThreshold);
+      // final double timeToTurnAround = Math.PI /
+      // maxTurnRt.asRadiansPerSecond();
+      // final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
+      // minTurnRadius.setAsMeters(arcLength / Math.PI);
+      // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
+      // maxTurnRt.asRadiansPerSecond());
+      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius.asMeters());
+
+      frameSpd.setAsMetersPerSecond(maxSpd.asMeterPerSecond() * (SimModel.SIM_STEP_RATE_MS / 1000.0));
    }
 }

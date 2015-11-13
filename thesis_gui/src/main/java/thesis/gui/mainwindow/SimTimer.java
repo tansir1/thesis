@@ -16,11 +16,6 @@ import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class SimTimer
 {
-   /**
-    * Length in time in milliseconds between subsequent steps of the simulation.
-    */
-   private final long timeStepMS;
-
    private ScheduledExecutorService execSvc;
 
    private SimModel model;
@@ -50,8 +45,6 @@ public class SimTimer
 
       logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
       execSvc = Executors.newSingleThreadScheduledExecutor();
-
-      timeStepMS = 16;// 60hz update rate
    }
 
    public void reset(SimModel model)
@@ -74,7 +67,7 @@ public class SimTimer
          }
 
          logger.info("Stepping simulation.");
-         model.stepSimulation(timeStepMS);
+         model.stepSimulation();
          SwingUtilities.invokeLater(new Runnable() {
 
             @Override
@@ -112,7 +105,7 @@ public class SimTimer
             {
                if (model != null)
                {
-                  model.stepSimulation(timeStepMS);
+                  model.stepSimulation();
                   SwingUtilities.invokeLater(new Runnable() {
 
                      @Override
@@ -123,7 +116,7 @@ public class SimTimer
                   });
                }
             }
-         }, 0, timeStepMS, TimeUnit.MILLISECONDS);
+         }, 0, SimModel.SIM_STEP_RATE_MS, TimeUnit.MILLISECONDS);
       }
    }
 

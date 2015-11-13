@@ -96,7 +96,8 @@ public class TestUtils
    {
       UAVType uavType = new UAVType(rand.nextInt());
       uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble() * 20);
-      uavType.getMaxTurnRt().setAsDegreesPerSecond(rand.nextDouble() * 5);
+      uavType.getMinTurnRadius().setAsMeters((rand.nextDouble() * 1000) + 200);
+      uavType.init();
 
       int numWpnTypes = (int) (wpns.size() * rand.nextDouble());
       for (int i = 0; i < numWpnTypes; ++i)

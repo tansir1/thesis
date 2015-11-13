@@ -13,14 +13,14 @@
       <TargetType maxSpd="10" type="2"/>
    </TargetTypes>
    <UAVTypes>
-      <UAVType maxSpd="15" maxTurnRt="10" type="1">
+      <UAVType maxSpd="15" turnRad="300" type="1">
          <Sensors>
             <Sensor type="1"/>
             <Sensor type="2"/>
          </Sensors>
          <Weapons/>
       </UAVType>
-      <UAVType maxSpd="25" maxTurnRt="15" type="2">
+      <UAVType maxSpd="25" turnRad="150" type="2">
          <Sensors>
             <Sensor type="1"/>
          </Sensors>

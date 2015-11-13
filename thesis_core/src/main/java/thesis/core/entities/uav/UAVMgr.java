@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.SimModel;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -94,16 +95,13 @@ public class UAVMgr
    }
 
    /**
-    * Step the simulation forward by the requested amount of time.
-    *
-    * @param deltaTimeMS
-    *           Advance the simulation forward by this many milliseconds.
+    * Step the simulation forward by {@link SimModel#SIM_STEP_RATE_MS} amount of time.
     */
-   public void stepSimulation(long deltaTimeMS)
+   public void stepSimulation()
    {
       for (UAV uav : uavs)
       {
-         uav.stepSimulation(deltaTimeMS);
+         uav.stepSimulation();
       }
    }
 }
