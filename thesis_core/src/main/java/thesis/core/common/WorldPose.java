@@ -68,4 +68,18 @@ public class WorldPose
    {
       return heading;
    }
+   
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("[N");
+      sb.append(coord.getNorth());
+      sb.append(", E");
+      sb.append(coord.getEast());
+      sb.append(", Hdg: ");
+      sb.append(heading);
+      sb.append("]");
+      return sb.toString();
+   }
 }

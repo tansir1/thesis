@@ -3,7 +3,6 @@ package thesis.core.entities.uav.dubins;
 import java.util.ArrayList;
 import java.util.List;
 
-import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -41,8 +40,8 @@ public class DubinsPathGenerator
       if (theta > Math.PI)
          theta -= 2.0 * Math.PI;
 
-      startLeft.getCenter().setEast(Distance.add(start.getEast(), minTurnRadius).scale(Math.cos(theta)));
-      startLeft.getCenter().setNorth(Distance.add(start.getNorth(), minTurnRadius).scale(Math.sin(theta)));
+      startLeft.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      startLeft.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       startLeft.getRadius().copy(minTurnRadius);
 
       theta = start.getHeading().asRadians();
@@ -50,8 +49,8 @@ public class DubinsPathGenerator
       if (theta < -Math.PI)
          theta += 2.0 * Math.PI;
 
-      startRight.getCenter().setEast(Distance.add(start.getEast(), minTurnRadius).scale(Math.cos(theta)));
-      startRight.getCenter().setNorth(Distance.add(start.getNorth(), minTurnRadius).scale(Math.sin(theta)));
+      startRight.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      startRight.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       startRight.getRadius().copy(minTurnRadius);
 
       theta = end.getHeading().asRadians();
@@ -59,8 +58,8 @@ public class DubinsPathGenerator
       if (theta > Math.PI)
          theta -= 2.0 * Math.PI;
 
-      endLeft.getCenter().setEast(Distance.add(end.getEast(), minTurnRadius).scale(Math.cos(theta)));
-      endLeft.getCenter().setNorth(Distance.add(end.getNorth(), minTurnRadius).scale(Math.sin(theta)));
+      endLeft.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      endLeft.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       endLeft.getRadius().copy(minTurnRadius);
 
       theta = end.getHeading().asRadians();
@@ -68,8 +67,8 @@ public class DubinsPathGenerator
       if (theta < -Math.PI)
          theta += 2.0 * Math.PI;
 
-      endRight.getCenter().setEast(Distance.add(end.getEast(), minTurnRadius).scale(Math.cos(theta)));
-      endRight.getCenter().setNorth(Distance.add(end.getNorth(), minTurnRadius).scale(Math.sin(theta)));
+      endRight.getCenter().getEast().setAsMeters(start.getEast().asMeters() + minTurnRadius.asMeters() * Math.cos(theta));
+      endRight.getCenter().getNorth().setAsMeters(start.getNorth().asMeters() + minTurnRadius.asMeters() * Math.sin(theta));
       endRight.getRadius().copy(minTurnRadius);
 
       DubinsPath path = genCSCPath(startLeft, startRight, endLeft, endRight, minTurnRadius, start, end);
@@ -224,12 +223,23 @@ public class DubinsPathGenerator
    private static Distance computeArcLength(final WorldCoordinate center, final WorldCoordinate lhs,
          final WorldCoordinate rhs, final Distance radius, final boolean left)
    {
+      //Angle leftAngle = new Angle();
+      //Angle rightAngle = new Angle();
+      /*
       Angle leftAngle = center.bearingTo(lhs);
       Angle rightAngle = center.bearingTo(lhs);
 
       rightAngle.subtract(leftAngle);
-      double theta = rightAngle.asRadians();
+      double theta = rightAngle.asRadians();*/
 
+      double x1 = lhs.getEast().asMeters() - center.getEast().asMeters();
+      double y1 = lhs.getNorth().asMeters() - center.getNorth().asMeters();
+      
+      double x2 = rhs.getEast().asMeters() - center.getEast().asMeters();
+      double y2 = rhs.getNorth().asMeters() - center.getNorth().asMeters();
+
+      double theta = Math.atan2(y2, x2) - Math.atan2(y1, x1);      
+      
       if (theta < 0 && left)
          theta += 2.0 * Math.PI;
       else if (theta > 0 && !left)

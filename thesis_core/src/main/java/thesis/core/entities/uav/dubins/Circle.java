@@ -24,4 +24,9 @@ public class Circle
       return radius;
    }
 
+   @Override
+   public String toString()
+   {
+      return center.toString() + ", " + radius.toString();
+   }
 }
