@@ -13,9 +13,12 @@ import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
 import thesis.core.entities.uav.UAV;
+import thesis.core.entities.uav.dubins.DubinsPath;
+import thesis.core.entities.uav.dubins.PathPhase;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 
@@ -76,6 +79,8 @@ public class RenderSimState
    private BufferedImage rawBlueMobileImg;
    private BufferedImage scaledBlueMobileImg;
 
+   private boolean drawUavPaths;
+
    /**
     * Initialize a renderer with a bounds size of zero.
     *
@@ -99,6 +104,8 @@ public class RenderSimState
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
+
+      drawUavPaths = false;
    }
 
    /**
@@ -202,6 +209,11 @@ public class RenderSimState
       drawRoads(gfx);
       drawHavens(gfx);
       drawTargets(gfx);
+
+      if (drawUavPaths)
+      {
+         drawUAVPaths(gfx);
+      }
       drawUAVs(gfx);
    }
 
@@ -254,6 +266,17 @@ public class RenderSimState
       int y = (int) (pixelsPerMeterH * meters);
       y = bounds.height - y;
       return y;
+   }
+
+   /**
+    * Toggle whether or not UAV flight paths are drawn.
+    * 
+    * @param drawPaths
+    *           True if the paths should be drawn.
+    */
+   public void setDrawUAVPaths(boolean drawPaths)
+   {
+      this.drawUavPaths = drawPaths;
    }
 
    private void recomputeScalingSizes()
@@ -485,6 +508,58 @@ public class RenderSimState
          trans.rotate(-uav.getHeading().asRadians());
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);
+      }
+   }
+
+   private void drawUAVPaths(Graphics2D g2d)
+   {
+      g2d.setColor(Color.blue);
+      for (UAV uav : model.getUAVManager().getAllUAVs())
+      {
+         DubinsPath path = uav.getFlightPath();
+         WorldPose start = path.getStartPose();
+         WorldPose end = path.getEndPose();
+
+         WorldCoordinate startPt = null;
+         WorldCoordinate endPt = null;
+
+         for (PathPhase phase : PathPhase.values())
+         {
+            switch (path.getPathType().getSegmentType(phase))
+            {
+
+            case Left:
+            {
+               //g2d.draw
+               //g2d.drawArc(x, y, width, height, startAngle, arcAngle);
+            }
+               break;
+            case Right:
+            {
+
+               //g2d.drawArc(x, y, width, height, startAngle, arcAngle);
+            }
+               break;
+            case Straight:
+            {
+               WorldCoordinate curLocation = uav.getCoordinate();
+
+               int x1 = (int) (pixelsPerMeterW * curLocation.getEast().asMeters());
+               int y1 = (int) (pixelsPerMeterH * curLocation.getNorth().asMeters());
+               // Invert the y axis so that "north" is at the top of the screen.
+               y1 = bounds.height - y1;
+
+               WorldCoordinate wypt = path.getWaypoint(phase);
+               int x2 = (int) (pixelsPerMeterW * wypt.getEast().asMeters());
+               int y2 = (int) (pixelsPerMeterH * wypt.getNorth().asMeters());
+               // Invert the y axis so that "north" is at the top of the screen.
+               y2 = bounds.height - y2;
+
+               g2d.drawLine(x1, y1, x2, y2);
+            }
+               break;
+            }
+         }
       }
    }
 

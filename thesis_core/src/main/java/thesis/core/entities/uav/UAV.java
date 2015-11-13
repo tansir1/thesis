@@ -65,6 +65,11 @@ public class UAV
       return pose;
    }
 
+   public PathPhase getCurrentPathPhase()
+   {
+      return pathPhase;
+   }
+   
    /**
     * Step the simulation forward by the requested amount of time.
     *
@@ -79,6 +84,11 @@ public class UAV
       checkPathPhaseTransition();
    }
 
+   public DubinsPath getFlightPath()
+   {
+      return path;
+   }
+   
    private void stepPhysics(long deltaTimeMS)
    {
       final Angle hdg = pose.getHeading();
