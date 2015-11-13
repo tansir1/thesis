@@ -214,7 +214,7 @@ public class UAV
    
    private void checkPathPhaseTransition()
    {
-      if(numFramesToWypt <= 0)
+      if(numFramesToWypt < 0)
       {   
          switch (pathPhase)
          {

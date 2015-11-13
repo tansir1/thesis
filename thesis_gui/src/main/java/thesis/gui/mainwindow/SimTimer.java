@@ -37,7 +37,7 @@ public class SimTimer
     */
    public SimTimer(RenderableSimWorldPanel simPanel)
    {
-      if(simPanel == null)
+      if (simPanel == null)
       {
          throw new NullPointerException("SimPanel cannot be null.");
       }
@@ -68,7 +68,8 @@ public class SimTimer
 
          logger.info("Stepping simulation.");
          model.stepSimulation();
-         SwingUtilities.invokeLater(new Runnable() {
+         SwingUtilities.invokeLater(new Runnable()
+         {
 
             @Override
             public void run()
@@ -98,7 +99,8 @@ public class SimTimer
       if (model != null)
       {
          logger.info("Free running simulation");
-         future = execSvc.scheduleAtFixedRate(new Runnable() {
+         future = execSvc.scheduleAtFixedRate(new Runnable()
+         {
 
             @Override
             public void run()
@@ -106,8 +108,8 @@ public class SimTimer
                if (model != null)
                {
                   model.stepSimulation();
-                  SwingUtilities.invokeLater(new Runnable() {
-
+                  SwingUtilities.invokeLater(new Runnable()
+                  {
                      @Override
                      public void run()
                      {
