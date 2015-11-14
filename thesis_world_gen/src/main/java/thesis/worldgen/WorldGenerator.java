@@ -14,7 +14,7 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
 import thesis.core.entities.TargetType;
-import thesis.core.entities.UAVType;
+import thesis.core.entities.uav.UAVType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.TargetEntityConfig;
 import thesis.core.serialization.world.UAVEntityConfig;
@@ -83,7 +83,7 @@ public class WorldGenerator
       world.setNumColumns(numCols);
       world.setNumRows(numRows);
 
-      world.setRoadNetwork(generateRoadNetwork());
+      generateRoadNetwork(world.getRoadNetwork());
       world.getHavens().addAll(generateHavens(world.getRoadNetwork()));
 
       generateTargets(world, entTypes, numMobileTgts, numStaticTgts);
@@ -204,10 +204,12 @@ public class WorldGenerator
 
    /**
     * Randomly/procedurally generate a network of roads for the world.
+    * 
+    * @param roadNet
+    *           Generated roads will be stored here.
     */
-   private Graph<WorldCoordinate> generateRoadNetwork()
+   private void generateRoadNetwork(Graph<WorldCoordinate> roadNet)
    {
-      Graph<WorldCoordinate> roadNet = new Graph<WorldCoordinate>();
 
       // This percentage of grid cells will contain road seed locations
       final double percentRoadCells = 0.01;
@@ -246,7 +248,6 @@ public class WorldGenerator
       KDNode rootNode = KDTree.generateTree(roadSeeds);
       Vertex<WorldCoordinate> rootVert = roadNet.createVertex(rootNode.getLocation());
       kdNodeToRoadGroup(rootVert, rootNode, roadNet);
-      return roadNet;
    }
 
    /**

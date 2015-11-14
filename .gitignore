@@ -9,6 +9,7 @@ thesis_gui/worlds/*
 thesis_world_gen/worlds/*
 thesis_world_gen/worldGen.properties
 worlds/*
+sim.log
 
 
 

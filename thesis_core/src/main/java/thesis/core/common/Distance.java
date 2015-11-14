@@ -35,10 +35,27 @@ public class Distance implements Comparable<Distance>
     * @param addMe
     *           This amount will be added to the calling instance of
     *           {@link Distance}.
+    * @return Returns 'this' to allow operator chaining.           
     */
-   public void add(Distance addMe)
+   public Distance add(Distance addMe)
    {
       valueMeters += addMe.valueMeters;
+      return this;
+   }
+
+   /**
+    * Add the given distances together and return their result in a new distance
+    * object.
+    * 
+    * @param d1
+    * @param d2
+    * @return
+    */
+   public static Distance add(Distance d1, Distance d2)
+   {
+      Distance ret = new Distance(d1);
+      ret.add(d2);
+      return ret;
    }
 
    /**
@@ -47,10 +64,12 @@ public class Distance implements Comparable<Distance>
     * @param subtractMe
     *           This amount will be subtracted from the calling instance of
     *           {@link Distance}.
+    * @return Returns 'this' to allow operator chaining.           
     */
-   public void subtract(Distance subtractMe)
+   public Distance subtract(Distance subtractMe)
    {
       valueMeters -= subtractMe.valueMeters;
+      return this;
    }
 
    /**
@@ -58,10 +77,13 @@ public class Distance implements Comparable<Distance>
     * 
     * If the distance is 10 then it becomes -10 and vice versa. Mostly used for
     * subtracting distances by adding a negated distance.
+    * 
+    * @return Returns 'this' to allow operator chaining.
     */
-   public void negate()
+   public Distance negate()
    {
       valueMeters = -valueMeters;
+      return this;
    }
 
    /**
@@ -69,10 +91,12 @@ public class Distance implements Comparable<Distance>
     * 
     * @param scalingFactor
     *           Multiply the distance by this percentage.
+    * @return Returns 'this' to allow operator chaining.
     */
-   public void scale(double scalingFactor)
+   public Distance scale(double scalingFactor)
    {
       valueMeters *= scalingFactor;
+      return this;
    }
 
    public double asMeters()
@@ -162,13 +186,14 @@ public class Distance implements Comparable<Distance>
       if (getClass() != obj.getClass())
          return false;
       Distance other = (Distance) obj;
-      //if (Double.doubleToLongBits(valueMeters) != Double.doubleToLongBits(other.valueMeters))
-        // return false;
-      
+      // if (Double.doubleToLongBits(valueMeters) !=
+      // Double.doubleToLongBits(other.valueMeters))
+      // return false;
+
       final double EPS_THRESHOLD = 0.000001;
-      if(Math.abs(valueMeters - other.valueMeters) > EPS_THRESHOLD)
+      if (Math.abs(valueMeters - other.valueMeters) > EPS_THRESHOLD)
          return false;
-      
+
       return true;
    }
 

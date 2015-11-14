@@ -1,10 +1,14 @@
-package thesis.core.entities;
+package thesis.core.entities.uav;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import thesis.core.SimModel;
 import thesis.core.common.AngularSpeed;
+import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
+import thesis.core.entities.Sensor;
+import thesis.core.entities.Weapon;
 
 /**
  * Performance specification data for a specific type of UAV.
@@ -13,9 +17,14 @@ public class UAVType
 {
    private int typeID;
    private LinearSpeed maxSpd;
-   private AngularSpeed maxTurnRt;
+   private Distance minTurnRadius;
+
    private Set<Sensor> sensors;
    private Set<Weapon> weapons;
+
+   // Derived parameters
+   private AngularSpeed maxTurnRt;
+   private LinearSpeed frameSpd;
 
    public UAVType(int typeID)
    {
@@ -25,6 +34,9 @@ public class UAVType
 
       sensors = new HashSet<Sensor>();
       weapons = new HashSet<Weapon>();
+
+      minTurnRadius = new Distance();
+      frameSpd = new LinearSpeed();
    }
 
    /**
@@ -45,6 +57,27 @@ public class UAVType
    public LinearSpeed getMaxSpd()
    {
       return maxSpd;
+   }
+
+   /**
+    * Get the speed of the UAV per frame of the simulation.
+    * 
+    * @return The speed of the UAV scaled to simulation frame rate.
+    */
+   public LinearSpeed getFrameSpd()
+   {
+      return frameSpd;
+   }
+
+   /**
+    * Get the minimum radius required for the UAV to turn 180 degrees at max
+    * speed.
+    * 
+    * @return The distance required to turn around at max speed.
+    */
+   public Distance getMinTurnRadius()
+   {
+      return minTurnRadius;
    }
 
    /**
@@ -111,4 +144,16 @@ public class UAVType
       return true;
    }
 
+   public void init()
+   {
+      // final double timeToTurnAround = Math.PI /
+      // maxTurnRt.asRadiansPerSecond();
+      // final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
+      // minTurnRadius.setAsMeters(arcLength / Math.PI);
+      // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
+      // maxTurnRt.asRadiansPerSecond());
+      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius.asMeters());
+
+      frameSpd.setAsMetersPerSecond(maxSpd.asMeterPerSecond() * (SimModel.SIM_STEP_RATE_MS / 1000.0));
+   }
 }

@@ -9,8 +9,8 @@ import java.util.Map;
 
 import thesis.core.entities.SensorType;
 import thesis.core.entities.TargetType;
-import thesis.core.entities.UAVType;
 import thesis.core.entities.WeaponType;
+import thesis.core.entities.uav.UAVType;
 
 public class EntityTypes
 {

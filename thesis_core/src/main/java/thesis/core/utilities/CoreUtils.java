@@ -122,8 +122,6 @@ public class CoreUtils
 				catch (Exception e)
 				{
 					logger.warn("Failed to read simulation version data. Details: {}", e.getLocalizedMessage());
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
 			}
 			else
