@@ -4,8 +4,9 @@ import subprocess
 
 #puSourceFiles = ['uav_task_state.pu',
 #                 'belief_class.pu']
-#puSourceFiles = ['uav_activity.pu']
-puSourceFiles = ['activity_search.pu',
+#puSourceFiles = ['uav_task_activity.pu']
+puSourceFiles = ['uav_task_activity.pu',
+                 'activity_search.pu',
                  'uav_loop.pu']
 
 
