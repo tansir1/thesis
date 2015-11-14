@@ -60,6 +60,11 @@ public class RenderSimState
     */
    private BasicStroke roadStroke;
 
+   /**
+    * Stroke for drawing lines connecting sample points along a UAV flight path.
+    */
+   private BasicStroke historyStroke;
+   
    private SimModel model;
 
    private Rectangle bounds;
@@ -103,6 +108,7 @@ public class RenderSimState
       renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
+      historyStroke = new BasicStroke(3f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
@@ -136,6 +142,7 @@ public class RenderSimState
       renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
+      historyStroke = new BasicStroke(3f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
@@ -557,7 +564,9 @@ public class RenderSimState
          y = bounds.height - y;
 
          trans.translate(x - halfImgW, y - halfImgH);
-         trans.rotate(-uav.getHeading().asRadians());
+         //trans.rotate(-uav.getHeading().asRadians());
+         double deg = uav.getHeading().asDegrees() - 90;
+         trans.rotate(-Math.toRadians(deg));
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);
       }
@@ -571,37 +580,18 @@ public class RenderSimState
     */
    private void drawUAVHistoryTrails(Graphics2D g2d)
    {
-      if (scaledBlueMobileImg == null)
-      {
-         return;
-      }
-
-      final int width = scaledBlueMobileImg.getWidth() / 2;
-      final int height = scaledBlueMobileImg.getHeight() / 2;
-
       g2d.setColor(Color.blue);
       int curX = 0;
       int curY = 0;
 
+      //BasicStroke historyStroke = new BasicStroke(3f);
+      g2d.setStroke(historyStroke);
+      
       List<WorldPose> history = new ArrayList<WorldPose>();
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
          int prevX = -1;
          int prevY = -1;
-
-         if (uav.getFlightPath() != null)
-         {
-            for (PathPhase phase : PathPhase.values())
-            {
-               WorldCoordinate wc = uav.getFlightPath().getWaypoint(phase);
-               int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
-               int y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
-               // Invert the y axis so that "north" is at the top of the screen.
-               y = bounds.height - y;
-
-               g2d.drawImage(scaledHavenImg, x, y, null);
-            }
-         }
 
          history.clear();
          uav.getFlightHistoryTrail(history);
@@ -611,12 +601,6 @@ public class RenderSimState
             curY = (int) (pixelsPerMeterH * pose.getCoordinate().getNorth().asMeters());
             // Invert the y axis so that "north" is at the top of the screen.
             curY = bounds.height - curY;
-
-            // Center the circle over the location
-            curX -= width / 2;
-            curY -= width / 2;
-
-            g2d.drawOval(curX, curY, width, height);
 
             if (prevX != -1 && prevY != -1)
             {

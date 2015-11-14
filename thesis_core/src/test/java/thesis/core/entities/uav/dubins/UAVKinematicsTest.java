@@ -52,8 +52,8 @@ public class UAVKinematicsTest
       flyTo.getHeading().setAsDegrees(-135);
       uav.TEMP_setDestination(flyTo);
 
-      final int runTimeMS = 700 * 1000;
-      for(int simTime = 0; simTime < runTimeMS; simTime += SimModel.SIM_STEP_RATE_MS)
+      final int FRAME_LIMIT = 45000;
+      for(int frameCount = 0; frameCount < FRAME_LIMIT; ++frameCount)
       {
          sim.stepSimulation();   
       }

@@ -366,7 +366,7 @@ public class DubinsPathGenerator
    {
       DubinsPath path = new DubinsPath();
       path.type = PathType.LRL;
-//FIXME Waypoints!
+
       WorldCoordinate startTan = new WorldCoordinate();
       WorldCoordinate endTan = new WorldCoordinate();
 
@@ -426,7 +426,7 @@ public class DubinsPathGenerator
    {
       DubinsPath path = new DubinsPath();
       path.type = PathType.RLR;
-//FIXME Waypoints!
+
       WorldCoordinate startTan = new WorldCoordinate();
       WorldCoordinate endTan = new WorldCoordinate();
 

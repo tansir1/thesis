@@ -169,7 +169,7 @@ public class UAV
       pose.getCoordinate().translate(northing, easting);
 
       pose.getHeading().normalize360();
-      logger.trace("{}", this);
+      //logger.trace("{}", this);
    }
    
    /**
@@ -186,10 +186,6 @@ public class UAV
    private void computePathTo(final WorldPose flyTo)
    {
       path = DubinsPathGenerator.generate(type.getMinTurnRadius(), pose, flyTo);
-      // FIXME
-      // Distance TEMP = new Distance();
-      // TEMP.setAsMeters(500);
-      // path = DubinsPathGenerator.generate(TEMP, pose, flyTo);
       if (path.getPathType() != PathType.NO_PATH)
       {
          pathPhase = PathPhase.Phase1;
@@ -214,7 +210,8 @@ public class UAV
    
    private void checkPathPhaseTransition()
    {
-      if(numFramesToWypt < 0)
+      //pathPhase is null when no destination is set
+      if(numFramesToWypt <= 0 && pathPhase != null)
       {   
          switch (pathPhase)
          {

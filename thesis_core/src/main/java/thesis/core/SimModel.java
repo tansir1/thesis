@@ -5,7 +5,10 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.common.Distance;
+import thesis.core.common.WorldPose;
 import thesis.core.entities.TargetMgr;
+import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
@@ -76,7 +79,7 @@ public class SimModel
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
-      /*for (UAV uav : uavMgr.getAllUAVs())
+      for (UAV uav : uavMgr.getAllUAVs())
       {
          WorldPose pose = new WorldPose();
          Distance north = new Distance();
@@ -88,7 +91,7 @@ public class SimModel
          pose.getCoordinate().setCoordinate(north, east);
          pose.getHeading().setAsDegrees(randGen.nextInt(360));
          uav.TEMP_setDestination(pose);
-      }*/
+      }
    }
 
    /**
@@ -131,7 +134,7 @@ public class SimModel
     */
    public void stepSimulation()
    {
-      logger.debug("-------------------Simulation stepping.-----------------");
+      logger.trace("-------------------Simulation stepping.-----------------");
       tgtMgr.stepSimulation();
       uavMgr.stepSimulation();
    }
