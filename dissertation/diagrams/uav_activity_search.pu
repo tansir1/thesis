@@ -1,8 +1,16 @@
 @startuml
 
-(*) -up-> "First Activity"
--right-> "Second Activity"
---> "Third Activity"
--left-> (*)
+(*) -d-> "Point sensors towards search location"
+note top
+  Sensors are not necessarily
+  in range of search location
+end note
+-d-> "Query World for cells in FOV"
+-r-> "Scan next cell" as scan
+-u-> if "All cells scanned?" then
+  -u->[Yes] "Update belief state"
+  --> (*)
+  else
+    -->[No] scan
 
 @enduml
