@@ -1,0 +1,30 @@
+@startuml
+
+actor uav
+actor world
+actor target
+
+'Search
+uav -d-> (Search)
+world -u-> (Search)
+
+'Confirm
+uav -d-> (Confirm)
+world -u-> (Confirm)
+
+'Track
+uav -d-> (Track)
+target -u-> (Track)
+
+'Attack
+uav -d-> (Attack)
+target -u-> (Attack)
+
+'Bda
+uav -d-> (BDA)
+target -u-> (BDA)
+
+'Path Planning
+uav -> (Path Planning)
+
+@enduml

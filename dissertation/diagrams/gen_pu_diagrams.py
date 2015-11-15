@@ -5,10 +5,25 @@ import subprocess
 #puSourceFiles = ['uav_task_state.pu',
 #                 'belief_class.pu']
 #puSourceFiles = ['uav_task_activity.pu']
-puSourceFiles = ['uav_task_use_case.pu',
-                 'activity_search.pu',
-                 'uav_loop_activity.pu']
+#puSourceFiles = ['uav_task_use_case.pu',
+#                 'activity_search.pu',
+#                 'uav_loop_activity.pu']
 
+
+puSourceFiles = ['belief_class.pu',
+                 'uav_activity_attack.pu',
+                 'uav_activity_bda.pu',
+                 'uav_activity_confirm.pu',
+                 'uav_activity_main_loop.pu',
+                 'uav_activity_merge_beliefs.pu',
+                 'uav_activity_pathing.pu',
+                 'uav_activity_proc_contracts.pu',
+                 'uav_activity_relay_comms.pu',
+                 'uav_activity_search.pu',
+                 'uav_activity_track.pu',
+                 'uav_state_tasks.pu',
+                 'uav_usecase_infrastructure.pu',
+                 'uav_usecase_tasks.pu']
 
 def generateDiagrams(puJarPath):
 
