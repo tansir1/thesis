@@ -1,0 +1,19 @@
+@startuml
+
+title Main UAV Simulation Step Frame Activity
+
+(*) -d-> "Update kinematics"
+-d-> "Update pathing"
+-d-> "Relay communications"
+-r-> "Merge incoming belief states"
+-u-> "Process contracts"
+-u-> "Process current task" as task
+
+task -r-> if "Task updated belief?" then
+  -d->[Yes] "Broadcast belief"
+  -d-> (*)
+else
+  -d->[No] (*)
+endif
+
+@enduml
