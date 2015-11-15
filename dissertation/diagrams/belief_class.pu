@@ -11,13 +11,11 @@ Class UAVBelief{
 }
 
 Class TargetBelief{
--WorldCoordinate location
--Angle heading
+-WorldPose pose
 -TargetType type
 -float probability
 +TargetBelief(TargetType tt)
-+WorldCoordinate getLocation()
-+Angle getHeading()
++WorldPose getPose()
 +TargetType getType()
 +float getTypeConfidence()
 +void setTypeConfidence(float confidence)
