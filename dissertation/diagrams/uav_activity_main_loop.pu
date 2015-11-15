@@ -8,7 +8,11 @@ start
 :Relay communications;
 :Merge incoming belief states;
 :Process contracts;
-:Process current task;
+if (UAV in range for task?) then (yes)
+  :Process current task;
+else (no)
+  :Do search activity;
+endif
 
 if (Task updated belief?) then (yes)
   :Broadcast belief;
