@@ -2,18 +2,19 @@
 
 title Main UAV Simulation Step Frame Activity
 
-(*) -d-> "Update kinematics"
--d-> "Update pathing"
--d-> "Relay communications"
--r-> "Merge incoming belief states"
--u-> "Process contracts"
--u-> "Process current task" as task
+start
+:Update kinematics;
+:Update pathing;
+:Relay communications;
+:Merge incoming belief states;
+:Process contracts;
+:Process current task;
 
-task -r-> if "Task updated belief?" then
-  -d->[Yes] "Broadcast belief"
-  -d-> (*)
-else
-  -d->[No] (*)
+if (Task updated belief?) then (yes)
+  :Broadcast belief;
+else (no)
 endif
+
+stop
 
 @enduml

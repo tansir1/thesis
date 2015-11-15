@@ -12,6 +12,7 @@ endif
 if (Target within weapons range?) then (yes)
   if( angle_between(uav, target) < launch_tolerance? or\nWill target evade soon?) then (yes)
     :Deploy weapon;
+    :Announce BDA task;
   endif
 else (no)
 endif

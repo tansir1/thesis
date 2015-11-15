@@ -14,6 +14,10 @@ end note
 while (All cells in FOV scanned?) is (false)
   :Scan next cell;
   :Update belief state;
+  if (New target potentially detected?) then (yes)
+    :Announce Confirm task;
+  else (no)
+  endif
 endwhile (true)
 
 stop
