@@ -1,0 +1,18 @@
+@startuml
+
+title UAV confirm activity
+
+start
+
+if (Target in range?) then (yes)
+  repeat
+    :Scan target cell;
+    :Update belieft state;
+  repeat while (task_timer < time_to_confirm?)
+else (no)
+  :Do search activity;
+endif
+
+stop
+
+@enduml
