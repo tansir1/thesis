@@ -1,0 +1,20 @@
+@startuml
+
+title UAV attack activity
+
+start
+
+if (target moved?) then (yes)
+  :Recompute Dubin's Path;
+else (no)
+endif
+
+if (Target within weapons range?) then (yes)
+  if( angle_between(uav, target) < launch_tolerance? or\nWill target evade soon?) then (yes)
+    :Deploy weapon;
+  endif
+else (no)
+endif
+
+stop
+@enduml
