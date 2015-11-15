@@ -2,25 +2,25 @@
 
 title UAV pathing activity
 
+start
 partition Path_Planning {
-(*) --> "Get next task" as next
---> "Compute Dubin's Path"
+:Get next task;
+:Compute Dubin's Path;
 }
 
 partition Path_Following {
--r-> "Step kinematics" as step
 
-step --> if "At waypoint?" then
-  -->[Yes] if "At last waypoint?" then
-            -->[Yes] next
-          else
-            -->[No] "Iterate Waypoint"
-            -l-> step
-          endif
-else
-  -->[No] step
-endif
+while (At last waypoint?) is (false)
+  repeat
+    :Step kinematics;
+  repeat while(At next waypoint?) is (false)
+  :Iterate waypoint;
+endwhile (true)
+:Get next task;
+
 }
+
+stop
 
 
 @enduml
