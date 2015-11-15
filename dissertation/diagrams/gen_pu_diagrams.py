@@ -2,13 +2,6 @@ import os
 import argparse
 import subprocess
 
-#puSourceFiles = ['uav_task_state.pu',
-#                 'belief_class.pu']
-#puSourceFiles = ['uav_task_activity.pu']
-#puSourceFiles = ['uav_task_use_case.pu',
-#                 'activity_search.pu',
-#                 'uav_loop_activity.pu']
-
 
 puSourceFiles = ['belief_class.pu',
                  'uav_activity_attack.pu',
@@ -25,16 +18,18 @@ puSourceFiles = ['belief_class.pu',
                  'uav_usecase_infrastructure.pu',
                  'uav_usecase_tasks.pu']
 
-def generateDiagrams(puJarPath):
+
+def generate_diagrams(pu_jar_path):
 
     for src in puSourceFiles:
         if not os.path.exists(src):
             print("ERROR: {0} does not exist.".format(src))
         else:
-            cmds = ['java', '-jar', os.path.abspath(puJarPath)]
+            cmds = ['java', '-jar', os.path.abspath(pu_jar_path)]
             cmds.append(src)
             print("Generating {0}".format(src))
             subprocess.run(cmds, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate all of the PlantUML diagrams.")
@@ -46,7 +41,7 @@ def main():
         if not os.path.exists(args.puJarPath):
             parser.error("The file %s does not exist." % args.puJarPath)
         else:
-            generateDiagrams(args.puJarPath)
+            generate_diagrams(args.puJarPath)
 
 if __name__ == "__main__":
     main()
