@@ -18,12 +18,6 @@ import thesis.core.world.World;
 
 public class SimModel
 {
-   
-   /**
-    * The time in milliseconds between simulation frames.
-    */
-   public static long SIM_STEP_RATE_MS = 16;//60Hz update rate
-   
    private Logger logger;
    private World world;
 
@@ -63,7 +57,8 @@ public class SimModel
     * @param entTypes
     *           The types of entities within the world.
     */
-   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes)
+   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes, float commsRngPercent,
+         float commsRelayProb)
    {
       randGen = new Random(randomSeed);
 
@@ -75,7 +70,12 @@ public class SimModel
 
       world = new World(worldCfg);
       tgtMgr.reset(entTypes, worldCfg);
-      uavMgr.reset(entTypes, worldCfg);
+
+      final Distance maxComsRng = worldCfg.getMaxWorldDistance();
+      maxComsRng.scale(commsRngPercent);
+
+      // FIXME Load/Derive the number of hops?
+      uavMgr.reset(entTypes, worldCfg, 5, randGen, maxComsRng, commsRelayProb);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
@@ -129,8 +129,8 @@ public class SimModel
     *
     * @param deltaTimeMS
     *           Advance the simulation forward by this many milliseconds.
-    *           
-    * @see #SIM_STEP_RATE_MS           
+    *
+    * @see #SIM_STEP_RATE_MS
     */
    public void stepSimulation()
    {
@@ -138,16 +138,16 @@ public class SimModel
       tgtMgr.stepSimulation();
       uavMgr.stepSimulation();
    }
-   
+
    /**
-    * 
+    *
     * @return
     */
    public WorldConfig getWorldConfig()
    {
       return worldCfg;
    }
-   
+
    public EntityTypes getEntityTypes()
    {
       return entTypes;

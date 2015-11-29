@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
+import thesis.core.common.SimTime;
 import thesis.core.utilities.LoggerIDs;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
@@ -118,7 +119,7 @@ public class SimTimer
                   });
                }
             }
-         }, 0, SimModel.SIM_STEP_RATE_MS, TimeUnit.MILLISECONDS);
+         }, 0, SimTime.SIM_STEP_RATE_MS, TimeUnit.MILLISECONDS);
       }
    }
 

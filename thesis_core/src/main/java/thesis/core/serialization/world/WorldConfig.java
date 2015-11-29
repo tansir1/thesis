@@ -53,6 +53,14 @@ public class WorldConfig
       return numCols;
    }
 
+   public Distance getMaxWorldDistance()
+   {
+      Distance max = new Distance();
+      double maxM = height.asMeters() * height.asMeters() + width.asMeters() * width.asMeters();
+      max.setAsMeters(maxM);
+      return max;
+   }
+
    public void setNumColumns(int numCols)
    {
       if (numCols < 0)

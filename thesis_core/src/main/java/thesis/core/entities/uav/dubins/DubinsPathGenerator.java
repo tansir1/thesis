@@ -3,6 +3,7 @@ package thesis.core.entities.uav.dubins;
 import java.util.ArrayList;
 import java.util.List;
 
+import thesis.core.common.Circle;
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -234,12 +235,12 @@ public class DubinsPathGenerator
 
       double x1 = lhs.getEast().asMeters() - center.getEast().asMeters();
       double y1 = lhs.getNorth().asMeters() - center.getNorth().asMeters();
-      
+
       double x2 = rhs.getEast().asMeters() - center.getEast().asMeters();
       double y2 = rhs.getNorth().asMeters() - center.getNorth().asMeters();
 
-      double theta = Math.atan2(y2, x2) - Math.atan2(y1, x1);      
-      
+      double theta = Math.atan2(y2, x2) - Math.atan2(y1, x1);
+
       if (theta < 0 && left)
          theta += 2.0 * Math.PI;
       else if (theta > 0 && !left)
