@@ -90,7 +90,7 @@ public class SimTimer
       }
    }
 
-   public void run()
+   public void run(int fastMultiplier)
    {
       if (future != null)
       {
@@ -99,7 +99,8 @@ public class SimTimer
 
       if (model != null)
       {
-         logger.info("Free running simulation");
+         double stepRate = SimTime.SIM_STEP_RATE_MS / (fastMultiplier*1.0) * 1000;
+         logger.info("Free running simulation at {}x", fastMultiplier);
          future = execSvc.scheduleAtFixedRate(new Runnable()
          {
 
@@ -119,7 +120,7 @@ public class SimTimer
                   });
                }
             }
-         }, 0, SimTime.SIM_STEP_RATE_MS, TimeUnit.MILLISECONDS);
+         }, 0, (long)stepRate, TimeUnit.MICROSECONDS);
       }
    }
 
