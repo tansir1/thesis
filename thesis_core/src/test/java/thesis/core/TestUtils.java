@@ -8,9 +8,10 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.entities.Sensor;
 import thesis.core.entities.SensorType;
 import thesis.core.entities.TargetType;
-import thesis.core.entities.UAVType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
+import thesis.core.entities.uav.UAVType;
+import thesis.core.serialization.entities.EntityTypes;
 
 /**
  * A collection of utility functions for running unit tests.
@@ -96,7 +97,8 @@ public class TestUtils
    {
       UAVType uavType = new UAVType(rand.nextInt());
       uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble() * 20);
-      uavType.getMaxTurnRt().setAsDegreesPerSecond(rand.nextDouble() * 5);
+      uavType.getMinTurnRadius().setAsMeters((rand.nextDouble() * 1000) + 200);
+      uavType.init();
 
       int numWpnTypes = (int) (wpns.size() * rand.nextDouble());
       for (int i = 0; i < numWpnTypes; ++i)
@@ -116,5 +118,37 @@ public class TestUtils
       }
 
       return uavType;
+   }
+   
+   public static EntityTypes randEntityTypes()
+   {
+      return randEntityTypes(3,3,4,7);
+   }
+   
+   public static EntityTypes randEntityTypes(int numSensorTypes, int numWeaponTypes, int numUAVTypes, int numTgtTypes)
+   {
+      EntityTypes entTypes = new EntityTypes();
+
+      for(int i=0; i<numSensorTypes; ++i)
+      {
+         entTypes.getSensorTypes().add(TestUtils.randSensorType());
+      }
+
+      for(int i=0; i<numWeaponTypes; ++i)
+      {
+         entTypes.getWeaponTypes().add(TestUtils.randWeaponType());
+      }
+
+      for (int i = 0; i < numUAVTypes; ++i)
+      {
+         entTypes.addUAVType(TestUtils.randUAVType(entTypes.getWeaponTypes(), entTypes.getSensorTypes()));
+      }
+
+      for (int i=0; i<numTgtTypes; ++i)
+      {
+         entTypes.addTargetType(TestUtils.randTargetType());
+      }
+      
+      return entTypes;
    }
 }

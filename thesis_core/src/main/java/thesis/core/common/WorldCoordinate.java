@@ -37,9 +37,9 @@ public class WorldCoordinate
     * Initialize a world coordinate at the given location.
     *
     * @param north
-    *           The distance north from the world origin.  The value is copied.
+    *           The distance north from the world origin. The value is copied.
     * @param east
-    *           The distance east from the world origin.  The value is copied.
+    *           The distance east from the world origin. The value is copied.
     */
    public WorldCoordinate(Distance north, Distance east)
    {
@@ -127,7 +127,7 @@ public class WorldCoordinate
     *           The position in this coordinate will be copied into the calling
     *           coordinate.
     */
-   public void setCoordinate(WorldCoordinate copy)
+   public void setCoordinate(final WorldCoordinate copy)
    {
       this.north.copy(copy.north);
       this.east.copy(copy.east);
@@ -141,22 +141,45 @@ public class WorldCoordinate
     * @param deltaEast
     *           Move the coordinate east by this far.
     */
-   public void translate(Distance deltaNorth, Distance deltaEast)
+   public void translate(final Distance deltaNorth, final Distance deltaEast)
    {
       this.north.add(deltaNorth);
       this.east.add(deltaEast);
    }
 
    /**
-    * Get the absolute bearing angle (in degrees) from this coordinate to the
-    * given coordinate.
+    * Translate the distance traveled at the given speed for the specified
+    * amount of time.
+    * 
+    * @param spd
+    *           The speed of travel.
+    * @param heading
+    *           The heading direction of travel.
+    * @param timeInSec
+    *           The time spent traveling.
+    */
+   public void translate(final LinearSpeed spd, final Angle heading, double timeInSec)
+   {
+      double delNorthM = spd.asMeterPerSecond() * heading.sin() * timeInSec;
+      double delEastM = spd.asMeterPerSecond() * heading.cos() * timeInSec;
+
+      Distance north = new Distance();
+      Distance east = new Distance();
+      north.setAsMeters(delNorthM);
+      east.setAsMeters(delEastM);
+
+      translate(north, east);
+   }
+
+   /**
+    * Get the absolute bearing angle from this coordinate to the given
+    * coordinate.
     *
     * @param wc
     *           Find the bearing to this coordinate.
-    * @return The bearing angle in degrees from this coordinate to the given
-    *         coordinate.
+    * @return The bearing angle from this coordinate to the given coordinate.
     */
-   public Angle bearingTo(WorldCoordinate wc)
+   public Angle bearingTo(final WorldCoordinate wc)
    {
       Distance delNorth = new Distance(wc.north);
       Distance delEast = new Distance(wc.east);
@@ -170,8 +193,18 @@ public class WorldCoordinate
    }
 
    /**
-    * Get the linear distance in kilometers between this coordinate and the
-    * given coordinate.
+    * Get the absolute bearing from the origin to this coordinate.
+    * 
+    * @return The bearing angle from the origin to this coordinate.
+    */
+   public Angle bearingFromOrigin()
+   {
+      WorldCoordinate origin = new WorldCoordinate();
+      return origin.bearingTo(this);
+   }
+
+   /**
+    * Get the linear distance between this coordinate and the given coordinate.
     *
     * @param wc
     *           Get the distance to here.
@@ -250,4 +283,12 @@ public class WorldCoordinate
       return true;
    }
 
+   public static void setAsMeters(final WorldCoordinate wc, final double metersNorth, final double metersEast)
+   {
+      Distance east = new Distance();
+      Distance north = new Distance();
+      east.setAsMeters(metersEast);
+      north.setAsMeters(metersNorth);
+      wc.setCoordinate(north, east);
+   }
 }

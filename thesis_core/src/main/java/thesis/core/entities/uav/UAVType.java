@@ -1,10 +1,14 @@
-package thesis.core.entities;
+package thesis.core.entities.uav;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import thesis.core.common.AngularSpeed;
+import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
+import thesis.core.common.SimTime;
+import thesis.core.entities.Sensor;
+import thesis.core.entities.Weapon;
 
 /**
  * Performance specification data for a specific type of UAV.
@@ -13,9 +17,14 @@ public class UAVType
 {
    private int typeID;
    private LinearSpeed maxSpd;
-   private AngularSpeed maxTurnRt;
+   private Distance minTurnRadius;
+
    private Set<Sensor> sensors;
    private Set<Weapon> weapons;
+
+   // Derived parameters
+   private AngularSpeed maxTurnRt;
+   private LinearSpeed frameSpd;
 
    public UAVType(int typeID)
    {
@@ -25,11 +34,14 @@ public class UAVType
 
       sensors = new HashSet<Sensor>();
       weapons = new HashSet<Weapon>();
+
+      minTurnRadius = new Distance();
+      frameSpd = new LinearSpeed();
    }
 
    /**
     * The unique ID categorizing the UAV type.
-    * 
+    *
     * @return The category type of the UAV.
     */
    public int getTypeID()
@@ -39,7 +51,7 @@ public class UAVType
 
    /**
     * Get the maximum ground speed of the aircraft.
-    * 
+    *
     * @return The maximum speed of the UAV.
     */
    public LinearSpeed getMaxSpd()
@@ -48,8 +60,29 @@ public class UAVType
    }
 
    /**
+    * Get the speed of the UAV per frame of the simulation.
+    *
+    * @return The speed of the UAV scaled to simulation frame rate.
+    */
+   public LinearSpeed getFrameSpd()
+   {
+      return frameSpd;
+   }
+
+   /**
+    * Get the minimum radius required for the UAV to turn 180 degrees at max
+    * speed.
+    *
+    * @return The distance required to turn around at max speed.
+    */
+   public Distance getMinTurnRadius()
+   {
+      return minTurnRadius;
+   }
+
+   /**
     * Get the maximum turning rate for the UAV.
-    * 
+    *
     * @return The maximum turning rate.
     */
    public AngularSpeed getMaxTurnRt()
@@ -59,7 +92,7 @@ public class UAVType
 
    /**
     * Get the set of sensors onboard the UAV.
-    * 
+    *
     * @return The sensors on the aircraft.
     */
    public Set<Sensor> getSensors()
@@ -69,7 +102,7 @@ public class UAVType
 
    /**
     * Get the set of weapons onboard the UAV.
-    * 
+    *
     * @return The weapons on the aircraft.
     */
    public Set<Weapon> getWeapons()
@@ -79,7 +112,7 @@ public class UAVType
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#hashCode()
     */
    @Override
@@ -93,7 +126,7 @@ public class UAVType
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#equals(java.lang.Object)
     */
    @Override
@@ -111,4 +144,16 @@ public class UAVType
       return true;
    }
 
+   public void init()
+   {
+      // final double timeToTurnAround = Math.PI /
+      // maxTurnRt.asRadiansPerSecond();
+      // final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
+      // minTurnRadius.setAsMeters(arcLength / Math.PI);
+      // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
+      // maxTurnRt.asRadiansPerSecond());
+      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius.asMeters());
+
+      frameSpd.setAsMetersPerSecond(maxSpd.asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0));
+   }
 }

@@ -28,9 +28,9 @@ import org.xml.sax.SAXException;
 import thesis.core.entities.Sensor;
 import thesis.core.entities.SensorType;
 import thesis.core.entities.TargetType;
-import thesis.core.entities.UAVType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
+import thesis.core.entities.uav.UAVType;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 
@@ -321,11 +321,12 @@ public class EntityTypesFile
          // Load UAV type specific data
          int type = Integer.parseInt(typeElem.getAttribute("type"));
          double spdM = Double.parseDouble(typeElem.getAttribute("maxSpd"));
-         double maxTurnRtDegSec = Double.parseDouble(typeElem.getAttribute("maxTurnRt"));
+         double minTurnRadM = Double.parseDouble(typeElem.getAttribute("turnRad"));
 
          UAVType uavType = new UAVType(type);
          uavType.getMaxSpd().setAsMetersPerSecond(spdM);
-         uavType.getMaxTurnRt().setAsDegreesPerSecond(maxTurnRtDegSec);
+         uavType.getMinTurnRadius().setAsMeters(minTurnRadM);
+         uavType.init();
 
          // Load sensor data for the uav
          Element sensorsElem = (Element) typeElem.getElementsByTagName("Sensors").item(0);
@@ -383,7 +384,7 @@ public class EntityTypesFile
          Element uavTypeElem = dom.createElement("UAVType");
          uavTypeElem.setAttribute("type", Integer.toString(uavType.getTypeID()));
          uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd().asMeterPerSecond()));
-         uavTypeElem.setAttribute("maxTurnRt", Double.toString(uavType.getMaxTurnRt().asDegreesPerSecond()));
+         uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius().asMeters()));
 
          Element sensorsElem = dom.createElement("Sensors");
          for (Sensor sensor : uavType.getSensors())

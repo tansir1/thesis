@@ -40,6 +40,24 @@ public class Vertex<T>
       outEdges = new ArrayList<DirectedEdge<T>>();
    }
 
+   public Vertex(Vertex<T> copyMe)
+   {
+      this.id = copyMe.id;
+      this.data = copyMe.data;
+      inEdges = new ArrayList<DirectedEdge<T>>();
+      outEdges = new ArrayList<DirectedEdge<T>>();
+
+      for(DirectedEdge<T> edge : copyMe.inEdges)
+      {
+         inEdges.add(new DirectedEdge<T>(edge));
+      }
+
+      for(DirectedEdge<T> edge : copyMe.outEdges)
+      {
+         outEdges.add(new DirectedEdge<T>(edge));
+      }
+   }
+
    public T getUserData()
    {
       return data;

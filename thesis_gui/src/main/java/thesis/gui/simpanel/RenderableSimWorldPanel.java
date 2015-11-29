@@ -45,6 +45,7 @@ public class RenderableSimWorldPanel extends JPanel
 				if (renderWorld != null)
 				{
 					renderWorld.setBounds(0, 0, getWidth(), getHeight());
+					repaint();
 				}
 			}
 		});

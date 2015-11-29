@@ -251,10 +251,8 @@ public class WorldConfigFile
 
    private static void decodeRoadNetwork(WorldConfig cfg, Element roadNetElem)
    {
-      Graph<WorldCoordinate> roadNet = new Graph<WorldCoordinate>();
-      decodeRoadVertices(roadNet, roadNetElem);
-      decodeRoadEdges(roadNet, roadNetElem);
-      cfg.setRoadNetwork(roadNet);
+      decodeRoadVertices(cfg.getRoadNetwork(), roadNetElem);
+      decodeRoadEdges(cfg.getRoadNetwork(), roadNetElem);
    }
 
    /**
