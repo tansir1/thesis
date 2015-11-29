@@ -51,15 +51,15 @@ public class UAVMgrTests
       //Construct 3 UAVs in a west to east line.
       final UAVEntityConfig uav1 = new UAVEntityConfig();
       uav1.setUAVType(uavTypes[0].getTypeID());
-      WorldCoordinate.setCoordinateAsMeters(uav1.getLocation(), 500, 0);
+      WorldCoordinate.setAsMeters(uav1.getLocation(), 500, 0);
       
       final UAVEntityConfig uav2 = new UAVEntityConfig();
       uav2.setUAVType(uavTypes[1].getTypeID());
-      WorldCoordinate.setCoordinateAsMeters(uav2.getLocation(), 500, 250);
+      WorldCoordinate.setAsMeters(uav2.getLocation(), 500, 250);
       
       final UAVEntityConfig uav3 = new UAVEntityConfig();
       uav3.setUAVType(uavTypes[2].getTypeID());
-      WorldCoordinate.setCoordinateAsMeters(uav3.getLocation(), 500, 500);
+      WorldCoordinate.setAsMeters(uav3.getLocation(), 500, 500);
       
       worldCfg.uavCfgs.add(uav1);
       worldCfg.uavCfgs.add(uav2);
@@ -72,7 +72,7 @@ public class UAVMgrTests
       Circle testRegion = new Circle();
       testRegion.getRadius().setAsMeters(50);
       //Slightly east of uav1 
-      WorldCoordinate.setCoordinateAsMeters(testRegion.getCenter(), 500, 10);
+      WorldCoordinate.setAsMeters(testRegion.getCenter(), 500, 10);
 
       //Should only contain uav1
       List<UAV> inRegion = testMe.getAllUAVsInRegion(testRegion);
@@ -80,7 +80,7 @@ public class UAVMgrTests
       assertEquals("Incorrect uav detected in region.", uav1.getUAVType(), inRegion.get(0).getType().getTypeID());
       
       //Slightly east of uav3 
-      WorldCoordinate.setCoordinateAsMeters(testRegion.getCenter(), 500, 510);
+      WorldCoordinate.setAsMeters(testRegion.getCenter(), 500, 510);
       testRegion.getRadius().setAsMeters(300);//UAVs are 250m apart, 300 will catch two of them
       inRegion = testMe.getAllUAVsInRegion(testRegion);
       assertEquals("Incorrect number of UAVs in query region2", 2, inRegion.size());
