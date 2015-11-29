@@ -40,16 +40,25 @@ public class UAV
    private List<WorldPose> pathTrail;
 
    private int numFramesToWypt;
-      
-   public UAV(UAVType type, int id)
+
+   private UAVMgr uavMgr;
+   
+   public UAV(final UAVType type, int id)
    {
       if (type == null)
       {
          throw new NullPointerException("type cannot be null.");
       }
 
+      if(uavMgr == null)
+      {
+         throw new NullPointerException("UAVMgr cannot be null.");
+      }
+      
       this.id = id;
       this.type = type;
+      this.uavMgr = uavMgr;
+      
       pathPhase = null;
       pose = new WorldPose();
       pathPhaseTraveled = new Distance();
