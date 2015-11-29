@@ -19,19 +19,19 @@ public class RectangleTests
        *  |               |
        * 0,0------------30,0
        */
-      WorldCoordinate.setCoordinateAsMeters(testMe.getBottomLeft(), 0, 0);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getTopLeft(), 10, 0);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getTopRight(), 10, 30);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getBottomRight(), 0, 30);
+      WorldCoordinate.setAsMeters(testMe.getBottomLeft(), 0, 0);
+      WorldCoordinate.setAsMeters(testMe.getTopLeft(), 10, 0);
+      WorldCoordinate.setAsMeters(testMe.getTopRight(), 10, 30);
+      WorldCoordinate.setAsMeters(testMe.getBottomRight(), 0, 30);
 
       assertEquals("Incorrect width", 30, testMe.getWidth().asMeters(), 0.0000000001);
       assertEquals("Incorrect height", 10, testMe.getHeight().asMeters(), 0.0000000001);
 
       WorldCoordinate testPt = new WorldCoordinate();
-      WorldCoordinate.setCoordinateAsMeters(testPt, 100, 100);
+      WorldCoordinate.setAsMeters(testPt, 100, 100);
       assertFalse("Point outside of rectangle marked as inside.", testMe.isCoordinateInRegion(testPt));
 
-      WorldCoordinate.setCoordinateAsMeters(testPt, 5, 5);
+      WorldCoordinate.setAsMeters(testPt, 5, 5);
       assertTrue("Point inside of rectangle marked as outside.", testMe.isCoordinateInRegion(testPt));
    }
 
@@ -40,16 +40,16 @@ public class RectangleTests
    {
       Rectangle testMe = new Rectangle();
 
-      WorldCoordinate.setCoordinateAsMeters(testMe.getBottomLeft(), 1, 2);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getTopLeft(), 2, 1);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getTopRight(), 6, 5);
-      WorldCoordinate.setCoordinateAsMeters(testMe.getBottomRight(), 5, 6);
+      WorldCoordinate.setAsMeters(testMe.getBottomLeft(), 1, 2);
+      WorldCoordinate.setAsMeters(testMe.getTopLeft(), 2, 1);
+      WorldCoordinate.setAsMeters(testMe.getTopRight(), 6, 5);
+      WorldCoordinate.setAsMeters(testMe.getBottomRight(), 5, 6);
 
       WorldCoordinate testPt = new WorldCoordinate();
-      WorldCoordinate.setCoordinateAsMeters(testPt, 100, 100);
+      WorldCoordinate.setAsMeters(testPt, 100, 100);
       assertFalse("Point outside of rectangle marked as inside.", testMe.isCoordinateInRegion(testPt));
 
-      WorldCoordinate.setCoordinateAsMeters(testPt, 3, 4);
+      WorldCoordinate.setAsMeters(testPt, 3, 4);
       assertTrue("Point inside of rectangle marked as outside.", testMe.isCoordinateInRegion(testPt));
 
    }
