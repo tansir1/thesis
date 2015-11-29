@@ -106,7 +106,8 @@ public class ThesisGUIApp
          logger.debug("Sim model initialized with:\n{}", cfg);
 
          SimModel simModel = new SimModel();
-         simModel.reset(cfg.getRandomSeed(), worldCfg, entityTypes);
+         simModel.reset(cfg.getRandomSeed(), worldCfg, entityTypes, cfg.getCommsRngPercent(),
+               cfg.getCommsRelayProbability());
 
          MainWindow mainWin = new MainWindow();
          mainWin.connectSimModel(simModel);
