@@ -17,6 +17,7 @@ import thesis.core.common.graph.Vertex;
 
 public class Target
 {
+   private static final double PROB_TO_IGNORE_HAVEN = 0.2;
    private final TargetType type;
    private final WorldPose pose;
    private final Graph<WorldCoordinate> roadNet;
@@ -137,7 +138,8 @@ public class Target
       {
          arrived = true;
       }
-      else if (pose.getCoordinate().distanceTo(intermediateCoordDest).asMeters() < type.getMaxSpeed().asMeterPerSecond())
+      else
+         if (pose.getCoordinate().distanceTo(intermediateCoordDest).asMeters() < type.getMaxSpeed().asMeterPerSecond())
       {
          // If we're within one frame of the destination
          arrived = true;
@@ -150,11 +152,12 @@ public class Target
    {
       if (path.isEmpty())
       {
+         Vertex<WorldCoordinate> start = findNearestVertex(pose.getCoordinate());
+
          // Select a new haven or road intersection if no havens are present
-         Vertex<WorldCoordinate> vert = selectNewHavenOrIntersection();
+         Vertex<WorldCoordinate> vert = selectNewHavenOrIntersection(start);
          if (vert != null)
          {
-            Vertex<WorldCoordinate> start = findNearestVertex(pose.getCoordinate());
             path = roadNet.findPath(start, vert);
          }
       }
@@ -172,19 +175,40 @@ public class Target
       }
    }
 
-   private Vertex<WorldCoordinate> selectNewHavenOrIntersection()
+   private Vertex<WorldCoordinate> selectNewHavenOrIntersection(Vertex<WorldCoordinate> current)
    {
-      Vertex<WorldCoordinate> vert = null;
-      if (!havens.isEmpty())
+      boolean forceHavenIgnore = false;
+      if(randGen.nextDouble() < PROB_TO_IGNORE_HAVEN)
       {
-         // Select a new haven
-         vert = roadNet.getVertexByData(havens.get(randGen.nextInt(havens.size())));
+         forceHavenIgnore = true;
       }
-      else if (roadNet.getNumVertices() > 0)
+
+      Vertex<WorldCoordinate> vert = null;
+      if (havens.size() > 1 && !forceHavenIgnore)
+      {
+         do
+         {
+            // Select a new haven
+            vert = roadNet.getVertexByData(havens.get(randGen.nextInt(havens.size())));
+         } while (vert.getID() == current.getID());
+      }
+      else if(havens.size() == 1 && !forceHavenIgnore)
+      {
+         vert = roadNet.getVertexByData(havens.get(0));
+         if(vert.getID() == current.getID())
+         {
+            //Force another type of selection so the target doesn't go
+            //from the haven to the same haven
+            vert = null;
+         }
+      }
+
+      if(vert == null && roadNet.getNumVertices() > 0)
       {
          // No havens so pick a random road intersection
          vert = roadNet.getVertexByID(randGen.nextInt(roadNet.getNumVertices()));
       }
+
       return vert;
    }
 
