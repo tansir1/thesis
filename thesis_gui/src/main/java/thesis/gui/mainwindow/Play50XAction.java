@@ -24,7 +24,7 @@ public class Play50XAction extends AbstractAction
 
       putValue(SHORT_DESCRIPTION, "Run the simulation at 50X.");
 
-      Icon icon = new ImageIcon(CoreUtils.getResourceAsImage(GuiRsrcPaths.RUN_20X_IMG_PATH));
+      Icon icon = new ImageIcon(CoreUtils.getResourceAsImage(GuiRsrcPaths.RUN_50X_IMG_PATH));
       putValue(LARGE_ICON_KEY, icon);
    }
 
