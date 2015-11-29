@@ -63,7 +63,7 @@ public class RenderSimState
     * Stroke for drawing lines connecting sample points along a UAV flight path.
     */
    private BasicStroke historyStroke;
-   
+
    private SimModel model;
 
    private Rectangle bounds;
@@ -297,9 +297,9 @@ public class RenderSimState
 
    /**
     * Retrieve the rendering options.
-    * 
+    *
     * Changes made to this option set will affect the next frame of rendering.
-    * 
+    *
     * @return A reference to the rendering options.
     */
    public RenderOptions getRenderOptions()
@@ -514,7 +514,9 @@ public class RenderSimState
                halfImgH = scaledRedMobileImg.getHeight() / 2;
 
                trans.translate(x - halfImgW, y - halfImgH);
-               trans.rotate(-tgt.getHeading().asRadians());
+               //trans.rotate(-tgt.getHeading().asRadians());
+               double deg = tgt.getHeading().asDegrees() - 90;
+               trans.rotate(-Math.toRadians(deg));
 
                g2d.drawImage(scaledRedMobileImg, trans, null);
             }
@@ -574,7 +576,7 @@ public class RenderSimState
    /**
     * Draw a series of connected dots at each recorded location of all UAV's
     * history trails.
-    * 
+    *
     * @param g2d
     */
    private void drawUAVHistoryTrails(Graphics2D g2d)
@@ -585,7 +587,7 @@ public class RenderSimState
 
       //BasicStroke historyStroke = new BasicStroke(3f);
       g2d.setStroke(historyStroke);
-      
+
       List<WorldPose> history = new ArrayList<WorldPose>();
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
