@@ -4,6 +4,7 @@ import thesis.core.SimModel;
 import thesis.core.common.Angle;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 
@@ -49,7 +50,7 @@ public class Target
 			Distance northing = new Distance();
 			Distance easting = new Distance();
 
-			double deltaSeconds = SimModel.SIM_STEP_RATE_MS / 1000.0;
+			double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
 			LinearSpeed spd = type.getMaxSpeed();
 
 	      // east distance = time * speed * east component

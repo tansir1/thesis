@@ -2,15 +2,17 @@ package thesis.core.entities.uav;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.SimModel;
 import thesis.core.common.Angle;
 import thesis.core.common.Distance;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
+import thesis.core.entities.uav.comms.UAVComms;
 import thesis.core.entities.uav.dubins.DubinsPath;
 import thesis.core.entities.uav.dubins.DubinsPathGenerator;
 import thesis.core.entities.uav.dubins.PathPhase;
@@ -23,7 +25,7 @@ public class UAV
    /**
     * When this amount of simulation time elapses the UAV will record its
     * current pose.
-    * 
+    *
     * @see #pathTrail
     */
    private static long TRAIL_SAMPLE_INTERVAL_MS = 250;
@@ -42,8 +44,10 @@ public class UAV
    private int numFramesToWypt;
 
    private UAVMgr uavMgr;
-   
-   public UAV(final UAVType type, int id)
+   private UAVComms comms;
+   private Random randGen;
+
+   public UAV(final UAVType type, int id, final UAVMgr uavMgr, Distance maxCommsRng, int maxRelayHops, Random randGen, float commsRelayProb)
    {
       if (type == null)
       {
@@ -54,11 +58,19 @@ public class UAV
       {
          throw new NullPointerException("UAVMgr cannot be null.");
       }
-      
+
+      if(randGen == null)
+      {
+         throw new NullPointerException("Randon generator cannot be null.");
+      }
+
       this.id = id;
       this.type = type;
       this.uavMgr = uavMgr;
-      
+      this.randGen = randGen;
+
+      comms = new UAVComms(this, uavMgr, maxRelayHops, maxCommsRng, randGen, commsRelayProb);
+
       pathPhase = null;
       pose = new WorldPose();
       pathPhaseTraveled = new Distance();
@@ -98,7 +110,7 @@ public class UAV
    }
 
    /**
-    * Step the simulation forward by the requested amount of time.
+    * Step the simulation forward by one frame.
     */
    public void stepSimulation()
    {
@@ -108,8 +120,8 @@ public class UAV
       {
          // Move the aircraft according to its speed, heading, and turn rate
          stepPhysics();
-   
-         lastTrailSampleTimeAccumulator += SimModel.SIM_STEP_RATE_MS;
+
+         lastTrailSampleTimeAccumulator += SimTime.SIM_STEP_RATE_MS;
          if (lastTrailSampleTimeAccumulator > TRAIL_SAMPLE_INTERVAL_MS)
          {
             lastTrailSampleTimeAccumulator = 0;
@@ -129,7 +141,7 @@ public class UAV
    /**
     * Get a copy of the list of poses that the UAV has reached while following
     * its current flight path.
-    * 
+    *
     * @return The poses the UAV reached sampled along its current flight path.
     */
    public void getFlightHistoryTrail(List<WorldPose> retVal)
@@ -140,13 +152,18 @@ public class UAV
       }
    }
 
+   public UAVComms getComms()
+   {
+      return comms;
+   }
+
    private void stepPhysics()
    {
       //We're one frame closer to the next waypoint so decrement the counter
       --numFramesToWypt;
-      
+
       final double frameSpdMpS = type.getFrameSpd().asMeterPerSecond();
-      
+
       double turnCoeff = 0;
       switch (path.getPathType().getSegmentType(pathPhase))
       {
@@ -166,11 +183,11 @@ public class UAV
       }
          break;
       }
-      
+
       double turnRate = turnCoeff * (frameSpdMpS / type.getMinTurnRadius().asMeters());
-      
+
       pose.getHeading().setAsRadians(pose.getHeading().asRadians() + turnRate);
-      
+
       final Distance northing = new Distance();
       final Distance easting = new Distance();
       northing.setAsMeters(frameSpdMpS * pose.getHeading().sin());
@@ -180,7 +197,7 @@ public class UAV
       pose.getHeading().normalize360();
       //logger.trace("{}", this);
    }
-   
+
    /**
     * This is a temporary method for development testing purposes. It will be
     * deleted once aircraft have a means of selecting their own destinations.
@@ -201,7 +218,7 @@ public class UAV
          pathPhaseTraveled.setAsMeters(0);
          pathTrail.clear();
          lastTrailSampleTimeAccumulator = 0;
-         
+
          resetFramesToWaypoint();
       }
       else
@@ -212,16 +229,16 @@ public class UAV
 
    private void resetFramesToWaypoint()
    {
-      final double frameVelocityMpS = type.getMaxSpd().asMeterPerSecond() * (SimModel.SIM_STEP_RATE_MS / 1000.0);
+      final double frameVelocityMpS = type.getMaxSpd().asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0);
       final double distToWypt = path.getSegmentLength(pathPhase).asMeters();
       numFramesToWypt = (int) (distToWypt / frameVelocityMpS) + 1;
    }
-   
+
    private void checkPathPhaseTransition()
    {
       //pathPhase is null when no destination is set
       if(numFramesToWypt <= 0 && pathPhase != null)
-      {   
+      {
          switch (pathPhase)
          {
          case Phase1:

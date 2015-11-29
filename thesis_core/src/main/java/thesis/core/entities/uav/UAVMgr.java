@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
+import thesis.core.common.Distance;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -38,8 +40,12 @@ public class UAVMgr
     * @param worldCfg
     *           UAVs will be generated based on configuration data from here and
     *           types will be cross referenced from entTypes.
+    * @param maxRelayHops
+    *           The maximum number of times that a message can be relayed
+    *           between UAVs.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg)
+   public void reset(EntityTypes entTypes, WorldConfig worldCfg, int maxRelayHops, Random randGen, Distance maxComsRng,
+         float commsRelayProb)
    {
       logger.debug("Resetting UAV Manager.");
 
@@ -51,7 +57,7 @@ public class UAVMgr
          UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
          if (type != null)
          {
-            UAV uav = new UAV(type, uavID);
+            UAV uav = new UAV(type, uavID, this, maxComsRng, maxRelayHops, randGen, commsRelayProb);
             uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
             uav.getHeading().copy(uavEntCfg.getOrientation());
             uav.getHeading().normalize360();
@@ -76,7 +82,7 @@ public class UAVMgr
 
    /**
     * Retrieve a UAV with the given ID.
-    * 
+    *
     * @param id
     *           The ID of the UAV to retrieve.
     * @return The requested UAV or null if no such UAV exists.
@@ -109,7 +115,7 @@ public class UAVMgr
 
    /**
     * Get all UAVs within the specified geographic region.
-    * 
+    *
     * @param region
     *           Get all UAVs within this region.
     * @return A list of UAVs in the region or an empty list if no UAVs are

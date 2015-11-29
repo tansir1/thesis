@@ -156,7 +156,7 @@ public class WorldGenApp
 
 				logger.debug("Saving world {} screenshot into {}", i, screenShotFile.getAbsolutePath());
 				SimModel model = new SimModel();
-				model.reset(0, world, entTypes);
+				model.reset(0, world, entTypes, 0.0f, 0.0f);
 
 				BufferedImage img = RenderSimState.renderToImage(model, 640, 480);
 				ImageIO.write(img, "png", screenShotFile);
