@@ -27,26 +27,26 @@ public class UAVKinematicsTest
       worldCfg.setNumRows(10);
       worldCfg.getWorldHeight().setAsKilometers(10);
       worldCfg.getWorldWidth().setAsKilometers(10);
-      
+
       UAVType uavType = new UAVType(1);
       uavType.getMaxSpd().setAsMetersPerSecond(10);
       uavType.getMinTurnRadius().setAsMeters(250);
       uavType.init();
-      
+
       EntityTypes entTypes = new EntityTypes();
-      entTypes.addUAVType(uavType);      
-      
+      entTypes.addUAVType(uavType);
+
       UAVEntityConfig uavEntCfg = new UAVEntityConfig();
       WorldCoordinate.setAsMeters(uavEntCfg.getLocation(), 2000, 3000);
       uavEntCfg.getOrientation().setAsDegrees(180);
       uavEntCfg.setUAVType(uavType.getTypeID());
       worldCfg.uavCfgs.add(uavEntCfg);
-      
+
       SimModel sim = new SimModel();
-      sim.reset(42, worldCfg, entTypes);
-      
+      sim.reset(42, worldCfg, entTypes, 0.0f, 0.0f);
+
       UAV uav = sim.getUAVManager().getUAV(0);
-      
+
       WorldPose flyTo = new WorldPose();
       WorldCoordinate.setAsMeters(flyTo.getCoordinate(), 7000, 6000);
       flyTo.getHeading().setAsDegrees(-135);
@@ -55,9 +55,9 @@ public class UAVKinematicsTest
       final int FRAME_LIMIT = 45000;
       for(int frameCount = 0; frameCount < FRAME_LIMIT; ++frameCount)
       {
-         sim.stepSimulation();   
+         sim.stepSimulation();
       }
-      
+
       /*
       List<WorldPose> history = new ArrayList<WorldPose>();
       uav.getFlightHistoryTrail(history);
@@ -65,15 +65,15 @@ public class UAVKinematicsTest
       {
          double east = pose.getEast().asMeters();
          double north = pose.getNorth().asMeters();
-         System.out.format("%.2f,%.2f,%.2f\n", east, north, pose.getHeading().asDegrees());   
+         System.out.format("%.2f,%.2f,%.2f\n", east, north, pose.getHeading().asDegrees());
       }
       */
-      
+
       try
       {
          RenderOptions opts = new RenderOptions();
          opts.setOption(RenderOption.UavHistoryTrail);
-         
+
          BufferedImage buf = RenderSimState.renderToImage(sim, 1280, 720, opts);
          ImageIO.write(buf, "png", new File("UAVKinematicsTest.png"));
       }
