@@ -37,7 +37,7 @@ public class UAVKinematicsTest
       entTypes.addUAVType(uavType);      
       
       UAVEntityConfig uavEntCfg = new UAVEntityConfig();
-      WorldCoordinate.setCoordinateAsMeters(uavEntCfg.getLocation(), 2000, 3000);
+      WorldCoordinate.setAsMeters(uavEntCfg.getLocation(), 2000, 3000);
       uavEntCfg.getOrientation().setAsDegrees(180);
       uavEntCfg.setUAVType(uavType.getTypeID());
       worldCfg.uavCfgs.add(uavEntCfg);
@@ -48,7 +48,7 @@ public class UAVKinematicsTest
       UAV uav = sim.getUAVManager().getUAV(0);
       
       WorldPose flyTo = new WorldPose();
-      WorldCoordinate.setCoordinateAsMeters(flyTo.getCoordinate(), 7000, 6000);
+      WorldCoordinate.setAsMeters(flyTo.getCoordinate(), 7000, 6000);
       flyTo.getHeading().setAsDegrees(-135);
       uav.TEMP_setDestination(flyTo);
 

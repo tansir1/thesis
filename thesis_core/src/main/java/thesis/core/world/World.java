@@ -239,6 +239,11 @@ public class World
       {
          throw new NullPointerException("from cannot be null");
       }
+      
+      if (to == null)
+      {
+         throw new NullPointerException("to cannot be null");
+      }
 
       double northM = from.getRow() * distPerRow.asMeters() + (distPerRow.asMeters() * 0.5);
       double eastM = from.getColumn() * distPerCol.asMeters() + (distPerCol.asMeters() * 0.5);
@@ -251,7 +256,4 @@ public class World
 
       to.setCoordinate(north, east);
    }
-
-
-
 }

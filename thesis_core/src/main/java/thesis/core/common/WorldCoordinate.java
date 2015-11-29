@@ -283,7 +283,7 @@ public class WorldCoordinate
       return true;
    }
 
-   public static void setCoordinateAsMeters(final WorldCoordinate wc, final double metersNorth, final double metersEast)
+   public static void setAsMeters(final WorldCoordinate wc, final double metersNorth, final double metersEast)
    {
       Distance east = new Distance();
       Distance north = new Distance();
