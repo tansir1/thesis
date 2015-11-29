@@ -261,7 +261,7 @@ public class Graph<T>
          {
             if (edge.getStartVertex().getID() == edgeStart.getID() && edge.getEndVertex().getID() == edgeEnd.getID())
             {
-               path.add(edge);
+               path.add(new DirectedEdge<T>(edge));
                break;
             }
          }

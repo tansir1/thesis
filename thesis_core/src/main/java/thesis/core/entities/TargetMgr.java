@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg)
+   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen)
    {
       logger.debug("Resetting Target Manager.");
 
@@ -50,7 +51,8 @@ public class TargetMgr
          TargetType type = entTypes.getTargetType(tarEntCfg.getTargetType());
          if (type != null)
          {
-            Target tgt = new Target(type);
+            Target tgt = new Target(type, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
+                  worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
             tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
             tgt.getHeading().copy(tarEntCfg.getOrientation());
             tgt.getHeading().normalize360();
@@ -94,9 +96,9 @@ public class TargetMgr
    public List<Target> getTargetsInRegion(Rectangle region)
    {
       List<Target> inRegion = new ArrayList<Target>();
-      for(Target tar : targets)
+      for (Target tar : targets)
       {
-         if(region.isCoordinateInRegion(tar.getCoordinate()))
+         if (region.isCoordinateInRegion(tar.getCoordinate()))
          {
             inRegion.add(tar);
          }

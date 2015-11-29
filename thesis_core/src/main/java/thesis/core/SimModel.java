@@ -69,7 +69,7 @@ public class SimModel
       logger.debug("World model intiliazed with:\n{}", worldCfg);
 
       world = new World(worldCfg);
-      tgtMgr.reset(entTypes, worldCfg);
+      tgtMgr.reset(entTypes, worldCfg, randGen);
 
       final Distance maxComsRng = worldCfg.getMaxWorldDistance();
       maxComsRng.scale(commsRngPercent);
