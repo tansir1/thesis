@@ -146,10 +146,7 @@ public class UAV
     */
    public void getFlightHistoryTrail(List<WorldPose> retVal)
    {
-      for (WorldPose pose : pathTrail)
-      {
-         retVal.add(new WorldPose(pose));
-      }
+      retVal.addAll(pathTrail);
    }
 
    public UAVComms getComms()
