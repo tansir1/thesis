@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
+import thesis.core.common.Circle;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -95,7 +96,8 @@ public class UAVMgr
    }
 
    /**
-    * Step the simulation forward by {@link SimModel#SIM_STEP_RATE_MS} amount of time.
+    * Step the simulation forward by {@link SimModel#SIM_STEP_RATE_MS} amount of
+    * time.
     */
    public void stepSimulation()
    {
@@ -103,5 +105,28 @@ public class UAVMgr
       {
          uav.stepSimulation();
       }
+   }
+
+   /**
+    * Get all UAVs within the specified geographic region.
+    * 
+    * @param region
+    *           Get all UAVs within this region.
+    * @return A list of UAVs in the region or an empty list if no UAVs are
+    *         within the region.
+    */
+   public List<UAV> getAllUAVsInRegion(Circle region)
+   {
+      List<UAV> inRegion = new ArrayList<UAV>();
+
+      for (UAV uav : uavs)
+      {
+         if (Math.abs(uav.getCoordinate().distanceTo(region.getCenter()).asMeters()) < region.getRadius().asMeters())
+         {
+            inRegion.add(uav);
+         }
+      }
+
+      return inRegion;
    }
 }
