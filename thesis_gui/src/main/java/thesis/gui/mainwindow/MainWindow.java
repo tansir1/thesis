@@ -113,6 +113,8 @@ public class MainWindow implements IMapMouseListener
 		toolbar.add(actions.getPlay5XAction());
 		toolbar.add(actions.getPlay10XAction());
 		toolbar.add(actions.getPlay20XAction());
+		toolbar.add(actions.getPlay50XAction());
+		toolbar.add(actions.getPlay100XAction());
 		toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
 		return toolbar;
 	}
