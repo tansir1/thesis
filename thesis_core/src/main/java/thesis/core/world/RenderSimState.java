@@ -19,7 +19,6 @@ import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
 import thesis.core.entities.uav.UAV;
-import thesis.core.entities.uav.dubins.PathPhase;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
