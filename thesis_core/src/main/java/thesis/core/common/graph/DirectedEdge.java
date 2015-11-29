@@ -65,6 +65,21 @@ public class DirectedEdge<T>
       this.cost = cost;
    }
 
+   public DirectedEdge(DirectedEdge<T> copy)
+   {
+      if (copy == null)
+      {
+         throw new NullPointerException("Copy edge cannot be null.");
+      }
+//      this.start = new Vertex<T>(copy.start);
+//      this.end = new Vertex<T>(copy.end);
+
+      this.start = copy.start;
+      this.end = copy.end;
+
+      this.cost = copy.cost;
+   }
+
    public Vertex<T> getStartVertex()
    {
       return start;
