@@ -8,47 +8,57 @@ import java.text.DecimalFormat;
 public class AngularSpeed implements Comparable<AngularSpeed>
 {
    private static DecimalFormat decFormat = new DecimalFormat("0.00");
-   
+
    /**
     * Internal representation of speed in degrees per second.
     */
    private double degPerSec;
-   
+
    public AngularSpeed()
    {
       degPerSec = 0;
    }
-   
+
    public AngularSpeed(AngularSpeed copy)
    {
       this.degPerSec = copy.degPerSec;
    }
-   
+
    public void copy(AngularSpeed copy)
    {
       this.degPerSec = copy.degPerSec;
    }
-   
+
    public void setAsDegreesPerSecond(double spd)
    {
       this.degPerSec = spd;
    }
-   
+
    public void setAsRadiansPerSecond(double spd)
    {
       this.degPerSec = spd * 57.2958;
    }
-   
+
    public double asRadiansPerSecond()
    {
       return degPerSec * 0.0174533;
    }
-   
+
+   public double asRadiansPerFrame()
+   {
+      return asDegreesPerFrame() * 0.0174533;
+   }
+
    public double asDegreesPerSecond()
    {
       return degPerSec;
    }
-   
+
+   public double asDegreesPerFrame()
+   {
+      return degPerSec * SimTime.SIM_STEP_RATE_S;
+   }
+
    @Override
    public String toString()
    {
@@ -104,12 +114,12 @@ public class AngularSpeed implements Comparable<AngularSpeed>
       AngularSpeed other = (AngularSpeed) obj;
 //      if (Double.doubleToLongBits(degPerSec) != Double.doubleToLongBits(other.degPerSec))
 //         return false;
-      
+
       final double EPS_THRESHOLD = 0.000001;
       if(Math.abs(degPerSec - other.degPerSec) > EPS_THRESHOLD)
-         return false;   
-      
+         return false;
+
       return true;
    }
-  
+
 }
