@@ -77,6 +77,8 @@ public class UAV
       pathTrail = new ArrayList<WorldPose>();
       lastTrailSampleTimeAccumulator = 0;
       numFramesToWypt = 0;
+
+      initSensors();
    }
 
    public int getID()
@@ -252,6 +254,11 @@ public class UAV
          }
          resetFramesToWaypoint();
       }
+   }
+
+   private void initSensors()
+   {
+
    }
 
    @Override

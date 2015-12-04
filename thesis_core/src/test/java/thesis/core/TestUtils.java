@@ -5,12 +5,11 @@ import java.util.Random;
 
 import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.Sensor;
-import thesis.core.entities.SensorType;
 import thesis.core.entities.TargetType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
 import thesis.core.entities.uav.UAVType;
+import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.serialization.entities.EntityTypes;
 
 /**
@@ -22,7 +21,7 @@ public class TestUtils
 
    /**
     * Generates a random world coordinate within a 100x100 km box.
-    * 
+    *
     * @return A random world coordinate.
     */
    public static WorldCoordinate randWorldCoord()
@@ -41,7 +40,7 @@ public class TestUtils
 
    /**
     * Generates a random sensor type.
-    * 
+    *
     * @return A random sensor type.
     */
    public static SensorType randSensorType()
@@ -61,7 +60,7 @@ public class TestUtils
 
    /**
     * Generates a random weapon type.
-    * 
+    *
     * @return A random weapon type.
     */
    public static WeaponType randWeaponType()
@@ -78,7 +77,7 @@ public class TestUtils
 
    /**
     * Generates a random target type.
-    * 
+    *
     * @return A random target type.
     */
    public static TargetType randTargetType()
@@ -90,7 +89,7 @@ public class TestUtils
 
    /**
     * Generates a random UAV type.
-    * 
+    *
     * @return A random UAV type.
     */
    public static UAVType randUAVType(List<WeaponType> wpns, List<SensorType> sensors)
@@ -113,18 +112,17 @@ public class TestUtils
       for (int i = 0; i < numSensorTypes; ++i)
       {
          SensorType sensorType = sensors.get(rand.nextInt(sensors.size()));
-         Sensor sensor = new Sensor(sensorType);
-         uavType.getSensors().add(sensor);
+         uavType.getSensors().add(sensorType);
       }
 
       return uavType;
    }
-   
+
    public static EntityTypes randEntityTypes()
    {
       return randEntityTypes(3,3,4,7);
    }
-   
+
    public static EntityTypes randEntityTypes(int numSensorTypes, int numWeaponTypes, int numUAVTypes, int numTgtTypes)
    {
       EntityTypes entTypes = new EntityTypes();
@@ -148,7 +146,7 @@ public class TestUtils
       {
          entTypes.addTargetType(TestUtils.randTargetType());
       }
-      
+
       return entTypes;
    }
 }
