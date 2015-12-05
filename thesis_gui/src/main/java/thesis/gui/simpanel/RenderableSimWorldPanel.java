@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.world.RenderOptions.RenderOption;
 import thesis.core.world.RenderSimState;
 import thesis.gui.utilities.ListenerSupport;
 
@@ -49,6 +50,7 @@ public class RenderableSimWorldPanel extends JPanel
 				}
 			}
 		});
+
 	}
 
 	public ListenerSupport<IMapMouseListener> getListenerSupport()
@@ -62,6 +64,8 @@ public class RenderableSimWorldPanel extends JPanel
 		this.addMouseListener(mouseState);
 		this.addMouseMotionListener(mouseState);
 		renderWorld.setBounds(0, 0, getWidth(), getHeight());
+	    //FIXME This is temporary demo code until render options can be set via GUI
+      renderWorld.getRenderOptions().setOption(RenderOption.SensorFOV);
 		repaint();
 	}
 

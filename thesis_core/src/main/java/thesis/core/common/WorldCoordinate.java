@@ -148,9 +148,28 @@ public class WorldCoordinate
    }
 
    /**
+    * Shift the current coordinate position by the specified amount.
+    *
+    * @param heading
+    *           Move along this heading.
+    * @param distance
+    *           Move this far along the heading.
+    */
+   public void translate(final Angle heading, final Distance distance)
+   {
+      double deltaNorthM = heading.sin() * distance.asMeters();
+      double deltaEastM = heading.cos() * distance.asMeters();
+      Distance deltaN = new Distance();
+      Distance deltaE = new Distance();
+      deltaN.setAsMeters(deltaNorthM);
+      deltaE.setAsMeters(deltaEastM);
+      translate(deltaN, deltaE);
+   }
+
+   /**
     * Translate the distance traveled at the given speed for the specified
     * amount of time.
-    * 
+    *
     * @param spd
     *           The speed of travel.
     * @param heading
@@ -194,7 +213,7 @@ public class WorldCoordinate
 
    /**
     * Get the absolute bearing from the origin to this coordinate.
-    * 
+    *
     * @return The bearing angle from the origin to this coordinate.
     */
    public Angle bearingFromOrigin()

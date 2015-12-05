@@ -17,6 +17,8 @@ import thesis.core.entities.uav.dubins.DubinsPath;
 import thesis.core.entities.uav.dubins.DubinsPathGenerator;
 import thesis.core.entities.uav.dubins.PathPhase;
 import thesis.core.entities.uav.dubins.PathType;
+import thesis.core.entities.uav.sensors.SensorGroup;
+import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAV
@@ -46,6 +48,8 @@ public class UAV
    private UAVMgr uavMgr;
    private UAVComms comms;
    private Random randGen;
+
+   private SensorGroup sensors;
 
    public UAV(final UAVType type, int id, final UAVMgr uavMgr, Distance maxCommsRng, int maxRelayHops, Random randGen, float commsRelayProb)
    {
@@ -77,6 +81,8 @@ public class UAV
       pathTrail = new ArrayList<WorldPose>();
       lastTrailSampleTimeAccumulator = 0;
       numFramesToWypt = 0;
+
+      initSensors();
    }
 
    public int getID()
@@ -131,6 +137,9 @@ public class UAV
       }
       // Check if the aircraft needs to start heading towards a new location
       checkPathPhaseTransition();
+
+      comms.stepSimulation();
+      sensors.stepSimulation(pose.getCoordinate());
    }
 
    public DubinsPath getFlightPath()
@@ -152,6 +161,11 @@ public class UAV
    public UAVComms getComms()
    {
       return comms;
+   }
+
+   public SensorGroup getSensors()
+   {
+      return sensors;
    }
 
    private void stepPhysics()
@@ -251,6 +265,15 @@ public class UAV
             break;
          }
          resetFramesToWaypoint();
+      }
+   }
+
+   private void initSensors()
+   {
+      sensors = new SensorGroup();
+      for(SensorType st : type.getSensors())
+      {
+         sensors.addSensor(st);
       }
    }
 

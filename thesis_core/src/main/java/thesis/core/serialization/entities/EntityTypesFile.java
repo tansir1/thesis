@@ -25,12 +25,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import thesis.core.entities.Sensor;
-import thesis.core.entities.SensorType;
 import thesis.core.entities.TargetType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
 import thesis.core.entities.uav.UAVType;
+import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 
@@ -338,7 +337,7 @@ public class EntityTypesFile
             SensorType st = entTypes.getSensorType(sensorTypeID);
             if (st != null)
             {
-               uavType.getSensors().add(new Sensor(st));
+               uavType.getSensors().add(st);
             }
             else
             {
@@ -387,10 +386,10 @@ public class EntityTypesFile
          uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius().asMeters()));
 
          Element sensorsElem = dom.createElement("Sensors");
-         for (Sensor sensor : uavType.getSensors())
+         for (SensorType sensor : uavType.getSensors())
          {
             Element sensorElem = dom.createElement("Sensor");
-            sensorElem.setAttribute("type", Integer.toString(sensor.getType().getTypeID()));
+            sensorElem.setAttribute("type", Integer.toString(sensor.getTypeID()));
             sensorsElem.appendChild(sensorElem);
          }
          uavTypeElem.appendChild(sensorsElem);
