@@ -38,11 +38,6 @@ public class SensorTests
 
       for(int i=0; i<numFrames; i++)
       {
-         if(i == numFrames - 2)
-         {
-            int x=0;
-            x++;
-         }
          testMe.stepSimulation(sensorPosition);
          //System.out.println(testMe.getAzimuth());
       }
