@@ -91,6 +91,9 @@ public class SimModel
          pose.getCoordinate().setCoordinate(north, east);
          pose.getHeading().setAsDegrees(randGen.nextInt(360));
          uav.TEMP_setDestination(pose);
+
+         //Temporary sensor stare point
+         uav.getSensors().stareAtAll(pose.getCoordinate());
       }
    }
 
