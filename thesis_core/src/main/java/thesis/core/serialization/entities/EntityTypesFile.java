@@ -328,8 +328,8 @@ public class EntityTypesFile
          uavType.init();
 
          // Load sensor data for the uav
-         Element sensorsElem = (Element) typeElem.getElementsByTagName("SensorTypes").item(0);
-         NodeList sensorsNodeList = sensorsElem.getElementsByTagName("SensorType");
+         Element sensorsElem = (Element) typeElem.getElementsByTagName("Sensors").item(0);
+         NodeList sensorsNodeList = sensorsElem.getElementsByTagName("Sensor");
          for (int j = 0; j < sensorsNodeList.getLength(); ++j)
          {
             Element sensorElem = (Element) sensorsNodeList.item(j);
@@ -385,10 +385,10 @@ public class EntityTypesFile
          uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd().asMeterPerSecond()));
          uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius().asMeters()));
 
-         Element sensorsElem = dom.createElement("SensorTypes");
+         Element sensorsElem = dom.createElement("Sensors");
          for (SensorType sensor : uavType.getSensors())
          {
-            Element sensorElem = dom.createElement("SensorType");
+            Element sensorElem = dom.createElement("Sensor");
             sensorElem.setAttribute("type", Integer.toString(sensor.getTypeID()));
             sensorsElem.appendChild(sensorElem);
          }
