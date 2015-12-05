@@ -1,4 +1,4 @@
-package thesis.core.entities;
+package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
 import thesis.core.common.AngularSpeed;

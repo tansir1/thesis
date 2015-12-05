@@ -7,8 +7,8 @@ import thesis.core.common.AngularSpeed;
 import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.common.SimTime;
-import thesis.core.entities.Sensor;
 import thesis.core.entities.Weapon;
+import thesis.core.entities.uav.sensors.SensorType;
 
 /**
  * Performance specification data for a specific type of UAV.
@@ -19,7 +19,7 @@ public class UAVType
    private LinearSpeed maxSpd;
    private Distance minTurnRadius;
 
-   private Set<Sensor> sensors;
+   private Set<SensorType> sensors;
    private Set<Weapon> weapons;
 
    // Derived parameters
@@ -32,7 +32,7 @@ public class UAVType
       maxSpd = new LinearSpeed();
       maxTurnRt = new AngularSpeed();
 
-      sensors = new HashSet<Sensor>();
+      sensors = new HashSet<SensorType>();
       weapons = new HashSet<Weapon>();
 
       minTurnRadius = new Distance();
@@ -91,11 +91,11 @@ public class UAVType
    }
 
    /**
-    * Get the set of sensors onboard the UAV.
+    * Get the set of sensor types onboard the UAV.
     *
     * @return The sensors on the aircraft.
     */
-   public Set<Sensor> getSensors()
+   public Set<SensorType> getSensors()
    {
       return sensors;
    }
