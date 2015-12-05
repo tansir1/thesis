@@ -102,14 +102,41 @@ public class Sensor
 
    private void updateViewRegion()
    {
-      Angle hdg = pose.getHeading();
-      double halfFOVdeg = type.getFov().asDegrees() / 2;
-      double leftAngleDeg = hdg.asDegrees() + halfFOVdeg;
-      double rightAngleDeg = hdg.asDegrees() - halfFOVdeg;
+      final Angle hdg = pose.getHeading();
+      final double halfFOVdeg = type.getFov().asDegrees() / 2;
+      final double leftAngleDeg = hdg.asDegrees() + halfFOVdeg;
+      final double rightAngleDeg = hdg.asDegrees() - halfFOVdeg;
 
+      final double maxRng = type.getMaxRange().asMeters();
+      final double minRng = type.getMinRange().asMeters();
+      final double frustrumHeight = maxRng - minRng;
+
+      final Distance distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
+      final Distance midRngDist = new Distance();
+      final Distance fovFar = new Distance();
+      final Distance fovNear = new Distance();
+      if(distToStarePt.asMeters() < (maxRng - frustrumHeight))
+      {
+         double distToStareM = distToStarePt.asMeters();
+
+         fovFar.setAsMeters(distToStareM + (frustrumHeight / 2));
+         fovNear.setAsMeters(distToStareM - (frustrumHeight / 2));
+         midRngDist.setAsMeters((frustrumHeight / 2.0) + fovNear.asMeters());
+      }
+      else
+      {
+         fovFar.setAsMeters(maxRng);
+         fovNear.setAsMeters(minRng);
+         midRngDist.setAsMeters((frustrumHeight / 2.0) + minRng);
+      }
+
+      //Update viewpoint center position
+      lookAtCur.setCoordinate(pose.getCoordinate());
+      lookAtCur.translate(hdg, midRngDist);
+
+      //Update frustrum boundary angles
       Angle leftAngle = new Angle();
       Angle rightAngle = new Angle();
-
       leftAngle.setAsDegrees(leftAngleDeg);
       rightAngle.setAsDegrees(rightAngleDeg);
 
@@ -120,19 +147,10 @@ public class Sensor
       viewRegion.getBottomRight().setCoordinate(pose.getCoordinate());
 
       //Project out from the sensor position along the view heading
-      viewRegion.getTopLeft().translate(hdg, type.getMaxRange());
-      viewRegion.getTopRight().translate(hdg, type.getMaxRange());
-      viewRegion.getBottomLeft().translate(hdg, type.getMinRange());
-      viewRegion.getBottomRight().translate(hdg, type.getMinRange());
-
-
-      final double maxRng = type.getMaxRange().asMeters();
-      final double minRng = type.getMinRange().asMeters();
-      final double midRng = ((maxRng - minRng) / 2.0) + minRng;
-      final Distance midRngDist = new Distance();
-      midRngDist.setAsMeters(midRng);
-      lookAtCur.setCoordinate(pose.getCoordinate());
-      lookAtCur.translate(hdg, midRngDist);
+      viewRegion.getTopLeft().translate(leftAngle, fovFar);
+      viewRegion.getTopRight().translate(rightAngle, fovFar);
+      viewRegion.getBottomLeft().translate(leftAngle, fovNear);
+      viewRegion.getBottomRight().translate(rightAngle, fovNear);
    }
 
    @Override

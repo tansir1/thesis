@@ -66,6 +66,11 @@ public class RenderSimState
     */
    private BasicStroke historyStroke;
 
+   /**
+    * Stroke used for drawing sensor FOV lines.
+    */
+   private BasicStroke sensorFOVStroke;
+
    private SimModel model;
 
    private Rectangle bounds;
@@ -110,6 +115,7 @@ public class RenderSimState
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
       historyStroke = new BasicStroke(3f);
+      sensorFOVStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
@@ -144,6 +150,7 @@ public class RenderSimState
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
       historyStroke = new BasicStroke(3f);
+      sensorFOVStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
@@ -616,6 +623,7 @@ public class RenderSimState
       final Point uavPix = new Point(0, 0);
 
       gfx.setColor(Color.yellow);
+      gfx.setStroke(sensorFOVStroke);
 
       final int frustrumX[] = new int[5];
       final int frustrumY[] = new int[5];
