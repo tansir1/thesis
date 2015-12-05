@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.entities.Target;
 import thesis.core.entities.uav.UAV;
+import thesis.core.entities.uav.sensors.Sensor;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -242,6 +244,11 @@ public class RenderSimState
       {
          drawUAVs(gfx);
       }
+
+      if(renderOpts.isOptionEnabled(RenderOption.SensorFOV))
+      {
+         drawSensorFOVs(gfx);
+      }
    }
 
    /**
@@ -287,12 +294,23 @@ public class RenderSimState
       return new CellCoordinate(invertedRows, x / gridCellW);
    }
 
-   public int WorldCoordinateToYPixel(final WorldCoordinate wc)
+   public Point worldCoordinateToPixels(final WorldCoordinate wc)
    {
-      final double meters = wc.getNorth().asMeters();
-      int y = (int) (pixelsPerMeterH * meters);
-      y = bounds.height - y;
-      return y;
+      final double x = pixelsPerMeterW * wc.getEast().asMeters();
+      //Invert the y axis so that "north" is at the top of the screen.
+      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+
+      final Point p = new Point(0,0);
+      p.setLocation(x, y);
+      return p;
+   }
+
+   public void worldCoordinateToPixels(final WorldCoordinate wc, final Point pixels)
+   {
+      final double x = pixelsPerMeterW * wc.getEast().asMeters();
+      //Invert the y axis so that "north" is at the top of the screen.
+      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+      pixels.setLocation(x, y);
    }
 
    /**
@@ -381,12 +399,11 @@ public class RenderSimState
       // Overlay the haven graphic over all road intersections that are also
       // havens
       final int halfRdSz = roadInterSectionSz / 2;
+      Point pixels = new Point(0, 0);
       for (WorldCoordinate wc : model.getWorld().getHavenLocations())
       {
-         final int x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
-         // Invert the y axis so that "north" is at the top of the screen.
-         final int y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
-         g2d.drawImage(scaledHavenImg, x - halfRdSz, y - halfRdSz, null);
+         worldCoordinateToPixels(wc, pixels);
+         g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }
 
@@ -397,34 +414,28 @@ public class RenderSimState
 
       final int halfRdSz = roadInterSectionSz / 2;
 
+      final Point start = new Point(0, 0);
+      final Point end = new Point(0, 0);
       for (DirectedEdge<WorldCoordinate> edge : model.getWorld().getRoadNetwork().getEdges())
       {
-         WorldCoordinate start = edge.getStartVertex().getUserData();
-         WorldCoordinate end = edge.getEndVertex().getUserData();
-
-         final int xStart = (int) (pixelsPerMeterW * start.getEast().asMeters());
-         // Invert the y axis so that "north" is at the top of the screen.
-         final int yStart = bounds.height - (int) (pixelsPerMeterH * start.getNorth().asMeters());
-
-         final int xEnd = (int) (pixelsPerMeterW * end.getEast().asMeters());
-         // Invert the y axis so that "north" is at the top of the screen.
-         final int yEnd = bounds.height - (int) (pixelsPerMeterH * end.getNorth().asMeters());
+         worldCoordinateToPixels(edge.getStartVertex().getUserData(), start);
+         worldCoordinateToPixels(edge.getEndVertex().getUserData(), end);
 
          // Draw a line representing the road
          g2d.setColor(Color.pink);
-         g2d.drawLine(xStart, yStart, xEnd, yEnd);
+         g2d.drawLine(start.x, start.y, end.x, end.y);
 
          // Draw squares over the road intersections (road graph vertices)
-         g2d.fillRect(xStart - halfRdSz, yStart - halfRdSz, roadInterSectionSz, roadInterSectionSz);
-         g2d.fillRect(xEnd - halfRdSz, yEnd - halfRdSz, roadInterSectionSz, roadInterSectionSz);
+         g2d.fillRect(start.x - halfRdSz, start.y - halfRdSz, roadInterSectionSz, roadInterSectionSz);
+         g2d.fillRect(end.x - halfRdSz, end.y - halfRdSz, roadInterSectionSz, roadInterSectionSz);
 
          // Draw the road intersection/vertex IDs above and to the left of the
          // intersection
          g2d.setColor(Color.GREEN);
-         g2d.drawString(Integer.toString(edge.getStartVertex().getID()), xStart - roadInterSectionSz,
-               yStart - roadInterSectionSz);
-         g2d.drawString(Integer.toString(edge.getEndVertex().getID()), xEnd - roadInterSectionSz,
-               yEnd - roadInterSectionSz);
+         g2d.drawString(Integer.toString(edge.getStartVertex().getID()), start.x - roadInterSectionSz,
+               start.y - roadInterSectionSz);
+         g2d.drawString(Integer.toString(edge.getEndVertex().getID()), end.x - roadInterSectionSz,
+               end.y - roadInterSectionSz);
 
       }
    }
@@ -486,14 +497,13 @@ public class RenderSimState
 
    private void drawTargets(Graphics2D g2d)
    {
-      WorldCoordinate wc = new WorldCoordinate();
+      final WorldCoordinate wc = new WorldCoordinate();
 
-      int x = -1;
-      int y = -1;
       int halfImgW = -1;
       int halfImgH = -1;
 
-      AffineTransform trans = new AffineTransform();
+      final AffineTransform trans = new AffineTransform();
+      final Point pixels = new Point(0,0);
 
       for (Target tgt : model.getTargetManager().getAllTargets())
       {
@@ -501,10 +511,7 @@ public class RenderSimState
 
          wc.setCoordinate(tgt.getCoordinate());
 
-         x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
-         y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
-         // Invert the y axis so that "north" is at the top of the screen.
-         y = bounds.height - y;
+         worldCoordinateToPixels(wc, pixels);
 
          if (tgt.getType().isMobile())
          {
@@ -513,7 +520,7 @@ public class RenderSimState
                halfImgW = scaledRedMobileImg.getWidth() / 2;
                halfImgH = scaledRedMobileImg.getHeight() / 2;
 
-               trans.translate(x - halfImgW, y - halfImgH);
+               trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                //trans.rotate(-tgt.getHeading().asRadians());
                double deg = tgt.getHeading().asDegrees() - 90;
                trans.rotate(-Math.toRadians(deg));
@@ -528,7 +535,7 @@ public class RenderSimState
                halfImgW = scaledRedStaticImg.getWidth() / 2;
                halfImgH = scaledRedStaticImg.getHeight() / 2;
 
-               trans.translate(x - halfImgW, y - halfImgH);
+               trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                trans.rotate(-tgt.getHeading().asRadians());
 
                g2d.drawImage(scaledRedStaticImg, trans, null);
@@ -544,14 +551,12 @@ public class RenderSimState
          return;
       }
 
-      WorldCoordinate wc = new WorldCoordinate();
-
-      int x = -1;
-      int y = -1;
+      final WorldCoordinate wc = new WorldCoordinate();
+      final Point pixels = new Point(0,0);
       final int halfImgW = scaledBlueMobileImg.getWidth() / 2;
       final int halfImgH = scaledBlueMobileImg.getHeight() / 2;
 
-      AffineTransform trans = new AffineTransform();
+      final AffineTransform trans = new AffineTransform();
 
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
@@ -559,12 +564,9 @@ public class RenderSimState
 
          wc.setCoordinate(uav.getCoordinate());
 
-         x = (int) (pixelsPerMeterW * wc.getEast().asMeters());
-         y = (int) (pixelsPerMeterH * wc.getNorth().asMeters());
-         // Invert the y axis so that "north" is at the top of the screen.
-         y = bounds.height - y;
+         worldCoordinateToPixels(wc, pixels);
 
-         trans.translate(x - halfImgW, y - halfImgH);
+         trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          //trans.rotate(-uav.getHeading().asRadians());
          double deg = uav.getHeading().asDegrees() - 90;
          trans.rotate(-Math.toRadians(deg));
@@ -582,34 +584,77 @@ public class RenderSimState
    private void drawUAVHistoryTrails(Graphics2D g2d)
    {
       g2d.setColor(Color.blue);
-      int curX = 0;
-      int curY = 0;
-
+      final Point curPixels = new Point(0,0);
+      final Point prevPix = new Point(0,0);
       //BasicStroke historyStroke = new BasicStroke(3f);
       g2d.setStroke(historyStroke);
 
       List<WorldPose> history = new ArrayList<WorldPose>();
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
-         int prevX = -1;
-         int prevY = -1;
+         prevPix.setLocation(-1,-1);
 
          history.clear();
          uav.getFlightHistoryTrail(history);
          for (WorldPose pose : history)
          {
-            curX = (int) (pixelsPerMeterW * pose.getCoordinate().getEast().asMeters());
-            curY = (int) (pixelsPerMeterH * pose.getCoordinate().getNorth().asMeters());
-            // Invert the y axis so that "north" is at the top of the screen.
-            curY = bounds.height - curY;
+            worldCoordinateToPixels(pose.getCoordinate(), curPixels);
 
-            if (prevX != -1 && prevY != -1)
+            if (prevPix.x != -1 && prevPix.y != -1)
             {
-               g2d.drawLine(prevX, prevY, curX, curY);
+               g2d.drawLine(prevPix.x, prevPix.y, curPixels.x, curPixels.y);
             }
 
-            prevX = curX;
-            prevY = curY;
+            prevPix.setLocation(curPixels);
+         }
+      }
+   }
+
+   private void drawSensorFOVs(Graphics2D gfx)
+   {
+      final Point frustrumPix = new Point(0, 0);
+      final Point uavPix = new Point(0, 0);
+
+      gfx.setColor(Color.yellow);
+
+      final int frustrumX[] = new int[5];
+      final int frustrumY[] = new int[5];
+
+      for (UAV uav : model.getUAVManager().getAllUAVs())
+      {
+         worldCoordinateToPixels(uav.getCoordinate(), uavPix);
+
+         for(Sensor sensor : uav.getSensors().getSensors())
+         {
+            final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
+
+            //Line from UAV to center of FOV
+            worldCoordinateToPixels(sensor.getViewCenter(), frustrumPix);
+            gfx.drawLine(uavPix.x, uavPix.y, frustrumPix.x, frustrumPix.y);
+
+            //Coordinates for drawing region box
+            worldCoordinateToPixels(viewRect.getTopLeft(), frustrumPix);
+            frustrumX[0] = frustrumPix.x;
+            frustrumY[0] = frustrumPix.y;
+
+            worldCoordinateToPixels(viewRect.getTopRight(), frustrumPix);
+            frustrumX[1] = frustrumPix.x;
+            frustrumY[1] = frustrumPix.y;
+
+            worldCoordinateToPixels(viewRect.getBottomRight(), frustrumPix);
+            frustrumX[2] = frustrumPix.x;
+            frustrumY[2] = frustrumPix.y;
+
+            worldCoordinateToPixels(viewRect.getBottomLeft(), frustrumPix);
+            frustrumX[3] = frustrumPix.x;
+            frustrumY[3] = frustrumPix.y;
+
+            //Connect back to start
+            worldCoordinateToPixels(viewRect.getTopLeft(), frustrumPix);
+            frustrumX[4] = frustrumPix.x;
+            frustrumY[4] = frustrumPix.y;
+
+            gfx.drawPolyline(frustrumX, frustrumY, 5);
          }
       }
    }
