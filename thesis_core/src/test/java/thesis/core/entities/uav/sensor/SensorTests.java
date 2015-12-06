@@ -16,7 +16,7 @@ public class SensorTests
    public void slewTests()
    {
       SensorType st = new SensorType(1);
-      st.getMaxSlewRate().setAsDegreesPerSecond(10);
+      st.setMaxSlewRate(10);
       Sensor testMe = new Sensor(st);
 
       WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
@@ -26,7 +26,7 @@ public class SensorTests
 
       //Compute number of frames needed to slew to look angle
       Angle bearingTo = sensorPosition.bearingTo(lookAt);
-      int numFrames = (int)Math.ceil(bearingTo.asDegrees() / st.getMaxSlewRate().asDegreesPerFrame());
+      int numFrames = (int)Math.ceil(bearingTo.asDegrees() / st.getMaxSlewFrameRate());
       if(numFrames < 0)
       {
          numFrames = -numFrames;

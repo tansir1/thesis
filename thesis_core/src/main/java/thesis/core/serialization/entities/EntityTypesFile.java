@@ -240,7 +240,7 @@ public class EntityTypesFile
          st.setMinRange(minRngM);
          st.setMaxRange(maxRngM);
          st.getFov().setAsDegrees(fovDeg);
-         st.getMaxSlewRate().setAsDegreesPerSecond(slewDegSec);
+         st.setMaxSlewRate(slewDegSec);
 
          entTypes.getSensorTypes().add(st);
       }
@@ -256,7 +256,7 @@ public class EntityTypesFile
          elem.setAttribute("minRng", Double.toString(st.getMinRange()));
          elem.setAttribute("maxRng", Double.toString(st.getMaxRange()));
          elem.setAttribute("fov", Double.toString(st.getFov().asDegrees()));
-         elem.setAttribute("maxSlew", Double.toString(st.getMaxSlewRate().asDegreesPerSecond()));
+         elem.setAttribute("maxSlew", Double.toString(st.getMaxSlewRate()));
 
          parentElem.appendChild(elem);
       }
