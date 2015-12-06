@@ -2,7 +2,6 @@ package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
 import thesis.core.common.AngularSpeed;
-import thesis.core.common.Distance;
 
 /**
  * Performance specification data for a specific type of sensor.
@@ -10,23 +9,23 @@ import thesis.core.common.Distance;
 public class SensorType
 {
    private int typeID;
-   private Distance minRange;
-   private Distance maxRange;
+   private double minRange;
+   private double maxRange;
    private Angle fov;
    private AngularSpeed maxSlewRate;
 
    public SensorType(int typeID)
    {
       this.typeID = typeID;
-      minRange = new Distance();
-      maxRange = new Distance();
+      minRange = 0;
+      maxRange = 0;
       fov = new Angle();
       maxSlewRate = new AngularSpeed();
    }
 
    /**
     * The unique ID categorizing the sensor type.
-    * 
+    *
     * @return The category type of the sensor.
     */
    public int getTypeID()
@@ -36,27 +35,37 @@ public class SensorType
 
    /**
     * Get the minimum sensing range of the sensor.
-    * 
-    * @return The minimum range of the sensor.
+    *
+    * @return The minimum range of the sensor in meters.
     */
-   public Distance getMinRange()
+   public double getMinRange()
    {
       return minRange;
    }
 
+   public void setMinRange(double minRng)
+   {
+      this.minRange = minRng;
+   }
+
    /**
     * Get the maximum sensing range of the sensor.
-    * 
-    * @return The max range of the sensor.
+    *
+    * @return The max range of the sensor in meters.
     */
-   public Distance getMaxRange()
+   public double getMaxRange()
    {
       return maxRange;
    }
 
+   public void setMaxRange(double maxRng)
+   {
+      this.maxRange = maxRng;
+   }
+
    /**
     * Get the field of view angle.
-    * 
+    *
     * @return The FOV of the sensor.
     */
    public Angle getFov()
@@ -66,7 +75,7 @@ public class SensorType
 
    /**
     * Get the maximum rate of slewing for this sensor.
-    * 
+    *
     * @return The maximum slew rate for the sensor.
     */
    public AngularSpeed getMaxSlewRate()
@@ -74,29 +83,22 @@ public class SensorType
       return maxSlewRate;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#hashCode()
-    */
    @Override
    public int hashCode()
    {
       final int prime = 31;
       int result = 1;
       result = prime * result + ((fov == null) ? 0 : fov.hashCode());
-      result = prime * result + ((maxRange == null) ? 0 : maxRange.hashCode());
+      long temp;
+      temp = Double.doubleToLongBits(maxRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + ((maxSlewRate == null) ? 0 : maxSlewRate.hashCode());
-      result = prime * result + ((minRange == null) ? 0 : minRange.hashCode());
+      temp = Double.doubleToLongBits(minRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + typeID;
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#equals(java.lang.Object)
-    */
    @Override
    public boolean equals(Object obj)
    {
@@ -107,6 +109,24 @@ public class SensorType
       if (getClass() != obj.getClass())
          return false;
       SensorType other = (SensorType) obj;
+      if (fov == null)
+      {
+         if (other.fov != null)
+            return false;
+      }
+      else if (!fov.equals(other.fov))
+         return false;
+      if (Double.doubleToLongBits(maxRange) != Double.doubleToLongBits(other.maxRange))
+         return false;
+      if (maxSlewRate == null)
+      {
+         if (other.maxSlewRate != null)
+            return false;
+      }
+      else if (!maxSlewRate.equals(other.maxSlewRate))
+         return false;
+      if (Double.doubleToLongBits(minRange) != Double.doubleToLongBits(other.minRange))
+         return false;
       if (typeID != other.typeID)
          return false;
       return true;

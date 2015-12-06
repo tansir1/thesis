@@ -1,7 +1,6 @@
 package thesis.core.entities;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 
 /**
  * Performance specification data for a specific type of weapon.
@@ -9,21 +8,21 @@ import thesis.core.common.Distance;
 public class WeaponType
 {
    private int typeID;
-   private Distance minRange;
-   private Distance maxRange;
+   private double minRange;
+   private double maxRange;
    private Angle fov;
 
    public WeaponType(int typeID)
    {
       this.typeID = typeID;
-      minRange = new Distance();
-      maxRange = new Distance();
+      minRange = 0;
+      maxRange = 0;
       fov = new Angle();
    }
 
    /**
     * The unique ID categorizing the weapon type.
-    * 
+    *
     * @return The category type of the weapon.
     */
    public int getTypeID()
@@ -32,28 +31,50 @@ public class WeaponType
    }
 
    /**
-    * Get the minimum launch range of the sensor.
-    * 
-    * @return The minimum launch range of the sensor.
+    * Get the minimum launch range of the weapon.
+    *
+    * @return The minimum launch range of the weapon in meters.
     */
-   public Distance getMinRange()
+   public double getMinRange()
    {
       return minRange;
    }
 
    /**
-    * Get the maximum launch range of the sensor.
-    * 
-    * @return The max launch range of the sensor.
+    * Set the minimum launch range of the weapon.
+    *
+    * @param minRng
+    *           The minimum launch range of the weapon in meters.
     */
-   public Distance getMaxRange()
+   public void setMinRange(double minRng)
+   {
+      this.minRange = minRng;
+   }
+
+   /**
+    * Get the maximum launch range of the weapon.
+    *
+    * @return The max launch range of the weapon in meters.
+    */
+   public double getMaxRange()
    {
       return maxRange;
    }
 
    /**
+    * Set the maximum launch range of the weapon.
+    *
+    * @param maxRng
+    *           The maximum launch range of the weapon in meters.
+    */
+   public void setMaxRange(double maxRng)
+   {
+      this.maxRange = maxRng;
+   }
+
+   /**
     * Get the field of view angle.
-    * 
+    *
     * @return The FOV of the sensor.
     */
    public Angle getFov()
@@ -61,28 +82,21 @@ public class WeaponType
       return fov;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#hashCode()
-    */
    @Override
    public int hashCode()
    {
       final int prime = 31;
       int result = 1;
       result = prime * result + ((fov == null) ? 0 : fov.hashCode());
-      result = prime * result + ((maxRange == null) ? 0 : maxRange.hashCode());
-      result = prime * result + ((minRange == null) ? 0 : minRange.hashCode());
+      long temp;
+      temp = Double.doubleToLongBits(maxRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(minRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + typeID;
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#equals(java.lang.Object)
-    */
    @Override
    public boolean equals(Object obj)
    {
@@ -93,6 +107,17 @@ public class WeaponType
       if (getClass() != obj.getClass())
          return false;
       WeaponType other = (WeaponType) obj;
+      if (fov == null)
+      {
+         if (other.fov != null)
+            return false;
+      }
+      else if (!fov.equals(other.fov))
+         return false;
+      if (Double.doubleToLongBits(maxRange) != Double.doubleToLongBits(other.maxRange))
+         return false;
+      if (Double.doubleToLongBits(minRange) != Double.doubleToLongBits(other.minRange))
+         return false;
       if (typeID != other.typeID)
          return false;
       return true;

@@ -1,7 +1,6 @@
 package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -107,27 +106,27 @@ public class Sensor
       final double leftAngleDeg = hdg.asDegrees() + halfFOVdeg;
       final double rightAngleDeg = hdg.asDegrees() - halfFOVdeg;
 
-      final double maxRng = type.getMaxRange().asMeters();
-      final double minRng = type.getMinRange().asMeters();
+      final double maxRng = type.getMaxRange();
+      final double minRng = type.getMinRange();
       final double frustrumHeight = maxRng - minRng;
 
-      final Distance distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
-      final Distance midRngDist = new Distance();
-      final Distance fovFar = new Distance();
-      final Distance fovNear = new Distance();
-      if(distToStarePt.asMeters() < (maxRng - frustrumHeight))
+      final double distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
+      double midRngDist = 0;
+      double fovFar = 0;
+      double fovNear = 0;
+      if(distToStarePt < (maxRng - frustrumHeight))
       {
-         double distToStareM = distToStarePt.asMeters();
+         double distToStareM = distToStarePt;
 
-         fovFar.setAsMeters(distToStareM + (frustrumHeight / 2));
-         fovNear.setAsMeters(distToStareM - (frustrumHeight / 2));
-         midRngDist.setAsMeters((frustrumHeight / 2.0) + fovNear.asMeters());
+         fovFar = distToStareM + (frustrumHeight / 2);
+         fovNear = distToStareM - (frustrumHeight / 2);
+         midRngDist = (frustrumHeight / 2.0) + fovNear;
       }
       else
       {
-         fovFar.setAsMeters(maxRng);
-         fovNear.setAsMeters(minRng);
-         midRngDist.setAsMeters((frustrumHeight / 2.0) + minRng);
+         fovFar = maxRng;
+         fovNear = minRng;
+         midRngDist = (frustrumHeight / 2.0) + minRng;
       }
 
       //Update viewpoint center position

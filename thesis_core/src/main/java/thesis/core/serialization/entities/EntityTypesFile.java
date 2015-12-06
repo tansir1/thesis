@@ -237,8 +237,8 @@ public class EntityTypesFile
          double slewDegSec = Double.parseDouble(typeElem.getAttribute("maxSlew"));
 
          SensorType st = new SensorType(type);
-         st.getMinRange().setAsMeters(minRngM);
-         st.getMaxRange().setAsMeters(maxRngM);
+         st.setMinRange(minRngM);
+         st.setMaxRange(maxRngM);
          st.getFov().setAsDegrees(fovDeg);
          st.getMaxSlewRate().setAsDegreesPerSecond(slewDegSec);
 
@@ -253,8 +253,8 @@ public class EntityTypesFile
       {
          Element elem = dom.createElement("SensorType");
          elem.setAttribute("type", Integer.toString(st.getTypeID()));
-         elem.setAttribute("minRng", Double.toString(st.getMinRange().asMeters()));
-         elem.setAttribute("maxRng", Double.toString(st.getMaxRange().asMeters()));
+         elem.setAttribute("minRng", Double.toString(st.getMinRange()));
+         elem.setAttribute("maxRng", Double.toString(st.getMaxRange()));
          elem.setAttribute("fov", Double.toString(st.getFov().asDegrees()));
          elem.setAttribute("maxSlew", Double.toString(st.getMaxSlewRate().asDegreesPerSecond()));
 
@@ -277,8 +277,8 @@ public class EntityTypesFile
          double fovDeg = Double.parseDouble(typeElem.getAttribute("fov"));
 
          WeaponType wt = new WeaponType(type);
-         wt.getMinRange().setAsMeters(minRngM);
-         wt.getMaxRange().setAsMeters(maxRngM);
+         wt.setMinRange(minRngM);
+         wt.setMaxRange(maxRngM);
          wt.getFov().setAsDegrees(fovDeg);
 
          entTypes.getWeaponTypes().add(wt);
@@ -292,8 +292,8 @@ public class EntityTypesFile
       {
          Element elem = dom.createElement("WeaponType");
          elem.setAttribute("type", Integer.toString(wt.getTypeID()));
-         elem.setAttribute("minRng", Double.toString(wt.getMinRange().asMeters()));
-         elem.setAttribute("maxRng", Double.toString(wt.getMaxRange().asMeters()));
+         elem.setAttribute("minRng", Double.toString(wt.getMinRange()));
+         elem.setAttribute("maxRng", Double.toString(wt.getMaxRange()));
          elem.setAttribute("fov", Double.toString(wt.getFov().asDegrees()));
 
          parentElem.appendChild(elem);
@@ -324,7 +324,7 @@ public class EntityTypesFile
 
          UAVType uavType = new UAVType(type);
          uavType.getMaxSpd().setAsMetersPerSecond(spdM);
-         uavType.getMinTurnRadius().setAsMeters(minTurnRadM);
+         uavType.setMinTurnRadius(minTurnRadM);
          uavType.init();
 
          // Load sensor data for the uav
@@ -383,7 +383,7 @@ public class EntityTypesFile
          Element uavTypeElem = dom.createElement("UAVType");
          uavTypeElem.setAttribute("type", Integer.toString(uavType.getTypeID()));
          uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd().asMeterPerSecond()));
-         uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius().asMeters()));
+         uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius()));
 
          Element sensorsElem = dom.createElement("Sensors");
          for (SensorType sensor : uavType.getSensors())

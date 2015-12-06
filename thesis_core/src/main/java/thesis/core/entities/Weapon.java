@@ -1,7 +1,6 @@
 package thesis.core.entities;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 
 public class Weapon
@@ -27,7 +26,7 @@ public class Weapon
 
    /**
     * Set the number of munitions available for this weapon on the host UAV.
-    * 
+    *
     * @param quantity
     *           The number of available munitions.
     */
@@ -38,7 +37,7 @@ public class Weapon
 
    /**
     * Get the number of munitions available to launch from the host UAV.
-    * 
+    *
     * @return The number of available munitions.
     */
    public int getQuantity()
@@ -48,7 +47,7 @@ public class Weapon
 
    /**
     * Determine if the target is within range of the weapon.
-    * 
+    *
     * @param wpnCoord
     *           Current location of the weapon.
     * @param wpnHdg
@@ -60,35 +59,35 @@ public class Weapon
    public boolean isInRange(WorldCoordinate wpnCoord, Angle wpnHdg, WorldCoordinate tarCoord)
    {
       boolean inRange = false;
-      
-      Distance distToTar = wpnCoord.distanceTo(tarCoord);
-      
+
+      double distToTar = wpnCoord.distanceTo(tarCoord);
+
       //Check the distance first since it's a cheap operation
-      if(Math.abs(distToTar.asMeters()) < type.getMaxRange().asMeters() && 
-            Math.abs(distToTar.asMeters()) > type.getMinRange().asMeters())
+      if(Math.abs(distToTar) < type.getMaxRange() &&
+            Math.abs(distToTar) > type.getMinRange())
       {
          //Computing angles is mathematically expensive, only do it if the range check passes first
-         
+
          Angle angToTar = wpnCoord.bearingTo(tarCoord);
-         
+
          Angle leftBnd = new Angle(wpnHdg);
          Angle rightBnd = new Angle(wpnHdg);
-         
+
          leftBnd.normalizeNegPiToPi();
          rightBnd.normalizeNegPiToPi();
-         
+
          leftBnd.subtract(type.getFov().halfAngle());
          rightBnd.add(type.getFov().halfAngle());
-         
+
          if(angToTar.isBetween(leftBnd, rightBnd))
          {
             inRange = true;
          }
       }
-      
+
       return inRange;
    }
-   
+
    @Override
    public String toString()
    {

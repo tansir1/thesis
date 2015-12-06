@@ -2,8 +2,6 @@ package thesis.worldgen.utilities;
 
 import java.io.File;
 
-import thesis.core.common.Distance;
-
 public class GeneratorConfig
 {
    private int numWorlds;
@@ -11,8 +9,8 @@ public class GeneratorConfig
    private File entityTypesFile;
    private int randSeed;
 
-   private Distance worldWidth;
-   private Distance worldHeight;
+   private double worldWidth;
+   private double worldHeight;
    private int numRows;
    private int numColumns;
 
@@ -81,22 +79,22 @@ public class GeneratorConfig
       this.entityTypesFile = entityTypesFile;
    }
 
-   public Distance getWorldWidth()
+   public double getWorldWidth()
    {
       return worldWidth;
    }
 
-   public void setWorldWidth(Distance worldWidth)
+   public void setWorldWidth(double worldWidth)
    {
       this.worldWidth = worldWidth;
    }
 
-   public Distance getWorldHeight()
+   public double getWorldHeight()
    {
       return worldHeight;
    }
 
-   public void setWorldHeight(Distance worldHeight)
+   public void setWorldHeight(double worldHeight)
    {
       this.worldHeight = worldHeight;
    }

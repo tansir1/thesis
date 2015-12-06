@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import thesis.core.common.AngularSpeed;
-import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.common.SimTime;
 import thesis.core.entities.Weapon;
@@ -17,7 +16,7 @@ public class UAVType
 {
    private int typeID;
    private LinearSpeed maxSpd;
-   private Distance minTurnRadius;
+   private double minTurnRadius;
 
    private Set<SensorType> sensors;
    private Set<Weapon> weapons;
@@ -35,7 +34,7 @@ public class UAVType
       sensors = new HashSet<SensorType>();
       weapons = new HashSet<Weapon>();
 
-      minTurnRadius = new Distance();
+      minTurnRadius = 0;
       frameSpd = new LinearSpeed();
    }
 
@@ -73,11 +72,22 @@ public class UAVType
     * Get the minimum radius required for the UAV to turn 180 degrees at max
     * speed.
     *
-    * @return The distance required to turn around at max speed.
+    * @return The distance required to turn around at max speed in meters.
     */
-   public Distance getMinTurnRadius()
+   public double getMinTurnRadius()
    {
       return minTurnRadius;
+   }
+
+   /**
+    * Set the minimum radius required for the UAV to turn 180 degrees at max
+    * speed.
+    *
+    * @param radius The distance required to turn around at max speed in meters.
+    */
+   public void setMinTurnRadius(double radius)
+   {
+      this.minTurnRadius = radius;
    }
 
    /**
@@ -152,7 +162,7 @@ public class UAVType
       // minTurnRadius.setAsMeters(arcLength / Math.PI);
       // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
       // maxTurnRt.asRadiansPerSecond());
-      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius.asMeters());
+      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius);
 
       frameSpd.setAsMetersPerSecond(maxSpd.asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0));
    }

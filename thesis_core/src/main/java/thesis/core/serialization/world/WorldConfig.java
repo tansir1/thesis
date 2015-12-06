@@ -3,7 +3,6 @@ package thesis.core.serialization.world;
 import java.util.ArrayList;
 import java.util.List;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 
@@ -13,8 +12,14 @@ import thesis.core.common.graph.Graph;
  */
 public class WorldConfig
 {
-   private Distance width;
-   private Distance height;
+   /**
+    * Meters
+    */
+   private double width;
+   /**
+    * Meters
+    */
+   private double height;
 
    private int numRows;
    private int numCols;
@@ -29,8 +34,8 @@ public class WorldConfig
 
    public WorldConfig()
    {
-      this.width = new Distance();
-      this.height = new Distance();
+      this.width = 0;
+      this.height = 0;
 
       havens = new ArrayList<WorldCoordinate>();
       targetCfgs = new ArrayList<TargetEntityConfig>();
@@ -38,14 +43,36 @@ public class WorldConfig
       roadNet = new Graph<WorldCoordinate>();
    }
 
-   public Distance getWorldWidth()
+   /**
+    * @return Width of the world in meters.
+    */
+   public double getWorldWidth()
    {
       return width;
    }
 
-   public Distance getWorldHeight()
+   /**
+    * @param width Meters
+    */
+   public void setWorldWidth(double width)
+   {
+      this.width = width;
+   }
+
+   /**
+    * @return Height of the world in meters.
+    */
+   public double getWorldHeight()
    {
       return height;
+   }
+
+   /**
+    * @param width Meters
+    */
+   public void setWorldHeight(double height)
+   {
+      this.height = height;
    }
 
    public int getNumColumns()
@@ -53,12 +80,14 @@ public class WorldConfig
       return numCols;
    }
 
-   public Distance getMaxWorldDistance()
+   /**
+    * @return The maximum distance between the farthest points in the world in meters.
+    */
+   public double getMaxWorldDistance()
    {
-      Distance max = new Distance();
-      double maxM = height.asMeters() * height.asMeters() + width.asMeters() * width.asMeters();
-      max.setAsMeters(maxM);
-      return max;
+      WorldCoordinate origin = new WorldCoordinate();
+      WorldCoordinate maxWidthHeight = new WorldCoordinate(height, width);
+      return origin.distanceTo(maxWidthHeight);
    }
 
    public void setNumColumns(int numCols)

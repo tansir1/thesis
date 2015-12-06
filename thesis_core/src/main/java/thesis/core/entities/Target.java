@@ -6,7 +6,6 @@ import java.util.Random;
 
 import thesis.core.SimModel;
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 import thesis.core.common.LinearSpeed;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
@@ -23,7 +22,7 @@ public class Target
    private final Graph<WorldCoordinate> roadNet;
    private final List<WorldCoordinate> havens;
    private final Random randGen;
-   private final Distance worldW, worldH;
+   private final double worldW, worldH;
 
    /**
     * The coordinate of the next location to traverse to in mobile targets
@@ -37,7 +36,7 @@ public class Target
    private List<DirectedEdge<WorldCoordinate>> path;
 
    public Target(TargetType type, Graph<WorldCoordinate> roadNet, List<WorldCoordinate> havens, Random randGen,
-         Distance worldW, Distance worldH)
+         double worldW, double worldH)
    {
       if (type == null)
       {
@@ -57,16 +56,6 @@ public class Target
       if (randGen == null)
       {
          throw new NullPointerException("Random generator cannot be null.");
-      }
-
-      if (worldW == null)
-      {
-         throw new NullPointerException("World width cannot be null.");
-      }
-
-      if (worldH == null)
-      {
-         throw new NullPointerException("World height cannot be null.");
       }
 
       this.type = type;
@@ -114,16 +103,13 @@ public class Target
             pose.getHeading().copy(newHdg);
          }
 
-         Distance northing = new Distance();
-         Distance easting = new Distance();
-
          double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
          LinearSpeed spd = type.getMaxSpeed();
 
          // east distance = time * speed * east component
-         easting.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().cos());
+         double easting = deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().cos();
          // north distance = time * speed * north component
-         northing.setAsMeters(deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().sin());
+         double northing = deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().sin();
 
          pose.getCoordinate().translate(northing, easting);
       }
@@ -139,7 +125,7 @@ public class Target
          arrived = true;
       }
       else
-         if (pose.getCoordinate().distanceTo(intermediateCoordDest).asMeters() < type.getMaxSpeed().asMeterPerSecond())
+         if (pose.getCoordinate().distanceTo(intermediateCoordDest) < type.getMaxSpeed().asMeterPerSecond())
       {
          // If we're within one frame of the destination
          arrived = true;
@@ -170,8 +156,8 @@ public class Target
       }
       else// No havens or roads in simulation, pick a random coordinate
       {
-         WorldCoordinate.setAsMeters(intermediateCoordDest, randGen.nextDouble() * worldH.asMeters(),
-               randGen.nextDouble() * worldW.asMeters());
+         intermediateCoordDest.setCoordinate(randGen.nextDouble() * worldH,
+               randGen.nextDouble() * worldW);
       }
    }
 
@@ -218,7 +204,7 @@ public class Target
       double distToNearestVert = 0;
       for (Vertex<WorldCoordinate> vert : roadNet.getVertices())
       {
-         double distToIterateVert = nearestTo.distanceTo(vert.getUserData()).asMeters();
+         double distToIterateVert = nearestTo.distanceTo(vert.getUserData());
          distToIterateVert = Math.abs(distToIterateVert);
 
          if (nearestVert == null)

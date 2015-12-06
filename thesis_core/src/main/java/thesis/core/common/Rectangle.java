@@ -40,23 +40,23 @@ public class Rectangle
       boolean valid = true;
 
       // Ensure left points are more west than right points
-      if (topLeft.getEast().asMeters() < topRight.getEast().asMeters()
-            || topLeft.getEast().asMeters() < bottomRight.getEast().asMeters()
-            || bottomLeft.getEast().asMeters() < topRight.getEast().asMeters()
-            || bottomLeft.getEast().asMeters() < bottomRight.getEast().asMeters())
+      if (topLeft.getEast() < topRight.getEast()
+            || topLeft.getEast() < bottomRight.getEast()
+            || bottomLeft.getEast() < topRight.getEast()
+            || bottomLeft.getEast() < bottomRight.getEast())
       {
          valid = false;
       }
       // Ensure top points are more north than bottom points
-      else if (topLeft.getNorth().asMeters() < bottomLeft.getNorth().asMeters()
-            || topLeft.getNorth().asMeters() < bottomRight.getNorth().asMeters()
-            || topRight.getNorth().asMeters() < bottomLeft.getNorth().asMeters()
-            || topRight.getNorth().asMeters() < bottomRight.getNorth().asMeters())
+      else if (topLeft.getNorth() < bottomLeft.getNorth()
+            || topLeft.getNorth() < bottomRight.getNorth()
+            || topRight.getNorth() < bottomLeft.getNorth()
+            || topRight.getNorth() < bottomRight.getNorth())
       {
          valid = false;
       }
-      else if (topLeft.getEast().asMeters() < topRight.getEast().asMeters()
-            || bottomLeft.getEast().asMeters() < bottomRight.getEast().asMeters())
+      else if (topLeft.getEast() < topRight.getEast()
+            || bottomLeft.getEast() < bottomRight.getEast())
       {
          valid = false;
       }
@@ -64,12 +64,12 @@ public class Rectangle
       return valid;
    }
 
-   public Distance getWidth()
+   public double getWidth()
    {
       return topLeft.distanceTo(topRight);
    }
 
-   public Distance getHeight()
+   public double getHeight()
    {
       return bottomLeft.distanceTo(topLeft);
    }
@@ -84,8 +84,8 @@ public class Rectangle
       // greater than the area of the rectangle then the point is outside of the
       // rectangle.
 
-      double widthM = getWidth().asMeters();
-      double heightM = getHeight().asMeters();
+      double widthM = getWidth();
+      double heightM = getHeight();
       double rectAreaM2 = widthM * heightM;
 
       double testArea = triangularAreaM2(topLeft, testPt, bottomLeft);
@@ -105,9 +105,9 @@ public class Rectangle
    {
       // Heron's formula finds the area of a triangle given the distance of all
       // 3 sides
-      double d1 = Math.abs(pt1.distanceTo(pt2).asMeters());
-      double d2 = Math.abs(pt2.distanceTo(pt3).asMeters());
-      double d3 = Math.abs(pt3.distanceTo(pt1).asMeters());
+      double d1 = Math.abs(pt1.distanceTo(pt2));
+      double d2 = Math.abs(pt2.distanceTo(pt3));
+      double d3 = Math.abs(pt3.distanceTo(pt1));
 
       double halfPerim = (d1 + d2 + d3) / 2.0;
       return Math.sqrt(halfPerim * (halfPerim - d1) * (halfPerim - d2) * (halfPerim - d3));

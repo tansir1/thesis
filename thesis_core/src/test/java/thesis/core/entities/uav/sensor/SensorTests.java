@@ -19,8 +19,7 @@ public class SensorTests
       st.getMaxSlewRate().setAsDegreesPerSecond(10);
       Sensor testMe = new Sensor(st);
 
-      WorldCoordinate lookAt = new WorldCoordinate();
-      WorldCoordinate.setAsMeters(lookAt, -100, -100);
+      WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
 
       //Default to origin
       WorldCoordinate sensorPosition = new WorldCoordinate();

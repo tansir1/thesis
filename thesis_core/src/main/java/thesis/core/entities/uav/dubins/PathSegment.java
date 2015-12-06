@@ -1,6 +1,5 @@
 package thesis.core.entities.uav.dubins;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 
 public class PathSegment
@@ -14,7 +13,7 @@ public class PathSegment
       end = new WorldCoordinate();
    }
 
-   public Distance pathLength()
+   public double pathLength()
    {
       return start.distanceTo(end);
    }
