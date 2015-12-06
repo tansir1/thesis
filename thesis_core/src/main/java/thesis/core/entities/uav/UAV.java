@@ -175,7 +175,7 @@ public class UAV
       //We're one frame closer to the next waypoint so decrement the counter
       --numFramesToWypt;
 
-      final double frameSpdMpS = type.getFrameSpd().asMeterPerSecond();
+      final double frameSpdMpS = type.getFrameSpd();
 
       double turnCoeff = 0;
       switch (path.getPathType().getSegmentType(pathPhase))
@@ -240,9 +240,8 @@ public class UAV
 
    private void resetFramesToWaypoint()
    {
-      final double frameVelocityMpS = type.getMaxSpd().asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0);
       final double distToWypt = path.getSegmentLength(pathPhase);
-      numFramesToWypt = (int) (distToWypt / frameVelocityMpS) + 1;
+      numFramesToWypt = (int) (distToWypt / type.getFrameSpd()) + 1;
    }
 
    private void checkPathPhaseTransition()

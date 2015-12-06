@@ -78,7 +78,7 @@ public class TestUtils
    public static TargetType randTargetType()
    {
       TargetType tt = new TargetType(rand.nextInt());
-      tt.getMaxSpeed().setAsMetersPerSecond(rand.nextDouble() * 5);
+      tt.setMaxSpeed(rand.nextDouble() * 5);
       return tt;
    }
 
@@ -90,7 +90,7 @@ public class TestUtils
    public static UAVType randUAVType(List<WeaponType> wpns, List<SensorType> sensors)
    {
       UAVType uavType = new UAVType(rand.nextInt());
-      uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble() * 20);
+      uavType.setMaxSpd(rand.nextDouble() * 20);
       uavType.setMinTurnRadius((rand.nextDouble() * 1000) + 200);
       uavType.init();
 

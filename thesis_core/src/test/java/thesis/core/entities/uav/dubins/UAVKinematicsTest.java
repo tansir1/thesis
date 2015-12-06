@@ -28,7 +28,7 @@ public class UAVKinematicsTest
       worldCfg.setWorldWidth(10000);
 
       UAVType uavType = new UAVType(1);
-      uavType.getMaxSpd().setAsMetersPerSecond(10);
+      uavType.setMaxSpd(10);
       uavType.setMinTurnRadius(250);
       uavType.init();
 

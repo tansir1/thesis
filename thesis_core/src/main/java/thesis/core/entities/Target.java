@@ -6,7 +6,6 @@ import java.util.Random;
 
 import thesis.core.SimModel;
 import thesis.core.common.Angle;
-import thesis.core.common.LinearSpeed;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -104,12 +103,12 @@ public class Target
          }
 
          double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
-         LinearSpeed spd = type.getMaxSpeed();
+         double spd = type.getMaxSpeed();
 
          // east distance = time * speed * east component
-         double easting = deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().cos();
+         double easting = deltaSeconds * spd * pose.getHeading().cos();
          // north distance = time * speed * north component
-         double northing = deltaSeconds * spd.asMeterPerSecond() * pose.getHeading().sin();
+         double northing = deltaSeconds * spd * pose.getHeading().sin();
 
          pose.getCoordinate().translate(northing, easting);
       }
@@ -125,7 +124,7 @@ public class Target
          arrived = true;
       }
       else
-         if (pose.getCoordinate().distanceTo(intermediateCoordDest) < type.getMaxSpeed().asMeterPerSecond())
+         if (pose.getCoordinate().distanceTo(intermediateCoordDest) < type.getMaxSpeed())
       {
          // If we're within one frame of the destination
          arrived = true;
