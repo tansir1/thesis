@@ -1,7 +1,7 @@
 package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
-import thesis.core.common.AngularSpeed;
+import thesis.core.common.SimTime;
 
 /**
  * Performance specification data for a specific type of sensor.
@@ -12,7 +12,15 @@ public class SensorType
    private double minRange;
    private double maxRange;
    private Angle fov;
-   private AngularSpeed maxSlewRate;
+   /**
+    * Max speed that the sensor can slew in degrees/second.
+    */
+   private double maxSlewRate;
+
+   /**
+    * Max speed that the sensor can slew in degrees/frame.
+    */
+   private double maxSlewRateFrame;
 
    public SensorType(int typeID)
    {
@@ -20,7 +28,7 @@ public class SensorType
       minRange = 0;
       maxRange = 0;
       fov = new Angle();
-      maxSlewRate = new AngularSpeed();
+      maxSlewRate = 0;
    }
 
    /**
@@ -76,11 +84,32 @@ public class SensorType
    /**
     * Get the maximum rate of slewing for this sensor.
     *
-    * @return The maximum slew rate for the sensor.
+    * @return The maximum slew rate for the sensor in degrees/second.
     */
-   public AngularSpeed getMaxSlewRate()
+   public double getMaxSlewRate()
    {
       return maxSlewRate;
+   }
+
+   /**
+    * Set the maximum rate of slewing for this sensor.
+    *
+    * @return slewRate The maximum slew rate for the sensor in degrees/second.
+    */
+   public void setMaxSlewRate(double slewRate)
+   {
+      maxSlewRate = slewRate;
+      maxSlewRateFrame = slewRate * SimTime.SIM_STEP_RATE_S;
+   }
+
+   /**
+    * Get the maximum rate of slewing for this sensor.
+    *
+    * @return The maximum slew rate for the sensor in degrees/frame.
+    */
+   public double getMaxSlewFrameRate()
+   {
+      return maxSlewRateFrame;
    }
 
    @Override
@@ -92,7 +121,8 @@ public class SensorType
       long temp;
       temp = Double.doubleToLongBits(maxRange);
       result = prime * result + (int) (temp ^ (temp >>> 32));
-      result = prime * result + ((maxSlewRate == null) ? 0 : maxSlewRate.hashCode());
+      temp = Double.doubleToLongBits(maxSlewRate);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       temp = Double.doubleToLongBits(minRange);
       result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + typeID;
@@ -118,12 +148,7 @@ public class SensorType
          return false;
       if (Double.doubleToLongBits(maxRange) != Double.doubleToLongBits(other.maxRange))
          return false;
-      if (maxSlewRate == null)
-      {
-         if (other.maxSlewRate != null)
-            return false;
-      }
-      else if (!maxSlewRate.equals(other.maxSlewRate))
+      if (Double.doubleToLongBits(maxSlewRate) != Double.doubleToLongBits(other.maxSlewRate))
          return false;
       if (Double.doubleToLongBits(minRange) != Double.doubleToLongBits(other.minRange))
          return false;

@@ -47,7 +47,7 @@ public class TestUtils
       st.setMaxRange(st.getMinRange() + rand.nextDouble() * 2000);
       st.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
                                                              // FOV
-      st.getMaxSlewRate().setAsDegreesPerSecond(rand.nextDouble() * 10 + 1);
+      st.setMaxSlewRate(rand.nextDouble() * 10 + 1);
       ;// min 1 deg/s
 
       return st;

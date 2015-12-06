@@ -2,6 +2,7 @@ package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 
@@ -76,7 +77,9 @@ public class Sensor
       Angle lookDelta = new Angle(pose.getHeading());
       lookDelta.subtract(desiredAngle);
 
-      if(Math.abs(lookDelta.asDegrees()) < (type.getMaxSlewRate().asDegreesPerFrame()))
+      final double degreesPerFrame = type.getMaxSlewRate() * SimTime.SIM_STEP_RATE_S;
+      //If the lookDelta < one frame's worth of slewing
+      if(Math.abs(lookDelta.asDegrees()) < degreesPerFrame)
       {
          //Prevent overshooting the look angle
          pose.getHeading().copy(desiredAngle);
@@ -87,12 +90,12 @@ public class Sensor
          if(((lookDelta.asDegrees()+360) % 360) > 180)
          {
             //turn left
-            slew.setAsDegrees(type.getMaxSlewRate().asDegreesPerFrame());
+            slew.setAsDegrees(degreesPerFrame);
          }
          else
          {
             //turn right
-            slew.setAsDegrees(-type.getMaxSlewRate().asDegreesPerFrame());
+            slew.setAsDegrees(-degreesPerFrame);
          }
          pose.getHeading().add(slew);
       }

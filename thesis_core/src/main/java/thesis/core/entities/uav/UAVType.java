@@ -3,7 +3,6 @@ package thesis.core.entities.uav;
 import java.util.HashSet;
 import java.util.Set;
 
-import thesis.core.common.AngularSpeed;
 import thesis.core.common.SimTime;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.uav.sensors.SensorType;
@@ -24,7 +23,11 @@ public class UAVType
    private Set<Weapon> weapons;
 
    // Derived parameters
-   private AngularSpeed maxTurnRt;
+   /**
+    * Max turn rate of the UAV in degrees/second.
+    */
+   private double maxTurnRt;
+
    /**
     * Speed of the UAV in meters/frame.
     */
@@ -34,7 +37,7 @@ public class UAVType
    {
       this.typeID = typeID;
       maxSpd = 0;
-      maxTurnRt = new AngularSpeed();
+      maxTurnRt = 0;
 
       sensors = new HashSet<SensorType>();
       weapons = new HashSet<Weapon>();
@@ -120,7 +123,7 @@ public class UAVType
     *
     * @return The maximum turning rate.
     */
-   public AngularSpeed getMaxTurnRt()
+   public double getMaxTurnRt()
    {
       return maxTurnRt;
    }
@@ -181,13 +184,7 @@ public class UAVType
 
    public void init()
    {
-      // final double timeToTurnAround = Math.PI /
-      // maxTurnRt.asRadiansPerSecond();
-      // final double arcLength = timeToTurnAround * maxSpd.asMeterPerSecond();
-      // minTurnRadius.setAsMeters(arcLength / Math.PI);
-      // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
-      // maxTurnRt.asRadiansPerSecond());
-      maxTurnRt.setAsRadiansPerSecond(maxSpd / minTurnRadius);
+      maxTurnRt = Math.toDegrees(maxSpd / minTurnRadius);
 
       frameSpd = maxSpd * SimTime.SIM_STEP_RATE_S;
    }
