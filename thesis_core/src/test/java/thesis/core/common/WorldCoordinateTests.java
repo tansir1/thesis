@@ -41,7 +41,7 @@ public class WorldCoordinateTests
 
       double delNorth = 843.25734;
       double delEast = 143.56247;
-      testMe.translate(delNorth, delEast);
+      testMe.translateCart(delNorth, delEast);
 
       double combineN = north + delNorth;
       double combineE = east + delEast;
@@ -51,9 +51,8 @@ public class WorldCoordinateTests
 
       testMe.setCoordinate(0, 0);
       WorldCoordinate bearingToMe = new WorldCoordinate(0.5, Math.sqrt(3.0) * 0.5);
-      Angle expectedResult = new Angle();
-      expectedResult.setAsDegrees(30);
-      assertEquals("Bearing to incorrect.", expectedResult, testMe.bearingTo(bearingToMe));
+      double expectedResult = 30;
+      assertEquals("Bearing to incorrect.", expectedResult, testMe.bearingTo(bearingToMe), 0.0000001);
 
       testMe.setCoordinate(10, 20);
 

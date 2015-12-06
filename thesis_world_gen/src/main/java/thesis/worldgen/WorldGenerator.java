@@ -292,7 +292,7 @@ public class WorldGenerator
 
          uavCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
          uavCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
-         uavCfg.getOrientation().setAsDegrees(randGen.nextDouble() * 360);
+         uavCfg.setOrientation(randGen.nextDouble() * 360);
 
          uavCfg.setUAVType(types.get(typeIndex).getTypeID());
 
@@ -388,7 +388,7 @@ public class WorldGenerator
       TargetEntityConfig tgtCfg = new TargetEntityConfig();
       tgtCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
       tgtCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
-      tgtCfg.getOrientation().setAsDegrees(randGen.nextDouble() * 360);
+      tgtCfg.setOrientation(randGen.nextDouble() * 360);
 
       return tgtCfg;
    }

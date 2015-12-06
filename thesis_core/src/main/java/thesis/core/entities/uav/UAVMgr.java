@@ -58,8 +58,7 @@ public class UAVMgr
          {
             UAV uav = new UAV(type, uavID, this, maxComsRng, maxRelayHops, randGen, commsRelayProb);
             uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
-            uav.getHeading().copy(uavEntCfg.getOrientation());
-            uav.getHeading().normalize360();
+            uav.setHeading(uavEntCfg.getOrientation());
             uavs.add(uav);
 
             ++uavID;

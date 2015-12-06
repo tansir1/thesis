@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import thesis.core.SimModel;
-import thesis.core.common.Angle;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -81,9 +80,14 @@ public class Target
       return pose.getCoordinate();
    }
 
-   public Angle getHeading()
+   public double getHeading()
    {
       return pose.getHeading();
+   }
+
+   public void setHeading(double hdg)
+   {
+      pose.setHeading(hdg);
    }
 
    /**
@@ -98,19 +102,19 @@ public class Target
          {
             selectNewDestination();
 
-            Angle newHdg = pose.getCoordinate().bearingTo(intermediateCoordDest);
-            pose.getHeading().copy(newHdg);
+            double newHdg = pose.getCoordinate().bearingTo(intermediateCoordDest);
+            pose.setHeading(newHdg);
          }
 
          double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
          double spd = type.getMaxSpeed();
 
          // east distance = time * speed * east component
-         double easting = deltaSeconds * spd * pose.getHeading().cos();
+         double easting = deltaSeconds * spd * Math.cos(Math.toRadians(pose.getHeading()));
          // north distance = time * speed * north component
-         double northing = deltaSeconds * spd * pose.getHeading().sin();
+         double northing = deltaSeconds * spd * Math.sin(Math.toRadians(pose.getHeading()));
 
-         pose.getCoordinate().translate(northing, easting);
+         pose.getCoordinate().translateCart(northing, easting);
       }
 
    }

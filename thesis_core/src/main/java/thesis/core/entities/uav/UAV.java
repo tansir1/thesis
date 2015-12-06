@@ -7,7 +7,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.Angle;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -102,9 +101,20 @@ public class UAV
       return pose.getCoordinate();
    }
 
-   public Angle getHeading()
+   /**
+    * @return The UAV's heading in degrees.
+    */
+   public double getHeading()
    {
       return pose.getHeading();
+   }
+
+   /**
+    * @param hdg The UAV's heading in degrees.
+    */
+   public void setHeading(double hdg)
+   {
+      pose.setHeading(hdg);
    }
 
    public WorldPose getPose()
@@ -199,13 +209,13 @@ public class UAV
 
       double turnRate = turnCoeff * (frameSpdMpS / type.getMinTurnRadius());
 
-      pose.getHeading().setAsRadians(pose.getHeading().asRadians() + turnRate);
+      double hdgRads = Math.toRadians(pose.getHeading()) + turnRate;
+      pose.setHeading(Math.toDegrees(hdgRads));
 
-      final double northing = frameSpdMpS * pose.getHeading().sin();
-      final double easting = frameSpdMpS * pose.getHeading().cos();
-      pose.getCoordinate().translate(northing, easting);
+      final double northing = frameSpdMpS * Math.sin(Math.toRadians(pose.getHeading()));
+      final double easting = frameSpdMpS * Math.cos(Math.toRadians(pose.getHeading()));
+      pose.getCoordinate().translateCart(northing, easting);
 
-      pose.getHeading().normalize360();
       //logger.trace("{}", this);
    }
 

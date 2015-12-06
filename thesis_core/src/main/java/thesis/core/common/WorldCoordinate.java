@@ -137,7 +137,7 @@ public class WorldCoordinate
     * @param deltaEast
     *           Move the coordinate east (meters) by this far.
     */
-   public void translate(final double deltaNorth, final double deltaEast)
+   public void translateCart(final double deltaNorth, final double deltaEast)
    {
       this.north += deltaNorth;
       this.east += deltaEast;
@@ -147,15 +147,15 @@ public class WorldCoordinate
     * Shift the current coordinate position by the specified amount.
     *
     * @param heading
-    *           Move along this heading.
+    *           Move along this heading (degrees).
     * @param distance
     *           Move this far along the heading (meters).
     */
-   public void translate(final Angle heading, final double distance)
+   public void translatePolar(final double heading, final double distance)
    {
-      double deltaNorth = heading.sin() * distance;
-      double deltaEast = heading.cos() * distance;
-      translate(deltaNorth, deltaEast);
+      double deltaNorth = Math.sin(Math.toRadians(heading)) * distance;
+      double deltaEast = Math.cos(Math.toRadians(heading)) * distance;
+      translateCart(deltaNorth, deltaEast);
    }
 
    /**
@@ -164,24 +164,22 @@ public class WorldCoordinate
     *
     * @param wc
     *           Find the bearing to this coordinate.
-    * @return The bearing angle from this coordinate to the given coordinate.
+    * @return The bearing angle from this coordinate to the given coordinate in degrees.
     */
-   public Angle bearingTo(final WorldCoordinate wc)
+   public double bearingTo(final WorldCoordinate wc)
    {
       double delNorth = wc.north - north;
       double delEast = wc.east - east;
-
-      Angle retVal = new Angle();
-      retVal.setAsRadians(Math.atan2(delNorth, delEast));
-      return retVal;
+      double bearing = Math.toDegrees(Math.atan2(delNorth, delEast));
+      return Angle.normalize360(bearing);
    }
 
    /**
     * Get the absolute bearing from the origin to this coordinate.
     *
-    * @return The bearing angle from the origin to this coordinate.
+    * @return The bearing angle from the origin to this coordinate in degrees.
     */
-   public Angle bearingFromOrigin()
+   public double bearingFromOrigin()
    {
       WorldCoordinate origin = new WorldCoordinate();
       return origin.bearingTo(this);

@@ -37,7 +37,7 @@ public class UAVKinematicsTest
 
       UAVEntityConfig uavEntCfg = new UAVEntityConfig();
       uavEntCfg.getLocation().setCoordinate(2000, 3000);
-      uavEntCfg.getOrientation().setAsDegrees(180);
+      uavEntCfg.setOrientation(180);
       uavEntCfg.setUAVType(uavType.getTypeID());
       worldCfg.uavCfgs.add(uavEntCfg);
 
@@ -48,7 +48,7 @@ public class UAVKinematicsTest
 
       WorldPose flyTo = new WorldPose();
       flyTo.getCoordinate().setCoordinate(7000, 6000);
-      flyTo.getHeading().setAsDegrees(-135);
+      flyTo.setHeading(-135);
       uav.TEMP_setDestination(flyTo);
 
       final int FRAME_LIMIT = 45000;

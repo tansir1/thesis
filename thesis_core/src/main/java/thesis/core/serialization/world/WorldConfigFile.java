@@ -394,7 +394,7 @@ public class WorldConfigFile
 
          TargetEntityConfig tarCfg = new TargetEntityConfig();
          tarCfg.getLocation().setCoordinate(coordFromAttr(tarElem));
-         tarCfg.getOrientation().setAsDegrees(orient);
+         tarCfg.setOrientation(orient);
          tarCfg.setTargetType(type);
 
          cfg.targetCfgs.add(tarCfg);
@@ -411,7 +411,7 @@ public class WorldConfigFile
          tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth()));
          tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast()));
          tarElem.setAttribute("type", Integer.toString(tarCfg.getTargetType()));
-         tarElem.setAttribute("orientation", Double.toString(tarCfg.getOrientation().asDegrees()));
+         tarElem.setAttribute("orientation", Double.toString(tarCfg.getOrientation()));
          targets.appendChild(tarElem);
       }
       return targets;
@@ -429,7 +429,7 @@ public class WorldConfigFile
 
          UAVEntityConfig uavCfg = new UAVEntityConfig();
          uavCfg.getLocation().setCoordinate(coordFromAttr(uavElem));
-         uavCfg.getOrientation().setAsDegrees(orient);
+         uavCfg.setOrientation(orient);
          uavCfg.setUAVType(type);
 
          cfg.uavCfgs.add(uavCfg);
@@ -446,7 +446,7 @@ public class WorldConfigFile
          uavElem.setAttribute("north", Double.toString(uavCfg.getLocation().getNorth()));
          uavElem.setAttribute("east", Double.toString(uavCfg.getLocation().getEast()));
          uavElem.setAttribute("type", Integer.toString(uavCfg.getUAVType()));
-         uavElem.setAttribute("orientation", Double.toString(uavCfg.getOrientation().asDegrees()));
+         uavElem.setAttribute("orientation", Double.toString(uavCfg.getOrientation()));
          uavs.appendChild(uavElem);
       }
       return uavs;
