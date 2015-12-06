@@ -53,4 +53,15 @@ public class TargetBelief
       this.confidence = confidence;
    }
 
+   public void merge(TargetBelief other)
+   {
+      //Weight the confidences in order to merge belief values using an alpha filter
+      double totalConf = confidence + other.confidence;
+      //double otherConfWeight = other.confidence / totalConf;
+      double myConfWeight = confidence / totalConf;
+
+      double deltaNorth = pose.getCoordinate().getNorth() - other.pose.getNorth();
+      /*double move = deltaNorth *
+      pose.getCoordinate()*/
+   }
 }
