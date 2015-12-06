@@ -14,7 +14,6 @@ import java.util.List;
 
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.common.graph.DirectedEdge;
@@ -275,11 +274,9 @@ public class RenderSimState
       final double xPercent = (x * 1.0) / (1.0 * bounds.width);
       final double yPercent = (y * 1.0) / (1.0 * bounds.height);
 
-      final Distance worldH = new Distance(model.getWorld().getHeight());
-      final Distance worldW = new Distance(model.getWorld().getWidth());
+      final double worldH = model.getWorld().getHeight() * yPercent;
+      final double worldW = model.getWorld().getWidth() * xPercent;
 
-      worldH.scale(yPercent);
-      worldW.scale(xPercent);
       return new WorldCoordinate(worldH, worldW);
    }
 
@@ -303,9 +300,9 @@ public class RenderSimState
 
    public Point worldCoordinateToPixels(final WorldCoordinate wc)
    {
-      final double x = pixelsPerMeterW * wc.getEast().asMeters();
+      final double x = pixelsPerMeterW * wc.getEast();
       //Invert the y axis so that "north" is at the top of the screen.
-      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth());
 
       final Point p = new Point(0,0);
       p.setLocation(x, y);
@@ -314,9 +311,9 @@ public class RenderSimState
 
    public void worldCoordinateToPixels(final WorldCoordinate wc, final Point pixels)
    {
-      final double x = pixelsPerMeterW * wc.getEast().asMeters();
+      final double x = pixelsPerMeterW * wc.getEast();
       //Invert the y axis so that "north" is at the top of the screen.
-      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth().asMeters());
+      final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth());
       pixels.setLocation(x, y);
    }
 
@@ -343,8 +340,8 @@ public class RenderSimState
       gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
       gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
 
-      pixelsPerMeterH = (pixH * 1.0) / model.getWorld().getHeight().asMeters();
-      pixelsPerMeterW = (pixW * 1.0) / model.getWorld().getWidth().asMeters();
+      pixelsPerMeterH = (pixH * 1.0) / model.getWorld().getHeight();
+      pixelsPerMeterW = (pixW * 1.0) / model.getWorld().getWidth();
 
       roadStroke = new BasicStroke(Math.min(gridCellH, gridCellW) * ROAD_WIDTH_VS_GRID_PERCENT);
       roadInterSectionSz = (int) (Math.min(gridCellH, gridCellW) * INTERSECTION_SZ_VS_GRID_PERCENT);
@@ -529,7 +526,7 @@ public class RenderSimState
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                //trans.rotate(-tgt.getHeading().asRadians());
-               double deg = tgt.getHeading().asDegrees() - 90;
+               double deg = tgt.getHeading() - 90;
                trans.rotate(-Math.toRadians(deg));
 
                g2d.drawImage(scaledRedMobileImg, trans, null);
@@ -543,7 +540,7 @@ public class RenderSimState
                halfImgH = scaledRedStaticImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
-               trans.rotate(-tgt.getHeading().asRadians());
+               trans.rotate(Math.toRadians(-tgt.getHeading()));
 
                g2d.drawImage(scaledRedStaticImg, trans, null);
             }
@@ -575,7 +572,7 @@ public class RenderSimState
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          //trans.rotate(-uav.getHeading().asRadians());
-         double deg = uav.getHeading().asDegrees() - 90;
+         double deg = uav.getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);

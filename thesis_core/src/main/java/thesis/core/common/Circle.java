@@ -3,12 +3,15 @@ package thesis.core.common;
 public class Circle
 {
    private WorldCoordinate center;
-   private Distance radius;
+   /**
+    * Meters.
+    */
+   private double radius;
 
    public Circle()
    {
       center = new WorldCoordinate();
-      radius = new Distance();
+      radius = 0;
    }
 
    public WorldCoordinate getCenter()
@@ -16,14 +19,25 @@ public class Circle
       return center;
    }
 
-   public Distance getRadius()
+   /**
+    * @return Meters
+    */
+   public double getRadius()
    {
       return radius;
+   }
+
+   /**
+    * @param radius Meters
+    */
+   public void setRadius(double radius)
+   {
+      this.radius = radius;
    }
 
    @Override
    public String toString()
    {
-      return center.toString() + ", " + radius.toString();
+      return String.format("%s, %.2fm", center.toString(), radius);
    }
 }

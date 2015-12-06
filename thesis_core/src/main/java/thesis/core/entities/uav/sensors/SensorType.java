@@ -1,8 +1,6 @@
 package thesis.core.entities.uav.sensors;
 
-import thesis.core.common.Angle;
-import thesis.core.common.AngularSpeed;
-import thesis.core.common.Distance;
+import thesis.core.common.SimTime;
 
 /**
  * Performance specification data for a specific type of sensor.
@@ -10,23 +8,31 @@ import thesis.core.common.Distance;
 public class SensorType
 {
    private int typeID;
-   private Distance minRange;
-   private Distance maxRange;
-   private Angle fov;
-   private AngularSpeed maxSlewRate;
+   private double minRange;
+   private double maxRange;
+   private double fov;
+   /**
+    * Max speed that the sensor can slew in degrees/second.
+    */
+   private double maxSlewRate;
+
+   /**
+    * Max speed that the sensor can slew in degrees/frame.
+    */
+   private double maxSlewRateFrame;
 
    public SensorType(int typeID)
    {
       this.typeID = typeID;
-      minRange = new Distance();
-      maxRange = new Distance();
-      fov = new Angle();
-      maxSlewRate = new AngularSpeed();
+      minRange = 0;
+      maxRange = 0;
+      fov = 0;
+      maxSlewRate = 0;
    }
 
    /**
     * The unique ID categorizing the sensor type.
-    * 
+    *
     * @return The category type of the sensor.
     */
    public int getTypeID()
@@ -36,67 +42,106 @@ public class SensorType
 
    /**
     * Get the minimum sensing range of the sensor.
-    * 
-    * @return The minimum range of the sensor.
+    *
+    * @return The minimum range of the sensor in meters.
     */
-   public Distance getMinRange()
+   public double getMinRange()
    {
       return minRange;
    }
 
+   public void setMinRange(double minRng)
+   {
+      this.minRange = minRng;
+   }
+
    /**
     * Get the maximum sensing range of the sensor.
-    * 
-    * @return The max range of the sensor.
+    *
+    * @return The max range of the sensor in meters.
     */
-   public Distance getMaxRange()
+   public double getMaxRange()
    {
       return maxRange;
    }
 
+   public void setMaxRange(double maxRng)
+   {
+      this.maxRange = maxRng;
+   }
+
    /**
     * Get the field of view angle.
-    * 
-    * @return The FOV of the sensor.
+    *
+    * @return The FOV of the sensor in degrees.
     */
-   public Angle getFov()
+   public double getFov()
    {
       return fov;
    }
 
    /**
-    * Get the maximum rate of slewing for this sensor.
-    * 
-    * @return The maximum slew rate for the sensor.
+    * Set the field of view angle.
+    *
+    * @param fov
+    *           The FOV of the sensor in degrees.
     */
-   public AngularSpeed getMaxSlewRate()
+   public void setFov(double fov)
+   {
+      this.fov = fov;
+   }
+
+   /**
+    * Get the maximum rate of slewing for this sensor.
+    *
+    * @return The maximum slew rate for the sensor in degrees/second.
+    */
+   public double getMaxSlewRate()
    {
       return maxSlewRate;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#hashCode()
+   /**
+    * Set the maximum rate of slewing for this sensor.
+    *
+    * @return slewRate The maximum slew rate for the sensor in degrees/second.
     */
+   public void setMaxSlewRate(double slewRate)
+   {
+      maxSlewRate = slewRate;
+      maxSlewRateFrame = slewRate * SimTime.SIM_STEP_RATE_S;
+   }
+
+   /**
+    * Get the maximum rate of slewing for this sensor.
+    *
+    * @return The maximum slew rate for the sensor in degrees/frame.
+    */
+   public double getMaxSlewFrameRate()
+   {
+      return maxSlewRateFrame;
+   }
+
    @Override
    public int hashCode()
    {
       final int prime = 31;
       int result = 1;
-      result = prime * result + ((fov == null) ? 0 : fov.hashCode());
-      result = prime * result + ((maxRange == null) ? 0 : maxRange.hashCode());
-      result = prime * result + ((maxSlewRate == null) ? 0 : maxSlewRate.hashCode());
-      result = prime * result + ((minRange == null) ? 0 : minRange.hashCode());
+      long temp;
+      temp = Double.doubleToLongBits(fov);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(maxRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(maxSlewRate);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(maxSlewRateFrame);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(minRange);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       result = prime * result + typeID;
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Object#equals(java.lang.Object)
-    */
    @Override
    public boolean equals(Object obj)
    {
@@ -107,6 +152,16 @@ public class SensorType
       if (getClass() != obj.getClass())
          return false;
       SensorType other = (SensorType) obj;
+      if (Double.doubleToLongBits(fov) != Double.doubleToLongBits(other.fov))
+         return false;
+      if (Double.doubleToLongBits(maxRange) != Double.doubleToLongBits(other.maxRange))
+         return false;
+      if (Double.doubleToLongBits(maxSlewRate) != Double.doubleToLongBits(other.maxSlewRate))
+         return false;
+      if (Double.doubleToLongBits(maxSlewRateFrame) != Double.doubleToLongBits(other.maxSlewRateFrame))
+         return false;
+      if (Double.doubleToLongBits(minRange) != Double.doubleToLongBits(other.minRange))
+         return false;
       if (typeID != other.typeID)
          return false;
       return true;

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.serialization.world.WorldConfig;
 
@@ -15,22 +14,19 @@ public class WorldTests
    @Test
    public void testCoordinateConversions()
    {
-      final Distance oneHundredKM = new Distance();
-      oneHundredKM.setAsKilometers(100);
+      final double oneHundredKM = 100000;
 
       //100km x 100km world, 10x10 grid, each cell should be 10km x 10km
       WorldConfig cfg = new WorldConfig();
       cfg.setNumColumns(10);
       cfg.setNumRows(10);
-      cfg.getWorldHeight().setAsKilometers(100);
-      cfg.getWorldWidth().setAsKilometers(100);
+      cfg.setWorldHeight(oneHundredKM);
+      cfg.setWorldWidth(oneHundredKM);
 
       World testMe = new World(cfg);
 
-      final Distance fifteenKM = new Distance();
-      fifteenKM.setAsKilometers(15);
-      final Distance thirtyFiveKM = new Distance();
-      thirtyFiveKM.setAsKilometers(35);
+      final double fifteenKM = 15000;
+      final double thirtyFiveKM = 35000;
 
       WorldCoordinate wc = new WorldCoordinate(fifteenKM, thirtyFiveKM);
       CellCoordinate cc = testMe.convertWorldToCell(wc);
@@ -42,14 +38,12 @@ public class WorldTests
       cc = new CellCoordinate(6, 2);
       wc = testMe.convertCellToWorld(cc);
 
-      final Distance twentyFiveKM = new Distance();
-      twentyFiveKM.setAsKilometers(25);
-      final Distance sixtyFiveKM = new Distance();
-      sixtyFiveKM.setAsKilometers(65);
+      final double twentyFiveKM = 25000;
+      final double sixtyFiveKM = 65000;
 
       //Column 2 should be 20-0km range, middle of that is 25km
-      assertEquals("Invalid cell row to world conversion.", twentyFiveKM, wc.getEast());
+      assertEquals("Invalid cell row to world conversion.", twentyFiveKM, wc.getEast(), 0.000001);
       //Row 6 should be 60-70km range, middle of that is 65km
-      assertEquals("Invalid cell row to world conversion.", sixtyFiveKM, wc.getNorth());
+      assertEquals("Invalid cell row to world conversion.", sixtyFiveKM, wc.getNorth(), 0.000001);
    }
 }

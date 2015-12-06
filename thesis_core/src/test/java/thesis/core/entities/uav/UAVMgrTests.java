@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import thesis.core.TestUtils;
 import thesis.core.common.Circle;
-import thesis.core.common.WorldCoordinate;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -30,8 +29,8 @@ public class UAVMgrTests
       final WorldConfig worldCfg = new WorldConfig();
       worldCfg.setNumColumns(10);
       worldCfg.setNumRows(10);
-      worldCfg.getWorldHeight().setAsKilometers(100);
-      worldCfg.getWorldWidth().setAsKilometers(100);
+      worldCfg.setWorldHeight(100000);
+      worldCfg.setWorldWidth(100000);
 
       Collection<UAVType> allUAVTypes = entTypes.getAllUAVTypes();
       final UAVType uavTypes[] = new UAVType[3];
@@ -52,28 +51,28 @@ public class UAVMgrTests
       // Construct 3 UAVs in a west to east line.
       final UAVEntityConfig uav1 = new UAVEntityConfig();
       uav1.setUAVType(uavTypes[0].getTypeID());
-      WorldCoordinate.setAsMeters(uav1.getLocation(), 500, 0);
+      uav1.getLocation().setCoordinate(500, 0);
 
       final UAVEntityConfig uav2 = new UAVEntityConfig();
       uav2.setUAVType(uavTypes[1].getTypeID());
-      WorldCoordinate.setAsMeters(uav2.getLocation(), 500, 250);
+      uav2.getLocation().setCoordinate(500, 250);
 
       final UAVEntityConfig uav3 = new UAVEntityConfig();
       uav3.setUAVType(uavTypes[2].getTypeID());
-      WorldCoordinate.setAsMeters(uav3.getLocation(), 500, 500);
+      uav3.getLocation().setCoordinate(500, 500);
 
       worldCfg.uavCfgs.add(uav1);
       worldCfg.uavCfgs.add(uav2);
       worldCfg.uavCfgs.add(uav3);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, worldCfg, 0, new Random(), worldCfg.getMaxWorldDistance().scale(0.1), 0.0f);
+      testMe.reset(entTypes, worldCfg, 0, new Random(), worldCfg.getMaxWorldDistance() * 0.1, 0.0f);
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();
-      testRegion.getRadius().setAsMeters(50);
+      testRegion.setRadius(50);
       // Slightly east of uav1
-      WorldCoordinate.setAsMeters(testRegion.getCenter(), 500, 10);
+      testRegion.getCenter().setCoordinate(500, 10);
 
       // Should only contain uav1
       List<UAV> inRegion = testMe.getAllUAVsInRegion(testRegion);
@@ -81,9 +80,9 @@ public class UAVMgrTests
       assertEquals("Incorrect uav detected in region.", uav1.getUAVType(), inRegion.get(0).getType().getTypeID());
 
       // Slightly east of uav3
-      WorldCoordinate.setAsMeters(testRegion.getCenter(), 500, 510);
-      testRegion.getRadius().setAsMeters(300);// UAVs are 250m apart, 300 will
-                                              // catch two of them
+      testRegion.getCenter().setCoordinate(500, 510);
+      testRegion.setRadius(300);// UAVs are 250m apart, 300 will
+                                // catch two of them
       inRegion = testMe.getAllUAVsInRegion(testRegion);
       assertEquals("Incorrect number of UAVs in query region2", 2, inRegion.size());
 
