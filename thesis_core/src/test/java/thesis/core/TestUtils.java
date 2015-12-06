@@ -45,10 +45,10 @@ public class TestUtils
       st.setMinRange(rand.nextDouble() * 100);
       // Add min range to guarantee max > min
       st.setMaxRange(st.getMinRange() + rand.nextDouble() * 2000);
-      st.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
-                                                             // FOV
+      // min of 10 degree fov
+      st.setFov(rand.nextDouble() * 120 + 10);
+      // min 1 deg/s
       st.setMaxSlewRate(rand.nextDouble() * 10 + 1);
-      ;// min 1 deg/s
 
       return st;
    }
@@ -65,7 +65,7 @@ public class TestUtils
       wt.setMinRange(rand.nextDouble() * 100);
       // Add min range to guarantee max > min
       wt.setMaxRange(wt.getMinRange() + rand.nextDouble() * 2000);
-      wt.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
+      wt.setFov(rand.nextDouble() * 120 + 10);// min of 10 degree
 
       return wt;
    }
@@ -115,19 +115,19 @@ public class TestUtils
 
    public static EntityTypes randEntityTypes()
    {
-      return randEntityTypes(3,3,4,7);
+      return randEntityTypes(3, 3, 4, 7);
    }
 
    public static EntityTypes randEntityTypes(int numSensorTypes, int numWeaponTypes, int numUAVTypes, int numTgtTypes)
    {
       EntityTypes entTypes = new EntityTypes();
 
-      for(int i=0; i<numSensorTypes; ++i)
+      for (int i = 0; i < numSensorTypes; ++i)
       {
          entTypes.getSensorTypes().add(TestUtils.randSensorType());
       }
 
-      for(int i=0; i<numWeaponTypes; ++i)
+      for (int i = 0; i < numWeaponTypes; ++i)
       {
          entTypes.getWeaponTypes().add(TestUtils.randWeaponType());
       }
@@ -137,7 +137,7 @@ public class TestUtils
          entTypes.addUAVType(TestUtils.randUAVType(entTypes.getWeaponTypes(), entTypes.getSensorTypes()));
       }
 
-      for (int i=0; i<numTgtTypes; ++i)
+      for (int i = 0; i < numTgtTypes; ++i)
       {
          entTypes.addTargetType(TestUtils.randTargetType());
       }

@@ -17,6 +17,7 @@ import thesis.core.common.graph.Vertex;
 public class WorldConfigFileTests
 {
    public static final double WC_COMPARE_THRESH = 0.0000001;
+   public static final double ANGLE_COMPARE_THRESH = 0.0001;
 
    private void createRoadNet(Graph<WorldCoordinate> roadNet)
    {
@@ -49,24 +50,24 @@ public class WorldConfigFileTests
 
       TargetEntityConfig tarCfg = new TargetEntityConfig();
       tarCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
-      tarCfg.getOrientation().setAsDegrees(34.547);
+      tarCfg.setOrientation(34.547);
       tarCfg.setTargetType(76);
       testMe.targetCfgs.add(tarCfg);
       tarCfg = new TargetEntityConfig();
       tarCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
-      tarCfg.getOrientation().setAsDegrees(69.547);
+      tarCfg.setOrientation(69.547);
       tarCfg.setTargetType(2);
       testMe.targetCfgs.add(tarCfg);
 
 
       UAVEntityConfig uavCfg = new UAVEntityConfig();
       uavCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
-      uavCfg.getOrientation().setAsDegrees(63.1547);
+      uavCfg.setOrientation(63.1547);
       uavCfg.setUAVType(3);
       testMe.uavCfgs.add(uavCfg);
       uavCfg = new UAVEntityConfig();
       uavCfg.getLocation().setCoordinate(TestUtils.randWorldCoord());
-      uavCfg.getOrientation().setAsDegrees(206.852);
+      uavCfg.setOrientation(206.852);
       uavCfg.setUAVType(22);
       testMe.uavCfgs.add(uavCfg);
 
@@ -134,14 +135,14 @@ public class WorldConfigFileTests
       assertEquals("Failed to read first target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth(), WC_COMPARE_THRESH);
       assertEquals("Failed to read first target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast(), WC_COMPARE_THRESH);
       assertEquals("Failed to read first target's type.", tarCfgR.getTargetType(), tarCfgT.getTargetType());
-      assertEquals("Failed to read first target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation());
+      assertEquals("Failed to read first target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation(), ANGLE_COMPARE_THRESH);
 
       tarCfgT = testMe.targetCfgs.get(1);
       tarCfgR = results.targetCfgs.get(1);
       assertEquals("Failed to read second target's north.", tarCfgR.getLocation().getNorth(), tarCfgT.getLocation().getNorth(), WC_COMPARE_THRESH);
       assertEquals("Failed to read second target's east.", tarCfgR.getLocation().getEast(), tarCfgT.getLocation().getEast(), WC_COMPARE_THRESH);
       assertEquals("Failed to read second target's type.", tarCfgR.getTargetType(), tarCfgT.getTargetType());
-      assertEquals("Failed to read second target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation());
+      assertEquals("Failed to read second target's orientation.", tarCfgR.getOrientation(), tarCfgT.getOrientation(), ANGLE_COMPARE_THRESH);
 
 
       UAVEntityConfig uavCfgT = testMe.uavCfgs.get(0);
@@ -149,14 +150,14 @@ public class WorldConfigFileTests
       assertEquals("Failed to read first uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth(), WC_COMPARE_THRESH);
       assertEquals("Failed to read first uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast(), WC_COMPARE_THRESH);
       assertEquals("Failed to read first uav's type.", uavCfgR.getUAVType(), uavCfgT.getUAVType());
-      assertEquals("Failed to read first uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation());
+      assertEquals("Failed to read first uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation(), ANGLE_COMPARE_THRESH);
 
       uavCfgT = testMe.uavCfgs.get(1);
       uavCfgR = results.uavCfgs.get(1);
       assertEquals("Failed to read second uav's north.", uavCfgR.getLocation().getNorth(), uavCfgT.getLocation().getNorth(), WC_COMPARE_THRESH);
       assertEquals("Failed to read second uav's east.", uavCfgR.getLocation().getEast(), uavCfgT.getLocation().getEast(), WC_COMPARE_THRESH);
       assertEquals("Failed to read second uav's type.", uavCfgR.getUAVType(), uavCfgT.getUAVType());
-      assertEquals("Failed to read second uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation());
+      assertEquals("Failed to read second uav's orientation.", uavCfgR.getOrientation(), uavCfgT.getOrientation(), ANGLE_COMPARE_THRESH);
    }
 }
 

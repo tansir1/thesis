@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import thesis.core.common.Angle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.entities.uav.sensors.Sensor;
 import thesis.core.entities.uav.sensors.SensorType;
@@ -25,8 +24,8 @@ public class SensorTests
       WorldCoordinate sensorPosition = new WorldCoordinate();
 
       //Compute number of frames needed to slew to look angle
-      Angle bearingTo = sensorPosition.bearingTo(lookAt);
-      int numFrames = (int)Math.ceil(bearingTo.asDegrees() / st.getMaxSlewFrameRate());
+      double bearingTo = sensorPosition.bearingTo(lookAt);
+      int numFrames = (int)Math.ceil(bearingTo / st.getMaxSlewFrameRate());
       if(numFrames < 0)
       {
          numFrames = -numFrames;
@@ -41,7 +40,6 @@ public class SensorTests
          //System.out.println(testMe.getAzimuth());
       }
 
-      bearingTo.normalize360();
-      assertEquals("Did not correctly slew sensor to lookAt angle.", bearingTo, testMe.getAzimuth());
+      assertEquals("Did not correctly slew sensor to lookAt angle.", bearingTo, testMe.getAzimuth(), 0.00001);
    }
 }

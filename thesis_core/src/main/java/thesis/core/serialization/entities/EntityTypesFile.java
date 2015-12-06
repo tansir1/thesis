@@ -239,7 +239,7 @@ public class EntityTypesFile
          SensorType st = new SensorType(type);
          st.setMinRange(minRngM);
          st.setMaxRange(maxRngM);
-         st.getFov().setAsDegrees(fovDeg);
+         st.setFov(fovDeg);
          st.setMaxSlewRate(slewDegSec);
 
          entTypes.getSensorTypes().add(st);
@@ -255,7 +255,7 @@ public class EntityTypesFile
          elem.setAttribute("type", Integer.toString(st.getTypeID()));
          elem.setAttribute("minRng", Double.toString(st.getMinRange()));
          elem.setAttribute("maxRng", Double.toString(st.getMaxRange()));
-         elem.setAttribute("fov", Double.toString(st.getFov().asDegrees()));
+         elem.setAttribute("fov", Double.toString(st.getFov()));
          elem.setAttribute("maxSlew", Double.toString(st.getMaxSlewRate()));
 
          parentElem.appendChild(elem);
@@ -279,7 +279,7 @@ public class EntityTypesFile
          WeaponType wt = new WeaponType(type);
          wt.setMinRange(minRngM);
          wt.setMaxRange(maxRngM);
-         wt.getFov().setAsDegrees(fovDeg);
+         wt.setFov(fovDeg);
 
          entTypes.getWeaponTypes().add(wt);
       }
@@ -294,7 +294,7 @@ public class EntityTypesFile
          elem.setAttribute("type", Integer.toString(wt.getTypeID()));
          elem.setAttribute("minRng", Double.toString(wt.getMinRange()));
          elem.setAttribute("maxRng", Double.toString(wt.getMaxRange()));
-         elem.setAttribute("fov", Double.toString(wt.getFov().asDegrees()));
+         elem.setAttribute("fov", Double.toString(wt.getFov()));
 
          parentElem.appendChild(elem);
       }

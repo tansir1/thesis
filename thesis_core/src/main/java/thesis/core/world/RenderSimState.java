@@ -526,7 +526,7 @@ public class RenderSimState
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                //trans.rotate(-tgt.getHeading().asRadians());
-               double deg = tgt.getHeading().asDegrees() - 90;
+               double deg = tgt.getHeading() - 90;
                trans.rotate(-Math.toRadians(deg));
 
                g2d.drawImage(scaledRedMobileImg, trans, null);
@@ -540,7 +540,7 @@ public class RenderSimState
                halfImgH = scaledRedStaticImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
-               trans.rotate(-tgt.getHeading().asRadians());
+               trans.rotate(Math.toRadians(-tgt.getHeading()));
 
                g2d.drawImage(scaledRedStaticImg, trans, null);
             }
@@ -572,7 +572,7 @@ public class RenderSimState
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          //trans.rotate(-uav.getHeading().asRadians());
-         double deg = uav.getHeading().asDegrees() - 90;
+         double deg = uav.getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);

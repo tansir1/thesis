@@ -35,7 +35,7 @@ public class DubinsPathGenerator
       Circle endLeft = new Circle();
       Circle endRight = new Circle();
 
-      double theta = start.getHeading().asRadians();
+      double theta = Math.toRadians(start.getHeading());
       theta += Math.PI / 2.0;
       if (theta > Math.PI)
          theta -= 2.0 * Math.PI;
@@ -44,7 +44,7 @@ public class DubinsPathGenerator
       startLeft.getCenter().setNorth(start.getNorth() + minTurnRadius * Math.sin(theta));
       startLeft.setRadius(minTurnRadius);
 
-      theta = start.getHeading().asRadians();
+      theta = Math.toRadians(start.getHeading());
       theta -= Math.PI / 2.0;
       if (theta < -Math.PI)
          theta += 2.0 * Math.PI;
@@ -53,7 +53,7 @@ public class DubinsPathGenerator
       startRight.getCenter().setNorth(start.getNorth() + minTurnRadius * Math.sin(theta));
       startRight.setRadius(minTurnRadius);
 
-      theta = end.getHeading().asRadians();
+      theta = Math.toRadians(end.getHeading());
       theta += Math.PI / 2.0;
       if (theta > Math.PI)
          theta -= 2.0 * Math.PI;
@@ -62,7 +62,7 @@ public class DubinsPathGenerator
       endLeft.getCenter().setNorth(end.getNorth() + minTurnRadius * Math.sin(theta));
       endLeft.setRadius(minTurnRadius);
 
-      theta = end.getHeading().asRadians();
+      theta = Math.toRadians(end.getHeading());
       theta -= Math.PI / 2.0;
       if (theta < -Math.PI)
          theta += 2.0 * Math.PI;

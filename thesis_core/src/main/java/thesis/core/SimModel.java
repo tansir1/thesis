@@ -85,7 +85,7 @@ public class SimModel
          double east = randGen.nextDouble() * world.getHeight();
 
          pose.getCoordinate().setCoordinate(north, east);
-         pose.getHeading().setAsDegrees(randGen.nextInt(360));
+         pose.setHeading(randGen.nextInt(360));
          uav.TEMP_setDestination(pose);
 
          //Temporary sensor stare point

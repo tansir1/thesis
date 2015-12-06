@@ -1,7 +1,5 @@
 package thesis.core.entities;
 
-import thesis.core.common.Angle;
-
 /**
  * Performance specification data for a specific type of weapon.
  */
@@ -10,14 +8,14 @@ public class WeaponType
    private int typeID;
    private double minRange;
    private double maxRange;
-   private Angle fov;
+   private double fov;
 
    public WeaponType(int typeID)
    {
       this.typeID = typeID;
       minRange = 0;
       maxRange = 0;
-      fov = new Angle();
+      fov = 0;
    }
 
    /**
@@ -75,11 +73,22 @@ public class WeaponType
    /**
     * Get the field of view angle.
     *
-    * @return The FOV of the sensor.
+    * @return The FOV of the sensor in degrees.
     */
-   public Angle getFov()
+   public double getFov()
    {
       return fov;
+   }
+
+   /**
+    * Set the field of view angle.
+    *
+    * @param fov
+    *           The FOV of the sensor in degrees.
+    */
+   public void setFov(double fov)
+   {
+      this.fov = fov;
    }
 
    @Override
@@ -87,8 +96,9 @@ public class WeaponType
    {
       final int prime = 31;
       int result = 1;
-      result = prime * result + ((fov == null) ? 0 : fov.hashCode());
       long temp;
+      temp = Double.doubleToLongBits(fov);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       temp = Double.doubleToLongBits(maxRange);
       result = prime * result + (int) (temp ^ (temp >>> 32));
       temp = Double.doubleToLongBits(minRange);
@@ -107,12 +117,7 @@ public class WeaponType
       if (getClass() != obj.getClass())
          return false;
       WeaponType other = (WeaponType) obj;
-      if (fov == null)
-      {
-         if (other.fov != null)
-            return false;
-      }
-      else if (!fov.equals(other.fov))
+      if (Double.doubleToLongBits(fov) != Double.doubleToLongBits(other.fov))
          return false;
       if (Double.doubleToLongBits(maxRange) != Double.doubleToLongBits(other.maxRange))
          return false;
