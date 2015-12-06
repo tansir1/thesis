@@ -323,7 +323,7 @@ public class EntityTypesFile
          double minTurnRadM = Double.parseDouble(typeElem.getAttribute("turnRad"));
 
          UAVType uavType = new UAVType(type);
-         uavType.getMaxSpd().setAsMetersPerSecond(spdM);
+         uavType.setMaxSpd(spdM);
          uavType.setMinTurnRadius(minTurnRadM);
          uavType.init();
 
@@ -382,7 +382,7 @@ public class EntityTypesFile
       {
          Element uavTypeElem = dom.createElement("UAVType");
          uavTypeElem.setAttribute("type", Integer.toString(uavType.getTypeID()));
-         uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd().asMeterPerSecond()));
+         uavTypeElem.setAttribute("maxSpd", Double.toString(uavType.getMaxSpd()));
          uavTypeElem.setAttribute("turnRad", Double.toString(uavType.getMinTurnRadius()));
 
          Element sensorsElem = dom.createElement("Sensors");
@@ -421,7 +421,7 @@ public class EntityTypesFile
          double maxSpd = Double.parseDouble(typeElem.getAttribute("maxSpd"));
 
          TargetType tt = new TargetType(type);
-         tt.getMaxSpeed().setAsMetersPerSecond(maxSpd);
+         tt.setMaxSpeed(maxSpd);
 
          entTypes.addTargetType(tt);
       }
@@ -434,7 +434,7 @@ public class EntityTypesFile
       {
          Element elem = dom.createElement("TargetType");
          elem.setAttribute("type", Integer.toString(tt.getTypeID()));
-         elem.setAttribute("maxSpd", Double.toString(tt.getMaxSpeed().asMeterPerSecond()));
+         elem.setAttribute("maxSpd", Double.toString(tt.getMaxSpeed()));
 
          parentElem.appendChild(elem);
       }

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import thesis.core.common.AngularSpeed;
-import thesis.core.common.LinearSpeed;
 import thesis.core.common.SimTime;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.uav.sensors.SensorType;
@@ -15,7 +14,10 @@ import thesis.core.entities.uav.sensors.SensorType;
 public class UAVType
 {
    private int typeID;
-   private LinearSpeed maxSpd;
+   /**
+    * Max speed of the UAV in meters/second.
+    */
+   private double maxSpd;
    private double minTurnRadius;
 
    private Set<SensorType> sensors;
@@ -23,19 +25,22 @@ public class UAVType
 
    // Derived parameters
    private AngularSpeed maxTurnRt;
-   private LinearSpeed frameSpd;
+   /**
+    * Speed of the UAV in meters/frame.
+    */
+   private double frameSpd;
 
    public UAVType(int typeID)
    {
       this.typeID = typeID;
-      maxSpd = new LinearSpeed();
+      maxSpd = 0;
       maxTurnRt = new AngularSpeed();
 
       sensors = new HashSet<SensorType>();
       weapons = new HashSet<Weapon>();
 
       minTurnRadius = 0;
-      frameSpd = new LinearSpeed();
+      frameSpd = 0;
    }
 
    /**
@@ -53,19 +58,39 @@ public class UAVType
     *
     * @return The maximum speed of the UAV.
     */
-   public LinearSpeed getMaxSpd()
+   public double getMaxSpd()
    {
       return maxSpd;
    }
 
    /**
+    * Set the maximum ground speed of the aircraft.
+    *
+    * @param spd The maximum speed of the UAV in meters/second.
+    */
+   public void setMaxSpd(double spd)
+   {
+      maxSpd = spd;
+   }
+
+   /**
     * Get the speed of the UAV per frame of the simulation.
     *
-    * @return The speed of the UAV scaled to simulation frame rate.
+    * @return The speed of the UAV scaled to simulation frame rate in meters/frame.
     */
-   public LinearSpeed getFrameSpd()
+   public double getFrameSpd()
    {
       return frameSpd;
+   }
+
+   /**
+    * Set the speed of the UAV per frame of the simulation.
+    *
+    * @param frameSpd The speed of the UAV scaled to simulation frame rate in meters/frame.
+    */
+   public void setFrameSpd(double frameSpd)
+   {
+      this.frameSpd = frameSpd;
    }
 
    /**
@@ -162,8 +187,8 @@ public class UAVType
       // minTurnRadius.setAsMeters(arcLength / Math.PI);
       // minTurnRadius.setAsMeters(maxSpd.asMeterPerSecond() /
       // maxTurnRt.asRadiansPerSecond());
-      maxTurnRt.setAsRadiansPerSecond(maxSpd.asMeterPerSecond() / minTurnRadius);
+      maxTurnRt.setAsRadiansPerSecond(maxSpd / minTurnRadius);
 
-      frameSpd.setAsMetersPerSecond(maxSpd.asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0));
+      frameSpd = maxSpd * SimTime.SIM_STEP_RATE_S;
    }
 }
