@@ -17,6 +17,8 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.world.RenderOptions.RenderOption;
 import thesis.core.world.RenderSimState;
+import thesis.gui.mainwindow.actions.Actions;
+import thesis.gui.mainwindow.actions.renderopts.RenderOptAction;
 import thesis.gui.utilities.ListenerSupport;
 
 @SuppressWarnings("serial")
@@ -58,12 +60,18 @@ public class RenderableSimWorldPanel extends JPanel
 		return listeners;
 	}
 
-	public void connectSimModel(SimModel simModel)
+	public void connectSimModel(final SimModel simModel, final Actions actions)
 	{
 		renderWorld = new RenderSimState(simModel);
 		this.addMouseListener(mouseState);
 		this.addMouseMotionListener(mouseState);
 		renderWorld.setBounds(0, 0, getWidth(), getHeight());
+
+		for(RenderOptAction action : actions.getRenderOptions())
+		{
+		   action.connectToModel(renderWorld.getRenderOptions());
+		}
+
 	    //FIXME This is temporary demo code until render options can be set via GUI
       renderWorld.getRenderOptions().setOption(RenderOption.SensorFOV);
 		repaint();
