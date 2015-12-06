@@ -1,4 +1,4 @@
-package thesis.gui.mainwindow;
+package thesis.gui.mainwindow.actions.runspeed;
 
 import java.awt.event.ActionEvent;
 
@@ -7,6 +7,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 import thesis.core.utilities.CoreUtils;
+import thesis.gui.mainwindow.SimTimer;
 import thesis.gui.utilities.GuiRsrcPaths;
 
 @SuppressWarnings("serial")
