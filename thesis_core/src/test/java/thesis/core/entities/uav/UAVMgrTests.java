@@ -91,11 +91,11 @@ public class UAVMgrTests
       boolean uav3Found = false;
       for (UAV uav : inRegion)
       {
-         if (uav.getType() == uav2.getUAVType())
+         if (uav.getType().getTypeID() == uav2.getUAVType())
          {
             uav2Found = true;
          }
-         else if (uav.getType() == uav3.getUAVType())
+         else if (uav.getType().getTypeID() == uav3.getUAVType())
          {
             uav3Found = true;
          }

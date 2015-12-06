@@ -1,4 +1,4 @@
-package thesis.core.entities.sensor;
+package thesis.core.entities.uav.sensor;
 
 import static org.junit.Assert.assertEquals;
 

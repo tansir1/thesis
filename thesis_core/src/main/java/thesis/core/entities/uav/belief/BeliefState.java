@@ -15,6 +15,12 @@ public class BeliefState
    private List<TargetBelief> targets;
    private Map<Integer, OtherUAVBelief> team;
 
+   /**
+    * If two {@link TargetBelief}s of the same type are this close together
+    * (meters) then it is assumed that they are the same target.
+    */
+   private final double TGT_MERGE_THRESHOLD = 100;
+
    public BeliefState()
    {
       targets = new ArrayList<TargetBelief>();
@@ -84,5 +90,29 @@ public class BeliefState
    public Collection<OtherUAVBelief> getOtherUAVs()
    {
       return team.values();
+   }
+
+   /**
+    * Merge the given belief state into the calling state.
+    *
+    * @param mergeIn
+    *           Merge this belief into the calling belief.
+    */
+   public void mergeBelief(BeliefState mergeIn)
+   {
+
+   }
+
+   public void mergeTarget(TargetBelief tb)
+   {
+      for (TargetBelief existing : targets)
+      {
+         double dist = existing.getPose().getCoordinate().distanceTo(tb.getPose().getCoordinate());
+         dist = Math.abs(dist);
+         if (dist < TGT_MERGE_THRESHOLD)
+         {
+
+         }
+      }
    }
 }
