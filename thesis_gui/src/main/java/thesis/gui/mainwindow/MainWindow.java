@@ -11,9 +11,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
 import thesis.core.SimModel;
+import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
@@ -128,8 +130,24 @@ public class MainWindow implements IMapMouseListener
 	 */
 	public void connectSimModel(SimModel simModel)
 	{
-		simPanel.connectSimModel(simModel);
+		simPanel.connectSimModel(simModel, actions);
 		simTimer.reset(simModel);
+	}
+
+	/**
+	 * Request that the sim panel repaint itself.
+	 */
+	public void repaintSimPanel()
+	{
+	   SwingUtilities.invokeLater(new Runnable()
+      {
+
+         @Override
+         public void run()
+         {
+            simPanel.repaint();
+         }
+      });
 	}
 
 	@Override

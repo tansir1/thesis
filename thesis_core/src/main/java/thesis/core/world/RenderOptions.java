@@ -2,8 +2,15 @@ package thesis.core.world;
 
 import java.util.BitSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import thesis.core.utilities.LoggerIDs;
+
 public class RenderOptions
 {
+   private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
+
    private BitSet options;
 
    public enum RenderOption
@@ -50,16 +57,19 @@ public class RenderOptions
 
    public void clearAllOptions()
    {
+      logger.debug("Cleared all render options");
       options.clear();
    }
 
    public void setOption(final RenderOption opt)
    {
+      logger.debug("Set render option: {}", opt);
       options.set(opt.index);
    }
 
    public void clearOption(final RenderOption opt)
    {
+      logger.debug("Cleared render option: {}", opt);
       options.clear(opt.index);
    }
 

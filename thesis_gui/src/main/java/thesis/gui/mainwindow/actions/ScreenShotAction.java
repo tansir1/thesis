@@ -1,4 +1,4 @@
-package thesis.gui.mainwindow;
+package thesis.gui.mainwindow.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
