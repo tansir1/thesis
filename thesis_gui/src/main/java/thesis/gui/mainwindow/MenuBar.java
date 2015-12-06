@@ -20,7 +20,7 @@ public class MenuBar
 		menuBar = new JMenuBar();
 
 		menuBar.add(buildFileMenu(mainWin, actions));
-		menuBar.add(buildRenderOptionsMenu(actions));
+		menuBar.add(buildRenderOptionsMenu(mainWin, actions));
 		menuBar.add(buildHelpMenu(mainWin, actions));
 	}
 
@@ -66,7 +66,7 @@ public class MenuBar
 		return helpMenu;
 	}
 
-	private JMenu buildRenderOptionsMenu(final Actions actions)
+	private JMenu buildRenderOptionsMenu(final MainWindow mainWin, final Actions actions)
 	{
       JMenu renderOptsMenu = new JMenu("Render Options");
       for(final RenderOptAction opt : actions.getRenderOptions())
@@ -78,7 +78,7 @@ public class MenuBar
             @Override
             public void actionPerformed(ActionEvent e)
             {
-               //opt.actionPerformed(e);
+               mainWin.repaintSimPanel();
             }
          });
 
