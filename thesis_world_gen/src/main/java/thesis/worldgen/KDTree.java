@@ -68,32 +68,32 @@ public class KDTree
 
 			if (sortVertically)
 			{
-				if (o1.getNorth().asMeters() < o2.getNorth().asMeters())
+				if (o1.getNorth() < o2.getNorth())
 				{
 					retVal = -1;
 				}
-				else if (o1.getNorth().equals(o2.getNorth()))
+				else if (o1.getNorth() > o2.getNorth())
 				{
-					retVal = 0;
+					retVal = 1;
 				}
 				else
 				{
-					retVal = 1;
+					retVal = 0;
 				}
 			}
 			else
 			{
-				if (o1.getEast().asMeters() < o2.getEast().asMeters())
+				if (o1.getEast() < o2.getEast())
 				{
 					retVal = -1;
 				}
-				else if (o1.getEast().equals(o2.getEast()))
+				else if (o1.getEast() > o2.getEast())
 				{
-					retVal = 0;
+					retVal = 1;
 				}
 				else
 				{
-					retVal = 1;
+					retVal = 0;
 				}
 			}
 			return retVal;

@@ -8,14 +8,14 @@ import java.text.DecimalFormat;
 public class WorldCoordinate
 {
    /**
-    * Distance north from the world origin.
+    * Distance north from the world origin in meters.
     */
-   private Distance north;
+   private double north;
 
    /**
-    * Distance east from the world origin.
+    * Distance east from the world origin in meters.
     */
-   private Distance east;
+   private double east;
 
    /**
     * Formatter for printing coordinate data in toString().
@@ -29,24 +29,22 @@ public class WorldCoordinate
     */
    public WorldCoordinate()
    {
-      north = new Distance();
-      east = new Distance();
+      north = 0;
+      east = 0;
    }
 
    /**
     * Initialize a world coordinate at the given location.
     *
     * @param north
-    *           The distance north from the world origin. The value is copied.
+    *           The distance north from the world origin in meters.
     * @param east
-    *           The distance east from the world origin. The value is copied.
+    *           The distance east from the world origin in meters.
     */
-   public WorldCoordinate(Distance north, Distance east)
+   public WorldCoordinate(final double north, final double east)
    {
-      this.north = new Distance();
-      this.east = new Distance();
-      this.north.copy(north);
-      this.east.copy(east);
+      this.north = north;
+      this.east = east;
    }
 
    /**
@@ -55,30 +53,28 @@ public class WorldCoordinate
     * @param wc
     *           Clone this coordinate.
     */
-   public WorldCoordinate(WorldCoordinate wc)
+   public WorldCoordinate(final WorldCoordinate wc)
    {
-      this.north = new Distance();
-      this.east = new Distance();
-      this.north.copy(wc.north);
-      this.east.copy(wc.east);
+      this.north = wc.north;
+      this.east = wc.east;
    }
 
    /**
-    * Get the distance north from the world origin.
+    * Get the distance north from the world origin in meters.
     *
     * @return Distance north.
     */
-   public Distance getNorth()
+   public double getNorth()
    {
       return north;
    }
 
    /**
-    * Get the distance east from the world origin.
+    * Get the distance east from the world origin in meters.
     *
     * @return Distance east.
     */
-   public Distance getEast()
+   public double getEast()
    {
       return east;
    }
@@ -87,36 +83,36 @@ public class WorldCoordinate
     * Set the distance north from the world origin.
     *
     * @param north
-    *           Distance north.
+    *           Distance north in meters.
     */
-   public void setNorth(Distance north)
+   public void setNorth(final double north)
    {
-      this.north.copy(north);
+      this.north = north;
    }
 
    /**
     * Set the distance east from the world origin.
     *
     * @param north
-    *           Distance east.
+    *           Distance east in meters.
     */
-   public void setEast(Distance east)
+   public void setEast(final double east)
    {
-      this.east.copy(east);
+      this.east = east;
    }
 
    /**
     * Set the distance north and east from the world origin.
     *
     * @param north
-    *           Distance north.
+    *           Distance north in meters.
     * @param east
-    *           Distance east.
+    *           Distance east in meters.
     */
-   public void setCoordinate(Distance north, Distance east)
+   public void setCoordinate(final double north, final double east)
    {
-      this.north.copy(north);
-      this.east.copy(east);
+      this.north = north;
+      this.east = east;
    }
 
    /**
@@ -129,65 +125,37 @@ public class WorldCoordinate
     */
    public void setCoordinate(final WorldCoordinate copy)
    {
-      this.north.copy(copy.north);
-      this.east.copy(copy.east);
+      this.north = copy.north;
+      this.east = copy.east;
    }
 
    /**
     * Shift the current coordinate position by the specified amount.
     *
     * @param deltaNorth
-    *           Move the coordinate north by this far.
+    *           Move the coordinate north (meters) by this far.
     * @param deltaEast
-    *           Move the coordinate east by this far.
+    *           Move the coordinate east (meters) by this far.
     */
-   public void translate(final Distance deltaNorth, final Distance deltaEast)
+   public void translateCart(final double deltaNorth, final double deltaEast)
    {
-      this.north.add(deltaNorth);
-      this.east.add(deltaEast);
+      this.north += deltaNorth;
+      this.east += deltaEast;
    }
 
    /**
     * Shift the current coordinate position by the specified amount.
     *
     * @param heading
-    *           Move along this heading.
+    *           Move along this heading (degrees).
     * @param distance
-    *           Move this far along the heading.
+    *           Move this far along the heading (meters).
     */
-   public void translate(final Angle heading, final Distance distance)
+   public void translatePolar(final double heading, final double distance)
    {
-      double deltaNorthM = heading.sin() * distance.asMeters();
-      double deltaEastM = heading.cos() * distance.asMeters();
-      Distance deltaN = new Distance();
-      Distance deltaE = new Distance();
-      deltaN.setAsMeters(deltaNorthM);
-      deltaE.setAsMeters(deltaEastM);
-      translate(deltaN, deltaE);
-   }
-
-   /**
-    * Translate the distance traveled at the given speed for the specified
-    * amount of time.
-    *
-    * @param spd
-    *           The speed of travel.
-    * @param heading
-    *           The heading direction of travel.
-    * @param timeInSec
-    *           The time spent traveling.
-    */
-   public void translate(final LinearSpeed spd, final Angle heading, double timeInSec)
-   {
-      double delNorthM = spd.asMeterPerSecond() * heading.sin() * timeInSec;
-      double delEastM = spd.asMeterPerSecond() * heading.cos() * timeInSec;
-
-      Distance north = new Distance();
-      Distance east = new Distance();
-      north.setAsMeters(delNorthM);
-      east.setAsMeters(delEastM);
-
-      translate(north, east);
+      double deltaNorth = Math.sin(Math.toRadians(heading)) * distance;
+      double deltaEast = Math.cos(Math.toRadians(heading)) * distance;
+      translateCart(deltaNorth, deltaEast);
    }
 
    /**
@@ -196,27 +164,22 @@ public class WorldCoordinate
     *
     * @param wc
     *           Find the bearing to this coordinate.
-    * @return The bearing angle from this coordinate to the given coordinate.
+    * @return The bearing angle from this coordinate to the given coordinate in degrees.
     */
-   public Angle bearingTo(final WorldCoordinate wc)
+   public double bearingTo(final WorldCoordinate wc)
    {
-      Distance delNorth = new Distance(wc.north);
-      Distance delEast = new Distance(wc.east);
-
-      delNorth.subtract(north);
-      delEast.subtract(east);
-
-      Angle retVal = new Angle();
-      retVal.setAsRadians(Math.atan2(delNorth.asMeters(), delEast.asMeters()));
-      return retVal;
+      double delNorth = wc.north - north;
+      double delEast = wc.east - east;
+      double bearing = Math.toDegrees(Math.atan2(delNorth, delEast));
+      return Angle.normalize360(bearing);
    }
 
    /**
     * Get the absolute bearing from the origin to this coordinate.
     *
-    * @return The bearing angle from the origin to this coordinate.
+    * @return The bearing angle from the origin to this coordinate in degrees.
     */
-   public Angle bearingFromOrigin()
+   public double bearingFromOrigin()
    {
       WorldCoordinate origin = new WorldCoordinate();
       return origin.bearingTo(this);
@@ -227,20 +190,14 @@ public class WorldCoordinate
     *
     * @param wc
     *           Get the distance to here.
-    * @return The distance between the coordinates in kilometers.
+    * @return The distance between the coordinates in meters.
     */
-   public Distance distanceTo(WorldCoordinate wc)
+   public double distanceTo(final WorldCoordinate wc)
    {
-      Distance delNorth = new Distance(wc.north);
-      Distance delEast = new Distance(wc.east);
+      final double delNorth = wc.north - north;
+      final double delEast = wc.east - east;
 
-      delNorth.subtract(north);
-      delEast.subtract(east);
-
-      double distInM = Math.sqrt(delNorth.asMeters() * delNorth.asMeters() + delEast.asMeters() * delEast.asMeters());
-      Distance retVal = new Distance();
-      retVal.setAsMeters(distInM);
-      return retVal;
+      return Math.sqrt(delNorth * delNorth + delEast * delEast);
    }
 
    @Override
@@ -255,26 +212,19 @@ public class WorldCoordinate
       return sb.toString();
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#hashCode()
-    */
    @Override
    public int hashCode()
    {
       final int prime = 31;
       int result = 1;
-      result = prime * result + ((east == null) ? 0 : east.hashCode());
-      result = prime * result + ((north == null) ? 0 : north.hashCode());
+      long temp;
+      temp = Double.doubleToLongBits(east);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(north);
+      result = prime * result + (int) (temp ^ (temp >>> 32));
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#equals(java.lang.Object)
-    */
    @Override
    public boolean equals(Object obj)
    {
@@ -285,29 +235,11 @@ public class WorldCoordinate
       if (getClass() != obj.getClass())
          return false;
       WorldCoordinate other = (WorldCoordinate) obj;
-      if (east == null)
-      {
-         if (other.east != null)
-            return false;
-      }
-      else if (!east.equals(other.east))
+      if (Double.doubleToLongBits(east) != Double.doubleToLongBits(other.east))
          return false;
-      if (north == null)
-      {
-         if (other.north != null)
-            return false;
-      }
-      else if (!north.equals(other.north))
+      if (Double.doubleToLongBits(north) != Double.doubleToLongBits(other.north))
          return false;
       return true;
    }
 
-   public static void setAsMeters(final WorldCoordinate wc, final double metersNorth, final double metersEast)
-   {
-      Distance east = new Distance();
-      Distance north = new Distance();
-      east.setAsMeters(metersEast);
-      north.setAsMeters(metersNorth);
-      wc.setCoordinate(north, east);
-   }
 }

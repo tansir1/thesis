@@ -7,7 +7,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import thesis.core.SimModel;
-import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVType;
@@ -25,20 +24,20 @@ public class UAVKinematicsTest
       WorldConfig worldCfg = new WorldConfig();
       worldCfg.setNumColumns(10);
       worldCfg.setNumRows(10);
-      worldCfg.getWorldHeight().setAsKilometers(10);
-      worldCfg.getWorldWidth().setAsKilometers(10);
+      worldCfg.setWorldHeight(10000);
+      worldCfg.setWorldWidth(10000);
 
       UAVType uavType = new UAVType(1);
-      uavType.getMaxSpd().setAsMetersPerSecond(10);
-      uavType.getMinTurnRadius().setAsMeters(250);
+      uavType.setMaxSpd(10);
+      uavType.setMinTurnRadius(250);
       uavType.init();
 
       EntityTypes entTypes = new EntityTypes();
       entTypes.addUAVType(uavType);
 
       UAVEntityConfig uavEntCfg = new UAVEntityConfig();
-      WorldCoordinate.setAsMeters(uavEntCfg.getLocation(), 2000, 3000);
-      uavEntCfg.getOrientation().setAsDegrees(180);
+      uavEntCfg.getLocation().setCoordinate(2000, 3000);
+      uavEntCfg.setOrientation(180);
       uavEntCfg.setUAVType(uavType.getTypeID());
       worldCfg.uavCfgs.add(uavEntCfg);
 
@@ -48,8 +47,8 @@ public class UAVKinematicsTest
       UAV uav = sim.getUAVManager().getUAV(0);
 
       WorldPose flyTo = new WorldPose();
-      WorldCoordinate.setAsMeters(flyTo.getCoordinate(), 7000, 6000);
-      flyTo.getHeading().setAsDegrees(-135);
+      flyTo.getCoordinate().setCoordinate(7000, 6000);
+      flyTo.setHeading(-135);
       uav.TEMP_setDestination(flyTo);
 
       final int FRAME_LIMIT = 45000;
@@ -63,8 +62,8 @@ public class UAVKinematicsTest
       uav.getFlightHistoryTrail(history);
       for(WorldPose pose : history)
       {
-         double east = pose.getEast().asMeters();
-         double north = pose.getNorth().asMeters();
+         double east = pose.getEast();
+         double north = pose.getNorth();
          System.out.format("%.2f,%.2f,%.2f\n", east, north, pose.getHeading().asDegrees());
       }
       */

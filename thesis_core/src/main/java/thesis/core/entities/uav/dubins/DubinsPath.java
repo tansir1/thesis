@@ -1,6 +1,5 @@
 package thesis.core.entities.uav.dubins;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 
@@ -13,7 +12,7 @@ public class DubinsPath
 
    private WorldCoordinate waypoint1, waypoint2;
 
-   protected Distance[] segmentLengths;
+   protected double[] segmentLengths;
 
    public DubinsPath()
    {
@@ -23,19 +22,22 @@ public class DubinsPath
       waypoint1 = new WorldCoordinate();
       waypoint2 = new WorldCoordinate();
 
-      segmentLengths = new Distance[3];
+      segmentLengths = new double[3];
       for (int i = 0; i < segmentLengths.length; ++i)
       {
-         segmentLengths[i] = new Distance();
+         segmentLengths[i] = 0;
       }
    }
 
-   public Distance getPathLength()
+   /**
+    * @return The total length of the path in meters.
+    */
+   public double getPathLength()
    {
-      Distance len = new Distance();
+      double len = 0;
       for (int i = 0; i < segmentLengths.length; ++i)
       {
-         len.add(segmentLengths[i]);
+         len += segmentLengths[i];
       }
       return len;
    }
@@ -67,13 +69,13 @@ public class DubinsPath
 
    /**
     * Get the length of segment of the path.
-    * 
+    *
     * @param phase
-    * @return
+    * @return The length of the requested phase in meters.
     */
-   public Distance getSegmentLength(PathPhase phase)
+   public double getSegmentLength(PathPhase phase)
    {
-      Distance len = null;
+      double len = 0;
       switch (phase)
       {
       case Phase1:
@@ -87,11 +89,11 @@ public class DubinsPath
          break;
       }
       return len;
-   }   
-   
+   }
+
    /**
     * Get the waypoint corresponding to the specified path phase.
-    * 
+    *
     * @param phase
     * @return
     */

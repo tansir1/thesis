@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
-import thesis.core.common.Distance;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -44,7 +43,7 @@ public class UAVMgr
     *           The maximum number of times that a message can be relayed
     *           between UAVs.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg, int maxRelayHops, Random randGen, Distance maxComsRng,
+   public void reset(EntityTypes entTypes, WorldConfig worldCfg, int maxRelayHops, Random randGen, double maxComsRng,
          float commsRelayProb)
    {
       logger.debug("Resetting UAV Manager.");
@@ -59,8 +58,7 @@ public class UAVMgr
          {
             UAV uav = new UAV(type, uavID, this, maxComsRng, maxRelayHops, randGen, commsRelayProb);
             uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
-            uav.getHeading().copy(uavEntCfg.getOrientation());
-            uav.getHeading().normalize360();
+            uav.setHeading(uavEntCfg.getOrientation());
             uavs.add(uav);
 
             ++uavID;
@@ -127,7 +125,7 @@ public class UAVMgr
 
       for (UAV uav : uavs)
       {
-         if (Math.abs(uav.getCoordinate().distanceTo(region.getCenter()).asMeters()) < region.getRadius().asMeters())
+         if (Math.abs(uav.getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
          {
             inRegion.add(uav);
          }

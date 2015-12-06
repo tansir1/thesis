@@ -7,7 +7,6 @@ import java.util.Queue;
 import java.util.Random;
 
 import thesis.core.common.Circle;
-import thesis.core.common.Distance;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 
@@ -37,7 +36,7 @@ public class UAVComms
     */
    private float commsRelayProb;
 
-   public UAVComms(UAV hostUAV, UAVMgr uavMgr, int maxRelayHops, Distance maxCommsRng, Random randGen,
+   public UAVComms(UAV hostUAV, UAVMgr uavMgr, int maxRelayHops, double maxCommsRng, Random randGen,
          float commsRelayProb)
    {
       if (hostUAV == null)
@@ -48,11 +47,6 @@ public class UAVComms
       if (uavMgr == null)
       {
          throw new NullPointerException("UAVMgr cannot be null.");
-      }
-
-      if (maxCommsRng == null)
-      {
-         throw new NullPointerException("Max comms range cannot be null.");
       }
 
       if (randGen == null)
@@ -67,7 +61,7 @@ public class UAVComms
       this.commsRelayProb = commsRelayProb;
 
       commsCoverage = new Circle();
-      commsCoverage.getRadius().copy(maxCommsRng);
+      commsCoverage.setRadius(maxCommsRng);
 
       incomingQ = new LinkedList<Message>();
       outgoingQ = new LinkedList<Message>();

@@ -54,8 +54,7 @@ public class TargetMgr
             Target tgt = new Target(type, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
                   worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
             tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
-            tgt.getHeading().copy(tarEntCfg.getOrientation());
-            tgt.getHeading().normalize360();
+            tgt.setHeading(tarEntCfg.getOrientation());
             targets.add(tgt);
          }
          else

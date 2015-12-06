@@ -25,13 +25,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.DirectedEdge;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
-import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.CoreUtils;
+import thesis.core.utilities.LoggerIDs;
 
 /**
  * Static class wrapping serialization utilities for reading and writing a
@@ -227,23 +226,21 @@ public class WorldConfigFile
 
    private static void decodeSizeElement(WorldConfig cfg, Element sizeElem)
    {
-      Distance width = new Distance();
-      Distance height = new Distance();
+      double width = Double.parseDouble(sizeElem.getAttribute("w"));
+      double height = Double.parseDouble(sizeElem.getAttribute("h"));
 
-      width.setAsMeters(Double.parseDouble(sizeElem.getAttribute("w")));
-      height.setAsMeters(Double.parseDouble(sizeElem.getAttribute("h")));
       cfg.setNumRows(Integer.parseInt(sizeElem.getAttribute("rows")));
       cfg.setNumColumns(Integer.parseInt(sizeElem.getAttribute("cols")));
 
-      cfg.getWorldWidth().copy(width);
-      cfg.getWorldHeight().copy(height);
+      cfg.setWorldWidth(width);
+      cfg.setWorldHeight(height);
    }
 
    private static Element encodeSizeElement(WorldConfig cfg, Document dom)
    {
       Element sizeElem = dom.createElement("Size");
-      sizeElem.setAttribute("w", Double.toString(cfg.getWorldWidth().asMeters()));
-      sizeElem.setAttribute("h", Double.toString(cfg.getWorldHeight().asMeters()));
+      sizeElem.setAttribute("w", Double.toString(cfg.getWorldWidth()));
+      sizeElem.setAttribute("h", Double.toString(cfg.getWorldHeight()));
       sizeElem.setAttribute("rows", Integer.toString(cfg.getNumRows()));
       sizeElem.setAttribute("cols", Integer.toString(cfg.getNumColumns()));
       return sizeElem;
@@ -330,8 +327,8 @@ public class WorldConfigFile
       {
          Element vertElem = dom.createElement("Vertex");
          vertElem.setAttribute("id", Integer.toString(vert.getID()));
-         vertElem.setAttribute("north", Double.toString(vert.getUserData().getNorth().asMeters()));
-         vertElem.setAttribute("east", Double.toString(vert.getUserData().getEast().asMeters()));
+         vertElem.setAttribute("north", Double.toString(vert.getUserData().getNorth()));
+         vertElem.setAttribute("east", Double.toString(vert.getUserData().getEast()));
          roadNetElem.appendChild(vertElem);
 
          Element incomingEdges = dom.createElement("IncomingEdges");
@@ -378,8 +375,8 @@ public class WorldConfigFile
       for (WorldCoordinate havenCoord : cfg.getHavens())
       {
          Element havenElem = dom.createElement("Haven");
-         havenElem.setAttribute("north", Double.toString(havenCoord.getNorth().asMeters()));
-         havenElem.setAttribute("east", Double.toString(havenCoord.getEast().asMeters()));
+         havenElem.setAttribute("north", Double.toString(havenCoord.getNorth()));
+         havenElem.setAttribute("east", Double.toString(havenCoord.getEast()));
          havens.appendChild(havenElem);
       }
       return havens;
@@ -397,7 +394,7 @@ public class WorldConfigFile
 
          TargetEntityConfig tarCfg = new TargetEntityConfig();
          tarCfg.getLocation().setCoordinate(coordFromAttr(tarElem));
-         tarCfg.getOrientation().setAsDegrees(orient);
+         tarCfg.setOrientation(orient);
          tarCfg.setTargetType(type);
 
          cfg.targetCfgs.add(tarCfg);
@@ -411,10 +408,10 @@ public class WorldConfigFile
       for (TargetEntityConfig tarCfg : cfg.targetCfgs)
       {
          Element tarElem = dom.createElement("Target");
-         tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth().asMeters()));
-         tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast().asMeters()));
+         tarElem.setAttribute("north", Double.toString(tarCfg.getLocation().getNorth()));
+         tarElem.setAttribute("east", Double.toString(tarCfg.getLocation().getEast()));
          tarElem.setAttribute("type", Integer.toString(tarCfg.getTargetType()));
-         tarElem.setAttribute("orientation", Double.toString(tarCfg.getOrientation().asDegrees()));
+         tarElem.setAttribute("orientation", Double.toString(tarCfg.getOrientation()));
          targets.appendChild(tarElem);
       }
       return targets;
@@ -432,7 +429,7 @@ public class WorldConfigFile
 
          UAVEntityConfig uavCfg = new UAVEntityConfig();
          uavCfg.getLocation().setCoordinate(coordFromAttr(uavElem));
-         uavCfg.getOrientation().setAsDegrees(orient);
+         uavCfg.setOrientation(orient);
          uavCfg.setUAVType(type);
 
          cfg.uavCfgs.add(uavCfg);
@@ -446,10 +443,10 @@ public class WorldConfigFile
       for (UAVEntityConfig uavCfg : cfg.uavCfgs)
       {
          Element uavElem = dom.createElement("UAV");
-         uavElem.setAttribute("north", Double.toString(uavCfg.getLocation().getNorth().asMeters()));
-         uavElem.setAttribute("east", Double.toString(uavCfg.getLocation().getEast().asMeters()));
+         uavElem.setAttribute("north", Double.toString(uavCfg.getLocation().getNorth()));
+         uavElem.setAttribute("east", Double.toString(uavCfg.getLocation().getEast()));
          uavElem.setAttribute("type", Integer.toString(uavCfg.getUAVType()));
-         uavElem.setAttribute("orientation", Double.toString(uavCfg.getOrientation().asDegrees()));
+         uavElem.setAttribute("orientation", Double.toString(uavCfg.getOrientation()));
          uavs.appendChild(uavElem);
       }
       return uavs;
@@ -462,17 +459,9 @@ public class WorldConfigFile
 
    private static WorldCoordinate coordFromAttr(String northAttr, String eastAttr)
    {
-      double northM = Double.parseDouble(northAttr);
-      double eastM = Double.parseDouble(eastAttr);
+      double north = Double.parseDouble(northAttr);
+      double east = Double.parseDouble(eastAttr);
 
-      Distance north = new Distance();
-      Distance east = new Distance();
-
-      north.setAsMeters(northM);
-      east.setAsMeters(eastM);
-
-      WorldCoordinate wc = new WorldCoordinate();
-      wc.setCoordinate(north, east);
-      return wc;
+      return new WorldCoordinate(north, east);
    }
 }

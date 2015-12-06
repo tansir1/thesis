@@ -1,7 +1,6 @@
 package thesis.core.entities.uav.sensors;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -38,11 +37,22 @@ public class Sensor
     * Get the current azimuth of the sensor in relation to the world's zero
     * degree mark. This angle is in absolute world coordinates.
     *
-    * @return The azimuth of the sensor in absolute world coordinates.
+    * @return The azimuth of the sensor in absolute world coordinates (degrees).
     */
-   public Angle getAzimuth()
+   public double getAzimuth()
    {
       return pose.getHeading();
+   }
+
+   /**
+    * Set the current azimuth of the sensor in relation to the world's zero
+    * degree mark. This angle is in absolute world coordinates.
+    *
+    * @param azimuth The azimuth of the sensor in absolute world coordinates (degrees).
+    */
+   public void setAzimuth(double azimuth)
+   {
+      pose.setHeading(azimuth);
    }
 
    public void slewToLookAt(WorldCoordinate lookAt)
@@ -63,7 +73,6 @@ public class Sensor
    public void stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
-      pose.getHeading().normalize360();
 
       slew();
       updateViewRegion();
@@ -71,74 +80,67 @@ public class Sensor
 
    private void slew()
    {
-      Angle desiredAngle = pose.getCoordinate().bearingTo(this.lookAtGoal);
-      desiredAngle.normalize360();
+      double desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
 
-      Angle lookDelta = new Angle(pose.getHeading());
-      lookDelta.subtract(desiredAngle);
+      double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
 
-      if(Math.abs(lookDelta.asDegrees()) < (type.getMaxSlewRate().asDegreesPerFrame()))
+      final double degreesPerFrame = type.getMaxSlewFrameRate();
+      //If the lookDelta < one frame's worth of slewing
+      if(Math.abs(lookDelta) < degreesPerFrame)
       {
          //Prevent overshooting the look angle
-         pose.getHeading().copy(desiredAngle);
+         pose.setHeading(desiredAngle);
       }
       else
       {
-         Angle slew = new Angle();
-         if(((lookDelta.asDegrees()+360) % 360) > 180)
+         double slew = 0;
+         if(((lookDelta+360) % 360) > 180)
          {
             //turn left
-            slew.setAsDegrees(type.getMaxSlewRate().asDegreesPerFrame());
+            slew = degreesPerFrame;
          }
          else
          {
             //turn right
-            slew.setAsDegrees(-type.getMaxSlewRate().asDegreesPerFrame());
+            slew = -degreesPerFrame;
          }
-         pose.getHeading().add(slew);
+         pose.setHeading(pose.getHeading() + slew);
       }
-      pose.getHeading().normalize360();
    }
 
    private void updateViewRegion()
    {
-      final Angle hdg = pose.getHeading();
-      final double halfFOVdeg = type.getFov().asDegrees() / 2;
-      final double leftAngleDeg = hdg.asDegrees() + halfFOVdeg;
-      final double rightAngleDeg = hdg.asDegrees() - halfFOVdeg;
+      final double hdg = pose.getHeading();
+      final double halfFOVdeg = type.getFov() / 2;
+      final double leftAngleDeg = hdg + halfFOVdeg;
+      final double rightAngleDeg = hdg - halfFOVdeg;
 
-      final double maxRng = type.getMaxRange().asMeters();
-      final double minRng = type.getMinRange().asMeters();
+      final double maxRng = type.getMaxRange();
+      final double minRng = type.getMinRange();
       final double frustrumHeight = maxRng - minRng;
 
-      final Distance distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
-      final Distance midRngDist = new Distance();
-      final Distance fovFar = new Distance();
-      final Distance fovNear = new Distance();
-      if(distToStarePt.asMeters() < (maxRng - frustrumHeight))
+      final double distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
+      double midRngDist = 0;
+      double fovFar = 0;
+      double fovNear = 0;
+      if(distToStarePt < (maxRng - frustrumHeight))
       {
-         double distToStareM = distToStarePt.asMeters();
+         double distToStareM = distToStarePt;
 
-         fovFar.setAsMeters(distToStareM + (frustrumHeight / 2));
-         fovNear.setAsMeters(distToStareM - (frustrumHeight / 2));
-         midRngDist.setAsMeters((frustrumHeight / 2.0) + fovNear.asMeters());
+         fovFar = distToStareM + (frustrumHeight / 2);
+         fovNear = distToStareM - (frustrumHeight / 2);
+         midRngDist = (frustrumHeight / 2.0) + fovNear;
       }
       else
       {
-         fovFar.setAsMeters(maxRng);
-         fovNear.setAsMeters(minRng);
-         midRngDist.setAsMeters((frustrumHeight / 2.0) + minRng);
+         fovFar = maxRng;
+         fovNear = minRng;
+         midRngDist = (frustrumHeight / 2.0) + minRng;
       }
 
       //Update viewpoint center position
       lookAtCur.setCoordinate(pose.getCoordinate());
-      lookAtCur.translate(hdg, midRngDist);
-
-      //Update frustrum boundary angles
-      Angle leftAngle = new Angle();
-      Angle rightAngle = new Angle();
-      leftAngle.setAsDegrees(leftAngleDeg);
-      rightAngle.setAsDegrees(rightAngleDeg);
+      lookAtCur.translatePolar(hdg, midRngDist);
 
       //Reset all view region locations to the sensor
       viewRegion.getTopLeft().setCoordinate(pose.getCoordinate());
@@ -147,10 +149,10 @@ public class Sensor
       viewRegion.getBottomRight().setCoordinate(pose.getCoordinate());
 
       //Project out from the sensor position along the view heading
-      viewRegion.getTopLeft().translate(leftAngle, fovFar);
-      viewRegion.getTopRight().translate(rightAngle, fovFar);
-      viewRegion.getBottomLeft().translate(leftAngle, fovNear);
-      viewRegion.getBottomRight().translate(rightAngle, fovNear);
+      viewRegion.getTopLeft().translatePolar(leftAngleDeg, fovFar);
+      viewRegion.getTopRight().translatePolar(rightAngleDeg, fovFar);
+      viewRegion.getBottomLeft().translatePolar(leftAngleDeg, fovNear);
+      viewRegion.getBottomRight().translatePolar(rightAngleDeg, fovNear);
    }
 
    @Override
