@@ -5,7 +5,6 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.Distance;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.PropertiesLoader;
 
@@ -86,13 +85,8 @@ public class GeneratorConfigLoader
 			cfg.setNumColumns(propsLdr.getInt("world.columns"));
 			cfg.setNumRows(propsLdr.getInt("world.rows"));
 
-			double widthM = propsLdr.getDouble("world.width");
-			double heightM = propsLdr.getDouble("world.height");
-
-			Distance width = new Distance();
-			Distance height = new Distance();
-			width.setAsMeters(widthM);
-			height.setAsMeters(heightM);
+			double width = propsLdr.getDouble("world.width");
+			double height = propsLdr.getDouble("world.height");
 
 			cfg.setWorldWidth(width);
 			cfg.setWorldHeight(height);

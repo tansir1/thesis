@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Distance;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -38,7 +37,10 @@ public class UAV
 
    private DubinsPath path;
    private PathPhase pathPhase;
-   private Distance pathPhaseTraveled;
+   /**
+    * Distance traveled along this phase's path in meters.
+    */
+   private double pathPhaseTraveled;
 
    private long lastTrailSampleTimeAccumulator;
    private List<WorldPose> pathTrail;
@@ -51,7 +53,7 @@ public class UAV
 
    private SensorGroup sensors;
 
-   public UAV(final UAVType type, int id, final UAVMgr uavMgr, Distance maxCommsRng, int maxRelayHops, Random randGen, float commsRelayProb)
+   public UAV(final UAVType type, int id, final UAVMgr uavMgr, double maxCommsRng, int maxRelayHops, Random randGen, float commsRelayProb)
    {
       if (type == null)
       {
@@ -77,7 +79,7 @@ public class UAV
 
       pathPhase = null;
       pose = new WorldPose();
-      pathPhaseTraveled = new Distance();
+      pathPhaseTraveled = 0;
       pathTrail = new ArrayList<WorldPose>();
       lastTrailSampleTimeAccumulator = 0;
       numFramesToWypt = 0;
@@ -195,14 +197,12 @@ public class UAV
          break;
       }
 
-      double turnRate = turnCoeff * (frameSpdMpS / type.getMinTurnRadius().asMeters());
+      double turnRate = turnCoeff * (frameSpdMpS / type.getMinTurnRadius());
 
       pose.getHeading().setAsRadians(pose.getHeading().asRadians() + turnRate);
 
-      final Distance northing = new Distance();
-      final Distance easting = new Distance();
-      northing.setAsMeters(frameSpdMpS * pose.getHeading().sin());
-      easting.setAsMeters(frameSpdMpS * pose.getHeading().cos());
+      final double northing = frameSpdMpS * pose.getHeading().sin();
+      final double easting = frameSpdMpS * pose.getHeading().cos();
       pose.getCoordinate().translate(northing, easting);
 
       pose.getHeading().normalize360();
@@ -226,7 +226,7 @@ public class UAV
       if (path.getPathType() != PathType.NO_PATH)
       {
          pathPhase = PathPhase.Phase1;
-         pathPhaseTraveled.setAsMeters(0);
+         pathPhaseTraveled = 0;
          pathTrail.clear();
          lastTrailSampleTimeAccumulator = 0;
 
@@ -241,7 +241,7 @@ public class UAV
    private void resetFramesToWaypoint()
    {
       final double frameVelocityMpS = type.getMaxSpd().asMeterPerSecond() * (SimTime.SIM_STEP_RATE_MS / 1000.0);
-      final double distToWypt = path.getSegmentLength(pathPhase).asMeters();
+      final double distToWypt = path.getSegmentLength(pathPhase);
       numFramesToWypt = (int) (distToWypt / frameVelocityMpS) + 1;
    }
 

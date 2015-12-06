@@ -3,7 +3,6 @@ package thesis.core.world;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.serialization.world.WorldConfig;
@@ -15,14 +14,14 @@ import thesis.core.serialization.world.WorldConfig;
 public class World
 {
    /**
-    * Width of the rectangular world.
+    * Width of the rectangular world in meters.
     */
-   private Distance width;
+   private double width;
 
    /**
-    * Height of the rectangular world.
+    * Height of the rectangular world in meters.
     */
-   private Distance height;
+   private double height;
 
    /**
     * The world is divided into this many rows.
@@ -35,14 +34,14 @@ public class World
    private int numCols;
 
    /**
-    * The lateral (vertical) distance spanned by a row.
+    * The lateral (vertical) distance spanned by a row in meters.
     */
-   private Distance distPerRow;
+   private double distPerRow;
 
    /**
-    * The longitudinal (horizontal) distance spanned by a column.
+    * The longitudinal (horizontal) distance spanned by a column in meters.
     */
-   private Distance distPerCol;
+   private double distPerCol;
 
    /**
     * The locations of all safe havens for targets.
@@ -71,17 +70,15 @@ public class World
          throw new NullPointerException("World configuration data cannot be null.");
       }
 
-      this.width = new Distance(cfg.getWorldWidth());
-      this.height = new Distance(cfg.getWorldHeight());
+      this.width = cfg.getWorldWidth();
+      this.height = cfg.getWorldHeight();
       this.numRows = cfg.getNumRows();
       this.numCols = cfg.getNumColumns();
 
       this.roadNet = cfg.getRoadNetwork();
 
-      distPerRow = new Distance();
-      distPerCol = new Distance();
-      distPerRow.setAsMeters(height.asMeters() / (numRows * 1.0));
-      distPerCol.setAsMeters(width.asMeters() / (numCols * 1.0));
+      distPerRow = height / (numRows * 1.0);
+      distPerCol = width / (numCols * 1.0);
 
       havens = cfg.getHavens();
       //roadLocations = new ArrayList<CellCoordinate>();
@@ -90,9 +87,9 @@ public class World
    /**
     * Get the physical width of the world.
     *
-    * @return Width of the world.
+    * @return Width of the world in meters.
     */
-   public Distance getWidth()
+   public double getWidth()
    {
       return width;
    }
@@ -100,9 +97,9 @@ public class World
    /**
     * Get the physical height of the world.
     *
-    * @return Height of the world.
+    * @return Height of the world in meters.
     */
-   public Distance getHeight()
+   public double getHeight()
    {
       return height;
    }
@@ -195,8 +192,8 @@ public class World
          throw new NullPointerException("from cannot be null.");
       }
 
-      int row = (int) (from.getNorth().asMeters() / distPerRow.asMeters());
-      int col = (int) (from.getEast().asMeters() / distPerCol.asMeters());
+      int row = (int) (from.getNorth() / distPerRow);
+      int col = (int) (from.getEast() / distPerCol);
 
       to.setCoordinate(row, col);
    }
@@ -239,20 +236,14 @@ public class World
       {
          throw new NullPointerException("from cannot be null");
       }
-      
+
       if (to == null)
       {
          throw new NullPointerException("to cannot be null");
       }
 
-      double northM = from.getRow() * distPerRow.asMeters() + (distPerRow.asMeters() * 0.5);
-      double eastM = from.getColumn() * distPerCol.asMeters() + (distPerCol.asMeters() * 0.5);
-
-      Distance north = new Distance();
-      Distance east = new Distance();
-
-      north.setAsMeters(northM);
-      east.setAsMeters(eastM);
+      double north = from.getRow() * distPerRow + (distPerRow * 0.5);
+      double east = from.getColumn() * distPerCol + (distPerCol * 0.5);
 
       to.setCoordinate(north, east);
    }

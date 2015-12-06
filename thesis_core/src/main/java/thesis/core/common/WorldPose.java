@@ -17,10 +17,10 @@ public class WorldPose
       coord = new WorldCoordinate();
       heading = new Angle();
    }
-   
+
    /**
     * Initialize a new pose by copying the given pose.
-    * 
+    *
     * @param copy Copy the values of this pose into the new pose.
     */
    public WorldPose(final WorldPose copy)
@@ -31,7 +31,7 @@ public class WorldPose
 
    /**
     * Initialize the pose with the specified location and heading.
-    * 
+    *
     * @param location
     *           Copy this value internally.
     * @param heading
@@ -48,27 +48,37 @@ public class WorldPose
       this.coord.setCoordinate(copy.coord);
       this.heading.copy(copy.heading);
    }
-   
+
    public WorldCoordinate getCoordinate()
    {
       return coord;
    }
 
-   public Distance getEast()
+   /**
+    * Get the distance east from the world origin in meters.
+    *
+    * @return Distance east.
+    */
+   public double getEast()
    {
       return coord.getEast();
    }
-   
-   public Distance getNorth()
+
+   /**
+    * Get the distance north from the world origin in meters.
+    *
+    * @return Distance north.
+    */
+   public double getNorth()
    {
       return coord.getNorth();
    }
-   
+
    public Angle getHeading()
    {
       return heading;
    }
-   
+
    @Override
    public String toString()
    {

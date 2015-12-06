@@ -5,7 +5,6 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.TargetMgr;
 import thesis.core.entities.uav.UAV;
@@ -71,8 +70,7 @@ public class SimModel
       world = new World(worldCfg);
       tgtMgr.reset(entTypes, worldCfg, randGen);
 
-      final Distance maxComsRng = worldCfg.getMaxWorldDistance();
-      maxComsRng.scale(commsRngPercent);
+      final double maxComsRng = worldCfg.getMaxWorldDistance() * commsRngPercent;
 
       // FIXME Load/Derive the number of hops?
       uavMgr.reset(entTypes, worldCfg, 5, randGen, maxComsRng, commsRelayProb);
@@ -82,11 +80,9 @@ public class SimModel
       for (UAV uav : uavMgr.getAllUAVs())
       {
          WorldPose pose = new WorldPose();
-         Distance north = new Distance();
-         Distance east = new Distance();
 
-         north.setAsMeters(randGen.nextDouble() * world.getWidth().asMeters());
-         east.setAsMeters(randGen.nextDouble() * world.getHeight().asMeters());
+         double north = randGen.nextDouble() * world.getWidth();
+         double east = randGen.nextDouble() * world.getHeight();
 
          pose.getCoordinate().setCoordinate(north, east);
          pose.getHeading().setAsDegrees(randGen.nextInt(360));

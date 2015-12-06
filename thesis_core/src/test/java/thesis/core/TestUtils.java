@@ -3,7 +3,6 @@ package thesis.core;
 import java.util.List;
 import java.util.Random;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.entities.TargetType;
 import thesis.core.entities.Weapon;
@@ -27,12 +26,8 @@ public class TestUtils
    public static WorldCoordinate randWorldCoord()
    {
       WorldCoordinate wc = new WorldCoordinate();
-      Distance north = new Distance();
-      Distance east = new Distance();
-
-      north.setAsMeters(rand.nextDouble() * 100000);
-      east.setAsMeters(rand.nextDouble() * 100000);
-
+      double north = rand.nextDouble() * 100000;
+      double east = rand.nextDouble() * 100000;
       wc.setCoordinate(north, east);
 
       return wc;
@@ -47,9 +42,9 @@ public class TestUtils
    {
       SensorType st = new SensorType(rand.nextInt());
 
-      st.getMinRange().setAsMeters(rand.nextDouble() * 100);
+      st.setMinRange(rand.nextDouble() * 100);
       // Add min range to guarantee max > min
-      st.getMaxRange().setAsMeters(st.getMinRange().asMeters() + rand.nextDouble() * 2000);
+      st.setMaxRange(st.getMinRange() + rand.nextDouble() * 2000);
       st.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
                                                              // FOV
       st.getMaxSlewRate().setAsDegreesPerSecond(rand.nextDouble() * 10 + 1);
@@ -67,9 +62,9 @@ public class TestUtils
    {
       WeaponType wt = new WeaponType(rand.nextInt());
 
-      wt.getMinRange().setAsMeters(rand.nextDouble() * 100);
+      wt.setMinRange(rand.nextDouble() * 100);
       // Add min range to guarantee max > min
-      wt.getMaxRange().setAsMeters(wt.getMinRange().asMeters() + rand.nextDouble() * 2000);
+      wt.setMaxRange(wt.getMinRange() + rand.nextDouble() * 2000);
       wt.getFov().setAsDegrees(rand.nextDouble() * 120 + 10);// min of 10 degree
 
       return wt;
@@ -96,7 +91,7 @@ public class TestUtils
    {
       UAVType uavType = new UAVType(rand.nextInt());
       uavType.getMaxSpd().setAsMetersPerSecond(rand.nextDouble() * 20);
-      uavType.getMinTurnRadius().setAsMeters((rand.nextDouble() * 1000) + 200);
+      uavType.setMinTurnRadius((rand.nextDouble() * 1000) + 200);
       uavType.init();
 
       int numWpnTypes = (int) (wpns.size() * rand.nextDouble());

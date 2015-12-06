@@ -9,7 +9,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.Distance;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
@@ -32,14 +31,14 @@ public class WorldGenerator
    private Random randGen;
 
    /**
-    * Width of the world.
+    * Width of the world in meters.
     */
-   private Distance width;
+   private double width;
 
    /**
-    * Height of the world.
+    * Height of the world in meters.
     */
-   private Distance height;
+   private double height;
 
    /**
     * Number of rows in the world.
@@ -51,18 +50,8 @@ public class WorldGenerator
     */
    private int numCols;
 
-   public WorldGenerator(int randSeed, Distance width, Distance height, int numRows, int numCols)
+   public WorldGenerator(int randSeed, double width, double height, int numRows, int numCols)
    {
-      if (width == null)
-      {
-         throw new NullPointerException("World width cannot be null.");
-      }
-
-      if (height == null)
-      {
-         throw new NullPointerException("World height cannot be null.");
-      }
-
       this.randGen = new Random(randSeed);
       this.width = width;
       this.height = height;
@@ -78,8 +67,8 @@ public class WorldGenerator
       }
 
       WorldConfig world = new WorldConfig();
-      world.getWorldHeight().copy(height);
-      world.getWorldWidth().copy(width);
+      world.setWorldHeight(height);
+      world.setWorldWidth(width);
       world.setNumColumns(numCols);
       world.setNumRows(numRows);
 
@@ -116,12 +105,12 @@ public class WorldGenerator
    private void insertIntermediateVertices(Graph<WorldCoordinate> roadNet, Vertex<WorldCoordinate> startVert,
          KDNode endNode, boolean isVertSplit)
    {
-      final double minVertexDistBuf = Math.min(width.asMeters(), height.asMeters()) * MIN_INTERSECTION_SPACING_PERCENT;
+      final double minVertexDistBuf = Math.min(width, height) * MIN_INTERSECTION_SPACING_PERCENT;
 
       WorldCoordinate intersection = computeRoadIntersectionFromNode(startVert.getUserData(), endNode, isVertSplit);
 
-      final double distStartToInter = intersection.distanceTo(startVert.getUserData()).asMeters();
-      final double distInterToEnd = intersection.distanceTo(endNode.getLocation()).asMeters();
+      final double distStartToInter = intersection.distanceTo(startVert.getUserData());
+      final double distInterToEnd = intersection.distanceTo(endNode.getLocation());
 
       Vertex<WorldCoordinate> endVert = null;
 
@@ -182,7 +171,7 @@ public class WorldGenerator
       boolean valid = true;
 
       // Prevents the seeds from clustering together
-      double interSeedDistBuffer = Math.min(width.asMeters(), height.asMeters()) * MIN_INTERSECTION_SPACING_PERCENT;
+      double interSeedDistBuffer = Math.min(width, height) * MIN_INTERSECTION_SPACING_PERCENT;
 
       if (existingLocations.contains(newLocation))
       {
@@ -192,7 +181,7 @@ public class WorldGenerator
 
       for (WorldCoordinate otherSeed : existingLocations)
       {
-         if (newLocation.distanceTo(otherSeed).asMeters() < interSeedDistBuffer)
+         if (newLocation.distanceTo(otherSeed) < interSeedDistBuffer)
          {
             valid = false;
             break;
@@ -204,7 +193,7 @@ public class WorldGenerator
 
    /**
     * Randomly/procedurally generate a network of roads for the world.
-    * 
+    *
     * @param roadNet
     *           Generated roads will be stored here.
     */
@@ -225,18 +214,15 @@ public class WorldGenerator
       // Generate seed locations
       for (int i = 0; i < numSeeds; ++i)
       {
-         Distance north = new Distance();
-         Distance east = new Distance();
-
-         north.setAsMeters(randGen.nextDouble() * height.asMeters());
-         east.setAsMeters(randGen.nextDouble() * width.asMeters());
+         double north = randGen.nextDouble() * height;
+         double east = randGen.nextDouble() * width;
 
          WorldCoordinate seedCoord = new WorldCoordinate(north, east);
          while (!isValidRoadSeedLocation(roadSeeds, seedCoord))
          {
             // Regenerate a new location until we get a valid one
-            north.setAsMeters(randGen.nextDouble() * height.asMeters());
-            east.setAsMeters(randGen.nextDouble() * width.asMeters());
+            north = randGen.nextDouble() * height;
+            east = randGen.nextDouble() * width;
             seedCoord.setCoordinate(north, east);
          }
 
@@ -293,8 +279,8 @@ public class WorldGenerator
          return;
       }
 
-      final double maxEastM = world.getWorldWidth().asMeters();
-      final double maxNorthM = world.getWorldHeight().asMeters();
+      final double maxEastM = world.getWorldWidth();
+      final double maxNorthM = world.getWorldHeight();
 
       List<UAVType> types = new ArrayList<UAVType>(entTypes.getAllUAVTypes());
 
@@ -304,8 +290,8 @@ public class WorldGenerator
 
          UAVEntityConfig uavCfg = new UAVEntityConfig();
 
-         uavCfg.getLocation().getNorth().setAsMeters(randGen.nextDouble() * maxNorthM);
-         uavCfg.getLocation().getEast().setAsMeters(randGen.nextDouble() * maxEastM);
+         uavCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
+         uavCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
          uavCfg.getOrientation().setAsDegrees(randGen.nextDouble() * 360);
 
          uavCfg.setUAVType(types.get(typeIndex).getTypeID());
@@ -396,12 +382,12 @@ public class WorldGenerator
     */
    private TargetEntityConfig generateRandomTarget(WorldConfig world)
    {
-      final double maxEastM = world.getWorldWidth().asMeters();
-      final double maxNorthM = world.getWorldHeight().asMeters();
+      final double maxEastM = world.getWorldWidth();
+      final double maxNorthM = world.getWorldHeight();
 
       TargetEntityConfig tgtCfg = new TargetEntityConfig();
-      tgtCfg.getLocation().getNorth().setAsMeters(randGen.nextDouble() * maxNorthM);
-      tgtCfg.getLocation().getEast().setAsMeters(randGen.nextDouble() * maxEastM);
+      tgtCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
+      tgtCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
       tgtCfg.getOrientation().setAsDegrees(randGen.nextDouble() * 360);
 
       return tgtCfg;
