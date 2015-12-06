@@ -1,11 +1,23 @@
 package thesis.core.entities.uav;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.common.SimTime;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.uav.comms.UAVComms;
+import thesis.core.entities.uav.dubins.DubinsPath;
+import thesis.core.entities.uav.dubins.DubinsPathGenerator;
+import thesis.core.entities.uav.dubins.PathPhase;
+import thesis.core.entities.uav.dubins.PathType;
+import thesis.core.entities.uav.sensors.SensorGroup;
+import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAV
@@ -17,6 +29,7 @@ public class UAV
    private int id;
 
    private UAVComms comms;
+   private Random randGen;
 
    private SensorGroup sensors;
    private Pathing pathing;
@@ -54,6 +67,7 @@ public class UAV
    {
       return type;
    }
+
 
    /**
     * Step the simulation forward by one frame.

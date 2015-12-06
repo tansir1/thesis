@@ -1,4 +1,4 @@
-package thesis.core.entities.sensors;
+package thesis.core.entities.uav.sensors;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,15 +9,16 @@ import thesis.core.common.WorldCoordinate;
 public class SensorGroup
 {
    private List<Sensor> sensors;
+   private TargetMgr tgtMgr;
 
-   public SensorGroup()
+   public SensorGroup(TargetMgr tgtMgr)
    {
       sensors = new ArrayList<Sensor>();
    }
 
    public Sensor addSensor(SensorType type)
    {
-      Sensor sensor = new Sensor(type);
+      Sensor sensor = new Sensor(type, tgtMgr);
       sensors.add(sensor);
       return sensor;
    }
@@ -27,12 +28,16 @@ public class SensorGroup
       return Collections.unmodifiableList(sensors);
    }
 
-   public void stepSimulation(WorldCoordinate hostUAVLocation)
+   public List<TargetBelief> stepSimulation(WorldCoordinate hostUAVLocation)
    {
+      List<TargetBelief> detections = new ArrayList<TargetBelief>();
+
       for(Sensor s : sensors)
       {
-         s.stepSimulation(hostUAVLocation);
+         detections.addAll(s.stepSimulation(hostUAVLocation));
       }
+
+      return detections;
    }
 
    public void stareAtAll(WorldCoordinate starePoint)
