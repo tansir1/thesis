@@ -1,7 +1,27 @@
-package thesis.gui.mainwindow;
+package thesis.gui.mainwindow.actions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 
+import thesis.gui.mainwindow.SimTimer;
+import thesis.gui.mainwindow.actions.renderopts.GraticuleOptAction;
+import thesis.gui.mainwindow.actions.renderopts.HavensOptAction;
+import thesis.gui.mainwindow.actions.renderopts.RenderOptAction;
+import thesis.gui.mainwindow.actions.renderopts.RoadsOptAction;
+import thesis.gui.mainwindow.actions.renderopts.SensorFOVOptAction;
+import thesis.gui.mainwindow.actions.renderopts.TargetsOptAction;
+import thesis.gui.mainwindow.actions.renderopts.UAVHistoryOptAction;
+import thesis.gui.mainwindow.actions.renderopts.UAVsOptAction;
+import thesis.gui.mainwindow.actions.runspeed.PauseAction;
+import thesis.gui.mainwindow.actions.runspeed.Play100XAction;
+import thesis.gui.mainwindow.actions.runspeed.Play10XAction;
+import thesis.gui.mainwindow.actions.runspeed.Play20XAction;
+import thesis.gui.mainwindow.actions.runspeed.Play50XAction;
+import thesis.gui.mainwindow.actions.runspeed.Play5XAction;
+import thesis.gui.mainwindow.actions.runspeed.PlayAction;
+import thesis.gui.mainwindow.actions.runspeed.StepSimAction;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 /**
@@ -21,6 +41,8 @@ public class Actions
    private Play50XAction play50xAction;
    private Play100XAction play100xAction;
 
+   private List<RenderOptAction> renderOptActions;
+
    public Actions(JFrame parentFrame, RenderableSimWorldPanel simPanel, SimTimer simTimer)
    {
       screenShotAction = new ScreenShotAction(parentFrame, simPanel);
@@ -32,6 +54,15 @@ public class Actions
       play20xAction = new Play20XAction(simTimer);
       play50xAction = new Play50XAction(simTimer);
       play100xAction = new Play100XAction(simTimer);
+
+      renderOptActions = new ArrayList<RenderOptAction>();
+      renderOptActions.add(new UAVHistoryOptAction());
+      renderOptActions.add(new GraticuleOptAction());
+      renderOptActions.add(new HavensOptAction());
+      renderOptActions.add(new RoadsOptAction());
+      renderOptActions.add(new SensorFOVOptAction());
+      renderOptActions.add(new TargetsOptAction());
+      renderOptActions.add(new UAVsOptAction());
    }
 
    public ScreenShotAction getScreenShotAction()
@@ -77,5 +108,10 @@ public class Actions
    public Play100XAction getPlay100XAction()
    {
       return play100xAction;
+   }
+
+   public List<RenderOptAction> getRenderOptions()
+   {
+      return renderOptActions;
    }
 }
