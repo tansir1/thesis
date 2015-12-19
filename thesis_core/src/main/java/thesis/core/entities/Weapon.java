@@ -5,8 +5,21 @@ import thesis.core.common.WorldCoordinate;
 
 public class Weapon
 {
-   private WeaponType type;
-   int quantity;
+   /**
+    * The minimum range of the sensor in meters.
+    */
+   private final double MIN_RNG;
+   /**
+    * The max range of the sensor in meters.
+    */
+   private final double MAX_RNG;
+   /**
+    * The FOV of the sensor in degrees.
+    */
+   private final double FOV;
+
+   private final int type;
+   private int quantity;
 
    public Weapon(WeaponType type)
    {
@@ -15,11 +28,15 @@ public class Weapon
          throw new NullPointerException("type cannot be null.");
       }
 
-      this.type = type;
+      this.type = type.getTypeID();
       quantity = 0;
+
+      MIN_RNG = type.getMinRange();
+      MAX_RNG = type.getMaxRange();
+      FOV = type.getFov();
    }
 
-   public WeaponType getType()
+   public int getType()
    {
       return type;
    }
@@ -63,8 +80,8 @@ public class Weapon
       double distToTar = wpnCoord.distanceTo(tarCoord);
 
       //Check the distance first since it's a cheap operation
-      if(Math.abs(distToTar) < type.getMaxRange() &&
-            Math.abs(distToTar) > type.getMinRange())
+      if(Math.abs(distToTar) < MAX_RNG &&
+            Math.abs(distToTar) > MIN_RNG)
       {
          //Computing angles is mathematically expensive, only do it if the range check passes first
 
@@ -73,8 +90,8 @@ public class Weapon
          double leftBnd = Angle.normalizeNegPiToPi(wpnHdg);
          double rightBnd = Angle.normalizeNegPiToPi(wpnHdg);
 
-         leftBnd -= type.getFov() / 2;
-         rightBnd += type.getFov() / 2;
+         leftBnd -= FOV / 2;
+         rightBnd += FOV / 2;
 
          if(Angle.isBetween(angToTar, leftBnd, rightBnd))
          {
@@ -89,7 +106,7 @@ public class Weapon
    public String toString()
    {
       StringBuilder sb = new StringBuilder("Type: ");
-      sb.append(type.getTypeID());
+      sb.append(type);
       sb.append(", Qty: ");
       sb.append(quantity);
       return sb.toString();

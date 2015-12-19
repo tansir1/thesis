@@ -5,5 +5,6 @@ public class LoggerIDs
    public static final String MAIN = "main";
    public static final String SIM_MODEL = "sim";
    public static final String UAV = SIM_MODEL+".uav";
+   public static final String UAV_PATHING = UAV+".pathing";
    public static final String UTILS = "utils";
 }

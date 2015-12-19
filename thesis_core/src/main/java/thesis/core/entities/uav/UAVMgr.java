@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
+import thesis.core.entities.uav.comms.CommsConfig;
+import thesis.core.entities.uav.comms.UAVComms;
+import thesis.core.entities.uav.sensors.Sensor;
+import thesis.core.entities.uav.sensors.SensorGroup;
+import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -56,9 +61,26 @@ public class UAVMgr
          UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
          if (type != null)
          {
-            UAV uav = new UAV(type, uavID, this, maxComsRng, maxRelayHops, randGen, commsRelayProb);
-            uav.getCoordinate().setCoordinate(uavEntCfg.getLocation());
-            uav.setHeading(uavEntCfg.getOrientation());
+            final SensorGroup sensors = new SensorGroup();
+            for(SensorType st : type.getSensors())
+            {
+               Sensor sensor = sensors.addSensor(st);
+               //Align sensor to point straight ahead at startup
+               sensor.setAzimuth(uavEntCfg.getOrientation());
+            }
+
+            final CommsConfig commsCfg = new CommsConfig();
+            commsCfg.setCommsRelayProb(commsRelayProb);
+            commsCfg.setMaxCommsRng(maxComsRng);
+            commsCfg.setMaxRelayHops(maxRelayHops);
+
+            final UAVComms comms = new UAVComms(uavID, this, randGen, commsCfg);
+
+            final Pathing pathing = new Pathing(uavID, type);
+            pathing.getCoordinate().setCoordinate(uavEntCfg.getLocation());
+            pathing.setHeading(uavEntCfg.getOrientation());
+
+            final UAV uav = new UAV(type.getTypeID(), uavID, sensors, comms, pathing);
             uavs.add(uav);
 
             ++uavID;
@@ -125,7 +147,7 @@ public class UAVMgr
 
       for (UAV uav : uavs)
       {
-         if (Math.abs(uav.getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
+         if (Math.abs(uav.getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
          {
             inRegion.add(uav);
          }
