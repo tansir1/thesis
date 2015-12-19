@@ -30,4 +30,10 @@
          </Weapons>
       </UAVType>
    </UAVTypes>
+   <SensorProbs>
+      <SensorProb tgtType="1" sensorType="1" probDtct="0.5" probID="0.5"/>
+      <SensorProb tgtType="1" sensorType="2" probDtct="0.5" probID="0.5"/>
+      <SensorProb tgtType="2" sensorType="1" probDtct="0.5" probID="0.5"/>
+      <SensorProb tgtType="2" sensorType="2" probDtct="0.5" probID="0.5"/>
+   </SensorProbs>
 </EntityTypes>

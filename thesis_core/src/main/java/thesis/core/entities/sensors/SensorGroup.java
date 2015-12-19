@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.sensors;
+package thesis.core.entities.sensors;
 
 import java.util.ArrayList;
 import java.util.Collections;
