@@ -77,7 +77,7 @@ public class UAVMgrTests
       // Should only contain uav1
       List<UAV> inRegion = testMe.getAllUAVsInRegion(testRegion);
       assertEquals("Incorrect number of UAVs in query region1", 1, inRegion.size());
-      assertEquals("Incorrect uav detected in region.", uav1.getUAVType(), inRegion.get(0).getType().getTypeID());
+      assertEquals("Incorrect uav detected in region.", uav1.getUAVType(), inRegion.get(0).getType());
 
       // Slightly east of uav3
       testRegion.getCenter().setCoordinate(500, 510);
@@ -90,11 +90,11 @@ public class UAVMgrTests
       boolean uav3Found = false;
       for (UAV uav : inRegion)
       {
-         if (uav.getType().getTypeID() == uav2.getUAVType())
+         if (uav.getType() == uav2.getUAVType())
          {
             uav2Found = true;
          }
-         else if (uav.getType().getTypeID() == uav3.getUAVType())
+         else if (uav.getType() == uav3.getUAVType())
          {
             uav3Found = true;
          }

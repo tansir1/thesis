@@ -15,9 +15,11 @@ public class SensorGroup
       sensors = new ArrayList<Sensor>();
    }
 
-   public void addSensor(SensorType type)
+   public Sensor addSensor(SensorType type)
    {
-      sensors.add(new Sensor(type));
+      Sensor sensor = new Sensor(type);
+      sensors.add(sensor);
+      return sensor;
    }
 
    public List<Sensor> getSensors()

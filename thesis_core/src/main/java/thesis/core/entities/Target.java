@@ -15,12 +15,17 @@ import thesis.core.common.graph.Vertex;
 public class Target
 {
    private static final double PROB_TO_IGNORE_HAVEN = 0.2;
-   private final TargetType type;
+   private final int type;
    private final WorldPose pose;
    private final Graph<WorldCoordinate> roadNet;
    private final List<WorldCoordinate> havens;
    private final Random randGen;
    private final double worldW, worldH;
+
+   /**
+    * Meters/second
+    */
+   private final double maxSpd;
 
    /**
     * The coordinate of the next location to traverse to in mobile targets
@@ -56,12 +61,13 @@ public class Target
          throw new NullPointerException("Random generator cannot be null.");
       }
 
-      this.type = type;
+      this.type = type.getTypeID();
       this.roadNet = roadNet;
       this.havens = havens;
       this.randGen = randGen;
       this.worldH = worldH;
       this.worldW = worldW;
+      this.maxSpd = type.getMaxSpeed();
 
       pose = new WorldPose();
       // This arraylist gets garbage collected after the first simulation step
@@ -70,9 +76,22 @@ public class Target
       path = new ArrayList<DirectedEdge<WorldCoordinate>>();
    }
 
-   public TargetType getType()
+   public int getType()
    {
       return type;
+   }
+
+   /**
+    * Check if this type of target is mobile or statically fixed. The check is
+    * performed by verifying that the max speed of the target is greater than
+    * zero.
+    *
+    * @return True if the target is capable of movement, false otherwise.
+    * @see TargetType#getMaxSpeed()
+    */
+   public boolean isMobile()
+   {
+      return maxSpd > 0;
    }
 
    public WorldCoordinate getCoordinate()
@@ -96,7 +115,7 @@ public class Target
     */
    public void stepSimulation()
    {
-      if (type.isMobile())
+      if (isMobile())
       {
          if (isAtDestination())
          {
@@ -107,12 +126,11 @@ public class Target
          }
 
          double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
-         double spd = type.getMaxSpeed();
 
          // east distance = time * speed * east component
-         double easting = deltaSeconds * spd * Math.cos(Math.toRadians(pose.getHeading()));
+         double easting = deltaSeconds * maxSpd * Math.cos(Math.toRadians(pose.getHeading()));
          // north distance = time * speed * north component
-         double northing = deltaSeconds * spd * Math.sin(Math.toRadians(pose.getHeading()));
+         double northing = deltaSeconds * maxSpd * Math.sin(Math.toRadians(pose.getHeading()));
 
          pose.getCoordinate().translateCart(northing, easting);
       }
@@ -127,8 +145,7 @@ public class Target
       {
          arrived = true;
       }
-      else
-         if (pose.getCoordinate().distanceTo(intermediateCoordDest) < type.getMaxSpeed())
+      else if (pose.getCoordinate().distanceTo(intermediateCoordDest) < maxSpd)
       {
          // If we're within one frame of the destination
          arrived = true;
@@ -159,15 +176,14 @@ public class Target
       }
       else// No havens or roads in simulation, pick a random coordinate
       {
-         intermediateCoordDest.setCoordinate(randGen.nextDouble() * worldH,
-               randGen.nextDouble() * worldW);
+         intermediateCoordDest.setCoordinate(randGen.nextDouble() * worldH, randGen.nextDouble() * worldW);
       }
    }
 
    private Vertex<WorldCoordinate> selectNewHavenOrIntersection(Vertex<WorldCoordinate> current)
    {
       boolean forceHavenIgnore = false;
-      if(randGen.nextDouble() < PROB_TO_IGNORE_HAVEN)
+      if (randGen.nextDouble() < PROB_TO_IGNORE_HAVEN)
       {
          forceHavenIgnore = true;
       }
@@ -181,18 +197,18 @@ public class Target
             vert = roadNet.getVertexByData(havens.get(randGen.nextInt(havens.size())));
          } while (vert.getID() == current.getID());
       }
-      else if(havens.size() == 1 && !forceHavenIgnore)
+      else if (havens.size() == 1 && !forceHavenIgnore)
       {
          vert = roadNet.getVertexByData(havens.get(0));
-         if(vert.getID() == current.getID())
+         if (vert.getID() == current.getID())
          {
-            //Force another type of selection so the target doesn't go
-            //from the haven to the same haven
+            // Force another type of selection so the target doesn't go
+            // from the haven to the same haven
             vert = null;
          }
       }
 
-      if(vert == null && roadNet.getNumVertices() > 0)
+      if (vert == null && roadNet.getNumVertices() > 0)
       {
          // No havens so pick a random road intersection
          vert = roadNet.getVertexByID(randGen.nextInt(roadNet.getNumVertices()));
