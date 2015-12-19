@@ -1,12 +1,9 @@
 package thesis.core.entities.sensors;
 
-import java.util.List;
-
 import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.Target;
 import thesis.core.entities.TargetMgr;
 
 public class Sensor
@@ -106,14 +103,14 @@ public class Sensor
       return lookAtCur;
    }
 
-   public List<Target> stepSimulation(WorldCoordinate sensorLocation)
+   public SensorDetections stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
 
       slew();
       updateViewRegion();
 
-      return tgtMgr.getTargetsInRegion(viewRegion);
+      return new SensorDetections(type, tgtMgr.getTargetsInRegion(viewRegion));
    }
 
    private void slew()

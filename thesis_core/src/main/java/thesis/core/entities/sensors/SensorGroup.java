@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.Target;
 import thesis.core.entities.TargetMgr;
 
 public class SensorGroup
@@ -31,13 +30,13 @@ public class SensorGroup
       return Collections.unmodifiableList(sensors);
    }
 
-   public List<Target> stepSimulation(WorldCoordinate hostUAVLocation)
+   public List<SensorDetections> stepSimulation(WorldCoordinate hostUAVLocation)
    {
-      List<Target> detections = new ArrayList<Target>();
+      List<SensorDetections> detections = new ArrayList<SensorDetections>();
 
       for(Sensor s : sensors)
       {
-         detections.addAll(s.stepSimulation(hostUAVLocation));
+         detections.add(s.stepSimulation(hostUAVLocation));
       }
 
       return detections;
