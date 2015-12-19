@@ -11,11 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
+import thesis.core.entities.sensors.Sensor;
+import thesis.core.entities.sensors.SensorGroup;
+import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.entities.uav.comms.UAVComms;
-import thesis.core.entities.uav.sensors.Sensor;
-import thesis.core.entities.uav.sensors.SensorGroup;
-import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -44,12 +44,9 @@ public class UAVMgr
     * @param worldCfg
     *           UAVs will be generated based on configuration data from here and
     *           types will be cross referenced from entTypes.
-    * @param maxRelayHops
-    *           The maximum number of times that a message can be relayed
-    *           between UAVs.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg, int maxRelayHops, Random randGen, double maxComsRng,
-         float commsRelayProb)
+   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen,
+         CommsConfig commsCfg)
    {
       logger.debug("Resetting UAV Manager.");
 
@@ -68,11 +65,6 @@ public class UAVMgr
                //Align sensor to point straight ahead at startup
                sensor.setAzimuth(uavEntCfg.getOrientation());
             }
-
-            final CommsConfig commsCfg = new CommsConfig();
-            commsCfg.setCommsRelayProb(commsRelayProb);
-            commsCfg.setMaxCommsRng(maxComsRng);
-            commsCfg.setMaxRelayHops(maxRelayHops);
 
             final UAVComms comms = new UAVComms(uavID, this, randGen, commsCfg);
 

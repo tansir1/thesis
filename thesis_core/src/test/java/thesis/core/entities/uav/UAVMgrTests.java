@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import thesis.core.TestUtils;
 import thesis.core.common.Circle;
+import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -66,7 +67,7 @@ public class UAVMgrTests
       worldCfg.uavCfgs.add(uav3);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, worldCfg, 0, new Random(), worldCfg.getMaxWorldDistance() * 0.1, 0.0f);
+      testMe.reset(entTypes, worldCfg, new Random(), new CommsConfig());
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();
