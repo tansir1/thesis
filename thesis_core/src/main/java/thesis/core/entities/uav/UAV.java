@@ -1,18 +1,12 @@
 package thesis.core.entities.uav;
 
-import java.util.List;
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.SimTime;
-import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.sensors.SensorGroup;
+import thesis.core.entities.uav.belief.BeliefState;
 import thesis.core.entities.uav.comms.UAVComms;
-import thesis.core.entities.uav.sensors.SensorGroup;
-import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAV
@@ -23,9 +17,7 @@ public class UAV
 
    private int id;
 
-   private UAVMgr uavMgr;
    private UAVComms comms;
-   private Random randGen;
 
    private SensorGroup sensors;
    private BeliefState belief;

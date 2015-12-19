@@ -84,7 +84,7 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg, randGen, commsCfg);
+      uavMgr.reset(entTypes, worldCfg, randGen, commsCfg, tgtMgr);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.

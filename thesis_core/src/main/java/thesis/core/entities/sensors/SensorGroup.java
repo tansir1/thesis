@@ -1,10 +1,12 @@
-package thesis.core.entities.uav.sensors;
+package thesis.core.entities.sensors;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
+import thesis.core.entities.TargetMgr;
+import thesis.core.entities.uav.belief.TargetBelief;
 
 public class SensorGroup
 {
@@ -14,6 +16,7 @@ public class SensorGroup
    public SensorGroup(TargetMgr tgtMgr)
    {
       sensors = new ArrayList<Sensor>();
+      this.tgtMgr = tgtMgr;
    }
 
    public Sensor addSensor(SensorType type)
