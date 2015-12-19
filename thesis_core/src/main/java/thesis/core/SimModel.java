@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.common.WorldPose;
 import thesis.core.entities.TargetMgr;
+import thesis.core.entities.sensors.SensorProbs;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 import thesis.core.entities.uav.comms.CommsConfig;
@@ -27,6 +28,8 @@ public class SimModel
    private EntityTypes entTypes;
    private WorldConfig worldCfg;
 
+   private SensorProbs sensorProbs;
+
    /**
     * A shared random number generator that is initialized with a known seed
     * value for reproducible experiments.
@@ -45,6 +48,7 @@ public class SimModel
       logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       tgtMgr = new TargetMgr();
       uavMgr = new UAVMgr();
+      sensorProbs = new SensorProbs();
    }
 
    /**
@@ -68,6 +72,7 @@ public class SimModel
       logger.debug("EntityTypes initialized with:\n{}", entTypes);
       logger.debug("World model intiliazed with:\n{}", worldCfg);
 
+      sensorProbs.reset();
       world = new World(worldCfg);
       tgtMgr.reset(entTypes, worldCfg, randGen);
 
@@ -76,9 +81,8 @@ public class SimModel
       final CommsConfig commsCfg = new CommsConfig();
       commsCfg.setCommsRelayProb(commsRelayProb);
       commsCfg.setMaxCommsRng(maxComsRng);
-   // FIXME Load/Derive the number of hops?
+      // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
-
 
       uavMgr.reset(entTypes, worldCfg, randGen, commsCfg);
 
@@ -95,7 +99,7 @@ public class SimModel
          pose.setHeading(randGen.nextInt(360));
          uav.TEMP_setDestination(pose);
 
-         //Temporary sensor stare point
+         // Temporary sensor stare point
          uav.getSensors().stareAtAll(pose.getCoordinate());
       }
    }
