@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 import thesis.core.entities.TargetType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
+import thesis.core.entities.sensors.SensorProbs;
 import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.UAVType;
 import thesis.core.utilities.CoreUtils;
@@ -114,6 +115,7 @@ public class EntityTypesFile
          decodeSensorTypes(tempTypes, (Element) root.getElementsByTagName("SensorTypes").item(0));
          decodeWeaponTypes(tempTypes, (Element) root.getElementsByTagName("WeaponTypes").item(0));
          decodeTargetTypes(tempTypes, (Element) root.getElementsByTagName("TargetTypes").item(0));
+         decodeSensorProbs(tempTypes, (Element) root.getElementsByTagName("SensorProbs").item(0));
          //Must be run after decoding weapon and sensor types
          decodeUAVTypes(tempTypes, (Element) root.getElementsByTagName("UAVTypes").item(0));
 
@@ -201,6 +203,7 @@ public class EntityTypesFile
          root.appendChild(encodeWeaponTypes(types, document));
          root.appendChild(encodeTargetTypes(types, document));
          root.appendChild(encodeUAVTypes(types, document));
+         root.appendChild(encodeSensorProbs(types, document));
 
          document.appendChild(root);
 
@@ -437,6 +440,52 @@ public class EntityTypesFile
          elem.setAttribute("maxSpd", Double.toString(tt.getMaxSpeed()));
 
          parentElem.appendChild(elem);
+      }
+      return parentElem;
+   }
+
+
+   private static void decodeSensorProbs(EntityTypes entTypes, Element parentElem)
+   {
+      NodeList nodeList = parentElem.getElementsByTagName("SensorProb");
+      final int numNodes = nodeList.getLength();
+      for (int i = 0; i < numNodes; ++i)
+      {
+         Element typeElem = (Element) nodeList.item(i);
+
+         int tgtType = Integer.parseInt(typeElem.getAttribute("tgtType"));
+         int sensorType = Integer.parseInt(typeElem.getAttribute("sensorType"));
+         float probDtct = Float.parseFloat(typeElem.getAttribute("probDtct"));
+         float probID = Float.parseFloat(typeElem.getAttribute("probID"));
+
+         entTypes.getSensorProbabilities().setDetectionProb(sensorType, tgtType, probDtct);
+         entTypes.getSensorProbabilities().setIdentificationProb(sensorType, tgtType, probID);
+      }
+   }
+
+   private static Element encodeSensorProbs(EntityTypes entTypes, Document dom)
+   {
+      Element parentElem = dom.createElement("SensorProbs");
+      SensorProbs probs = entTypes.getSensorProbabilities();
+
+      for (TargetType tt : entTypes.getAllTargetTypes())
+      {
+         for(SensorType st : entTypes.getSensorTypes())
+         {
+            float detect = probs.getDetectionProb(st.getTypeID(), tt.getTypeID());
+            float id = probs.getIdentificationProb(st.getTypeID(), tt.getTypeID());
+
+            if(detect >= 0 && id >= 0)
+            {
+               Element elem = dom.createElement("SensorProb");
+               elem.setAttribute("tgtType", Integer.toString(tt.getTypeID()));
+               elem.setAttribute("sensorType", Integer.toString(st.getTypeID()));
+               elem.setAttribute("probDtct", Float.toString(detect));
+               elem.setAttribute("probID", Float.toString(id));
+
+               parentElem.appendChild(elem);
+            }
+         }
       }
       return parentElem;
    }
