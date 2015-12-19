@@ -398,7 +398,7 @@ public class EntityTypesFile
          for (Weapon weapon : uavType.getWeapons())
          {
             Element weaponElem = dom.createElement("Weapon");
-            weaponElem.setAttribute("type", Integer.toString(weapon.getType().getTypeID()));
+            weaponElem.setAttribute("type", Integer.toString(weapon.getType()));
             weaponElem.setAttribute("initQty", Integer.toString(weapon.getQuantity()));
             weaponsElem.appendChild(weaponElem);
          }
