@@ -1,5 +1,6 @@
 package thesis.core.entities.uav.belief;
 
+import thesis.core.common.Angle;
 import thesis.core.common.WorldPose;
 
 /**
@@ -8,8 +9,8 @@ import thesis.core.common.WorldPose;
  */
 public class TargetBelief
 {
-   private WorldPose pose;
-   private int type;
+   private final WorldPose pose;
+   private final int type;
    private float confidence;
 
    public TargetBelief(int type)
@@ -50,13 +51,21 @@ public class TargetBelief
 
    public void merge(TargetBelief other)
    {
-      //Weight the confidences in order to merge belief values using an alpha filter
-      double totalConf = confidence + other.confidence;
-      //double otherConfWeight = other.confidence / totalConf;
-      double myConfWeight = confidence / totalConf;
+      //Weight the confidences in order to merge belief values
+      final double totalConf = confidence + other.confidence;
+      final double mergePercent = other.confidence / totalConf;
 
       double deltaNorth = pose.getCoordinate().getNorth() - other.pose.getNorth();
-      /*double move = deltaNorth *
-      pose.getCoordinate()*/
+      double deltaEast = pose.getCoordinate().getEast() - other.pose.getEast();
+
+      deltaNorth *= mergePercent;
+      deltaEast *= mergePercent;
+      pose.getCoordinate().translateCart(deltaNorth, deltaEast);
+
+      double deltaHdg = pose.getHeading() - other.getPose().getHeading();
+      deltaHdg = Angle.normalize360(deltaHdg);
+      deltaHdg *= mergePercent;
+      final double newHdg = pose.getHeading() + deltaHdg;
+      pose.setHeading(Angle.normalize360(newHdg));
    }
 }

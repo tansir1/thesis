@@ -107,11 +107,15 @@ public class BeliefState
    {
       for (TargetBelief existing : targets)
       {
-         double dist = existing.getPose().getCoordinate().distanceTo(tb.getPose().getCoordinate());
-         dist = Math.abs(dist);
-         if (dist < TGT_MERGE_THRESHOLD)
+         //Cannot merge targets of different types
+         if (existing.getType() == tb.getType())
          {
-
+            double dist = existing.getPose().getCoordinate().distanceTo(tb.getPose().getCoordinate());
+            dist = Math.abs(dist);
+            if (dist < TGT_MERGE_THRESHOLD)
+            {
+               existing.merge(tb);
+            }
          }
       }
    }
