@@ -9,6 +9,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.entities.TargetMgr;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
+import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -72,8 +73,14 @@ public class SimModel
 
       final double maxComsRng = worldCfg.getMaxWorldDistance() * commsRngPercent;
 
-      // FIXME Load/Derive the number of hops?
-      uavMgr.reset(entTypes, worldCfg, 5, randGen, maxComsRng, commsRelayProb);
+      final CommsConfig commsCfg = new CommsConfig();
+      commsCfg.setCommsRelayProb(commsRelayProb);
+      commsCfg.setMaxCommsRng(maxComsRng);
+   // FIXME Load/Derive the number of hops?
+      commsCfg.setMaxRelayHops(5);
+
+
+      uavMgr.reset(entTypes, worldCfg, randGen, commsCfg);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.

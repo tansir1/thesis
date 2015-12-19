@@ -1,12 +1,12 @@
-package thesis.core.entities.uav.sensor;
+package thesis.core.entities.sensor;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.uav.sensors.Sensor;
-import thesis.core.entities.uav.sensors.SensorType;
+import thesis.core.entities.sensors.Sensor;
+import thesis.core.entities.sensors.SensorType;
 
 public class SensorTests
 {
