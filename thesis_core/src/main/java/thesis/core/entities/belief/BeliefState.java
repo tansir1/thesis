@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import thesis.core.common.SimTime;
+
 /**
  * Overall container for everything that a UAV thinks it knows about the world.
  */
@@ -21,10 +23,30 @@ public class BeliefState
     */
    private final double TGT_MERGE_THRESHOLD = 100;
 
+   /**
+    * The confidence of all belief states drop by this much per frame.
+    * TODO This should be set externally somehow.
+    */
+   private final float CONF_DECAY_RATE = //2% per second
+         (float)(0.02 * SimTime.SIM_STEP_RATE_S);
+
    public BeliefState()
    {
       targets = new ArrayList<TargetBelief>();
       team = new HashMap<Integer, OtherUAVBelief>();
+   }
+
+   /**
+    * Decays confidence values.
+    */
+   public void stepSimulation()
+   {
+      //TODO Decay other teammate locations
+
+      for(TargetBelief tb : targets)
+      {
+         tb.setConfidence(tb.getConfidence() - CONF_DECAY_RATE);
+      }
    }
 
    /**

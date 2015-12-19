@@ -72,6 +72,7 @@ public class UAV
 
       comms.stepSimulation(pathing.getCoordinate());
       logicMgr.stepSimulation(sensors.stepSimulation(pathing.getCoordinate()));
+      belief.stepSimulation();
    }
 
    public Pathing getPathing()
