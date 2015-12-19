@@ -7,6 +7,7 @@ import java.util.Queue;
 import java.util.Random;
 
 import thesis.core.common.Circle;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 
@@ -27,23 +28,17 @@ public class UAVComms
    private final int maxRelayHops;
 
    /**
-    * UAV containing this communications system.
+    * ID number of the UAV containing this communications system.
     */
-   private UAV hostUAV;
+   private int hostUavId;
 
    /**
     * The probability that the UAV will relay a message.
     */
    private float commsRelayProb;
 
-   public UAVComms(UAV hostUAV, UAVMgr uavMgr, int maxRelayHops, double maxCommsRng, Random randGen,
-         float commsRelayProb)
+   public UAVComms(int hostUavId, UAVMgr uavMgr, Random randGen, CommsConfig commsCfg)
    {
-      if (hostUAV == null)
-      {
-         throw new NullPointerException("Host UAV cannot be null.");
-      }
-
       if (uavMgr == null)
       {
          throw new NullPointerException("UAVMgr cannot be null.");
@@ -54,14 +49,14 @@ public class UAVComms
          throw new NullPointerException("Random generator cannot be null.");
       }
 
-      this.hostUAV = hostUAV;
+      this.hostUavId = hostUavId;
       this.uavMgr = uavMgr;
-      this.maxRelayHops = maxRelayHops;
+      this.maxRelayHops = commsCfg.getMaxRelayHops();
       this.randGen = randGen;
-      this.commsRelayProb = commsRelayProb;
+      this.commsRelayProb = commsCfg.getCommsRelayProb();
 
       commsCoverage = new Circle();
-      commsCoverage.setRadius(maxCommsRng);
+      commsCoverage.setRadius(commsCfg.getMaxCommsRng());
 
       incomingQ = new LinkedList<Message>();
       outgoingQ = new LinkedList<Message>();
@@ -84,15 +79,15 @@ public class UAVComms
    public void transmit(final Message msg, int destinationID)
    {
       msg.setNumHops(0);
-      msg.setOriginatingUAV(hostUAV.getID());
+      msg.setOriginatingUAV(hostUavId);
       msg.setReceiverUAV(destinationID);
       msg.resetTime();
       outgoingQ.offer(msg);
    }
 
-   public void stepSimulation()
+   public void stepSimulation(WorldCoordinate commsLocation)
    {
-      commsCoverage.getCenter().setCoordinate(hostUAV.getCoordinate());
+      commsCoverage.getCenter().setCoordinate(commsLocation);
 
       List<UAV> uavs = uavMgr.getAllUAVsInRegion(commsCoverage);
       relayMessages(uavs);
@@ -125,7 +120,7 @@ public class UAVComms
       while (itr.hasNext())
       {
          Message msg = itr.next();
-         if (msg.getReceiverUAV() != hostUAV.getID() && msg.getReceiverUAV() != Message.BROADCAST_ID
+         if (msg.getReceiverUAV() != hostUavId && msg.getReceiverUAV() != Message.BROADCAST_ID
                && msg.getNumHops() < maxRelayHops)
          {
 

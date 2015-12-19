@@ -517,7 +517,7 @@ public class RenderSimState
 
          worldCoordinateToPixels(wc, pixels);
 
-         if (tgt.getType().isMobile())
+         if (tgt.isMobile())
          {
             if (scaledRedMobileImg != null)
             {
@@ -566,13 +566,13 @@ public class RenderSimState
       {
          trans.setToIdentity();
 
-         wc.setCoordinate(uav.getCoordinate());
+         wc.setCoordinate(uav.getPathing().getCoordinate());
 
          worldCoordinateToPixels(wc, pixels);
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          //trans.rotate(-uav.getHeading().asRadians());
-         double deg = uav.getHeading() - 90;
+         double deg = uav.getPathing().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
          g2d.drawImage(scaledBlueMobileImg, trans, null);
@@ -599,7 +599,7 @@ public class RenderSimState
          prevPix.setLocation(-1,-1);
 
          history.clear();
-         uav.getFlightHistoryTrail(history);
+         uav.getPathing().getFlightHistoryTrail(history);
          for (WorldPose pose : history)
          {
             worldCoordinateToPixels(pose.getCoordinate(), curPixels);
@@ -627,7 +627,7 @@ public class RenderSimState
 
       for (UAV uav : model.getUAVManager().getAllUAVs())
       {
-         worldCoordinateToPixels(uav.getCoordinate(), uavPix);
+         worldCoordinateToPixels(uav.getPathing().getCoordinate(), uavPix);
 
          for(Sensor sensor : uav.getSensors().getSensors())
          {
