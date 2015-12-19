@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.belief;
+package thesis.core.entities.belief;
 
 import thesis.core.common.WorldPose;
 
