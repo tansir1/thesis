@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.sensors;
+package thesis.core.entities.sensors;
 
 import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;

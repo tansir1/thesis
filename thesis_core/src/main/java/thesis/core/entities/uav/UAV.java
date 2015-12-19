@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.common.WorldPose;
+import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.uav.comms.UAVComms;
-import thesis.core.entities.uav.sensors.SensorGroup;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAV

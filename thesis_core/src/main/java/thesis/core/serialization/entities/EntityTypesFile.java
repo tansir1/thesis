@@ -28,8 +28,8 @@ import org.xml.sax.SAXException;
 import thesis.core.entities.TargetType;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
+import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.UAVType;
-import thesis.core.entities.uav.sensors.SensorType;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 
