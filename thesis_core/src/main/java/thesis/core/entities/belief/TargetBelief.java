@@ -60,12 +60,12 @@ public class TargetBelief
 
       deltaNorth *= mergePercent;
       deltaEast *= mergePercent;
-      pose.getCoordinate().translateCart(deltaNorth, deltaEast);
+      pose.getCoordinate().translateCart(-deltaNorth, -deltaEast);
 
       double deltaHdg = pose.getHeading() - other.getPose().getHeading();
-      deltaHdg = Angle.normalize360(deltaHdg);
+      //deltaHdg = Angle.normalize360(deltaHdg);
       deltaHdg *= mergePercent;
-      final double newHdg = pose.getHeading() + deltaHdg;
+      final double newHdg = pose.getHeading() - deltaHdg;
       pose.setHeading(Angle.normalize360(newHdg));
    }
 }

@@ -42,6 +42,8 @@ public class UAVLogicMgr
       {
          for(Target tgt : sd.getTgtsInFOV())
          {
+            //TODO Need logic to check state of UAV to determine if it should be
+            //detecting or identifying
 
             float detectProb = sensorProbs.getDetectionProb(sd.getSensorType(), tgt.getType());
             float idProb = sensorProbs.getIdentificationProb(sd.getSensorType(), tgt.getType());

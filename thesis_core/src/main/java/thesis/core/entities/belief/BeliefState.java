@@ -38,28 +38,6 @@ public class BeliefState
    }
 
    /**
-    * Add a new target to the UAV's belief state.
-    *
-    * @param tb
-    *           The new target to remember.
-    */
-   public void addTarget(TargetBelief tb)
-   {
-      targets.add(tb);
-   }
-
-   /**
-    * Remove a target from this UAV's belief state.
-    *
-    * @param tb
-    *           The target to remove.
-    */
-   public void removeTarget(TargetBelief tb)
-   {
-      targets.remove(tb);
-   }
-
-   /**
     * Add another UAV teammate to this UAV's belief.
     *
     * @param oub
@@ -100,11 +78,18 @@ public class BeliefState
     */
    public void mergeBelief(BeliefState mergeIn)
    {
+      //TODO Merge other UAVs
+      //mergeIn.getOtherUAVs();
 
+      for(TargetBelief tb : mergeIn.targets)
+      {
+         mergeTarget(tb);
+      }
    }
 
    public void mergeTarget(TargetBelief tb)
    {
+      boolean merged = false;
       for (TargetBelief existing : targets)
       {
          //Cannot merge targets of different types
@@ -114,9 +99,16 @@ public class BeliefState
             dist = Math.abs(dist);
             if (dist < TGT_MERGE_THRESHOLD)
             {
+               merged = true;
                existing.merge(tb);
+               break;
             }
          }
+      }
+
+      if(!merged)
+      {
+         targets.add(tb);
       }
    }
 }
