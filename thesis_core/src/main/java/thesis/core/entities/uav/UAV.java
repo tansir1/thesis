@@ -1,11 +1,16 @@
 package thesis.core.entities.uav;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.common.WorldPose;
+import thesis.core.entities.Target;
 import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.uav.belief.BeliefState;
+import thesis.core.entities.uav.belief.TargetBelief;
 import thesis.core.entities.uav.comms.UAVComms;
 import thesis.core.utilities.LoggerIDs;
 
@@ -65,7 +70,22 @@ public class UAV
       pathing.stepSimulation();
 
       comms.stepSimulation(pathing.getCoordinate());
-      sensors.stepSimulation(pathing.getCoordinate());
+      List<Target> tgtsInFOV = sensors.stepSimulation(pathing.getCoordinate());
+      scanForTargets(tgtsInFOV);
+   }
+
+   private List<TargetBelief> scanForTargets(List<Target> tgtsInFOV)
+   {
+      List<TargetBelief> detections = new ArrayList<TargetBelief>();
+      for(Target tgt : tgtsInFOV)
+      {
+         //TODO Need to add probabilities of detection.
+         //For now 100% detection to test sensor update logic and beliefs
+         TargetBelief tb = new TargetBelief(tgt.getType());
+         tb.getPose().copy(tgt.getPose());
+         detections.add(tb);
+      }
+      return detections;
    }
 
    public Pathing getPathing()

@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
+import thesis.core.entities.Target;
 import thesis.core.entities.TargetMgr;
-import thesis.core.entities.uav.belief.TargetBelief;
 
 public class SensorGroup
 {
@@ -31,9 +31,9 @@ public class SensorGroup
       return Collections.unmodifiableList(sensors);
    }
 
-   public List<TargetBelief> stepSimulation(WorldCoordinate hostUAVLocation)
+   public List<Target> stepSimulation(WorldCoordinate hostUAVLocation)
    {
-      List<TargetBelief> detections = new ArrayList<TargetBelief>();
+      List<Target> detections = new ArrayList<Target>();
 
       for(Sensor s : sensors)
       {

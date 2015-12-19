@@ -1,6 +1,5 @@
 package thesis.core.entities.sensors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.Angle;
@@ -9,7 +8,6 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.Target;
 import thesis.core.entities.TargetMgr;
-import thesis.core.entities.uav.belief.TargetBelief;
 
 public class Sensor
 {
@@ -32,6 +30,7 @@ public class Sensor
    private final double MAX_SLEW_FRAME_RATE;
 
    private final TargetMgr tgtMgr;
+
    private final int type;
    private final WorldPose pose;
    private final WorldCoordinate lookAtGoal;
@@ -107,14 +106,14 @@ public class Sensor
       return lookAtCur;
    }
 
-   public List<TargetBelief> stepSimulation(WorldCoordinate sensorLocation)
+   public List<Target> stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
 
       slew();
       updateViewRegion();
 
-      return scanForTargets();
+      return tgtMgr.getTargetsInRegion(viewRegion);
    }
 
    private void slew()
@@ -189,22 +188,6 @@ public class Sensor
       viewRegion.getTopRight().translatePolar(rightAngleDeg, fovFar);
       viewRegion.getBottomLeft().translatePolar(leftAngleDeg, fovNear);
       viewRegion.getBottomRight().translatePolar(rightAngleDeg, fovNear);
-   }
-
-   private List<TargetBelief> scanForTargets()
-   {
-      List<Target> tgtsInView = tgtMgr.getTargetsInRegion(viewRegion);
-
-      List<TargetBelief> detections = new ArrayList<TargetBelief>();
-      for(Target tgt : tgtsInView)
-      {
-         //TODO Need to add probabilities of detection.
-         //For now 100% detection to test sensor update logic and beliefs
-         TargetBelief tb = new TargetBelief(tgt.getType());
-         tb.getPose().copy(tgt.getPose());
-         detections.add(tb);
-      }
-      return detections;
    }
 
    @Override
