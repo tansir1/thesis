@@ -1,8 +1,8 @@
 package thesis.core.entities.uav;
 
 import thesis.core.common.WorldPose;
+import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.sensors.SensorGroup;
-import thesis.core.entities.uav.belief.BeliefState;
 import thesis.core.entities.uav.comms.UAVComms;
 import thesis.core.entities.uav.logic.UAVLogicMgr;
 

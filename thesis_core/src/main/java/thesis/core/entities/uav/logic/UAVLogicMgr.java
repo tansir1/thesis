@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Random;
 
 import thesis.core.entities.Target;
+import thesis.core.entities.belief.TargetBelief;
 import thesis.core.entities.sensors.SensorDetections;
 import thesis.core.entities.sensors.SensorProbs;
-import thesis.core.entities.uav.belief.TargetBelief;
 
 public class UAVLogicMgr
 {
