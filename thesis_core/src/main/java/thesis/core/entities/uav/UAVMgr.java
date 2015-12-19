@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
+import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.Sensor;
 import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.sensors.SensorType;
@@ -46,7 +47,7 @@ public class UAVMgr
     *           types will be cross referenced from entTypes.
     */
    public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen,
-         CommsConfig commsCfg)
+         CommsConfig commsCfg, TargetMgr tgtMgr)
    {
       logger.debug("Resetting UAV Manager.");
 
@@ -58,7 +59,7 @@ public class UAVMgr
          UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
          if (type != null)
          {
-            final SensorGroup sensors = new SensorGroup();
+            final SensorGroup sensors = new SensorGroup(tgtMgr);
             for(SensorType st : type.getSensors())
             {
                Sensor sensor = sensors.addSensor(st);

@@ -1,7 +1,6 @@
 package thesis.core.entities.uav.belief;
 
 import thesis.core.common.WorldPose;
-import thesis.core.entities.TargetType;
 
 /**
  * A container for everything a UAV thinks it knows about a target out in the
@@ -10,15 +9,11 @@ import thesis.core.entities.TargetType;
 public class TargetBelief
 {
    private WorldPose pose;
-   private TargetType type;
+   private int type;
    private float confidence;
 
-   public TargetBelief(TargetType type)
+   public TargetBelief(int type)
    {
-      if (type == null)
-      {
-         throw new NullPointerException("Target type cannot be null.");
-      }
       this.type = type;
       pose = new WorldPose();
       confidence = 0;
@@ -29,7 +24,7 @@ public class TargetBelief
       return pose;
    }
 
-   public TargetType getType()
+   public int getType()
    {
       return type;
    }

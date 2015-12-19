@@ -1,10 +1,11 @@
-package thesis.core.entities.uav.sensor;
+package thesis.core.entities.sensor;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import thesis.core.common.WorldCoordinate;
+import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.Sensor;
 import thesis.core.entities.sensors.SensorType;
 
@@ -16,7 +17,7 @@ public class SensorTests
    {
       SensorType st = new SensorType(1);
       st.setMaxSlewRate(10);
-      Sensor testMe = new Sensor(st);
+      Sensor testMe = new Sensor(st, new TargetMgr());
 
       WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
 

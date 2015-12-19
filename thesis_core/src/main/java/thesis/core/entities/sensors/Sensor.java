@@ -1,9 +1,15 @@
-package thesis.core.entities.uav.sensors;
+package thesis.core.entities.sensors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
+import thesis.core.entities.Target;
+import thesis.core.entities.TargetMgr;
+import thesis.core.entities.uav.belief.TargetBelief;
 
 public class Sensor
 {
@@ -25,11 +31,13 @@ public class Sensor
     */
    private final double MAX_SLEW_FRAME_RATE;
 
-   private int type;
-   private WorldPose pose;
-   private WorldCoordinate lookAtGoal;
-   private WorldCoordinate lookAtCur;
-   private Rectangle viewRegion;
+   private final TargetMgr tgtMgr;
+   private final int type;
+   private final WorldPose pose;
+   private final WorldCoordinate lookAtGoal;
+   private final WorldCoordinate lookAtCur;
+   private final Rectangle viewRegion;
+
 
    public Sensor(SensorType type, TargetMgr tgtMgr)
    {
@@ -43,7 +51,7 @@ public class Sensor
          throw new NullPointerException("Target manager cannot be null.");
       }
 
-      this.type = type;
+      this.type = type.getTypeID();
       this.tgtMgr = tgtMgr;
 
       pose = new WorldPose();
@@ -115,7 +123,6 @@ public class Sensor
 
       double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
 
-      final double degreesPerFrame = type.getMaxSlewFrameRate();
       //If the lookDelta < one frame's worth of slewing
       if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
       {
@@ -142,19 +149,17 @@ public class Sensor
    private void updateViewRegion()
    {
       final double hdg = pose.getHeading();
-      final double halfFOVdeg = type.getFov() / 2;
+      final double halfFOVdeg = FOV / 2;
       final double leftAngleDeg = hdg + halfFOVdeg;
       final double rightAngleDeg = hdg - halfFOVdeg;
 
-      final double maxRng = type.getMaxRange();
-      final double minRng = type.getMinRange();
-      final double frustrumHeight = maxRng - minRng;
+      final double frustrumHeight = MAX_RNG - MIN_RNG;
 
       final double distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
       double midRngDist = 0;
       double fovFar = 0;
       double fovNear = 0;
-      if(distToStarePt < (maxRng - frustrumHeight))
+      if(distToStarePt < (MAX_RNG - frustrumHeight))
       {
          double distToStareM = distToStarePt;
 
@@ -164,9 +169,9 @@ public class Sensor
       }
       else
       {
-         fovFar = maxRng;
-         fovNear = minRng;
-         midRngDist = (frustrumHeight / 2.0) + minRng;
+         fovFar = MAX_RNG;
+         fovNear = MIN_RNG;
+         midRngDist = (frustrumHeight / 2.0) + MIN_RNG;
       }
 
       //Update viewpoint center position
@@ -205,6 +210,6 @@ public class Sensor
    @Override
    public String toString()
    {
-      return "Type: " + Integer.toString(type.getTypeID());
+      return "Type: " + Integer.toString(type);
    }
 }
