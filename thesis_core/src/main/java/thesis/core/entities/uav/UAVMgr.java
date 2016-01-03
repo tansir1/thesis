@@ -73,7 +73,7 @@ public class UAVMgr
             pathing.getCoordinate().setCoordinate(uavEntCfg.getLocation());
             pathing.setHeading(uavEntCfg.getOrientation());
 
-            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen);
+            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen, uavID);
 
             final UAV uav = new UAV(type.getTypeID(), uavID, sensors, comms, pathing, logicMgr);
             uavs.add(uav);
