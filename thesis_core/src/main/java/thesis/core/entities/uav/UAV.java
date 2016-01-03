@@ -1,6 +1,5 @@
 package thesis.core.entities.uav;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.WorldPose;
@@ -76,8 +75,8 @@ public class UAV
 
       // Must be invoked before the comms.stepSimulation() call so that
       // broadcast messages are received.
-      //List<Message> msgs = comms.getAllIncoming();
-      List<Message> msgs = new ArrayList<Message>();
+      List<Message> msgs = comms.getAllIncoming();
+
       comms.stepSimulation(pathing.getCoordinate());
       logicMgr.stepSimulation(sensors.stepSimulation(pathing.getCoordinate()), belief, msgs);
       belief.stepSimulation(comms);

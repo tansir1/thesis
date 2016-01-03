@@ -150,4 +150,30 @@ public class UAVMgr
 
       return inRegion;
    }
+
+   /**
+    * Get all UAVs within the specified geographic region.
+    *
+    * @param region
+    *           Get all UAVs within this region.
+    * @param excludeUAV
+    *           ID of a UAV to exclude from the results.
+    * @return A list of UAVs in the region or an empty list if no UAVs are
+    *         within the region.
+    */
+   public List<UAV> getAllUAVsInRegion(Circle region, int excludeUAV)
+   {
+      List<UAV> inRegion = new ArrayList<UAV>();
+
+      for (UAV uav : uavs)
+      {
+         if (Math.abs(uav.getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
+               && uav.getID() != excludeUAV)
+         {
+            inRegion.add(uav);
+         }
+      }
+
+      return inRegion;
+   }
 }
