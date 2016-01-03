@@ -79,7 +79,7 @@ public class UAVComms
     */
    public void transmit(final Message msg, int destinationID)
    {
-      msg.setNumHops(0);
+      msg.setNumHops(maxRelayHops);
       msg.setOriginatingUAV(hostUavId);
       msg.setReceiverUAV(destinationID);
       msg.resetTime();
@@ -90,7 +90,7 @@ public class UAVComms
    {
       commsCoverage.getCenter().setCoordinate(commsLocation);
 
-      List<UAV> uavs = uavMgr.getAllUAVsInRegion(commsCoverage);
+      List<UAV> uavs = uavMgr.getAllUAVsInRegion(commsCoverage, hostUavId);
       relayMessages(uavs);
 
       Iterator<Message> itr = outgoingQ.iterator();
