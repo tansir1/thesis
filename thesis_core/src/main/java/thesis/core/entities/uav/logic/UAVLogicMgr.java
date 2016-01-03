@@ -4,19 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import thesis.core.entities.Target;
 import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.belief.TargetBelief;
 import thesis.core.entities.sensors.SensorDetections;
 import thesis.core.entities.sensors.SensorProbs;
+import thesis.core.entities.uav.comms.BeliefStateMsg;
 import thesis.core.entities.uav.comms.Message;
+import thesis.core.utilities.LoggerIDs;
 
 public class UAVLogicMgr
 {
+   private static Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV_LOGIC);
+
    private final SensorProbs sensorProbs;
    private final Random randGen;
+   private final int hostUavId;
 
-   public UAVLogicMgr(SensorProbs sensorProbs, Random randGen)
+   public UAVLogicMgr(SensorProbs sensorProbs, Random randGen, int hostUavId)
    {
       if (sensorProbs == null)
       {
@@ -30,6 +38,7 @@ public class UAVLogicMgr
 
       this.sensorProbs = sensorProbs;
       this.randGen = randGen;
+      this.hostUavId = hostUavId;
    }
 
    public void stepSimulation(List<SensorDetections> detections, BeliefState curBelief, List<Message> incomingMsgs)
@@ -37,6 +46,27 @@ public class UAVLogicMgr
       for (TargetBelief tb : scanForTargets(detections))
       {
          curBelief.mergeTarget(tb);
+      }
+
+      for(Message msg : incomingMsgs)
+      {
+         switch(msg.getType())
+         {
+         case AuctionAnnounce:
+            break;
+         case AuctionBid:
+            break;
+         case AuctionLose:
+            break;
+         case AuctionWin:
+            break;
+         case BeliefState:
+            processBeliefStateMsg(curBelief, msg);
+            break;
+         default:
+            //TODO Log error, this shouldn't be possible unless a new enum type is added
+            break;
+         }
       }
    }
 
@@ -62,5 +92,12 @@ public class UAVLogicMgr
       }
 
       return tgtBeliefs;
+   }
+
+   private void processBeliefStateMsg(BeliefState curBelief, Message rawMsg)
+   {
+      BeliefStateMsg msg = (BeliefStateMsg)rawMsg;
+      curBelief.mergeBelief(msg.getBelief());
+      //logger.debug("Merged belief from {} into {}", rawMsg.getOriginatingUAV(), hostUavId);
    }
 }
