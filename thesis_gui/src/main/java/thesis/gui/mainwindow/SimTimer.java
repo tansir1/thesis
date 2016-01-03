@@ -99,7 +99,7 @@ public class SimTimer
 
       if (model != null)
       {
-         double stepRate = SimTime.SIM_STEP_RATE_MS / (fastMultiplier*1.0) * 1000;
+         double stepRate = SimTime.SIM_STEP_RATE_MS / (fastMultiplier * 1.0) * 1000;
          logger.info("Free running simulation at {}x", fastMultiplier);
          future = execSvc.scheduleAtFixedRate(new Runnable()
          {
@@ -107,20 +107,27 @@ public class SimTimer
             @Override
             public void run()
             {
-               if (model != null)
+               try
                {
-                  model.stepSimulation();
-                  SwingUtilities.invokeLater(new Runnable()
+                  if (model != null)
                   {
-                     @Override
-                     public void run()
+                     model.stepSimulation();
+                     SwingUtilities.invokeLater(new Runnable()
                      {
-                        simPanel.repaint();
-                     }
-                  });
+                        @Override
+                        public void run()
+                        {
+                           simPanel.repaint();
+                        }
+                     });
+                  }
+               }
+               catch (Exception e)
+               {
+                  logger.error("{}", e);
                }
             }
-         }, 0, (long)stepRate, TimeUnit.MICROSECONDS);
+         }, 0, (long) stepRate, TimeUnit.MICROSECONDS);
       }
    }
 

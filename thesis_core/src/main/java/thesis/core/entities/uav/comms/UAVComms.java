@@ -1,5 +1,6 @@
 package thesis.core.entities.uav.comms;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -78,7 +79,7 @@ public class UAVComms
     */
    public void transmit(final Message msg, int destinationID)
    {
-      msg.setNumHops(0);
+      msg.setNumHops(maxRelayHops);
       msg.setOriginatingUAV(hostUavId);
       msg.setReceiverUAV(destinationID);
       msg.resetTime();
@@ -89,11 +90,11 @@ public class UAVComms
    {
       commsCoverage.getCenter().setCoordinate(commsLocation);
 
-      List<UAV> uavs = uavMgr.getAllUAVsInRegion(commsCoverage);
+      List<UAV> uavs = uavMgr.getAllUAVsInRegion(commsCoverage, hostUavId);
       relayMessages(uavs);
 
       Iterator<Message> itr = outgoingQ.iterator();
-      while(itr.hasNext())
+      while (itr.hasNext())
       {
          Message msg = itr.next();
          for (UAV uav : uavs)
@@ -108,6 +109,10 @@ public class UAVComms
     * Scan through the incoming queue and process everything not destined for
     * this UAV.
     *
+    * NOTE: Broadcast messages are deleted from the queue by this mehod! Be sure
+    * to invoke {@link #getAllIncoming()} otherwise the UAV will miss broadcast
+    * messages.
+    *
     * Processing messages entails relaying (based on a probability) or dropping
     * the message.
     *
@@ -120,8 +125,7 @@ public class UAVComms
       while (itr.hasNext())
       {
          Message msg = itr.next();
-         if (msg.getReceiverUAV() != hostUavId && msg.getReceiverUAV() != Message.BROADCAST_ID
-               && msg.getNumHops() < maxRelayHops)
+         if (msg.getReceiverUAV() != hostUavId && msg.getNumHops() < maxRelayHops)
          {
 
             Message toSend = msg.copy();
@@ -139,5 +143,30 @@ public class UAVComms
             itr.remove();
          }
       }
+   }
+
+   public List<Message> getAllIncoming()
+   {
+      List<Message> msgs = new ArrayList<Message>();
+
+      Iterator<Message> itr = incomingQ.iterator();
+      while (itr.hasNext())
+      {
+         Message msg = itr.next();
+         if (msg.getReceiverUAV() == hostUavId || msg.getReceiverUAV() == Message.BROADCAST_ID)
+         {
+            msgs.add(msg);
+
+            // Only remove the message from the queue if it was explicitly
+            // destined
+            // for this UAV. Broadcast messages are removed during {@link
+            // #relayMessages(List<UAV>)}.
+            if (msg.getReceiverUAV() == hostUavId)
+            {
+               itr.remove();
+            }
+         }
+      }
+      return msgs;
    }
 }
