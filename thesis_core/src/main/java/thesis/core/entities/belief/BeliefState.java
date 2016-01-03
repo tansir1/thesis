@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import thesis.core.common.SimTime;
+import thesis.core.entities.uav.comms.BeliefStateMsg;
+import thesis.core.entities.uav.comms.Message;
+import thesis.core.entities.uav.comms.UAVComms;
 
 /**
  * Overall container for everything that a UAV thinks it knows about the world.
@@ -30,16 +33,26 @@ public class BeliefState
    private final float CONF_DECAY_RATE = //2% per second
          (float)(0.02 * SimTime.SIM_STEP_RATE_S);
 
+   /**
+    * When this amount of simulation time elapses the UAV will broadcast its
+    * current belief state.
+    */
+   private static long BELIEF_BROADCAST_RATE_MS = 1000;//Broadcast at 1hz
+
+   private long lastBeliefBroadcastTimeAccumulator;
+
    public BeliefState()
    {
       targets = new ArrayList<TargetBelief>();
       team = new HashMap<Integer, OtherUAVBelief>();
+
+      lastBeliefBroadcastTimeAccumulator = 0;
    }
 
    /**
     * Decays confidence values.
     */
-   public void stepSimulation()
+   public void stepSimulation(UAVComms comms)
    {
       for(OtherUAVBelief otherUAV : team.values())
       {
@@ -50,6 +63,14 @@ public class BeliefState
       for(TargetBelief tb : targets)
       {
          tb.setConfidence(tb.getConfidence() - CONF_DECAY_RATE);
+      }
+
+      lastBeliefBroadcastTimeAccumulator += SimTime.SIM_STEP_RATE_MS;
+      if (lastBeliefBroadcastTimeAccumulator > BELIEF_BROADCAST_RATE_MS)
+      {
+         lastBeliefBroadcastTimeAccumulator = 0;
+         BeliefStateMsg msg = new BeliefStateMsg(this);
+         comms.transmit(msg, Message.BROADCAST_ID);
       }
    }
 
