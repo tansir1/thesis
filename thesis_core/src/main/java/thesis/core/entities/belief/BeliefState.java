@@ -41,7 +41,11 @@ public class BeliefState
     */
    public void stepSimulation()
    {
-      //TODO Decay other teammate locations
+      for(OtherUAVBelief otherUAV : team.values())
+      {
+         otherUAV.setConfidence(otherUAV.getConfidence() - CONF_DECAY_RATE);
+      }
+
 
       for(TargetBelief tb : targets)
       {
