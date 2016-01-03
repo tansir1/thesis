@@ -8,7 +8,8 @@ import thesis.core.common.SimTime;
 public abstract class Message
 {
    /**
-    * Special receiver ID indicating that all UAVs should listen to this message.
+    * Special receiver ID indicating that all UAVs should listen to this
+    * message.
     */
    public static final int BROADCAST_ID = -1;
 
@@ -60,7 +61,23 @@ public abstract class Message
       return type;
    }
 
-   public abstract Message copy();
+   public Message copy()
+   {
+      Message msg = cloneMsgSpecificData();
+      msg.simTime = simTime;
+      msg.originatingUAV = originatingUAV;
+      msg.receiverUAV = receiverUAV;
+      msg.numHops = numHops;
+
+      return msg;
+   }
+
+   /**
+    * Subclasses must clone their local data into a new subclass object.
+    *
+    * @return A new message containing the same information as the invoker.
+    */
+   protected abstract Message cloneMsgSpecificData();
 
    /**
     * Reset the simulation time in which the message's data was considered valid
@@ -109,6 +126,5 @@ public abstract class Message
    {
       this.numHops = numHops;
    }
-
 
 }

@@ -1,14 +1,18 @@
 package thesis.core.entities.uav;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import thesis.core.common.WorldPose;
 import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.sensors.SensorGroup;
+import thesis.core.entities.uav.comms.Message;
 import thesis.core.entities.uav.comms.UAVComms;
 import thesis.core.entities.uav.logic.UAVLogicMgr;
 
 public class UAV
 {
-   //private static Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV);
+   // private static Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV);
 
    private int type;
 
@@ -70,9 +74,13 @@ public class UAV
    {
       pathing.stepSimulation();
 
+      // Must be invoked before the comms.stepSimulation() call so that
+      // broadcast messages are received.
+      //List<Message> msgs = comms.getAllIncoming();
+      List<Message> msgs = new ArrayList<Message>();
       comms.stepSimulation(pathing.getCoordinate());
-      logicMgr.stepSimulation(sensors.stepSimulation(pathing.getCoordinate()));
-      belief.stepSimulation();
+      logicMgr.stepSimulation(sensors.stepSimulation(pathing.getCoordinate()), belief, msgs);
+      belief.stepSimulation(comms);
    }
 
    public Pathing getPathing()
@@ -94,7 +102,6 @@ public class UAV
    {
       return belief;
    }
-
 
    /**
     * This is a temporary method for development testing purposes. It will be
