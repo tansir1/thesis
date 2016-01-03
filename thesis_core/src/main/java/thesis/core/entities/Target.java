@@ -109,6 +109,11 @@ public class Target
       pose.setHeading(hdg);
    }
 
+   public WorldPose getPose()
+   {
+      return pose;
+   }
+
    /**
     * Step the simulation forward by {@link SimModel#SIM_STEP_RATE_MS} amount of
     * time.

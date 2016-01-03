@@ -11,11 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
+import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.Sensor;
 import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.entities.uav.comms.UAVComms;
+import thesis.core.entities.uav.logic.UAVLogicMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
@@ -45,8 +47,7 @@ public class UAVMgr
     *           UAVs will be generated based on configuration data from here and
     *           types will be cross referenced from entTypes.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen,
-         CommsConfig commsCfg)
+   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen, CommsConfig commsCfg, TargetMgr tgtMgr)
    {
       logger.debug("Resetting UAV Manager.");
 
@@ -58,11 +59,11 @@ public class UAVMgr
          UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
          if (type != null)
          {
-            final SensorGroup sensors = new SensorGroup();
-            for(SensorType st : type.getSensors())
+            final SensorGroup sensors = new SensorGroup(tgtMgr);
+            for (SensorType st : type.getSensors())
             {
                Sensor sensor = sensors.addSensor(st);
-               //Align sensor to point straight ahead at startup
+               // Align sensor to point straight ahead at startup
                sensor.setAzimuth(uavEntCfg.getOrientation());
             }
 
@@ -72,7 +73,9 @@ public class UAVMgr
             pathing.getCoordinate().setCoordinate(uavEntCfg.getLocation());
             pathing.setHeading(uavEntCfg.getOrientation());
 
-            final UAV uav = new UAV(type.getTypeID(), uavID, sensors, comms, pathing);
+            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen);
+
+            final UAV uav = new UAV(type.getTypeID(), uavID, sensors, comms, pathing, logicMgr);
             uavs.add(uav);
 
             ++uavID;
