@@ -4,6 +4,7 @@ import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
+import thesis.core.entities.TargetMgr;
 
 public class Sensor
 {
@@ -25,20 +26,29 @@ public class Sensor
     */
    private final double MAX_SLEW_FRAME_RATE;
 
-   private int type;
-   private WorldPose pose;
-   private WorldCoordinate lookAtGoal;
-   private WorldCoordinate lookAtCur;
-   private Rectangle viewRegion;
+   private final TargetMgr tgtMgr;
 
-   public Sensor(SensorType type)
+   private final int type;
+   private final WorldPose pose;
+   private final WorldCoordinate lookAtGoal;
+   private final WorldCoordinate lookAtCur;
+   private final Rectangle viewRegion;
+
+
+   public Sensor(SensorType type, TargetMgr tgtMgr)
    {
       if (type == null)
       {
          throw new NullPointerException("type cannot be null.");
       }
 
+      if (tgtMgr == null)
+      {
+         throw new NullPointerException("Target manager cannot be null.");
+      }
+
       this.type = type.getTypeID();
+      this.tgtMgr = tgtMgr;
 
       pose = new WorldPose();
       lookAtGoal = new WorldCoordinate();
@@ -93,12 +103,14 @@ public class Sensor
       return lookAtCur;
    }
 
-   public void stepSimulation(WorldCoordinate sensorLocation)
+   public SensorDetections stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
 
       slew();
       updateViewRegion();
+
+      return new SensorDetections(type, tgtMgr.getTargetsInRegion(viewRegion));
    }
 
    private void slew()

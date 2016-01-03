@@ -5,19 +5,22 @@ import java.util.Collections;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
+import thesis.core.entities.TargetMgr;
 
 public class SensorGroup
 {
    private List<Sensor> sensors;
+   private TargetMgr tgtMgr;
 
-   public SensorGroup()
+   public SensorGroup(TargetMgr tgtMgr)
    {
       sensors = new ArrayList<Sensor>();
+      this.tgtMgr = tgtMgr;
    }
 
    public Sensor addSensor(SensorType type)
    {
-      Sensor sensor = new Sensor(type);
+      Sensor sensor = new Sensor(type, tgtMgr);
       sensors.add(sensor);
       return sensor;
    }
@@ -27,12 +30,16 @@ public class SensorGroup
       return Collections.unmodifiableList(sensors);
    }
 
-   public void stepSimulation(WorldCoordinate hostUAVLocation)
+   public List<SensorDetections> stepSimulation(WorldCoordinate hostUAVLocation)
    {
+      List<SensorDetections> detections = new ArrayList<SensorDetections>();
+
       for(Sensor s : sensors)
       {
-         s.stepSimulation(hostUAVLocation);
+         detections.add(s.stepSimulation(hostUAVLocation));
       }
+
+      return detections;
    }
 
    public void stareAtAll(WorldCoordinate starePoint)
