@@ -1,4 +1,4 @@
-package thesis.core.uav.logic;
+package thesis.core.entities.uav.logic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +7,13 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.entities.Target;
 import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.belief.TargetBelief;
-import thesis.core.sensors.SensorDetections;
-import thesis.core.sensors.SensorProbs;
-import thesis.core.targets.Target;
-import thesis.core.uav.comms.BeliefStateMsg;
-import thesis.core.uav.comms.Message;
+import thesis.core.entities.sensors.SensorDetections;
+import thesis.core.entities.sensors.SensorProbs;
+import thesis.core.entities.uav.comms.BeliefStateMsg;
+import thesis.core.entities.uav.comms.Message;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAVLogicMgr

@@ -7,19 +7,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
+import thesis.core.entities.TargetMgr;
+import thesis.core.entities.sensors.SensorProbs;
+import thesis.core.entities.uav.UAV;
+import thesis.core.entities.uav.UAVMgr;
+import thesis.core.entities.uav.comms.CommsConfig;
+import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
-import thesis.core.targets.TargetMgr;
-import thesis.core.uav.UAV;
-import thesis.core.uav.UAVMgr;
-import thesis.core.uav.comms.CommsConfig;
 import thesis.core.utilities.ISimStepListener;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.world.World;
-import thesis.core.world.WorldGIS;
 
 public class SimModel
 {
@@ -72,6 +72,7 @@ public class SimModel
       randGen = new Random(randomSeed);
 
       this.entTypes = entTypes;
+      this.worldCfg = worldCfg;
 
       logger.debug("EntityTypes initialized with:\n{}", entTypes);
       logger.debug("World model intiliazed with:\n{}", worldCfg);
@@ -95,7 +96,7 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg);
+      uavMgr.reset(entTypes, worldCfg, randGen, commsCfg, tgtMgr);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
@@ -103,8 +104,8 @@ public class SimModel
       {
          WorldPose pose = new WorldPose();
 
-         double north = randGen.nextDouble() * world.getWorldGIS().getWidth();
-         double east = randGen.nextDouble() * world.getWorldGIS().getHeight();
+         double north = randGen.nextDouble() * world.getWidth();
+         double east = randGen.nextDouble() * world.getHeight();
 
          pose.getCoordinate().setCoordinate(north, east);
          pose.setHeading(randGen.nextInt(360));
@@ -115,6 +116,11 @@ public class SimModel
       }
    }
 
+   /**
+    * Get the world map submodel.
+    *
+    * @return The world map of the simulation.
+    */
    public World getWorld()
    {
       return world;
@@ -169,6 +175,15 @@ public class SimModel
       {
          listener.onSimulationStep();
       }
+   }
+
+   /**
+    *
+    * @return
+    */
+   public WorldConfig getWorldConfig()
+   {
+      return worldCfg;
    }
 
    public EntityTypeCfgs getEntityTypeCfgs()

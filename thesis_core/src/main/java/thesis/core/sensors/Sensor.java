@@ -116,7 +116,7 @@ public class Sensor
 
    public boolean isInRange(WorldCoordinate coord)
    {
-      return pose.getCoordinate().distanceTo(coord) < MAX_RNG;
+      return Math.abs(pose.getCoordinate().distanceTo(coord)) < MAX_RNG;
    }
 
    public boolean isInView(WorldCoordinate coord)

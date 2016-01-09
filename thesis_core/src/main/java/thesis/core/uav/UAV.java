@@ -1,4 +1,4 @@
-package thesis.core.uav;
+package thesis.core.entities.uav;
 
 import java.util.List;
 
