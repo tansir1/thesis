@@ -16,6 +16,7 @@ import javax.swing.border.BevelBorder;
 
 import thesis.core.SimModel;
 import thesis.gui.mainwindow.actions.Actions;
+import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
@@ -28,6 +29,7 @@ public class MainWindow implements IMapMouseListener
 {
 	private JFrame frame;
 	private RenderableSimWorldPanel simPanel;
+	private UAVViewPanel uavViewPan;
 
 	private Actions actions;
 
@@ -48,6 +50,7 @@ public class MainWindow implements IMapMouseListener
 		});
 
 		simPanel = new RenderableSimWorldPanel();
+		uavViewPan = new UAVViewPanel();
 		simTimer = new SimTimer(simPanel);
 		actions = new Actions(frame, simPanel, simTimer);
 
@@ -70,6 +73,7 @@ public class MainWindow implements IMapMouseListener
 		frame.add(simPanel, BorderLayout.CENTER);
 
 		frame.add(buildToolbar(), BorderLayout.NORTH);
+		frame.add(uavViewPan.getRenderable(), BorderLayout.WEST);
 
 		JPanel statusPanel = new JPanel();
 		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
@@ -131,6 +135,7 @@ public class MainWindow implements IMapMouseListener
 	public void connectSimModel(SimModel simModel)
 	{
 		simPanel.connectSimModel(simModel, actions);
+		uavViewPan.connectSimModel(simModel);
 		simTimer.reset(simModel);
 	}
 

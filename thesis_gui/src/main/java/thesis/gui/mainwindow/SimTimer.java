@@ -17,6 +17,8 @@ import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class SimTimer
 {
+   private static final long UPDATE_GUI_RATE_MS = 250;
+
    private ScheduledExecutorService execSvc;
 
    private SimModel model;
@@ -25,6 +27,8 @@ public class SimTimer
    private Logger logger;
 
    private RenderableSimWorldPanel simPanel;
+
+   private long guiRefreshAccumulator;
 
    /**
     * Initialize a timer to drive the simulation. Does nothing without a
@@ -46,6 +50,8 @@ public class SimTimer
 
       logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
       execSvc = Executors.newSingleThreadScheduledExecutor();
+
+      guiRefreshAccumulator = 0;
    }
 
    public void reset(SimModel model)
@@ -69,6 +75,8 @@ public class SimTimer
 
          logger.info("Stepping simulation.");
          model.stepSimulation();
+
+         guiRefreshAccumulator = 0;
          SwingUtilities.invokeLater(new Runnable()
          {
 
@@ -112,14 +120,19 @@ public class SimTimer
                   if (model != null)
                   {
                      model.stepSimulation();
-                     SwingUtilities.invokeLater(new Runnable()
+                     guiRefreshAccumulator += SimTime.SIM_STEP_RATE_MS;
+                     if(guiRefreshAccumulator > UPDATE_GUI_RATE_MS)
                      {
-                        @Override
-                        public void run()
+                        guiRefreshAccumulator = 0;
+                        SwingUtilities.invokeLater(new Runnable()
                         {
-                           simPanel.repaint();
-                        }
-                     });
+                           @Override
+                           public void run()
+                           {
+                              simPanel.repaint();
+                           }
+                        });
+                     }
                   }
                }
                catch (Exception e)
