@@ -135,7 +135,7 @@ public class MainWindow implements IMapMouseListener
 	public void connectSimModel(SimModel simModel)
 	{
 		simPanel.connectSimModel(simModel, actions);
-		uavViewPan.connectSimModel(simModel);
+		uavViewPan.connectSimModel(simModel, simPanel.getWorldRenderer());
 		simTimer.reset(simModel);
 	}
 

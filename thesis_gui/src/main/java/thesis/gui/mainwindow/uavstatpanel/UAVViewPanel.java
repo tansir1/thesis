@@ -16,6 +16,7 @@ import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.uav.UAV;
 import thesis.core.utilities.ISimStepListener;
+import thesis.core.world.RenderSimState;
 
 public class UAVViewPanel implements ISimStepListener
 {
@@ -28,6 +29,7 @@ public class UAVViewPanel implements ISimStepListener
    private JLabel northLbl, eastLbl, hdgLbl;
 
    private long updateTimeAccumulator;
+   private RenderSimState renderSim;
 
    public UAVViewPanel()
    {
@@ -55,13 +57,9 @@ public class UAVViewPanel implements ISimStepListener
       GridBagConstraints gbc = new GridBagConstraints();
       gbc.gridx = 0;
       gbc.gridy = 0;
-      gbc.gridwidth = 2;
-
-      renderable.add(uavSelCB, gbc);
-      gbc.gridy++;
-      gbc.gridwidth = 1;
       gbc.anchor = GridBagConstraints.LINE_START;
 
+      addGridFormRow(gbc, "Selected UAV:", uavSelCB);
       addGridFormRow(gbc, "North:", northLbl);
       addGridFormRow(gbc, "East:", eastLbl);
       addGridFormRow(gbc, "Heading:", hdgLbl);
@@ -77,9 +75,11 @@ public class UAVViewPanel implements ISimStepListener
       gbc.gridy++;
    }
 
-   public void connectSimModel(final SimModel simModel)
+   public void connectSimModel(final SimModel simModel, RenderSimState renderSim)
    {
       this.simModel = simModel;
+      this.renderSim = renderSim;
+
       for(UAV uav : simModel.getUAVManager().getAllUAVs())
       {
          uavSelCB.addItem(uav.getID());
@@ -109,6 +109,13 @@ public class UAVViewPanel implements ISimStepListener
          @Override
          public void run()
          {
+            if(uav == null)
+            {
+               return;
+            }
+
+            renderSim.setSelectedUAV(selUAV);
+
             WorldPose pose = uav.getPathing().getPose();
             northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
             eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));

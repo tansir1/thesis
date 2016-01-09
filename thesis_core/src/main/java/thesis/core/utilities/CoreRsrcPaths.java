@@ -10,6 +10,7 @@ public class CoreRsrcPaths
 
 
 	public static String RED_STATIC_IMG_PATH = "thesis/core/redStatic16x16.png";
+	public static String GREEN_MOBILE_IMG_PATH = "thesis/core/greenMobile16x16.png";
 	public static String BLUE_MOBILE_IMG_PATH = "thesis/core/blueMobile16x16.png";
 	public static String RED_MOBILE_IMG_PATH = "thesis/core/redMobile16x16.png";
 	public static String HAVEN_IMG_PATH = "thesis/core/haven16x16.png";
