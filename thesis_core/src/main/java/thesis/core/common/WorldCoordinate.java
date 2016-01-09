@@ -203,13 +203,7 @@ public class WorldCoordinate
    @Override
    public String toString()
    {
-      StringBuilder sb = new StringBuilder();
-      sb.append("[N");
-      sb.append(north);
-      sb.append(", E");
-      sb.append(east);
-      sb.append("]");
-      return sb.toString();
+      return String.format("[N%.2fm, E%.2fm]", north, east);
    }
 
    @Override
