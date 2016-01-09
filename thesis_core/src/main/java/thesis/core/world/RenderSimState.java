@@ -79,11 +79,16 @@ public class RenderSimState
     */
    private int roadInterSectionSz;
 
+   private int selectedUAV;
+
    private BufferedImage rawHavenImg;
    private BufferedImage scaledHavenImg;
 
    private BufferedImage rawRedMobileImg;
    private BufferedImage scaledRedMobileImg;
+
+   private BufferedImage rawGreenMobileImg;
+   private BufferedImage scaledGreenMobileImg;
 
    private BufferedImage rawRedStaticImg;
    private BufferedImage scaledRedStaticImg;
@@ -117,8 +122,11 @@ public class RenderSimState
       sensorFOVStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
+      rawGreenMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.GREEN_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
+
+      selectedUAV = -1;
    }
 
    /**
@@ -152,6 +160,7 @@ public class RenderSimState
       sensorFOVStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
+      rawGreenMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.GREEN_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
    }
@@ -177,6 +186,11 @@ public class RenderSimState
       bounds.width = width;
       bounds.height = height;
       recomputeScalingSizes();
+   }
+
+   public void setSelectedUAV(int id)
+   {
+      this.selectedUAV = id;
    }
 
    /**
@@ -384,6 +398,12 @@ public class RenderSimState
          // Does this need scaling?
          scaledBlueMobileImg = rawBlueMobileImg;
       }
+
+      if (rawGreenMobileImg != null)
+      {
+         // Does this need scaling?
+         scaledGreenMobileImg = rawGreenMobileImg;
+      }
    }
 
    /**
@@ -575,7 +595,14 @@ public class RenderSimState
          double deg = uav.getPathing().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
-         g2d.drawImage(scaledBlueMobileImg, trans, null);
+         if(uav.getID() != selectedUAV)
+         {
+            g2d.drawImage(scaledBlueMobileImg, trans, null);
+         }
+         else
+         {
+            g2d.drawImage(scaledGreenMobileImg, trans, null);
+         }
       }
    }
 
