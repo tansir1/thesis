@@ -97,23 +97,6 @@ public class RenderableSimWorldPanel extends JPanel
 
 	}
 
-	// private void drawCoordinates(Graphics2D g2d)
-	// {
-	// if (mouseState.isMouseOverPanel())
-	// {
-	// int x = mouseState.getMouseX();
-	// int y = mouseState.getMouseY();
-	//
-	// WorldCoordinate wc = renderWorld.pixelsToWorldCoordinate(x, y);
-	// CellCoordinate cc = renderWorld.pixelsToCellCoordinate(x, y);
-	//
-	// String locationTxt = wc.toString() + " - " + cc.toString() + " - " +
-	// Integer.toString(x) + "," + Integer.toString(y);
-	// g2d.setColor(Color.YELLOW);
-	// g2d.drawString(locationTxt, 5, getHeight() - 10);
-	// }
-	// }
-
 	public RenderSimState getWorldRenderer()
 	{
 		return renderWorld;
