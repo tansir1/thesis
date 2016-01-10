@@ -424,9 +424,13 @@ public class RenderSimState
       // havens
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
-      for (WorldCoordinate wc : model.getWorld().getHavenLocations())
+
+      final List<WorldCoordinate> havenLocs = model.getWorld().getHavenLocations();
+      final int NUM_HAVENS = havenLocs.size();
+
+      for(int i = 0; i < NUM_HAVENS; ++i)
       {
-         worldCoordinateToPixels(wc, pixels);
+         worldCoordinateToPixels(havenLocs.get(i), pixels);
          g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }
@@ -440,8 +444,14 @@ public class RenderSimState
 
       final Point start = new Point(0, 0);
       final Point end = new Point(0, 0);
-      for (DirectedEdge<WorldCoordinate> edge : model.getWorld().getRoadNetwork().getEdges())
+
+      final List<DirectedEdge<WorldCoordinate>> edges = model.getWorld().getRoadNetwork().getEdges();
+      final int NUM_EDGES = edges.size();
+      DirectedEdge<WorldCoordinate> edge = null;
+      for(int i=0; i<NUM_EDGES; ++i)
       {
+         edge = edges.get(i);
+
          worldCoordinateToPixels(edge.getStartVertex().getUserData(), start);
          worldCoordinateToPixels(edge.getEndVertex().getUserData(), end);
 
@@ -529,8 +539,12 @@ public class RenderSimState
       final AffineTransform trans = new AffineTransform();
       final Point pixels = new Point(0,0);
 
-      for (Target tgt : model.getTargetManager().getAllTargets())
+      final List<Target> targets = model.getTargetManager().getAllTargets();
+      final int NUM_TARGETS = targets.size();
+      Target tgt = null;
+      for(int i=0; i<NUM_TARGETS; ++i)
       {
+         tgt = targets.get(i);
          trans.setToIdentity();
 
          wc.setCoordinate(tgt.getCoordinate());
@@ -582,8 +596,13 @@ public class RenderSimState
 
       final AffineTransform trans = new AffineTransform();
 
-      for (UAV uav : model.getUAVManager().getAllUAVs())
+      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
+      final int NUM_UAVS = uavs.size();
+      UAV uav = null;
+      for(int i=0; i<NUM_UAVS; ++i)
       {
+         uav = uavs.get(i);
+
          trans.setToIdentity();
 
          wc.setCoordinate(uav.getPathing().getCoordinate());
@@ -621,8 +640,13 @@ public class RenderSimState
       g2d.setStroke(historyStroke);
 
       List<WorldPose> history = new ArrayList<WorldPose>();
-      for (UAV uav : model.getUAVManager().getAllUAVs())
+
+      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
+      final int NUM_UAVS = uavs.size();
+      UAV uav = null;
+      for(int i=0; i<NUM_UAVS; ++i)
       {
+         uav = uavs.get(i);
          prevPix.setLocation(-1,-1);
 
          history.clear();
@@ -652,12 +676,22 @@ public class RenderSimState
       final int frustrumX[] = new int[5];
       final int frustrumY[] = new int[5];
 
-      for (UAV uav : model.getUAVManager().getAllUAVs())
+      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
+      final int NUM_UAVS = uavs.size();
+      UAV uav = null;
+      List<Sensor> sensors = null;
+      Sensor sensor = null;
+      for(int i=0; i<NUM_UAVS; ++i)
       {
+         uav = uavs.get(i);
          worldCoordinateToPixels(uav.getPathing().getCoordinate(), uavPix);
 
-         for(Sensor sensor : uav.getSensors().getSensors())
+         sensors = uav.getSensors().getSensors();
+         final int NUM_SENSORS = sensors.size();
+
+         for(int j = 0; j<NUM_SENSORS; ++j)
          {
+            sensor = sensors.get(j);
             final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
 
             //Line from UAV to center of FOV

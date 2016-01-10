@@ -1,7 +1,6 @@
 package thesis.core.entities.sensors;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
@@ -27,7 +26,7 @@ public class SensorGroup
 
    public List<Sensor> getSensors()
    {
-      return Collections.unmodifiableList(sensors);
+      return sensors;
    }
 
    public List<SensorDetections> stepSimulation(WorldCoordinate hostUAVLocation)

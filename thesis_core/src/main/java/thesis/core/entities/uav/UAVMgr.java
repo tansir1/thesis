@@ -1,8 +1,6 @@
 package thesis.core.entities.uav;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -87,12 +85,9 @@ public class UAVMgr
       }
    }
 
-   /**
-    * @return An unmodifiable view of all uavs in the simulation.
-    */
-   public Collection<UAV> getAllUAVs()
+   public List<UAV> getAllUAVs()
    {
-      return Collections.unmodifiableCollection(uavs);
+      return uavs;
    }
 
    /**
@@ -122,9 +117,10 @@ public class UAVMgr
     */
    public void stepSimulation()
    {
-      for (UAV uav : uavs)
+      final int NUM_UAVS = uavs.size();
+      for(int i=0; i<NUM_UAVS; ++i)
       {
-         uav.stepSimulation();
+         uavs.get(i).stepSimulation();
       }
    }
 
@@ -140,11 +136,12 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      for (UAV uav : uavs)
+      final int NUM_UAVS = uavs.size();
+      for(int i=0; i<NUM_UAVS; ++i)
       {
-         if (Math.abs(uav.getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
+         if (Math.abs(uavs.get(i).getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
          {
-            inRegion.add(uav);
+            inRegion.add(uavs.get(i));
          }
       }
 
@@ -165,12 +162,13 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      for (UAV uav : uavs)
+      final int NUM_UAVS = uavs.size();
+      for(int i=0; i<NUM_UAVS; ++i)
       {
-         if (Math.abs(uav.getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
-               && uav.getID() != excludeUAV)
+         if (Math.abs(uavs.get(i).getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
+               && uavs.get(i).getID() != excludeUAV)
          {
-            inRegion.add(uav);
+            inRegion.add(uavs.get(i));
          }
       }
 
