@@ -17,19 +17,19 @@ public class SimTime
     */
    public static long CURRENT_SIM_TIME_MS = 0;
 
-   private static long startTime = 0;
+   private static long wallTime = 0;
 
    /**
     * Increment the simulation time.
     */
    public static void stepSimulation()
    {
-      if(startTime == 0)
-      {
-         startTime = System.currentTimeMillis();
-      }
-
       CURRENT_SIM_TIME_MS += SIM_STEP_RATE_MS;
+   }
+
+   public static void incrementWallTime(long elapsed)
+   {
+      wallTime += elapsed;
    }
 
    /**
@@ -37,6 +37,6 @@ public class SimTime
     */
    public static long getWallTime()
    {
-      return System.currentTimeMillis() - startTime;
+      return wallTime;
    }
 }
