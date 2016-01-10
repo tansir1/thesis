@@ -154,13 +154,13 @@ public class SimModel
    {
       logger.trace("-------------------Simulation stepping.-----------------");
       SimTime.stepSimulation();
-      final long start = System.currentTimeMillis();
+      final long start = System.nanoTime() / 1000000;
 
       tgtMgr.stepSimulation();
       uavMgr.stepSimulation();
 
-      long elapsedWallTime = System.currentTimeMillis() - start;
-      SimTime.incrementWallTime(elapsedWallTime);
+      final long end = System.nanoTime() / 1000000;
+      SimTime.incrementWallTime(end - start);
 
       for(ISimStepListener listener : stepListeners)
       {
