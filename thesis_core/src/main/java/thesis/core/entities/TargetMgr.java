@@ -20,12 +20,12 @@ import thesis.core.utilities.LoggerIDs;
 public class TargetMgr
 {
    private Logger logger;
-   private List<Target> targets;
+   private Target[] targets;
 
    public TargetMgr()
    {
       logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
-      targets = new ArrayList<Target>();
+      targets = null;
    }
 
    /**
@@ -42,10 +42,14 @@ public class TargetMgr
    {
       logger.debug("Resetting Target Manager.");
 
-      targets.clear();
+      final int NUM_TARGETS = worldCfg.targetCfgs.size();
 
-      for (TargetEntityConfig tarEntCfg : worldCfg.targetCfgs)
+      targets = new Target[NUM_TARGETS];
+
+      TargetEntityConfig tarEntCfg = null;
+      for(int i=0; i<NUM_TARGETS; ++i)
       {
+         tarEntCfg = worldCfg.targetCfgs.get(i);
          TargetType type = entTypes.getTargetType(tarEntCfg.getTargetType());
          if (type != null)
          {
@@ -53,7 +57,7 @@ public class TargetMgr
                   worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
             tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
             tgt.setHeading(tarEntCfg.getOrientation());
-            targets.add(tgt);
+            targets[i]=tgt;
          }
          else
          {
@@ -62,7 +66,7 @@ public class TargetMgr
       }
    }
 
-   public List<Target> getAllTargets()
+   public Target[] getAllTargets()
    {
       return targets;
    }

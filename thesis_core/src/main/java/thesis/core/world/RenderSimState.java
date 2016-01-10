@@ -539,12 +539,12 @@ public class RenderSimState
       final AffineTransform trans = new AffineTransform();
       final Point pixels = new Point(0,0);
 
-      final List<Target> targets = model.getTargetManager().getAllTargets();
-      final int NUM_TARGETS = targets.size();
+      final Target[] targets = model.getTargetManager().getAllTargets();
+      final int NUM_TARGETS = targets.length;
       Target tgt = null;
       for(int i=0; i<NUM_TARGETS; ++i)
       {
-         tgt = targets.get(i);
+         tgt = targets[i];
          trans.setToIdentity();
 
          wc.setCoordinate(tgt.getCoordinate());
@@ -596,12 +596,11 @@ public class RenderSimState
 
       final AffineTransform trans = new AffineTransform();
 
-      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
-      final int NUM_UAVS = uavs.size();
+      final UAV[] uavs = model.getUAVManager().getAllUAVs();
       UAV uav = null;
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         uav = uavs.get(i);
+         uav = uavs[i];
 
          trans.setToIdentity();
 
@@ -641,12 +640,11 @@ public class RenderSimState
 
       List<WorldPose> history = new ArrayList<WorldPose>();
 
-      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
-      final int NUM_UAVS = uavs.size();
+      final UAV[] uavs = model.getUAVManager().getAllUAVs();
       UAV uav = null;
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         uav = uavs.get(i);
+         uav = uavs[i];
          prevPix.setLocation(-1,-1);
 
          history.clear();
@@ -676,14 +674,13 @@ public class RenderSimState
       final int frustrumX[] = new int[5];
       final int frustrumY[] = new int[5];
 
-      final List<UAV> uavs = model.getUAVManager().getAllUAVs();
-      final int NUM_UAVS = uavs.size();
+      final UAV[] uavs = model.getUAVManager().getAllUAVs();
       UAV uav = null;
       List<Sensor> sensors = null;
       Sensor sensor = null;
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         uav = uavs.get(i);
+         uav = uavs[i];
          worldCoordinateToPixels(uav.getPathing().getCoordinate(), uavPix);
 
          sensors = uav.getSensors().getSensors();

@@ -27,12 +27,12 @@ import thesis.core.utilities.LoggerIDs;
 public class UAVMgr
 {
    private Logger logger;
-   private List<UAV> uavs;
+   private UAV[] uavs;
 
    public UAVMgr()
    {
       logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
-      uavs = new ArrayList<UAV>();
+      uavs = null;
    }
 
    /**
@@ -49,11 +49,13 @@ public class UAVMgr
    {
       logger.debug("Resetting UAV Manager.");
 
-      uavs.clear();
+      final int NUM_UAVS = worldCfg.uavCfgs.size();
+      uavs = new UAV[NUM_UAVS];
+      UAVEntityConfig uavEntCfg = null;
 
-      int uavID = 0;
-      for (UAVEntityConfig uavEntCfg : worldCfg.uavCfgs)
+      for(int i=0; i<NUM_UAVS; ++i)
       {
+         uavEntCfg = worldCfg.uavCfgs.get(i);
          UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
          if (type != null)
          {
@@ -65,18 +67,16 @@ public class UAVMgr
                sensor.setAzimuth(uavEntCfg.getOrientation());
             }
 
-            final UAVComms comms = new UAVComms(uavID, this, randGen, commsCfg);
+            final UAVComms comms = new UAVComms(i, this, randGen, commsCfg);
 
-            final Pathing pathing = new Pathing(uavID, type);
+            final Pathing pathing = new Pathing(i, type);
             pathing.getCoordinate().setCoordinate(uavEntCfg.getLocation());
             pathing.setHeading(uavEntCfg.getOrientation());
 
-            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen, uavID);
+            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen, i);
 
-            final UAV uav = new UAV(type.getTypeID(), uavID, sensors, comms, pathing, logicMgr);
-            uavs.add(uav);
+            uavs[i]=new UAV(type.getTypeID(), i, sensors, comms, pathing, logicMgr);;
 
-            ++uavID;
          }
          else
          {
@@ -85,7 +85,7 @@ public class UAVMgr
       }
    }
 
-   public List<UAV> getAllUAVs()
+   public UAV[] getAllUAVs()
    {
       return uavs;
    }
@@ -117,10 +117,9 @@ public class UAVMgr
     */
    public void stepSimulation()
    {
-      final int NUM_UAVS = uavs.size();
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         uavs.get(i).stepSimulation();
+         uavs[i].stepSimulation();
       }
    }
 
@@ -136,12 +135,11 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      final int NUM_UAVS = uavs.size();
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         if (Math.abs(uavs.get(i).getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
+         if (Math.abs(uavs[i].getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
          {
-            inRegion.add(uavs.get(i));
+            inRegion.add(uavs[i]);
          }
       }
 
@@ -162,13 +160,12 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      final int NUM_UAVS = uavs.size();
-      for(int i=0; i<NUM_UAVS; ++i)
+      for(int i=0; i<uavs.length; ++i)
       {
-         if (Math.abs(uavs.get(i).getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
-               && uavs.get(i).getID() != excludeUAV)
+         if (Math.abs(uavs[i].getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
+               && uavs[i].getID() != excludeUAV)
          {
-            inRegion.add(uavs.get(i));
+            inRegion.add(uavs[i]);
          }
       }
 
