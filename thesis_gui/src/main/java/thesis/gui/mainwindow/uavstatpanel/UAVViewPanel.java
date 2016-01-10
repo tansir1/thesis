@@ -3,6 +3,8 @@ package thesis.gui.mainwindow.uavstatpanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -16,7 +18,7 @@ import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.entities.uav.UAV;
 import thesis.core.utilities.ISimStepListener;
-import thesis.core.world.RenderSimState;
+import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel implements ISimStepListener
 {
@@ -29,7 +31,7 @@ public class UAVViewPanel implements ISimStepListener
    private JLabel northLbl, eastLbl, hdgLbl;
 
    private long updateTimeAccumulator;
-   private RenderSimState renderSim;
+   private RenderableSimWorldPanel renderSim;
 
    public UAVViewPanel()
    {
@@ -43,6 +45,20 @@ public class UAVViewPanel implements ISimStepListener
       renderable.setPreferredSize(size);
 
       updateTimeAccumulator = 0;
+
+      uavSelCB.addItemListener(new ItemListener()
+      {
+
+         @Override
+         public void itemStateChanged(ItemEvent e)
+         {
+            update();
+            if(renderSim != null)
+            {
+               renderSim.repaint();
+            }
+         }
+      });
 
       buildGUI();
    }
@@ -75,7 +91,7 @@ public class UAVViewPanel implements ISimStepListener
       gbc.gridy++;
    }
 
-   public void connectSimModel(final SimModel simModel, RenderSimState renderSim)
+   public void connectSimModel(final SimModel simModel, RenderableSimWorldPanel renderSim)
    {
       this.simModel = simModel;
       this.renderSim = renderSim;
@@ -114,7 +130,7 @@ public class UAVViewPanel implements ISimStepListener
                return;
             }
 
-            renderSim.setSelectedUAV(selUAV);
+            renderSim.getWorldRenderer().setSelectedUAV(selUAV);
 
             WorldPose pose = uav.getPathing().getPose();
             northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
