@@ -1,8 +1,6 @@
 package thesis.core.entities;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -64,12 +62,9 @@ public class TargetMgr
       }
    }
 
-   /**
-    * @return An unmodifiable view of all targets in the simulation.
-    */
-   public Collection<Target> getAllTargets()
+   public List<Target> getAllTargets()
    {
-      return Collections.unmodifiableCollection(targets);
+      return targets;
    }
 
    /**

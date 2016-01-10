@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Set;
 
 /**
  * Generic graph data structure that can store arbitrary user data at its
@@ -18,14 +16,14 @@ import java.util.Set;
  */
 public class Graph<T>
 {
-   private Set<DirectedEdge<T>> edges;
+   private List<DirectedEdge<T>> edges;
    private HashMap<Integer, Vertex<T>> vertices;
    private int idCounter;
 
    public Graph()
    {
       idCounter = 0;
-      edges = new HashSet<DirectedEdge<T>>();
+      edges = new ArrayList<DirectedEdge<T>>();
       vertices = new HashMap<Integer, Vertex<T>>();
    }
 
@@ -115,13 +113,9 @@ public class Graph<T>
       return edges.size();
    }
 
-   /**
-    *
-    * @return An unmodifiable view of the edges in the graph.
-    */
-   public Set<DirectedEdge<T>> getEdges()
+   public List<DirectedEdge<T>> getEdges()
    {
-      return Collections.unmodifiableSet(edges);
+      return edges;
    }
 
    /**
