@@ -1,4 +1,4 @@
-package thesis.core.entities.sensors;
+package thesis.core.sensors;
 
 import java.util.List;
 

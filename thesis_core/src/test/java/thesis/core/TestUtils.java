@@ -6,8 +6,8 @@ import java.util.Random;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.entities.Weapon;
 import thesis.core.entities.WeaponType;
-import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.UAVType;
+import thesis.core.sensors.SensorType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.targets.TargetType;
 
