@@ -2,7 +2,7 @@ package thesis.core.entities.sensors;
 
 import java.util.List;
 
-import thesis.core.entities.Target;
+import thesis.core.targets.Target;
 
 public class SensorDetections
 {

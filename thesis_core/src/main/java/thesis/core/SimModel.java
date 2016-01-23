@@ -9,13 +9,13 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.SensorProbs;
 import thesis.core.entities.uav.UAV;
 import thesis.core.entities.uav.UAVMgr;
 import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.targets.TargetMgr;
 import thesis.core.utilities.ISimStepListener;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;

@@ -4,7 +4,7 @@ import thesis.core.common.Angle;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.TargetMgr;
+import thesis.core.targets.TargetMgr;
 
 public class Sensor
 {

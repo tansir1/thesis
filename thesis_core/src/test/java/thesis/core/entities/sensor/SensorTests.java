@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.Sensor;
 import thesis.core.entities.sensors.SensorType;
+import thesis.core.targets.TargetMgr;
 
 public class SensorTests
 {

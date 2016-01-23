@@ -12,12 +12,12 @@ import org.slf4j.LoggerFactory;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.graph.Graph;
 import thesis.core.common.graph.Vertex;
-import thesis.core.entities.TargetType;
 import thesis.core.entities.uav.UAVType;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.TargetEntityConfig;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.targets.TargetType;
 import thesis.core.utilities.LoggerIDs;
 
 public class WorldGenerator

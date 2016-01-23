@@ -1,4 +1,4 @@
-package thesis.core.entities;
+package thesis.core.targets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class Target
    /**
     * Meters/second
     */
-   private final double maxSpd;
+   private final float maxSpd;
 
    /**
     * The coordinate of the next location to traverse to in mobile targets
@@ -38,14 +38,9 @@ public class Target
     */
    private List<DirectedEdge<WorldCoordinate>> path;
 
-   public Target(TargetType type, Graph<WorldCoordinate> roadNet, List<WorldCoordinate> havens, Random randGen,
+   public Target(int tgtType, float tgtSpd, Graph<WorldCoordinate> roadNet, List<WorldCoordinate> havens, Random randGen,
          double worldW, double worldH)
    {
-      if (type == null)
-      {
-         throw new NullPointerException("type cannot be null.");
-      }
-
       if (roadNet == null)
       {
          throw new NullPointerException("Road network cannot be null.");
@@ -61,13 +56,13 @@ public class Target
          throw new NullPointerException("Random generator cannot be null.");
       }
 
-      this.type = type.getTypeID();
+      this.type = tgtType;
       this.roadNet = roadNet;
       this.havens = havens;
       this.randGen = randGen;
       this.worldH = worldH;
       this.worldW = worldW;
-      this.maxSpd = type.getMaxSpeed();
+      this.maxSpd = tgtSpd;
 
       pose = new WorldPose();
       // This arraylist gets garbage collected after the first simulation step

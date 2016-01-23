@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.TargetMgr;
+import thesis.core.targets.TargetMgr;
 
 public class SensorGroup
 {
