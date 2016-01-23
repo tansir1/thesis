@@ -11,10 +11,9 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldPose;
-import thesis.core.experimental.TargetTypeConfigs;
 import thesis.core.serialization.TargetEntitiesCfg;
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.world.World;
+import thesis.core.world.WorldGIS;
 
 /**
  * High level manager that maintains all targets in the simulation.
@@ -23,7 +22,7 @@ public class TargetMgr
 {
    private Logger logger;
    private Target[] targets;
-   private World world;//Used for coordinate conversions
+   private WorldGIS worldGIS;//Used for coordinate conversions
 
    public TargetMgr()
    {
@@ -41,9 +40,9 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, HavenRouting havenRouting, World world)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, HavenRouting havenRouting, WorldGIS worldGIS)
    {
-      this.world = world;
+      this.worldGIS = worldGIS;
 
       logger.debug("Resetting Target Manager.");
 
@@ -127,7 +126,7 @@ public class TargetMgr
       {
          for (Target tar : targets)
          {
-            world.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+            worldGIS.convertWorldToCell(tar.getCoordinate(), tgtTemp);
 
             if (tgtTemp.equals(searchCell))
             {
@@ -154,7 +153,7 @@ public class TargetMgr
 
       for (Target tar : targets)
       {
-         world.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+         worldGIS.convertWorldToCell(tar.getCoordinate(), tgtTemp);
 
          if (tgtTemp.equals(region))
          {

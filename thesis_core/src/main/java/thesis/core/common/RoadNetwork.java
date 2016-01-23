@@ -10,9 +10,13 @@ public class RoadNetwork
 {
    private boolean network[][];
 
+   private List<CellCoordinate> traversableCache;
+   private boolean dirtyCache;
+
    public RoadNetwork()
    {
-
+      dirtyCache = false;
+      traversableCache = new ArrayList<CellCoordinate>();
    }
 
    public void reset(int numRows, int numCols)
@@ -29,6 +33,7 @@ public class RoadNetwork
 
    public void setTraversable(int row, int col, boolean traversable)
    {
+      dirtyCache = true;
       network[row][col] = traversable;
    }
 
@@ -47,6 +52,26 @@ public class RoadNetwork
       return isTraversable(cell.getRow(), cell.getColumn());
    }
 
+   public List<CellCoordinate> getTraversableCells()
+   {
+      if(dirtyCache)
+      {
+         dirtyCache = false;
+         traversableCache.clear();
+
+         for(int i=0; i<network.length; ++i)
+         {
+            for(int j=0; j<network[i].length; ++j)
+            {
+               if(network[i][j])
+               {
+                  traversableCache.add(new CellCoordinate(i, j));
+               }
+            }
+         }
+      }
+      return traversableCache;
+   }
 
    public List<CellCoordinate> findPath(int startRow, int startCol, int endRow, int endCol)
    {

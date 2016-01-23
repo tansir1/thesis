@@ -3,8 +3,8 @@ package thesis.core.serialization.world;
 import java.util.ArrayList;
 import java.util.List;
 
+import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.common.graph.Graph;
 
 /**
  * Container for all of the configuration parameters necessary to initialize a
@@ -24,7 +24,7 @@ public class WorldConfig
    private int numRows;
    private int numCols;
 
-   private Graph<WorldCoordinate> roadNet;
+   private RoadNetwork roadNet;
 
    private List<WorldCoordinate> havens;
 
@@ -40,7 +40,7 @@ public class WorldConfig
       havens = new ArrayList<WorldCoordinate>();
       targetCfgs = new ArrayList<TargetEntityConfig>();
       uavCfgs = new ArrayList<UAVEntityConfig>();
-      roadNet = new Graph<WorldCoordinate>();
+      roadNet = new RoadNetwork();
    }
 
    /**
@@ -113,7 +113,7 @@ public class WorldConfig
       this.numRows = numRows;
    }
 
-   public Graph<WorldCoordinate> getRoadNetwork()
+   public RoadNetwork getRoadNetwork()
    {
       return roadNet;
    }
