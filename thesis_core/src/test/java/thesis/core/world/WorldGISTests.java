@@ -6,9 +6,8 @@ import org.junit.Test;
 
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.serialization.world.WorldConfig;
 
-public class WorldTests
+public class WorldGISTests
 {
 
    @Test
@@ -17,13 +16,7 @@ public class WorldTests
       final double oneHundredKM = 100000;
 
       //100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      WorldConfig cfg = new WorldConfig();
-      cfg.setNumColumns(10);
-      cfg.setNumRows(10);
-      cfg.setWorldHeight(oneHundredKM);
-      cfg.setWorldWidth(oneHundredKM);
-
-      World testMe = new World(cfg);
+      WorldGIS testMe = new WorldGIS(oneHundredKM, oneHundredKM, 10, 10);
 
       final double fifteenKM = 15000;
       final double thirtyFiveKM = 35000;
