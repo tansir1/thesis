@@ -2,18 +2,17 @@ package thesis.core.targets;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.HavenRouting;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldPose;
 import thesis.core.experimental.TargetTypeConfigs;
 import thesis.core.serialization.TargetEntitiesCfg;
-import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.World;
 
@@ -42,7 +41,7 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, WorldConfig worldCfg, Random randGen, World world)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, HavenRouting havenRouting, World world)
    {
       this.world = world;
 
@@ -61,8 +60,7 @@ public class TargetMgr
          {
             float tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
 
-            Target tgt = new Target(tgtType, tgtSpd, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
-                  worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
+            Target tgt = new Target(tgtType, tgtSpd, havenRouting);
             tgt.getCoordinate().setCoordinate(pose.getCoordinate());
             tgt.setHeading(pose.getHeading());
             targets[i]=tgt;
