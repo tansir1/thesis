@@ -12,6 +12,7 @@ public class TargetTypeConfigs
    {
       spds = new float[numTgtTypes];
       bestAngles = new float[numTgtTypes];
+      reset();
    }
 
    public void reset()
