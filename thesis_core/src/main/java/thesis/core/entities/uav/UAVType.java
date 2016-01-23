@@ -5,7 +5,7 @@ import java.util.Set;
 
 import thesis.core.common.SimTime;
 import thesis.core.entities.Weapon;
-import thesis.core.entities.sensors.SensorType;
+import thesis.core.sensors.SensorType;
 
 /**
  * Performance specification data for a specific type of UAV.

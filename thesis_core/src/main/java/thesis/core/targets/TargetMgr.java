@@ -8,11 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
+import thesis.core.common.CellCoordinate;
 import thesis.core.common.Rectangle;
+import thesis.core.common.WorldPose;
 import thesis.core.experimental.TargetTypeConfigs;
-import thesis.core.serialization.world.TargetEntityConfig;
+import thesis.core.serialization.TargetEntitiesCfg;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.world.World;
 
 /**
  * High level manager that maintains all targets in the simulation.
@@ -21,6 +24,7 @@ public class TargetMgr
 {
    private Logger logger;
    private Target[] targets;
+   private World world;//Used for coordinate conversions
 
    public TargetMgr()
    {
@@ -38,19 +42,20 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(TargetTypeConfigs tgtTypeCfgs, WorldConfig worldCfg, Random randGen)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, WorldConfig worldCfg, Random randGen, World world)
    {
+      this.world = world;
+
       logger.debug("Resetting Target Manager.");
 
-      final int NUM_TARGETS = worldCfg.targetCfgs.size();
+      final int NUM_TARGETS = tgtEntCfgs.getNumTargets();
 
       targets = new Target[NUM_TARGETS];
 
-      TargetEntityConfig tarEntCfg = null;
       for(int i=0; i<NUM_TARGETS; ++i)
       {
-         tarEntCfg = worldCfg.targetCfgs.get(i);
-         int tgtType = tarEntCfg.getTargetType();
+         int tgtType = tgtEntCfgs.getTargetType(i);
+         WorldPose pose = tgtEntCfgs.getTargetPose(i);
 
          if (tgtTypeCfgs.typeExists(tgtType))
          {
@@ -58,8 +63,8 @@ public class TargetMgr
 
             Target tgt = new Target(tgtType, tgtSpd, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
                   worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
-            tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
-            tgt.setHeading(tarEntCfg.getOrientation());
+            tgt.getCoordinate().setCoordinate(pose.getCoordinate());
+            tgt.setHeading(pose.getHeading());
             targets[i]=tgt;
          }
          else
@@ -104,6 +109,61 @@ public class TargetMgr
             inRegion.add(tar);
          }
       }
+      return inRegion;
+   }
+
+   /**
+    * Get all targets within the specified geographic region.
+    *
+    * @param region
+    *           Get all targets within this region.
+    * @return A list of targets in the region or an empty list if no targets are
+    *         within the region.
+    */
+   public List<Target> getTargetsInRegion(List<CellCoordinate> region)
+   {
+      List<Target> inRegion = new ArrayList<Target>();
+      CellCoordinate tgtTemp = new CellCoordinate();
+
+      for(CellCoordinate searchCell : region)
+      {
+         for (Target tar : targets)
+         {
+            world.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+
+            if (tgtTemp.equals(searchCell))
+            {
+               inRegion.add(tar);
+            }
+         }
+      }
+
+      return inRegion;
+   }
+
+   /**
+    * Get all targets within the specified geographic region.
+    *
+    * @param region
+    *           Get all targets within this region.
+    * @return A list of targets in the region or an empty list if no targets are
+    *         within the region.
+    */
+   public List<Target> getTargetsInRegion(CellCoordinate region)
+   {
+      List<Target> inRegion = new ArrayList<Target>();
+      CellCoordinate tgtTemp = new CellCoordinate();
+
+      for (Target tar : targets)
+      {
+         world.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+
+         if (tgtTemp.equals(region))
+         {
+            inRegion.add(tar);
+         }
+      }
+
       return inRegion;
    }
 }

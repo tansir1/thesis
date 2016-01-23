@@ -1,8 +1,11 @@
-package thesis.core.experimental;
+package thesis.core.sensors;
 
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
+import thesis.core.experimental.PayloadProbs;
+import thesis.core.experimental.WorldBelief;
+import thesis.core.targets.Target;
 import thesis.core.targets.TargetMgr;
 
 public class SensorScan
@@ -18,6 +21,12 @@ public class SensorScan
 
    public void simulateScan(WorldBelief belief, int snsrType, List<CellCoordinate> snsrFOV)
    {
-      //query tgt truth in the cells
+      final int NUM_COORDS = snsrFOV.size();
+      List<Target> tgtTruth = null;
+
+      for(int i=0; i<NUM_COORDS; ++i)
+      {
+         tgtTruth = tgtMgr.getTargetsInRegion(snsrFOV.get(i));
+      }
    }
 }

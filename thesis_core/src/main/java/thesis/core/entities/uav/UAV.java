@@ -4,10 +4,10 @@ import java.util.List;
 
 import thesis.core.common.WorldPose;
 import thesis.core.entities.belief.BeliefState;
-import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.uav.comms.Message;
 import thesis.core.entities.uav.comms.UAVComms;
 import thesis.core.entities.uav.logic.UAVLogicMgr;
+import thesis.core.sensors.SensorGroup;
 
 public class UAV
 {

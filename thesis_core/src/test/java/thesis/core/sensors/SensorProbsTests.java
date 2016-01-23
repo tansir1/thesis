@@ -1,11 +1,11 @@
-package thesis.core.entities.sensor;
+package thesis.core.sensors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import thesis.core.entities.sensors.SensorProbs;
+import thesis.core.sensors.SensorProbs;
 
 public class SensorProbsTests
 {

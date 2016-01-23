@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.belief.TargetBelief;
-import thesis.core.entities.sensors.SensorDetections;
-import thesis.core.entities.sensors.SensorProbs;
 import thesis.core.entities.uav.comms.BeliefStateMsg;
 import thesis.core.entities.uav.comms.Message;
+import thesis.core.sensors.SensorDetections;
+import thesis.core.sensors.SensorProbs;
 import thesis.core.targets.Target;
 import thesis.core.utilities.LoggerIDs;
 
