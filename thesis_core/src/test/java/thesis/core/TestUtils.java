@@ -9,7 +9,6 @@ import thesis.core.entities.WeaponType;
 import thesis.core.entities.uav.UAVType;
 import thesis.core.sensors.SensorType;
 import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.targets.TargetType;
 
 /**
  * A collection of utility functions for running unit tests.
@@ -68,18 +67,6 @@ public class TestUtils
       wt.setFov(rand.nextDouble() * 120 + 10);// min of 10 degree
 
       return wt;
-   }
-
-   /**
-    * Generates a random target type.
-    *
-    * @return A random target type.
-    */
-   public static TargetType randTargetType()
-   {
-      TargetType tt = new TargetType(rand.nextInt());
-      tt.setMaxSpeed(rand.nextDouble() * 5);
-      return tt;
    }
 
    /**

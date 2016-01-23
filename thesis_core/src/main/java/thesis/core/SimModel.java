@@ -20,6 +20,7 @@ import thesis.core.utilities.ISimStepListener;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.world.World;
+import thesis.core.world.WorldGIS;
 
 public class SimModel
 {
@@ -120,6 +121,11 @@ public class SimModel
    public World getWorld()
    {
       return world;
+   }
+
+   public WorldGIS getWorldGIS()
+   {
+      return world.getWorldGIS();
    }
 
    public TargetMgr getTargetManager()
