@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import thesis.core.common.WorldCoordinate;
+import thesis.core.common.CellCoordinate;
 
 /**
  * A naive KDTree implementation to partition the world space.
@@ -19,12 +19,12 @@ public class KDTree
 	 *            The world is partitioned based on these locations.
 	 * @return The root node of the generated tree.
 	 */
-	public static KDNode generateTree(List<WorldCoordinate> nodes)
+	public static KDNode generateTree(List<CellCoordinate> nodes)
 	{
 		return generateTree(nodes, 0);
 	}
 
-	private static KDNode generateTree(List<WorldCoordinate> nodes, int depth)
+	private static KDNode generateTree(List<CellCoordinate> nodes, int depth)
 	{
 		if (nodes.isEmpty())
 		{
@@ -38,7 +38,7 @@ public class KDTree
 
 		int median = nodes.size() / 2;
 
-		WorldCoordinate location = nodes.get(median);
+		CellCoordinate location = nodes.get(median);
 
 		KDNode leftChild = null;
 		KDNode rightChild = null;
@@ -52,7 +52,7 @@ public class KDTree
 		return new KDNode(location, leftChild, rightChild, axis == 0);
 	}
 
-	private static class CoordComparator implements Comparator<WorldCoordinate>
+	private static class CoordComparator implements Comparator<CellCoordinate>
 	{
 		private boolean sortVertically;
 
@@ -62,17 +62,17 @@ public class KDTree
 		}
 
 		@Override
-		public int compare(WorldCoordinate o1, WorldCoordinate o2)
+		public int compare(CellCoordinate o1, CellCoordinate o2)
 		{
 			int retVal = 0;
 
 			if (sortVertically)
 			{
-				if (o1.getNorth() < o2.getNorth())
+				if (o1.getRow() < o2.getRow())
 				{
 					retVal = -1;
 				}
-				else if (o1.getNorth() > o2.getNorth())
+				else if (o1.getRow() > o2.getRow())
 				{
 					retVal = 1;
 				}
@@ -83,11 +83,11 @@ public class KDTree
 			}
 			else
 			{
-				if (o1.getEast() < o2.getEast())
+				if (o1.getColumn() < o2.getColumn())
 				{
 					retVal = -1;
 				}
-				else if (o1.getEast() > o2.getEast())
+				else if (o1.getColumn() > o2.getColumn())
 				{
 					retVal = 1;
 				}

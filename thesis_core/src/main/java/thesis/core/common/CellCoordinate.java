@@ -31,7 +31,7 @@ public class CellCoordinate
 
    /**
     * Initialize a cell coordinate at the given location.
-    * 
+    *
     * @param row
     *           The number of rows above the origin.
     * @param col
@@ -45,7 +45,7 @@ public class CellCoordinate
 
    /**
     * Initialize a cell coordinate by cloning the given coordinate.
-    * 
+    *
     * @param wc
     *           Clone this coordinate.
     */
@@ -57,7 +57,7 @@ public class CellCoordinate
 
    /**
     * Get the row index above the world origin.
-    * 
+    *
     * @return Index of the row above the origin.
     */
    public int getRow()
@@ -67,7 +67,7 @@ public class CellCoordinate
 
    /**
     * Get the column index to the right of the world origin.
-    * 
+    *
     * @return Index of the column to the right of the origin.
     */
    public int getColumn()
@@ -77,7 +77,7 @@ public class CellCoordinate
 
    /**
     * Set the row index above the world origin.
-    * 
+    *
     * @param row
     *           Index of the row above the origin.
     */
@@ -88,7 +88,7 @@ public class CellCoordinate
 
    /**
     * Set the column index to the right of the world origin.
-    * 
+    *
     * @param col
     *           Index of the column to the right of the origin.
     */
@@ -99,7 +99,7 @@ public class CellCoordinate
 
    /**
     * Set the row and column indexes.
-    * 
+    *
     * @param row
     *           Row index above of the world origin.
     * @param col
@@ -110,22 +110,38 @@ public class CellCoordinate
       this.row = row;
       this.col = col;
    }
-   
+
    /**
     * Set the row and column indexes.
-    * 
+    *
     * @param copy
-    *           Copy the location from this parameter into the calling CellCoordinate.
+    *           Copy the location from this parameter into the calling
+    *           CellCoordinate.
     */
-   public void setCoordinate(CellCoordinate copy)
+   public void setCoordinate(final CellCoordinate copy)
    {
       this.row = copy.row;
       this.col = copy.col;
    }
 
    /**
+    * Computes the cartesian distance to the given cell from the invoking cell.
+    *
+    * @param other
+    *           Compute the distance to this cell.
+    * @return The cartesian distance between the cells.
+    */
+   public double distanceTo(final CellCoordinate other)
+   {
+      int dx = other.row - row;
+      int dy = other.col - col;
+
+      return Math.sqrt(dx * dx + dy * dy);
+   }
+
+   /**
     * Shift the current coordinate position by the specified amount.
-    * 
+    *
     * @param deltaRow
     *           Move the coordinate row index by this much.
     * @param deltaCol
@@ -151,7 +167,7 @@ public class CellCoordinate
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#hashCode()
     */
    @Override
@@ -166,7 +182,7 @@ public class CellCoordinate
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#equals(java.lang.Object)
     */
    @Override
