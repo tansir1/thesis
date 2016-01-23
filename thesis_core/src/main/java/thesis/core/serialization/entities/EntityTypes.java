@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import thesis.core.entities.TargetType;
 import thesis.core.entities.WeaponType;
 import thesis.core.entities.sensors.SensorProbs;
 import thesis.core.entities.sensors.SensorType;
 import thesis.core.entities.uav.UAVType;
+import thesis.core.targets.TargetType;
 
 public class EntityTypes
 {

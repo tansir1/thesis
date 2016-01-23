@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
-import thesis.core.entities.TargetMgr;
 import thesis.core.entities.sensors.Sensor;
 import thesis.core.entities.sensors.SensorGroup;
 import thesis.core.entities.sensors.SensorType;
@@ -19,6 +18,7 @@ import thesis.core.entities.uav.logic.UAVLogicMgr;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.targets.TargetMgr;
 import thesis.core.utilities.LoggerIDs;
 
 /**

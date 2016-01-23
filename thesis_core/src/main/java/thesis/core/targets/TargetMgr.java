@@ -1,4 +1,4 @@
-package thesis.core.entities;
+package thesis.core.targets;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.Rectangle;
-import thesis.core.serialization.entities.EntityTypes;
+import thesis.core.experimental.TargetTypeConfigs;
 import thesis.core.serialization.world.TargetEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -38,7 +38,7 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, WorldConfig worldCfg, Random randGen)
    {
       logger.debug("Resetting Target Manager.");
 
@@ -50,10 +50,13 @@ public class TargetMgr
       for(int i=0; i<NUM_TARGETS; ++i)
       {
          tarEntCfg = worldCfg.targetCfgs.get(i);
-         TargetType type = entTypes.getTargetType(tarEntCfg.getTargetType());
-         if (type != null)
+         int tgtType = tarEntCfg.getTargetType();
+
+         if (tgtTypeCfgs.typeExists(tgtType))
          {
-            Target tgt = new Target(type, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
+            float tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
+
+            Target tgt = new Target(tgtType, tgtSpd, worldCfg.getRoadNetwork(), worldCfg.getHavens(), randGen,
                   worldCfg.getWorldWidth(), worldCfg.getWorldHeight());
             tgt.getCoordinate().setCoordinate(tarEntCfg.getLocation());
             tgt.setHeading(tarEntCfg.getOrientation());
@@ -77,9 +80,9 @@ public class TargetMgr
     */
    public void stepSimulation()
    {
-      for (Target tgt : targets)
+      for(int i=0; i<targets.length; ++i)
       {
-         tgt.stepSimulation();
+         targets[i].stepSimulation();
       }
    }
 

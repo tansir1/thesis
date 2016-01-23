@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import thesis.core.TestUtils;
 import thesis.core.common.Circle;
-import thesis.core.entities.TargetMgr;
 import thesis.core.entities.uav.comms.CommsConfig;
 import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.UAVEntityConfig;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.targets.TargetMgr;
 
 public class UAVMgrTests
 {
