@@ -1,74 +1,36 @@
 package thesis.core.targets;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import thesis.core.SimModel;
+import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.common.graph.DirectedEdge;
-import thesis.core.common.graph.Graph;
-import thesis.core.common.graph.Vertex;
 
 public class Target
 {
-   private static final double PROB_TO_IGNORE_HAVEN = 0.2;
    private final int type;
    private final WorldPose pose;
-   private final Graph<WorldCoordinate> roadNet;
-   private final List<WorldCoordinate> havens;
-   private final Random randGen;
-   private final double worldW, worldH;
+
+   private WorldCoordinate destination;
+   private HavenRouting havenRouting;
+   private List<WorldCoordinate> havenPath;
 
    /**
     * Meters/second
     */
    private final float maxSpd;
 
-   /**
-    * The coordinate of the next location to traverse to in mobile targets
-    */
-   private WorldCoordinate intermediateCoordDest;
-
-   /**
-    * The path the target will follow along the road network to its final
-    * destination.
-    */
-   private List<DirectedEdge<WorldCoordinate>> path;
-
-   public Target(int tgtType, float tgtSpd, Graph<WorldCoordinate> roadNet, List<WorldCoordinate> havens, Random randGen,
-         double worldW, double worldH)
+   public Target(int tgtType, float tgtSpd, HavenRouting havenRouting)
    {
-      if (roadNet == null)
-      {
-         throw new NullPointerException("Road network cannot be null.");
-      }
-
-      if (havens == null)
-      {
-         throw new NullPointerException("Havens cannot be null.");
-      }
-
-      if (randGen == null)
-      {
-         throw new NullPointerException("Random generator cannot be null.");
-      }
-
       this.type = tgtType;
-      this.roadNet = roadNet;
-      this.havens = havens;
-      this.randGen = randGen;
-      this.worldH = worldH;
-      this.worldW = worldW;
       this.maxSpd = tgtSpd;
+      this.havenRouting = havenRouting;
 
       pose = new WorldPose();
-      // This arraylist gets garbage collected after the first simulation step
-      // It's only initialized to something to prevent having 'if(path == null)'
-      // checks everywhere. It's not actually used for anything useful.
-      path = new ArrayList<DirectedEdge<WorldCoordinate>>();
+      destination = new WorldCoordinate();
+
    }
 
    public int getType()
@@ -115,13 +77,15 @@ public class Target
     */
    public void stepSimulation()
    {
+      // TODO Add a time delay for mobile targets to sit inside of a haven
+
       if (isMobile())
       {
          if (isAtDestination())
          {
             selectNewDestination();
 
-            double newHdg = pose.getCoordinate().bearingTo(intermediateCoordDest);
+            double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
             pose.setHeading(newHdg);
          }
 
@@ -141,11 +105,11 @@ public class Target
    {
       boolean arrived = false;
 
-      if (intermediateCoordDest == null)
+      if (havenPath.isEmpty())
       {
          arrived = true;
       }
-      else if (pose.getCoordinate().distanceTo(intermediateCoordDest) < maxSpd)
+      else if (pose.getCoordinate().distanceTo(havenPath.get(0)) < maxSpd)
       {
          // If we're within one frame of the destination
          arrived = true;
@@ -156,87 +120,13 @@ public class Target
 
    private void selectNewDestination()
    {
-      if (path.isEmpty())
+      if (!havenPath.isEmpty())
       {
-         Vertex<WorldCoordinate> start = findNearestVertex(pose.getCoordinate());
-
-         // Select a new haven or road intersection if no havens are present
-         Vertex<WorldCoordinate> vert = selectNewHavenOrIntersection(start);
-         if (vert != null)
-         {
-            path = roadNet.findPath(start, vert);
-         }
+         havenPath.remove(0);
       }
-
-      // Path should be filled again if havens and/or roads exist
-      if (!path.isEmpty())
+      else
       {
-         DirectedEdge<WorldCoordinate> edge = path.remove(0);
-         intermediateCoordDest = edge.getEndVertex().getUserData();
+         havenRouting.selectNewHavenDestination(pose.getCoordinate(), destination, havenPath);
       }
-      else// No havens or roads in simulation, pick a random coordinate
-      {
-         intermediateCoordDest.setCoordinate(randGen.nextDouble() * worldH, randGen.nextDouble() * worldW);
-      }
-   }
-
-   private Vertex<WorldCoordinate> selectNewHavenOrIntersection(Vertex<WorldCoordinate> current)
-   {
-      boolean forceHavenIgnore = false;
-      if (randGen.nextDouble() < PROB_TO_IGNORE_HAVEN)
-      {
-         forceHavenIgnore = true;
-      }
-
-      Vertex<WorldCoordinate> vert = null;
-      if (havens.size() > 1 && !forceHavenIgnore)
-      {
-         do
-         {
-            // Select a new haven
-            vert = roadNet.getVertexByData(havens.get(randGen.nextInt(havens.size())));
-         } while (vert.getID() == current.getID());
-      }
-      else if (havens.size() == 1 && !forceHavenIgnore)
-      {
-         vert = roadNet.getVertexByData(havens.get(0));
-         if (vert.getID() == current.getID())
-         {
-            // Force another type of selection so the target doesn't go
-            // from the haven to the same haven
-            vert = null;
-         }
-      }
-
-      if (vert == null && roadNet.getNumVertices() > 0)
-      {
-         // No havens so pick a random road intersection
-         vert = roadNet.getVertexByID(randGen.nextInt(roadNet.getNumVertices()));
-      }
-
-      return vert;
-   }
-
-   private Vertex<WorldCoordinate> findNearestVertex(WorldCoordinate nearestTo)
-   {
-      Vertex<WorldCoordinate> nearestVert = null;
-      double distToNearestVert = 0;
-      for (Vertex<WorldCoordinate> vert : roadNet.getVertices())
-      {
-         double distToIterateVert = nearestTo.distanceTo(vert.getUserData());
-         distToIterateVert = Math.abs(distToIterateVert);
-
-         if (nearestVert == null)
-         {
-            nearestVert = vert;
-            distToNearestVert = distToIterateVert;
-         }
-         else if (distToIterateVert < distToNearestVert)
-         {
-            nearestVert = vert;
-            distToNearestVert = distToIterateVert;
-         }
-      }
-      return nearestVert;
    }
 }
