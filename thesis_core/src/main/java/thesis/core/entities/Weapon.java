@@ -73,7 +73,7 @@ public class Weapon
     *           Location of the target.
     * @return True if the target can be hit by the weapon, false otherwise.
     */
-   public boolean isInRange(WorldCoordinate wpnCoord, double wpnHdg, WorldCoordinate tarCoord)
+   public boolean isInRange(WorldCoordinate wpnCoord, float wpnHdg, WorldCoordinate tarCoord)
    {
       boolean inRange = false;
 
@@ -85,10 +85,10 @@ public class Weapon
       {
          //Computing angles is mathematically expensive, only do it if the range check passes first
 
-         double angToTar = wpnCoord.bearingTo(tarCoord);
+         float angToTar = wpnCoord.bearingTo(tarCoord);
 
-         double leftBnd = Angle.normalizeNegPiToPi(wpnHdg);
-         double rightBnd = Angle.normalizeNegPiToPi(wpnHdg);
+         float leftBnd = Angle.normalizeNegPiToPi(wpnHdg);
+         float rightBnd = Angle.normalizeNegPiToPi(wpnHdg);
 
          leftBnd -= FOV / 2;
          rightBnd += FOV / 2;

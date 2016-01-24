@@ -2,7 +2,7 @@ package thesis.core.serialization;
 
 import java.io.File;
 
-import thesis.core.EntityCfgs;
+import thesis.core.EntityTypeCfgs;
 
 public class ConfigLoader
 {
@@ -17,7 +17,7 @@ public class ConfigLoader
 
    }
 
-   public boolean loadConfigs(DBConnections dbConns, File cfgDir, EntityCfgs entCfgs)
+   public boolean loadConfigs(DBConnections dbConns, File cfgDir, EntityTypeCfgs entCfgs)
    {
       boolean success = true;
 

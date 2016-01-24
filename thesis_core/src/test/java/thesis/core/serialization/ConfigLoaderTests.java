@@ -6,7 +6,7 @@ import java.io.File;
 
 import org.junit.Test;
 
-import thesis.core.EntityCfgs;
+import thesis.core.EntityTypeCfgs;
 
 public class ConfigLoaderTests
 {
@@ -17,7 +17,7 @@ public class ConfigLoaderTests
       DBConnections dbConns = new DBConnections();
       assertTrue("Failed to open configuration db.", dbConns.openConfigDB());
 
-      EntityCfgs entCfgs = new EntityCfgs();
+      EntityTypeCfgs entCfgs = new EntityTypeCfgs();
 
       ConfigLoader testMe = new ConfigLoader();
 

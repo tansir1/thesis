@@ -24,7 +24,7 @@ public class Sensor
    /**
     * Max speed that the sensor can slew in degrees/frame.
     */
-   private final double MAX_SLEW_FRAME_RATE;
+   private final float MAX_SLEW_FRAME_RATE;
 
    private final TargetMgr tgtMgr;
 
@@ -35,11 +35,11 @@ public class Sensor
    private final Rectangle viewRegion;
 
 
-   public Sensor(SensorType type, TargetMgr tgtMgr)
+   public Sensor(int type, SensorTypeConfigs cfgs, TargetMgr tgtMgr)
    {
-      if (type == null)
+      if (cfgs == null)
       {
-         throw new NullPointerException("type cannot be null.");
+         throw new NullPointerException("Type configs cannot be null.");
       }
 
       if (tgtMgr == null)
@@ -47,7 +47,7 @@ public class Sensor
          throw new NullPointerException("Target manager cannot be null.");
       }
 
-      this.type = type.getTypeID();
+      this.type = type;
       this.tgtMgr = tgtMgr;
 
       pose = new WorldPose();
@@ -55,9 +55,9 @@ public class Sensor
       lookAtCur = new WorldCoordinate();
       viewRegion = new Rectangle();
 
-      MIN_RNG = type.getMinRange();
-      MAX_RNG = type.getMaxRange();
-      FOV = type.getFov();
+      MIN_RNG = cfgs.getMinRange(type);
+      MAX_RNG = cfgs.getMaxRange(type);
+      FOV = cfgs.getFOV(type);
       MAX_SLEW_FRAME_RATE = type.getMaxSlewFrameRate();
    }
 
@@ -83,7 +83,7 @@ public class Sensor
     *
     * @param azimuth The azimuth of the sensor in absolute world coordinates (degrees).
     */
-   public void setAzimuth(double azimuth)
+   public void setAzimuth(float azimuth)
    {
       pose.setHeading(azimuth);
    }
@@ -115,9 +115,9 @@ public class Sensor
 
    private void slew()
    {
-      double desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
+      float desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
 
-      double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
+      float lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
 
       //If the lookDelta < one frame's worth of slewing
       if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
@@ -127,7 +127,7 @@ public class Sensor
       }
       else
       {
-         double slew = 0;
+         float slew = 0;
          if(((lookDelta+360) % 360) > 180)
          {
             //turn left

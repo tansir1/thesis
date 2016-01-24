@@ -39,14 +39,14 @@ public class SensorTypeConfigs
       System.arraycopy(copy.slewRate, 0, slewRate, 0, numTgts);
    }
 
-   public void reset(int numTgtTypes)
+   public void reset(int numTypes)
    {
-      fov = new float[numTgtTypes];
-      minRng = new double[numTgtTypes];
-      maxRng = new double[numTgtTypes];
-      slewRate = new float[numTgtTypes];
+      fov = new float[numTypes];
+      minRng = new double[numTypes];
+      maxRng = new double[numTypes];
+      slewRate = new float[numTypes];
 
-      for(int i=0; i<numTgtTypes; ++i)
+      for(int i=0; i<numTypes; ++i)
       {
          fov[0] = -1f;
          minRng[0] = -1f;

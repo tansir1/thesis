@@ -13,6 +13,7 @@ import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorType;
 import thesis.core.targets.TargetTypeConfigs;
 
+@Deprecated
 public class EntityTypes
 {
    private List<SensorType> sensorTypes;

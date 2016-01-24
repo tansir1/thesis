@@ -9,7 +9,7 @@ public class UAVEntityConfig
 {
    private int type;
    private WorldCoordinate location;
-   private double orientation;
+   private float orientation;
 
    public UAVEntityConfig()
    {
@@ -33,12 +33,12 @@ public class UAVEntityConfig
       return location;
    }
 
-   public double getOrientation()
+   public float getOrientation()
    {
       return orientation;
    }
 
-   public void setOrientation(double angle)
+   public void setOrientation(float angle)
    {
       orientation = angle;
    }
