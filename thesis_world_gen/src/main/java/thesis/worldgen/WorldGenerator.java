@@ -136,7 +136,7 @@ public class WorldGenerator
 
          uavCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
          uavCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
-         uavCfg.setOrientation(randGen.nextDouble() * 360);
+         uavCfg.setOrientation(randGen.nextFloat() * 360);
 
          uavCfg.setUAVType(types.get(typeIndex).getTypeID());
 

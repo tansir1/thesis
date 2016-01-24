@@ -1,5 +1,7 @@
 package thesis.core.experimental;
 
+import thesis.core.common.CellCoordinate;
+
 public class WorldBelief
 {
    private CellBelief cells[][];
@@ -21,5 +23,14 @@ public class WorldBelief
 
    }
 
+   public CellBelief getCellBelief(CellCoordinate cell)
+   {
+      return getCellBelief(cell.getRow(), cell.getColumn());
+   }
+
+   public CellBelief getCellBelief(int row, int col)
+   {
+      return cells[row][col];
+   }
 
 }

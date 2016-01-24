@@ -56,12 +56,12 @@ public class Target
       return pose.getCoordinate();
    }
 
-   public double getHeading()
+   public float getHeading()
    {
       return pose.getHeading();
    }
 
-   public void setHeading(double hdg)
+   public void setHeading(float hdg)
    {
       pose.setHeading(hdg);
    }
@@ -85,7 +85,7 @@ public class Target
          {
             selectNewDestination();
 
-            double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
+            float newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
             pose.setHeading(newHdg);
          }
 

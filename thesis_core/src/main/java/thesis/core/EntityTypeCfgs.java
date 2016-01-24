@@ -6,7 +6,7 @@ import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.weapons.WeaponProbs;
 import thesis.core.weapons.WeaponTypeConfigs;
 
-public class EntityCfgs
+public class EntityTypeCfgs
 {
    private SensorTypeConfigs snsrTypeCfgs;
    private TargetTypeConfigs tgtTypeCfgs;
@@ -15,7 +15,7 @@ public class EntityCfgs
    private SensorProbs snsrProbs;
    private WeaponProbs wpnProbs;
 
-   public EntityCfgs()
+   public EntityTypeCfgs()
    {
       snsrTypeCfgs = new SensorTypeConfigs();
       tgtTypeCfgs = new TargetTypeConfigs();

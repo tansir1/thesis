@@ -23,6 +23,7 @@ public class TargetMgr
    private Logger logger;
    private Target[] targets;
    private WorldGIS worldGIS;//Used for coordinate conversions
+   private TargetTypeConfigs tgtTypeCfgs;
 
    public TargetMgr()
    {
@@ -43,6 +44,7 @@ public class TargetMgr
    public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, HavenRouting havenRouting, WorldGIS worldGIS)
    {
       this.worldGIS = worldGIS;
+      this.tgtTypeCfgs = tgtTypeCfgs;
 
       logger.debug("Resetting Target Manager.");
 
@@ -74,6 +76,11 @@ public class TargetMgr
    public Target[] getAllTargets()
    {
       return targets;
+   }
+
+   public TargetTypeConfigs getTypeConfigs()
+   {
+      return tgtTypeCfgs;
    }
 
    /**
