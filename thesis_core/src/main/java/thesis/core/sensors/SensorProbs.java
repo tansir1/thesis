@@ -1,88 +1,47 @@
 package thesis.core.sensors;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SensorProbs
 {
-   // A list is inefficient but good enough for this simulation's small number
-   // of permutations
-   private List<SensorToTargetProb> detectProbs;
-   private List<SensorToTargetProb> identProbs;
+   private float snsrDetect[][];
+   private float snsrConfirm[][];
 
    public SensorProbs()
    {
-      detectProbs = new ArrayList<SensorToTargetProb>();
-      identProbs = new ArrayList<SensorToTargetProb>();
+
    }
 
-   public void reset()
+   public void reset(int numSnsrTypes, int numTgtTypes)
    {
-      detectProbs.clear();
-      identProbs.clear();
-   }
+      snsrDetect = new float[numSnsrTypes][numTgtTypes];
+      snsrConfirm = new float[numSnsrTypes][numTgtTypes];
 
-   public void setDetectionProb(int sensorType, int targetType, float prob)
-   {
-      setProb(detectProbs, sensorType, targetType, prob);
-   }
-
-   public void setIdentificationProb(int sensorType, int targetType, float prob)
-   {
-      setProb(identProbs, sensorType, targetType, prob);
-   }
-
-   private void setProb(List<SensorToTargetProb> probs, int sensorType, int targetType, float prob)
-   {
-      boolean exists = false;
-      for (SensorToTargetProb stp : probs)
+      for(int i=0; i<snsrDetect.length; ++i)
       {
-         if (stp.sensorType == sensorType && stp.targetType == targetType)
+         for(int j=0; j<snsrDetect[i].length; ++j)
          {
-            stp.prob = prob;
-            exists = true;
-            break;
+            snsrDetect[i][j] = -1.0f;//-1 probability is used as an unset error flag
+            snsrConfirm[i][j] = -1.0f;
          }
       }
-
-      if (!exists)
-      {
-         SensorToTargetProb stp = new SensorToTargetProb();
-         stp.prob = prob;
-         stp.sensorType = sensorType;
-         stp.targetType = targetType;
-         probs.add(stp);
-      }
    }
 
-   public float getDetectionProb(int sensorType, int targetType)
+   public float getSensorDetectProb(int snsrType, int tgtType)
    {
-      return getProb(detectProbs, sensorType, targetType);
+      return snsrDetect[snsrType][tgtType];
    }
 
-   public float getIdentificationProb(int sensorType, int targetType)
+   public float getSensorConfirmProb(int snsrType, int tgtType)
    {
-      return getProb(identProbs, sensorType, targetType);
+      return snsrConfirm[snsrType][tgtType];
    }
 
-   private float getProb(List<SensorToTargetProb> probs, int sensorType, int targetType)
+   public void setSensorDetectProb(int snsrType, int tgtType, float prob)
    {
-      float prob = -1;
-      for (SensorToTargetProb stp : probs)
-      {
-         if (stp.sensorType == sensorType && stp.targetType == targetType)
-         {
-            prob = stp.prob;
-            break;
-         }
-      }
-      return prob;
+      snsrDetect[snsrType][tgtType] = prob;
    }
 
-   private static class SensorToTargetProb
+   public void setSensorConfirmProb(int snsrType, int tgtType, float prob)
    {
-      public int sensorType;
-      public int targetType;
-      public float prob;
+      snsrConfirm[snsrType][tgtType] = prob;
    }
 }

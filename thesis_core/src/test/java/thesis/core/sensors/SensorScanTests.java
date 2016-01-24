@@ -10,7 +10,7 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldPose;
-import thesis.core.experimental.PayloadProbs;
+import thesis.core.experimental.SensorProbs;
 import thesis.core.experimental.WorldBelief;
 import thesis.core.serialization.TargetEntitiesCfg;
 import thesis.core.targets.TargetMgr;
@@ -45,7 +45,7 @@ public class SensorScanTests
 
       //-------------Initialize world sim----------------------
       WorldBelief wb = new WorldBelief(numRows, numCols, numTgtTypes);
-      PayloadProbs pyldProb = new PayloadProbs(numSnsrTypes, numWpnTypes, numTgtTypes);
+      SensorProbs pyldProb = new SensorProbs(numSnsrTypes, numWpnTypes, numTgtTypes);
       TargetTypeConfigs tgtTypeCfgs = new TargetTypeConfigs(numTgtTypes);
       TargetEntitiesCfg tgtEntCfgs = new TargetEntitiesCfg();
       WorldGIS worldGIS = new WorldGIS(100, 100, numRows, numCols);
