@@ -47,11 +47,13 @@ public class ConfigLoader
 
       if (success)
       {
+         entCfgs.getSnsrProbs().reset(entCfgs.getSnsrTypeCfgs().getNumTypes(), entCfgs.getTgtTypeCfgs().getNumTypes());
          sensorProbsDAO.loadCSV(dbConns.getConfigDBConnection(), snsrTgtProbFile, entCfgs.getSnsrProbs());
       }
 
       if (success)
       {
+         entCfgs.getWpnProbs().reset(entCfgs.getWpnTypeCfgs().getNumTypes(), entCfgs.getTgtTypeCfgs().getNumTypes());
          wpnProbsDAO.loadCSV(dbConns.getConfigDBConnection(), wpnTgtProbFile, entCfgs.getWpnProbs());
       }
 
