@@ -9,8 +9,8 @@
       <WeaponType fov="52" maxRng="500" minRng="100" type="2"/>
    </WeaponTypes>
    <TargetTypes>
-      <TargetType maxSpd="0" type="1"/>
-      <TargetType maxSpd="10" type="2"/>
+      <TargetType maxSpd="0" bestAngle="45" type="1"/>
+      <TargetType maxSpd="10" bestAngle="115" type="2"/>
    </TargetTypes>
    <UAVTypes>
       <UAVType maxSpd="15" turnRad="300" type="1">

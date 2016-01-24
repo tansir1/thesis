@@ -8,15 +8,25 @@ public class TargetTypeConfigs
    private float spds[];
    private float bestAngles[];
 
-   public TargetTypeConfigs(int numTgtTypes)
+   public TargetTypeConfigs()
+   {
+
+   }
+
+   public void copy(TargetTypeConfigs copy)
+   {
+      int numTgts = copy.spds.length;
+      reset(copy.spds.length);
+
+      System.arraycopy(copy.spds, 0, spds, 0, numTgts);
+      System.arraycopy(copy.bestAngles, 0, bestAngles, 0, numTgts);
+   }
+
+   public void reset(int numTgtTypes)
    {
       spds = new float[numTgtTypes];
       bestAngles = new float[numTgtTypes];
-      reset();
-   }
 
-   public void reset()
-   {
       for(int i=0; i<spds.length; ++i)
       {
          spds[i] = -1f;//Used to indicate a non-mobile target
@@ -43,6 +53,11 @@ public class TargetTypeConfigs
    public float getSpeed(int tgtType)
    {
       return spds[tgtType];
+   }
+
+   public int getNumTypes()
+   {
+      return spds.length;
    }
 
    public boolean isMobile(int tgtType)
