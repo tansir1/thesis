@@ -101,8 +101,8 @@ public class SimModel
       {
          WorldPose pose = new WorldPose();
 
-         double north = randGen.nextDouble() * world.getWidth();
-         double east = randGen.nextDouble() * world.getHeight();
+         double north = randGen.nextDouble() * world.getWorldGIS().getWidth();
+         double east = randGen.nextDouble() * world.getWorldGIS().getHeight();
 
          pose.getCoordinate().setCoordinate(north, east);
          pose.setHeading(randGen.nextInt(360));

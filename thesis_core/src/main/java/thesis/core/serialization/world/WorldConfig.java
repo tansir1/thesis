@@ -3,6 +3,7 @@ package thesis.core.serialization.world;
 import java.util.ArrayList;
 import java.util.List;
 
+import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
 
@@ -26,7 +27,7 @@ public class WorldConfig
 
    private RoadNetwork roadNet;
 
-   private List<WorldCoordinate> havens;
+   private List<CellCoordinate> havens;
 
    public List<TargetEntityConfig> targetCfgs;
 
@@ -37,7 +38,7 @@ public class WorldConfig
       this.width = 0;
       this.height = 0;
 
-      havens = new ArrayList<WorldCoordinate>();
+      havens = new ArrayList<CellCoordinate>();
       targetCfgs = new ArrayList<TargetEntityConfig>();
       uavCfgs = new ArrayList<UAVEntityConfig>();
       roadNet = new RoadNetwork();
@@ -118,7 +119,7 @@ public class WorldConfig
       return roadNet;
    }
 
-   public List<WorldCoordinate> getHavens()
+   public List<CellCoordinate> getHavens()
    {
       return havens;
    }

@@ -434,12 +434,12 @@ public class RenderSimState
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
 
-      final List<WorldCoordinate> havenLocs = model.getWorld().getHavenLocations();
+      final List<CellCoordinate> havenLocs = model.getWorld().getHavenLocations();
       final int NUM_HAVENS = havenLocs.size();
 
       for(int i = 0; i < NUM_HAVENS; ++i)
       {
-         worldCoordinateToPixels(havenLocs.get(i), pixels);
+         cellCoordinateToPixels(havenLocs.get(i), pixels);
          g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }

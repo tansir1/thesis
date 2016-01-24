@@ -2,8 +2,8 @@ package thesis.core.world;
 
 import java.util.List;
 
+import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
-import thesis.core.common.WorldCoordinate;
 import thesis.core.serialization.world.WorldConfig;
 
 public class World
@@ -11,7 +11,7 @@ public class World
    /**
     * The locations of all safe havens for targets.
     */
-   private List<WorldCoordinate> havens;
+   private List<CellCoordinate> havens;
 
    private RoadNetwork roadNet;
 
@@ -41,7 +41,7 @@ public class World
     *
     * @return The location of each haven.
     */
-   public List<WorldCoordinate> getHavenLocations()
+   public List<CellCoordinate> getHavenLocations()
    {
       return havens;
    }
