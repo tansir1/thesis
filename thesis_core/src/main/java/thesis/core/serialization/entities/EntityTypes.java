@@ -11,14 +11,14 @@ import thesis.core.entities.WeaponType;
 import thesis.core.entities.uav.UAVType;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorType;
-import thesis.core.targets.TargetType;
+import thesis.core.targets.TargetTypeConfigs;
 
 public class EntityTypes
 {
    private List<SensorType> sensorTypes;
    private List<WeaponType> weaponTypes;
    private Map<Integer, UAVType> uavTypes;
-   private Map<Integer, TargetType> targetTypes;
+   private TargetTypeConfigs targetTypes;
    private SensorProbs sensorProbs;
 
    public EntityTypes()
@@ -26,7 +26,7 @@ public class EntityTypes
       sensorTypes = new ArrayList<SensorType>();
       weaponTypes = new ArrayList<WeaponType>();
       uavTypes = new HashMap<Integer, UAVType>();
-      targetTypes = new HashMap<Integer, TargetType>();
+      targetTypes = new TargetTypeConfigs();
       sensorProbs = new SensorProbs();
    }
 
@@ -40,10 +40,7 @@ public class EntityTypes
          uavTypes.put(uavType.getTypeID(), uavType);
       }
 
-      for (TargetType tt : copy.targetTypes.values())
-      {
-         targetTypes.put(tt.getTypeID(), tt);
-      }
+      targetTypes.copy(copy.targetTypes);
    }
 
    /**
@@ -108,47 +105,10 @@ public class EntityTypes
       return Collections.unmodifiableCollection(uavTypes.values());
    }
 
-   /**
-    * Retrieve a specific target type.
-    *
-    * @param typeID
-    *           The ID of the type to retrieve.
-    * @return The requested target type or null if no such type exists.
-    */
-   public TargetType getTargetType(int typeID)
+   public TargetTypeConfigs getTargetTypes()
    {
-      return targetTypes.get(typeID);
+      return targetTypes;
    }
-
-   /**
-    * Store a new type of target.
-    *
-    * @param type
-    *           This data will be stored.
-    */
-   public void addTargetType(TargetType type)
-   {
-      targetTypes.put(type.getTypeID(), type);
-   }
-
-   /**
-    * Get an unmodifiable view of all the known target types.
-    *
-    * @return
-    */
-   public Collection<TargetType> getAllTargetTypes()
-   {
-      return Collections.unmodifiableCollection(targetTypes.values());
-   }
-
-   /**
-    * Get a modifiable list of all known target types.
-    *
-    * @return The list of known target types.
-    */
-   /*
-    * public List<TargetType> getTargetTypes() { return targetTypes; }
-    */
 
    /**
     * Retrieve the {@link SensorType} corresponding to the given type ID.

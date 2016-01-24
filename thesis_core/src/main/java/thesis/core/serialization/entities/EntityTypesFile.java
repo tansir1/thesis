@@ -30,7 +30,7 @@ import thesis.core.entities.WeaponType;
 import thesis.core.entities.uav.UAVType;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorType;
-import thesis.core.targets.TargetType;
+import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 
@@ -416,28 +416,33 @@ public class EntityTypesFile
    {
       NodeList nodeList = parentElem.getElementsByTagName("TargetType");
       final int numNodes = nodeList.getLength();
+
+      TargetTypeConfigs tgtTypeCfgs = entTypes.getTargetTypes();
+      tgtTypeCfgs.reset(numNodes);
+
       for (int i = 0; i < numNodes; ++i)
       {
          Element typeElem = (Element) nodeList.item(i);
 
          int type = Integer.parseInt(typeElem.getAttribute("type"));
-         double maxSpd = Double.parseDouble(typeElem.getAttribute("maxSpd"));
+         float maxSpd = Float.parseFloat(typeElem.getAttribute("maxSpd"));
+         float bestAngle = Float.parseFloat(typeElem.getAttribute("bestAngle"));
 
-         TargetType tt = new TargetType(type);
-         tt.setMaxSpeed(maxSpd);
-
-         entTypes.addTargetType(tt);
+         tgtTypeCfgs.setTargetData(type, maxSpd, bestAngle);
       }
    }
 
    private static Element encodeTargetTypes(EntityTypes entTypes, Document dom)
    {
       Element parentElem = dom.createElement("TargetTypes");
-      for (TargetType tt : entTypes.getAllTargetTypes())
+      TargetTypeConfigs tgtTypeCfgs = entTypes.getTargetTypes();
+      int NUM_TYPES = tgtTypeCfgs.getNumTypes();
+      for(int i=0; i<NUM_TYPES; ++i)
       {
          Element elem = dom.createElement("TargetType");
-         elem.setAttribute("type", Integer.toString(tt.getTypeID()));
-         elem.setAttribute("maxSpd", Double.toString(tt.getMaxSpeed()));
+         elem.setAttribute("type", Integer.toString(i));
+         elem.setAttribute("maxSpd", Float.toString(tgtTypeCfgs.getSpeed(i)));
+         elem.setAttribute("bestAngle", Float.toString(tgtTypeCfgs.getBestAngle(i)));
 
          parentElem.appendChild(elem);
       }
@@ -468,17 +473,19 @@ public class EntityTypesFile
       Element parentElem = dom.createElement("SensorProbs");
       SensorProbs probs = entTypes.getSensorProbabilities();
 
-      for (TargetType tt : entTypes.getAllTargetTypes())
+      TargetTypeConfigs tgtTypeCfgs = entTypes.getTargetTypes();
+      int NUM_TGT_TYPES = tgtTypeCfgs.getNumTypes();
+      for(int tgtTypeID=0; tgtTypeID<NUM_TGT_TYPES; ++tgtTypeID)
       {
          for(SensorType st : entTypes.getSensorTypes())
          {
-            float detect = probs.getDetectionProb(st.getTypeID(), tt.getTypeID());
-            float id = probs.getIdentificationProb(st.getTypeID(), tt.getTypeID());
+            float detect = probs.getDetectionProb(st.getTypeID(), tgtTypeID);
+            float id = probs.getIdentificationProb(st.getTypeID(), tgtTypeID);
 
             if(detect >= 0 && id >= 0)
             {
                Element elem = dom.createElement("SensorProb");
-               elem.setAttribute("tgtType", Integer.toString(tt.getTypeID()));
+               elem.setAttribute("tgtType", Integer.toString(tgtTypeID));
                elem.setAttribute("sensorType", Integer.toString(st.getTypeID()));
                elem.setAttribute("probDtct", Float.toString(detect));
                elem.setAttribute("probID", Float.toString(id));
