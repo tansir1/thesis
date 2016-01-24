@@ -2,16 +2,17 @@ package thesis.core.serialization;
 
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 import org.junit.Test;
 
+import thesis.core.targets.TargetTypeConfigs;
+
 public class DBConnectionTest
 {
-
+/*
    @Test
    public void connectionTest()
    {
@@ -20,7 +21,7 @@ public class DBConnectionTest
       {
          Class.forName("org.h2.Driver");
          Connection conn = DriverManager.
-             getConnection("jdbc:h2:~/test", "sa", "");
+             getConnection("jdbc:h2:./cfg", "sa", "");
 
          Statement stmt = conn.createStatement();
          ResultSet rs = stmt.executeQuery("SELECT * FROM TEST");
@@ -32,6 +33,29 @@ public class DBConnectionTest
          }
          rs.close();
          stmt.close();
+         conn.close();
+      }
+      catch (Exception e)
+      {
+         fail(e.getMessage());
+      }
+   }*/
+
+   @Test
+   public void stest2()
+   {
+
+
+      try
+      {
+         Class.forName("org.h2.Driver");
+         Connection conn = DriverManager.
+             getConnection("jdbc:h2:../config/cfg", "sa", "");
+
+         TargetTypeConfigs tgtTypeCfg = new TargetTypeConfigs();
+         TargetTypeConfigsDAO testMe = new TargetTypeConfigsDAO();
+         testMe.loadCSV(conn, new File("../config/targetTypes.csv"), tgtTypeCfg);
+
          conn.close();
       }
       catch (Exception e)
