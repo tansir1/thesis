@@ -73,7 +73,7 @@ public class SensorTypeConfigs
       return slewRate[snsrType];
    }
 
-   public int getSensorNumTypes()
+   public int getNumTypes()
    {
       return fov.length;
    }
