@@ -9,23 +9,24 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.weapons.WeaponTypeConfigs;
 
-public class TargetTypeConfigsDAO
+public class WeaponTypeConfigsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "target_type_cfgs";
-   private final String typeColName = "TargetType";
-   private final String angleColName = "BestAngle";
-   private final String spdColName = "MaxSpd";
+   private final String TBL_NAME = "weapon_types_cfg";
+   private final String typeColName = "WeaponType";
+   private final String fovColName = "fov";
+   private final String minRngColName = "minRng";
+   private final String maxRngColName = "maxRng";
 
-   public TargetTypeConfigsDAO()
+   public WeaponTypeConfigsDAO()
    {
 
    }
 
-   public boolean loadCSV(Connection dbCon, File csvFile, TargetTypeConfigs tgtTypeCfgs)
+   public boolean loadCSV(Connection dbCon, File csvFile, WeaponTypeConfigs wpnTypeCfgs)
    {
       boolean success = true;
       try
@@ -38,12 +39,14 @@ public class TargetTypeConfigsDAO
          initTblSQL.append("(");
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
-         initTblSQL.append(angleColName);
+         initTblSQL.append(fovColName);
          initTblSQL.append(" real not null,");
-         initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(minRngColName);
+         initTblSQL.append(" double not null,");
+         initTblSQL.append(maxRngColName);
+         initTblSQL.append(" double not null,");
          initTblSQL.append(") as select ");
-         initTblSQL.append(typeColName + "," + angleColName + "," + spdColName + " ");
+         initTblSQL.append(typeColName + "," + fovColName + "," + minRngColName + "," + maxRngColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -51,20 +54,21 @@ public class TargetTypeConfigsDAO
 
          ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
          rs.next();
-         int numTgtTypes = rs.getInt(1);
-         logger.info("Loading {} target types.", numTgtTypes);
+         int numWpnTypes = rs.getInt(1);
+         logger.info("Loading {} weapon types.", numWpnTypes);
          rs.close();
 
-         tgtTypeCfgs.reset(numTgtTypes);
+         wpnTypeCfgs.reset(numWpnTypes);
 
          rs = stmt.executeQuery("select * from " + TBL_NAME);
          while(rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float spd = rs.getFloat(spdColName);
-            float angle = rs.getFloat(angleColName);
+            float fov = rs.getFloat(fovColName);
+            double minRng = rs.getDouble(minRngColName);
+            double maxRng = rs.getDouble(maxRngColName);
 
-            tgtTypeCfgs.setTargetData(typeID, spd, angle);
+            wpnTypeCfgs.setWeaponData(typeID, fov, minRng, maxRng);
          }
          rs.close();
 
@@ -72,7 +76,7 @@ public class TargetTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load target type configs. Details: {}", e.getMessage());
+         logger.error("Failed to load weapon type configs. Details: {}", e.getMessage());
          success = false;
       }
       return success;
