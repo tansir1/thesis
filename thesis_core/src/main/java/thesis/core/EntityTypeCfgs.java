@@ -1,5 +1,6 @@
 package thesis.core;
 
+import thesis.core.entities.uav.UAVTypeConfigs;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorTypeConfigs;
 import thesis.core.targets.TargetTypeConfigs;
@@ -11,6 +12,7 @@ public class EntityTypeCfgs
    private SensorTypeConfigs snsrTypeCfgs;
    private TargetTypeConfigs tgtTypeCfgs;
    private WeaponTypeConfigs wpnTypeCfgs;
+   private UAVTypeConfigs uavTypeCfgs;
 
    private SensorProbs snsrProbs;
    private WeaponProbs wpnProbs;
@@ -20,6 +22,7 @@ public class EntityTypeCfgs
       snsrTypeCfgs = new SensorTypeConfigs();
       tgtTypeCfgs = new TargetTypeConfigs();
       wpnTypeCfgs = new WeaponTypeConfigs();
+      uavTypeCfgs = new UAVTypeConfigs();
 
       snsrProbs = new SensorProbs();
       wpnProbs = new WeaponProbs();
@@ -38,6 +41,11 @@ public class EntityTypeCfgs
    public WeaponTypeConfigs getWpnTypeCfgs()
    {
       return wpnTypeCfgs;
+   }
+
+   public UAVTypeConfigs getUAVTypeCfgs()
+   {
+      return uavTypeCfgs;
    }
 
    public SensorProbs getSnsrProbs()
