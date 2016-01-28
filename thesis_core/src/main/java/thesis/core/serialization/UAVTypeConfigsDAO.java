@@ -9,7 +9,7 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.entities.uav.UAVTypeConfigs;
+import thesis.core.uav.UAVTypeConfigs;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAVTypeConfigsDAO
