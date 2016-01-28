@@ -9,22 +9,23 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.uav.UAVSensorCfgs;
+import thesis.core.uav.UAVWeaponCfgs;
 import thesis.core.utilities.LoggerIDs;
 
-public class UAVSensorCfgsDAO
+public class UAVWeaponCfgsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "uav_sensors_cfg";
+   private final String TBL_NAME = "uav_weapons_cfg";
    private final String uavTypeColName = "UAVType";
-   private final String snsrTypeColName = "SensorType";
+   private final String wpnTypeColName = "WeaponType";
+   private final String initQtyTypeColName = "InitQty";
 
-   public UAVSensorCfgsDAO()
+   public UAVWeaponCfgsDAO()
    {
 
    }
 
-   public boolean loadCSV(Connection dbCon, File csvFile, UAVSensorCfgs typeCfgs)
+   public boolean loadCSV(Connection dbCon, File csvFile, UAVWeaponCfgs typeCfgs)
    {
       boolean success = true;
       try
@@ -37,10 +38,12 @@ public class UAVSensorCfgsDAO
          initTblSQL.append("(");
          initTblSQL.append(uavTypeColName);
          initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(snsrTypeColName);
+         initTblSQL.append(wpnTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(initQtyTypeColName);
          initTblSQL.append(" tinyint not null");
          initTblSQL.append(") as select ");
-         initTblSQL.append(uavTypeColName + "," + snsrTypeColName + " ");
+         initTblSQL.append(uavTypeColName + "," + wpnTypeColName + "," + initQtyTypeColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -50,9 +53,10 @@ public class UAVSensorCfgsDAO
          while (rs.next())
          {
             int uavID = rs.getInt(uavTypeColName);
-            int snsrID = rs.getInt(snsrTypeColName);
+            int wpnID = rs.getInt(wpnTypeColName);
+            int initQty = rs.getInt(initQtyTypeColName);
 
-            typeCfgs.addSensorToUAV(uavID, snsrID);
+            typeCfgs.addWeaponToUAV(uavID, wpnID, initQty);
          }
          rs.close();
 
@@ -60,7 +64,7 @@ public class UAVSensorCfgsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load UAV/Sensor loadout configs. Details: {}", e.getMessage());
+         logger.error("Failed to load uav/weapon loadout configs. Details: {}", e.getMessage());
          success = false;
       }
       return success;
