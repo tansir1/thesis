@@ -15,5 +15,9 @@ public class DBConnectionsTests
       assertTrue("Failed to open config db.", testMe.openConfigDB());
       assertNotNull("Got a null config db connection.", testMe.getConfigDBConnection());
       testMe.closeConfigDB();
+
+      assertTrue("Failed to open worlds db.", testMe.openWorldsDB());
+      assertNotNull("Got a null world db connection.", testMe.getWorldsDBConnection());
+      testMe.closeWorldsDB();
    }
 }

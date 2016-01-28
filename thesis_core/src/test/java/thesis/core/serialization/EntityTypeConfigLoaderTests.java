@@ -23,5 +23,6 @@ public class EntityTypeConfigLoaderTests
 
       assertTrue("Failed to load entity configurations.",
             testMe.loadConfigs(dbConns, new File("./testConfigs"), entCfgs));
+      dbConns.closeConfigDB();
    }
 }
