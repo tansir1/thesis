@@ -15,6 +15,7 @@ public class ConfigLoader
    private final String wpnTargetProbCSV = "weaponTargetProb.csv";
    private final String uavSnsrCSV = "uavSensorMap.csv";
    private final String uavWpnsCSV = "uavWeaponMap.csv";
+   private final String snsrMisclassCSV = "sensorMisclass.csv";
 
    public ConfigLoader()
    {
@@ -33,6 +34,7 @@ public class ConfigLoader
       File wpnTgtProbFile = new File(cfgDir, wpnTargetProbCSV);
       File uavSnsrFile = new File(cfgDir, uavSnsrCSV);
       File uavWpnsFile = new File(cfgDir, uavWpnsCSV);
+      File snsrMisclassFile = new File(cfgDir, snsrMisclassCSV);
 
       SensorTypeConfigsDAO snsrTypeCfgsDAO = new SensorTypeConfigsDAO();
       TargetTypeConfigsDAO tgtTypeCfgsDAO = new TargetTypeConfigsDAO();
@@ -42,6 +44,7 @@ public class ConfigLoader
       WeaponProbsDAO wpnProbsDAO = new WeaponProbsDAO();
       UAVSensorCfgsDAO uavSnsrCfgsDAO = new UAVSensorCfgsDAO();
       UAVWeaponCfgsDAO uavWpnsCfgsDAO = new UAVWeaponCfgsDAO();
+      SensorMisclassifyProbsDAO snsrMisclassDAO = new SensorMisclassifyProbsDAO();
 
       success = snsrTypeCfgsDAO.loadCSV(dbConns.getConfigDBConnection(), snsrTypeFile, entCfgs.getSnsrTypeCfgs());
 
@@ -84,7 +87,10 @@ public class ConfigLoader
          uavWpnsCfgsDAO.loadCSV(dbConns.getConfigDBConnection(), uavWpnsFile, entCfgs.getUAVWeaponCfgs());
       }
 
-
+      if(success)
+      {
+         snsrMisclassDAO.loadCSV(dbConns.getConfigDBConnection(), snsrMisclassFile, entCfgs.getSnsrProbs());
+      }
 
       return success;
    }

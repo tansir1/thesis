@@ -6,6 +6,8 @@ public class SensorProbs
    private float snsrConfirm[][];
    private float snsrHdgCoef[][];
 
+   private float snsrMisClass[][][];
+
    public SensorProbs()
    {
 
@@ -16,6 +18,7 @@ public class SensorProbs
       snsrDetect = new float[numSnsrTypes][numTgtTypes];
       snsrConfirm = new float[numSnsrTypes][numTgtTypes];
       snsrHdgCoef = new float[numSnsrTypes][numTgtTypes];
+      snsrMisClass = new float[numSnsrTypes][numTgtTypes][numTgtTypes];
 
       for(int i=0; i<snsrDetect.length; ++i)
       {
@@ -24,6 +27,12 @@ public class SensorProbs
             snsrDetect[i][j] = -1.0f;//-1 probability is used as an unset error flag
             snsrConfirm[i][j] = -1.0f;
             snsrHdgCoef[i][j] = -1.0f;
+
+            snsrMisClass[i][j] = new float[numTgtTypes];
+            for(int k=0; k<numTgtTypes; ++k)
+            {
+               snsrMisClass[i][j][k] = -1.0f;
+            }
          }
       }
    }
@@ -36,6 +45,11 @@ public class SensorProbs
    public float getSensorConfirmProb(int snsrType, int tgtType)
    {
       return snsrConfirm[snsrType][tgtType];
+   }
+
+   public float getSensorMisclassifyProb(int snsrType, int detectType, int misclassifyType)
+   {
+      return snsrMisClass[snsrType][detectType][misclassifyType];
    }
 
    public float getSensorHeadingCoeff(int snsrType, int tgtType)
@@ -56,5 +70,10 @@ public class SensorProbs
    public void setSensorHeadingCoeff(int snsrType, int tgtType, float coeff)
    {
       snsrHdgCoef[snsrType][tgtType] = coeff;
+   }
+
+   public void setSensorMisclassifyProb(int snsrType, int detectTgtType, int misclassTgtType, float prob)
+   {
+      snsrMisClass[snsrType][detectTgtType][misclassTgtType] = prob;
    }
 }
