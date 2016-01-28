@@ -9,6 +9,7 @@ public class ConfigLoader
    private final String snsrTypeCSV = "sensorTypes.csv";
    private final String targetTypeCSV = "targetTypes.csv";
    private final String wpnTypeCSV = "weaponTypes.csv";
+   private final String uavTypeCSV = "uavTypes.csv";
    private final String snsrTargetProbCSV = "sensorTargetProb.csv";
    private final String wpnTargetProbCSV = "weaponTargetProb.csv";
 
@@ -24,12 +25,14 @@ public class ConfigLoader
       File snsrTypeFile = new File(cfgDir, snsrTypeCSV);
       File tgtTypeFile = new File(cfgDir, targetTypeCSV);
       File wpnTypeFile = new File(cfgDir, wpnTypeCSV);
+      File uavTypeFile = new File(cfgDir, uavTypeCSV);
       File snsrTgtProbFile = new File(cfgDir, snsrTargetProbCSV);
       File wpnTgtProbFile = new File(cfgDir, wpnTargetProbCSV);
 
       SensorTypeConfigsDAO snsrTypeCfgsDAO = new SensorTypeConfigsDAO();
       TargetTypeConfigsDAO tgtTypeCfgsDAO = new TargetTypeConfigsDAO();
       WeaponTypeConfigsDAO wpnTypesCfgsDAO = new WeaponTypeConfigsDAO();
+      UAVTypeConfigsDAO uavTypeCfgsDAO = new UAVTypeConfigsDAO();
       SensorProbsDAO sensorProbsDAO = new SensorProbsDAO();
       WeaponProbsDAO wpnProbsDAO = new WeaponProbsDAO();
 
@@ -45,16 +48,21 @@ public class ConfigLoader
          wpnTypesCfgsDAO.loadCSV(dbConns.getConfigDBConnection(), wpnTypeFile, entCfgs.getWpnTypeCfgs());
       }
 
+      if(success)
+      {
+         uavTypeCfgsDAO.loadCSV(dbConns.getConfigDBConnection(), uavTypeFile, entCfgs.getUAVTypeCfgs());
+      }
+
       if (success)
       {
          entCfgs.getSnsrProbs().reset(entCfgs.getSnsrTypeCfgs().getNumTypes(), entCfgs.getTgtTypeCfgs().getNumTypes());
-         sensorProbsDAO.loadCSV(dbConns.getConfigDBConnection(), snsrTgtProbFile, entCfgs.getSnsrProbs());
+         success = sensorProbsDAO.loadCSV(dbConns.getConfigDBConnection(), snsrTgtProbFile, entCfgs.getSnsrProbs());
       }
 
       if (success)
       {
          entCfgs.getWpnProbs().reset(entCfgs.getWpnTypeCfgs().getNumTypes(), entCfgs.getTgtTypeCfgs().getNumTypes());
-         wpnProbsDAO.loadCSV(dbConns.getConfigDBConnection(), wpnTgtProbFile, entCfgs.getWpnProbs());
+         success = wpnProbsDAO.loadCSV(dbConns.getConfigDBConnection(), wpnTgtProbFile, entCfgs.getWpnProbs());
       }
 
       return success;
