@@ -1,10 +1,10 @@
 package thesis.core.world;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
-import thesis.core.serialization.world.WorldConfig;
 
 public class World
 {
@@ -17,23 +17,11 @@ public class World
 
    private WorldGIS worldGIS;
 
-   /**
-    *
-    * @param cfg
-    *           Configuration data describing the world.
-    */
-   public World(WorldConfig cfg)
+   public World()
    {
-      if (cfg == null)
-      {
-         throw new NullPointerException("World configuration data cannot be null.");
-      }
-
-      worldGIS = new WorldGIS(cfg.getWorldWidth(), cfg.getWorldHeight(), cfg.getNumRows(), cfg.getNumColumns());
-
-      roadNet = cfg.getRoadNetwork();
-
-      havens = cfg.getHavens();
+      worldGIS = new WorldGIS();
+      roadNet = new RoadNetwork();
+      havens = new ArrayList<CellCoordinate>();
    }
 
    /**

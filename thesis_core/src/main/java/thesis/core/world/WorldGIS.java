@@ -39,13 +39,18 @@ public class WorldGIS
     */
    private double distPerCol;
 
+   public WorldGIS()
+   {
+
+   }
+
    /**
     * @param width Width of the world in meters.
     * @param height Height of the world in meters.
     * @param numRows Tessellate the world into this many rows.
     * @param numCols Tessellate the world into this many columns.
     */
-   public WorldGIS(double width, double height, int numRows, int numCols)
+   public void reset(double width, double height, int numRows, int numCols)
    {
       this.width = width;
       this.height = height;
