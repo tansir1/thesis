@@ -4,7 +4,7 @@ import java.io.File;
 
 import thesis.core.EntityTypeCfgs;
 
-public class ConfigLoader
+public class EntityTypeConfigLoader
 {
    private final String snsrTypeCSV = "sensorTypes.csv";
    private final String targetTypeCSV = "targetTypes.csv";
@@ -17,7 +17,7 @@ public class ConfigLoader
    private final String uavWpnsCSV = "uavWeaponMap.csv";
    private final String snsrMisclassCSV = "sensorMisclass.csv";
 
-   public ConfigLoader()
+   public EntityTypeConfigLoader()
    {
 
    }

@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import thesis.core.EntityTypeCfgs;
 
-public class ConfigLoaderTests
+public class EntityTypeConfigLoaderTests
 {
 
    @Test
@@ -19,7 +19,7 @@ public class ConfigLoaderTests
 
       EntityTypeCfgs entCfgs = new EntityTypeCfgs();
 
-      ConfigLoader testMe = new ConfigLoader();
+      EntityTypeConfigLoader testMe = new EntityTypeConfigLoader();
 
       assertTrue("Failed to load entity configurations.",
             testMe.loadConfigs(dbConns, new File("./testConfigs"), entCfgs));
