@@ -45,7 +45,7 @@ public class SensorProbsDAO
          initTblSQL.append(probDetectColName);
          initTblSQL.append(" real not null,");
          initTblSQL.append(probConfirmColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" real not null,");
          initTblSQL.append(hdgCoefColName);
          initTblSQL.append(" real not null");
          initTblSQL.append(") as select ");
