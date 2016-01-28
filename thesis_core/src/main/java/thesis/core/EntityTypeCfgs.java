@@ -1,9 +1,9 @@
 package thesis.core;
 
-import thesis.core.entities.uav.UAVTypeConfigs;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorTypeConfigs;
 import thesis.core.targets.TargetTypeConfigs;
+import thesis.core.uav.UAVTypeConfigs;
 import thesis.core.weapons.WeaponProbs;
 import thesis.core.weapons.WeaponTypeConfigs;
 
