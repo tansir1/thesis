@@ -33,6 +33,11 @@ public class UAVTypeConfigs
       }
    }
 
+   public int getNumTypes()
+   {
+      return spds.length;
+   }
+
    /**
     * @param type
     *           Type ID.
