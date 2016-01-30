@@ -5,11 +5,12 @@ import thesis.core.common.WorldCoordinate;
 /**
  * Configuration data required to initialize a UAV.
  */
+@Deprecated
 public class UAVEntityConfig
 {
    private int type;
    private WorldCoordinate location;
-   private double orientation;
+   private float orientation;
 
    public UAVEntityConfig()
    {
@@ -33,12 +34,12 @@ public class UAVEntityConfig
       return location;
    }
 
-   public double getOrientation()
+   public float getOrientation()
    {
       return orientation;
    }
 
-   public void setOrientation(double angle)
+   public void setOrientation(float angle)
    {
       orientation = angle;
    }

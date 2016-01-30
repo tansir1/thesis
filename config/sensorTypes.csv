@@ -1,0 +1,4 @@
+SensorType,fov,minRng,maxRng,slewRate
+0,22,1500,2000,5
+1,45,800,1000,10
+

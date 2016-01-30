@@ -9,9 +9,9 @@ public class Angle
     *           The angle to compute in degrees.
     * @return The normalized angle.
     */
-   public static double normalize360(double angle)
+   public static float normalize360(float angle)
    {
-      angle = angle % 360.0;// Java allows modulo with floating point
+      angle = angle % 360.0f;// Java allows modulo with floating point
       // values
       if (angle < 0)
       {
@@ -27,14 +27,14 @@ public class Angle
     *           The angle to compute in degrees.
     * @return The normalized angle.
     */
-   public static double normalizeNegPiToPi(double angle)
+   public static float normalizeNegPiToPi(float angle)
    {
-      angle = (angle + 180.0) % 360;
+      angle = (angle + 180.0f) % 360f;
       if (angle < 0)
       {
-         angle += 360.0;
+         angle += 360.0f;
       }
-      angle -= 180.0;
+      angle -= 180.0f;
       return angle;
    }
 
@@ -49,7 +49,7 @@ public class Angle
     *           The right angular bound (degrees).
     * @return True if the given angle is between the two bound angles.
     */
-   public static boolean isBetween(double angle, double leftBnd, double rightBnd)
+   public static boolean isBetween(float angle, float leftBnd, float rightBnd)
    {
       leftBnd = normalizeNegPiToPi(leftBnd);
       rightBnd = normalizeNegPiToPi(rightBnd);
@@ -57,7 +57,7 @@ public class Angle
       // Make sure the right bound is greater than the left bound
       if (leftBnd > rightBnd)
       {
-         double temp = leftBnd;
+         float temp = leftBnd;
          leftBnd = rightBnd;
          rightBnd = temp;
       }

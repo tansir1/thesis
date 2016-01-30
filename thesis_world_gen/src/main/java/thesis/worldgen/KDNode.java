@@ -1,15 +1,15 @@
 package thesis.worldgen;
 
-import thesis.core.common.WorldCoordinate;
+import thesis.core.common.CellCoordinate;
 
 public class KDNode
 {
-   private WorldCoordinate location;
+   private CellCoordinate location;
    private KDNode leftChild;
    private KDNode rightChild;
    private boolean isVerticalSplit;
 
-   public KDNode(WorldCoordinate location, KDNode leftChild, KDNode rightChild, boolean isVerticalSplit)
+   public KDNode(CellCoordinate location, KDNode leftChild, KDNode rightChild, boolean isVerticalSplit)
    {
       this.location = location;
       this.leftChild = leftChild;
@@ -17,7 +17,7 @@ public class KDNode
       this.isVerticalSplit = isVerticalSplit;
    }
 
-   public WorldCoordinate getLocation()
+   public CellCoordinate getLocation()
    {
       return location;
    }
@@ -31,7 +31,7 @@ public class KDNode
    {
       return rightChild;
    }
-   
+
    public boolean isVerticalSplit()
    {
       return isVerticalSplit;

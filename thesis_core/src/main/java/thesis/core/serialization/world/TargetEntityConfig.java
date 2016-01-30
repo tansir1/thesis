@@ -5,6 +5,7 @@ import thesis.core.common.WorldCoordinate;
 /**
  * Configuration data required to initialize a target.
  */
+@Deprecated
 public class TargetEntityConfig
 {
    private int type;

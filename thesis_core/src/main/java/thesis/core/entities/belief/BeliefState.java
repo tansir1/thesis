@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import thesis.core.common.SimTime;
-import thesis.core.entities.uav.comms.BeliefStateMsg;
-import thesis.core.entities.uav.comms.Message;
-import thesis.core.entities.uav.comms.UAVComms;
+import thesis.core.uav.comms.BeliefStateMsg;
+import thesis.core.uav.comms.Message;
+import thesis.core.uav.comms.UAVComms;
 
 /**
  * Overall container for everything that a UAV thinks it knows about the world.
