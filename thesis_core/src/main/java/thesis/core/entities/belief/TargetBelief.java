@@ -12,12 +12,14 @@ public class TargetBelief
    private final WorldPose pose;
    private final int type;
    private float confidence;
+   private boolean isMobile;
 
-   public TargetBelief(int type)
+   public TargetBelief(int type, boolean isMobile)
    {
       this.type = type;
       pose = new WorldPose();
       confidence = 0;
+      this.isMobile = isMobile;
    }
 
    public WorldPose getPose()
@@ -28,6 +30,11 @@ public class TargetBelief
    public int getType()
    {
       return type;
+   }
+
+   public boolean isMobile()
+   {
+      return isMobile;
    }
 
    /**
@@ -51,7 +58,7 @@ public class TargetBelief
 
    public void merge(TargetBelief other)
    {
-      //Weight the confidences in order to merge belief values
+      // Weight the confidences in order to merge belief values
       final double totalConf = confidence + other.confidence;
       final double mergePercent = other.confidence / totalConf;
 
@@ -63,9 +70,9 @@ public class TargetBelief
       pose.getCoordinate().translateCart(-deltaNorth, -deltaEast);
 
       double deltaHdg = pose.getHeading() - other.getPose().getHeading();
-      //deltaHdg = Angle.normalize360(deltaHdg);
+      // deltaHdg = Angle.normalize360(deltaHdg);
       deltaHdg *= mergePercent;
       final double newHdg = pose.getHeading() - deltaHdg;
-      pose.setHeading(Angle.normalize360((float)newHdg));
+      pose.setHeading(Angle.normalize360((float) newHdg));
    }
 }

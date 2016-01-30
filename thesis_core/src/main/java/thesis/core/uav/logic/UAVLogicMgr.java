@@ -83,7 +83,7 @@ public class UAVLogicMgr
             float idProb = sensorProbs.getSensorConfirmProb(sd.getSensorType(), tgt.getType());
             // TODO Need to add probabilities of detection.
             // For now 100% detection to test sensor update logic and beliefs
-            TargetBelief tb = new TargetBelief(tgt.getType());
+            TargetBelief tb = new TargetBelief(tgt.getType(), false);
             tb.getPose().copy(tgt.getPose());
             tgtBeliefs.add(tb);
          }

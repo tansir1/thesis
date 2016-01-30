@@ -10,8 +10,8 @@ public class TargetBeliefTests
    @Test
    public void mergeTest()
    {
-      TargetBelief tb1 = new TargetBelief(1);
-      TargetBelief tb2 = new TargetBelief(1);
+      TargetBelief tb1 = new TargetBelief(1, false);
+      TargetBelief tb2 = new TargetBelief(1, false);
 
       //Low confidence
       tb1.setConfidence(0.4f);
