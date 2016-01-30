@@ -190,8 +190,18 @@ public class WorldGIS
          throw new NullPointerException("to cannot be null");
       }
 
-      double north = from.getRow() * distPerRow + (distPerRow * 0.5);
-      double east = from.getColumn() * distPerCol + (distPerCol * 0.5);
+      convertCellToWorld(from.getRow(), from.getColumn(), to);
+   }
+
+   public void convertCellToWorld(int fromRow, int fromCol, WorldCoordinate to)
+   {
+      if (to == null)
+      {
+         throw new NullPointerException("to cannot be null");
+      }
+
+      double north = fromRow * distPerRow + (distPerRow * 0.5);
+      double east = fromCol * distPerCol + (distPerCol * 0.5);
 
       to.setCoordinate(north, east);
    }
