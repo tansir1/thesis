@@ -30,6 +30,40 @@ public class SensorTypeConfigsDAO
       this.dbCon = dbCon;
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(typeColName);
+         initTblSQL.append(" tinyint primary key not null,");
+         initTblSQL.append(fovColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(minRngColName);
+         initTblSQL.append(" double not null,");
+         initTblSQL.append(maxRngColName);
+         initTblSQL.append(" double not null,");
+         initTblSQL.append(slewRtColName);
+         initTblSQL.append(" real not null");
+         initTblSQL.append(");");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create sensor types table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadCSV(Connection dbCon, File csvFile, SensorTypeConfigs snsrTypeCfgs)
    {
       boolean success = true;

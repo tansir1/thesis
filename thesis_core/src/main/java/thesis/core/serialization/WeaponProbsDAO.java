@@ -28,6 +28,36 @@ public class WeaponProbsDAO
       this.dbCon = dbCon;
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(wpnTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(tgtTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(probDestroyColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(")");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create weapon probabilities table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(WeaponProbs wpnProbs)
    {
       boolean success = true;

@@ -29,6 +29,34 @@ public class HavensDAO
       TBL_NAME = "havens_" + worldName + "_cfg";
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(rowsColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(colsColName);
+         initTblSQL.append(" int not null");
+         initTblSQL.append(");");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create haven configs table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(Havens havens)
    {
       boolean success = true;

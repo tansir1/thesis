@@ -30,6 +30,38 @@ public class WorldGISDAO
       TBL_NAME = "worldgis_" + worldName + "_cfg";
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(numRowsColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(numColsColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(widthColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(heightColName);
+         initTblSQL.append(" int not null");
+         initTblSQL.append(")");
+         stmt.execute(initTblSQL.toString());;
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create GIS configs table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(WorldGIS gis)
    {
       boolean success = true;

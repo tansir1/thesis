@@ -28,6 +28,36 @@ public class UAVTypeConfigsDAO
       this.dbCon = dbCon;
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(typeColName);
+         initTblSQL.append(" tinyint primary key not null,");
+         initTblSQL.append(turnRadColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(spdColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(");");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create uav type configs table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(UAVTypeConfigs uavTypeCfgs)
    {
       boolean success = true;
@@ -57,7 +87,7 @@ public class UAVTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load weapon type configs from db. Details: {}", e.getMessage());
+         logger.error("Failed to load uav type configs from db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -94,7 +124,7 @@ public class UAVTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save weapon type configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save uav type configs to db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -128,7 +158,7 @@ public class UAVTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load weapon type configs from csv. Details: {}", e.getMessage());
+         logger.error("Failed to load uav type configs from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -154,7 +184,7 @@ public class UAVTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save weapon type configs to csv. Details: {}", e.getMessage());
+         logger.error("Failed to save uav type configs to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
