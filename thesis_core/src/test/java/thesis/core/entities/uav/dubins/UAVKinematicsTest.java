@@ -6,13 +6,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import thesis.core.EntityTypeCfgs;
 import thesis.core.SimModel;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.UAV;
-import thesis.core.entities.uav.UAVType;
-import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.serialization.world.UAVEntityConfig;
+import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.uav.UAV;
 import thesis.core.world.RenderOptions;
 import thesis.core.world.RenderOptions.RenderOption;
 import thesis.core.world.RenderSimState;
@@ -22,27 +21,20 @@ public class UAVKinematicsTest
    public static void main(String[] args)
    {
       WorldConfig worldCfg = new WorldConfig();
-      worldCfg.setNumColumns(10);
-      worldCfg.setNumRows(10);
-      worldCfg.setWorldHeight(10000);
-      worldCfg.setWorldWidth(10000);
+      worldCfg.getWorld().getWorldGIS().reset(10000, 10000, 10, 10);
 
-      UAVType uavType = new UAVType(1);
-      uavType.setMaxSpd(10);
-      uavType.setMinTurnRadius(250);
-      uavType.init();
+      EntityTypeCfgs entTypeCfgs = new EntityTypeCfgs();
+      entTypeCfgs.getUAVTypeCfgs().setUAVData(0, 10, 250);
 
-      EntityTypes entTypes = new EntityTypes();
-      entTypes.addUAVType(uavType);
+      UAVStartCfg startCfg = new UAVStartCfg();
+      startCfg.getLocation().setCoordinate(2000, 3000);
+      startCfg.setOrientation(180);
+      startCfg.setUAVType(0);
+      worldCfg.getUAVCfgs().add(startCfg);
 
-      UAVEntityConfig uavEntCfg = new UAVEntityConfig();
-      uavEntCfg.getLocation().setCoordinate(2000, 3000);
-      uavEntCfg.setOrientation(180);
-      uavEntCfg.setUAVType(uavType.getTypeID());
-      worldCfg.uavCfgs.add(uavEntCfg);
 
       SimModel sim = new SimModel();
-      sim.reset(42, worldCfg, entTypes, 0.0f, 0.0f);
+      sim.reset(42, worldCfg, entTypeCfgs, 0.0f, 0.0f);
 
       UAV uav = sim.getUAVManager().getUAV(0);
 

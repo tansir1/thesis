@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.dubins;
+package thesis.core.uav.dubins;
 
 import java.util.ArrayList;
 import java.util.List;

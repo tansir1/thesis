@@ -14,9 +14,20 @@ public class Havens
    public void reset(int numHavens)
    {
       locations = new CellCoordinate[numHavens];
-      for(int i=0; i<numHavens; ++i)
+      for (int i = 0; i < numHavens; ++i)
       {
          locations[i] = new CellCoordinate();
+      }
+   }
+
+   public void copy(Havens copy)
+   {
+      int numHavens = copy.getNumHavens();
+      this.reset(copy.locations.length);
+
+      for (int i = 0; i < numHavens; ++i)
+      {
+         locations[i] = new CellCoordinate(copy.locations[i]);
       }
    }
 

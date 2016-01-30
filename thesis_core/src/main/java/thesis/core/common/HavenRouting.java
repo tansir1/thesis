@@ -3,20 +3,22 @@ package thesis.core.common;
 import java.util.List;
 import java.util.Random;
 
+import thesis.core.world.Havens;
+import thesis.core.world.World;
 import thesis.core.world.WorldGIS;
 
 public class HavenRouting
 {
    private RoadNetwork roadNet;
    private WorldGIS worldGIS;
-   private List<CellCoordinate> havens;
+   private Havens havens;
    private Random randGen;
 
-   public HavenRouting(RoadNetwork roadNet, WorldGIS worldGIS, List<CellCoordinate> havens, Random randGen)
+   public HavenRouting(World world, Random randGen)
    {
-      this.roadNet = roadNet;
-      this.worldGIS = worldGIS;
-      this.havens = havens;
+      this.roadNet = world.getRoadNetwork();
+      this.worldGIS = world.getWorldGIS();
+      this.havens = world.getHavens();
       this.randGen = randGen;
    }
 
@@ -25,10 +27,10 @@ public class HavenRouting
    {
       CellCoordinate start = worldGIS.convertWorldToCell(curPos);
       CellCoordinate end = null;
-      int numHavens = havens.size();
+      int numHavens = havens.getNumHavens();
       do
       {
-         end = havens.get(randGen.nextInt(numHavens));
+         end = havens.getHavenByIndx(randGen.nextInt(numHavens));
       } while (end.equals(start));
 
       //Copy destination to passed in reference

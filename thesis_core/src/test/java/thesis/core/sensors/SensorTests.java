@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.sensors.Sensor;
-import thesis.core.sensors.SensorType;
 import thesis.core.targets.TargetMgr;
 
 public class SensorTests
@@ -15,9 +13,10 @@ public class SensorTests
    @Test
    public void slewTests()
    {
-      SensorType st = new SensorType(1);
-      st.setMaxSlewRate(10);
-      Sensor testMe = new Sensor(st, new TargetMgr());
+      SensorTypeConfigs snsrTypeCfgs = new SensorTypeConfigs();
+      snsrTypeCfgs.reset(1);
+      snsrTypeCfgs.setSensorData(0, 45, 0, 1000, 10);
+      Sensor testMe = new Sensor(0, snsrTypeCfgs, new TargetMgr());
 
       WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
 
@@ -26,7 +25,7 @@ public class SensorTests
 
       //Compute number of frames needed to slew to look angle
       double bearingTo = sensorPosition.bearingTo(lookAt);
-      int numFrames = (int)Math.ceil(bearingTo / st.getMaxSlewFrameRate());
+      int numFrames = (int)Math.ceil(bearingTo / snsrTypeCfgs.getMaxSlewFrameRate(0));
       if(numFrames < 0)
       {
          numFrames = -numFrames;

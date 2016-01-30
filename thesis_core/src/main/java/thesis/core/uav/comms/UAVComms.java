@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.comms;
+package thesis.core.uav.comms;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -9,8 +9,8 @@ import java.util.Random;
 
 import thesis.core.common.Circle;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.entities.uav.UAV;
-import thesis.core.entities.uav.UAVMgr;
+import thesis.core.uav.UAV;
+import thesis.core.uav.UAVMgr;
 
 public class UAVComms
 {

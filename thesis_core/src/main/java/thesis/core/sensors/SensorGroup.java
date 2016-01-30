@@ -4,24 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.WorldCoordinate;
-import thesis.core.targets.TargetMgr;
 
 public class SensorGroup
 {
    private List<Sensor> sensors;
-   private TargetMgr tgtMgr;
 
-   public SensorGroup(TargetMgr tgtMgr)
+   public SensorGroup()
    {
       sensors = new ArrayList<Sensor>();
-      this.tgtMgr = tgtMgr;
    }
 
-   public Sensor addSensor(SensorType type)
+   public void addSensor(Sensor sensor)
    {
-      Sensor sensor = new Sensor(type, tgtMgr);
       sensors.add(sensor);
-      return sensor;
    }
 
    public List<Sensor> getSensors()

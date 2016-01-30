@@ -4,71 +4,57 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
 
-import thesis.core.TestUtils;
+import thesis.core.EntityTypeCfgs;
 import thesis.core.common.Circle;
-import thesis.core.entities.uav.comms.CommsConfig;
-import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.serialization.world.UAVEntityConfig;
-import thesis.core.serialization.world.WorldConfig;
+import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.targets.TargetMgr;
+import thesis.core.uav.UAV;
+import thesis.core.uav.UAVMgr;
+import thesis.core.uav.comms.CommsConfig;
+import thesis.core.world.WorldGIS;
 
 public class UAVMgrTests
 {
+   private List<UAVStartCfg> initUAVs()
+   {
+      // Construct 3 UAVs in a west to east line.
+      final UAVStartCfg uav1 = new UAVStartCfg();
+      uav1.setUAVType(0);
+      uav1.getLocation().setCoordinate(500, 0);
+
+      final UAVStartCfg uav2 = new UAVStartCfg();
+      uav2.setUAVType(1);
+      uav2.getLocation().setCoordinate(500, 250);
+
+      final UAVStartCfg uav3 = new UAVStartCfg();
+      uav3.setUAVType(2);
+      uav3.getLocation().setCoordinate(500, 500);
+
+      List<UAVStartCfg> startCfgs = new ArrayList<UAVStartCfg>();
+      startCfgs.add(uav1);
+      startCfgs.add(uav2);
+      startCfgs.add(uav3);
+      return startCfgs;
+   }
 
    @Test
    public void regionQueryTests()
    {
-      final EntityTypes entTypes = TestUtils.randEntityTypes();
+      final EntityTypeCfgs entTypes = new EntityTypeCfgs();
+      entTypes.getUAVTypeCfgs().reset(3);
 
       // 100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      final WorldConfig worldCfg = new WorldConfig();
-      worldCfg.setNumColumns(10);
-      worldCfg.setNumRows(10);
-      worldCfg.setWorldHeight(100000);
-      worldCfg.setWorldWidth(100000);
-
-      Collection<UAVType> allUAVTypes = entTypes.getAllUAVTypes();
-      final UAVType uavTypes[] = new UAVType[3];
-
-      if (allUAVTypes.size() < 3)
-      {
-         fail("Test case assumes at least 3 uav types.");
-      }
-      else
-      {
-         Iterator<UAVType> itr = allUAVTypes.iterator();
-         for (int i = 0; i < 3; ++i)
-         {
-            uavTypes[i] = itr.next();
-         }
-      }
-
-      // Construct 3 UAVs in a west to east line.
-      final UAVEntityConfig uav1 = new UAVEntityConfig();
-      uav1.setUAVType(uavTypes[0].getTypeID());
-      uav1.getLocation().setCoordinate(500, 0);
-
-      final UAVEntityConfig uav2 = new UAVEntityConfig();
-      uav2.setUAVType(uavTypes[1].getTypeID());
-      uav2.getLocation().setCoordinate(500, 250);
-
-      final UAVEntityConfig uav3 = new UAVEntityConfig();
-      uav3.setUAVType(uavTypes[2].getTypeID());
-      uav3.getLocation().setCoordinate(500, 500);
-
-      worldCfg.uavCfgs.add(uav1);
-      worldCfg.uavCfgs.add(uav2);
-      worldCfg.uavCfgs.add(uav3);
+      final WorldGIS worldGIS = new WorldGIS();
+      worldGIS.reset(100000, 100000, 10, 10);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, worldCfg, new Random(), new CommsConfig(), new TargetMgr());
+      testMe.reset(entTypes, initUAVs(), new TargetMgr(), new Random(), new CommsConfig());
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();
@@ -79,7 +65,7 @@ public class UAVMgrTests
       // Should only contain uav1
       List<UAV> inRegion = testMe.getAllUAVsInRegion(testRegion);
       assertEquals("Incorrect number of UAVs in query region1", 1, inRegion.size());
-      assertEquals("Incorrect uav detected in region.", uav1.getUAVType(), inRegion.get(0).getType());
+      assertEquals("Incorrect uav detected in region.", 0, inRegion.get(0).getType());
 
       // Slightly east of uav3
       testRegion.getCenter().setCoordinate(500, 510);
@@ -92,11 +78,11 @@ public class UAVMgrTests
       boolean uav3Found = false;
       for (UAV uav : inRegion)
       {
-         if (uav.getType() == uav2.getUAVType())
+         if (uav.getType() == 1)
          {
             uav2Found = true;
          }
-         else if (uav.getType() == uav3.getUAVType())
+         else if (uav.getType() == 2)
          {
             uav3Found = true;
          }

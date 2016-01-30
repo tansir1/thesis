@@ -1,4 +1,4 @@
-package thesis.core.entities.uav;
+package thesis.core.uav;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,18 +7,16 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.EntityTypeCfgs;
 import thesis.core.SimModel;
 import thesis.core.common.Circle;
-import thesis.core.entities.uav.comms.CommsConfig;
-import thesis.core.entities.uav.comms.UAVComms;
-import thesis.core.entities.uav.logic.UAVLogicMgr;
 import thesis.core.sensors.Sensor;
 import thesis.core.sensors.SensorGroup;
-import thesis.core.sensors.SensorType;
-import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.serialization.world.UAVEntityConfig;
-import thesis.core.serialization.world.WorldConfig;
+import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.targets.TargetMgr;
+import thesis.core.uav.comms.CommsConfig;
+import thesis.core.uav.comms.UAVComms;
+import thesis.core.uav.logic.UAVLogicMgr;
 import thesis.core.utilities.LoggerIDs;
 
 /**
@@ -45,43 +43,45 @@ public class UAVMgr
     *           UAVs will be generated based on configuration data from here and
     *           types will be cross referenced from entTypes.
     */
-   public void reset(EntityTypes entTypes, WorldConfig worldCfg, Random randGen, CommsConfig commsCfg, TargetMgr tgtMgr)
+   public void reset(EntityTypeCfgs entTypes, List<UAVStartCfg> uavStartCfgs, TargetMgr tgtMgr, Random randGen,
+         CommsConfig commsCfg)
    {
       logger.debug("Resetting UAV Manager.");
 
-      final int NUM_UAVS = worldCfg.uavCfgs.size();
+      final int NUM_UAVS = uavStartCfgs.size();
       uavs = new UAV[NUM_UAVS];
-      UAVEntityConfig uavEntCfg = null;
 
-      for(int i=0; i<NUM_UAVS; ++i)
+      UAVSensorCfgs uavSensorCfgs = entTypes.getUAVSensorCfgs();
+      final int NUM_SNSR_TYPES = uavSensorCfgs.getNumSensorTypes();
+
+      UAVStartCfg uavStartCfg = null;
+
+      final SensorGroup sensors = new SensorGroup();
+      for (int i = 0; i < NUM_UAVS; ++i)
       {
-         uavEntCfg = worldCfg.uavCfgs.get(i);
-         UAVType type = entTypes.getUAVType(uavEntCfg.getUAVType());
-         if (type != null)
+         uavStartCfg = uavStartCfgs.get(i);
+         int type = uavStartCfg.getUAVType();
+
+         for (int j = 0; j < NUM_SNSR_TYPES; ++j)
          {
-            final SensorGroup sensors = new SensorGroup(tgtMgr);
-            for (SensorType st : type.getSensors())
+            if (uavSensorCfgs.uavHasSensor(type, j))
             {
-               Sensor sensor = sensors.addSensor(st);
+               Sensor sensor = new Sensor(j, entTypes.getSnsrTypeCfgs(), tgtMgr);
                // Align sensor to point straight ahead at startup
-               sensor.setAzimuth(uavEntCfg.getOrientation());
+               sensor.setAzimuth(uavStartCfg.getOrientation());
+               sensors.addSensor(sensor);
             }
-
-            final UAVComms comms = new UAVComms(i, this, randGen, commsCfg);
-
-            final Pathing pathing = new Pathing(i, type);
-            pathing.getCoordinate().setCoordinate(uavEntCfg.getLocation());
-            pathing.setHeading(uavEntCfg.getOrientation());
-
-            final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSensorProbabilities(), randGen, i);
-
-            uavs[i]=new UAV(type.getTypeID(), i, sensors, comms, pathing, logicMgr);;
-
          }
-         else
-         {
-            logger.error("UAV configured with an unknown target type.  Ignoring UAV.");
-         }
+
+         final UAVComms comms = new UAVComms(i, this, randGen, commsCfg);
+
+         final Pathing pathing = new Pathing(i, type, entTypes.getUAVTypeCfgs());
+         pathing.getCoordinate().setCoordinate(uavStartCfg.getLocation());
+         pathing.setHeading(uavStartCfg.getOrientation());
+
+         final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSnsrProbs(), randGen, i);
+
+         uavs[i] = new UAV(type, i, sensors, comms, pathing, logicMgr);
       }
    }
 
@@ -117,7 +117,7 @@ public class UAVMgr
     */
    public void stepSimulation()
    {
-      for(int i=0; i<uavs.length; ++i)
+      for (int i = 0; i < uavs.length; ++i)
       {
          uavs[i].stepSimulation();
       }
@@ -135,7 +135,7 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      for(int i=0; i<uavs.length; ++i)
+      for (int i = 0; i < uavs.length; ++i)
       {
          if (Math.abs(uavs[i].getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius())
          {
@@ -160,7 +160,7 @@ public class UAVMgr
    {
       List<UAV> inRegion = new ArrayList<UAV>();
 
-      for(int i=0; i<uavs.length; ++i)
+      for (int i = 0; i < uavs.length; ++i)
       {
          if (Math.abs(uavs[i].getPathing().getCoordinate().distanceTo(region.getCenter())) < region.getRadius()
                && uavs[i].getID() != excludeUAV)

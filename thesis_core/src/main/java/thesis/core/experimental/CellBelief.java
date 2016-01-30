@@ -17,9 +17,10 @@ public class CellBelief
 
    public void reset()
    {
+      float equalProb = 1.f / tgtProbs.length;
       for(int i=0; i<tgtProbs.length; ++i)
       {
-         tgtProbs[i] = 0;//Assume targets do not exist at location
+         tgtProbs[i] = equalProb;//Assume equal probability of all target types
          tgtHdgs[i] = 0;//If target exists, assume they have 0 heading
          timestamps[i] = 0;
       }
@@ -45,5 +46,17 @@ public class CellBelief
       tgtProbs[tgtType] = prob;
       tgtHdgs[tgtType] = hdg;
       timestamps[tgtType] = timestamp;
+
+      float total = 0;
+      for(int i=0; i<tgtProbs.length; ++i)
+      {
+         total += tgtProbs[i];
+      }
+
+      for(int i=0; i<tgtProbs.length; ++i)
+      {
+         tgtProbs[i] /= total;
+      }
+
    }
 }
