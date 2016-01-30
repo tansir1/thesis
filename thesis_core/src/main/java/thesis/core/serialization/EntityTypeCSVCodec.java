@@ -3,6 +3,15 @@ package thesis.core.serialization;
 import java.io.File;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.serialization.entities.SensorMisclassifyProbsDAO;
+import thesis.core.serialization.entities.SensorProbsDAO;
+import thesis.core.serialization.entities.SensorTypeConfigsDAO;
+import thesis.core.serialization.entities.TargetTypeConfigsDAO;
+import thesis.core.serialization.entities.UAVSensorCfgsDAO;
+import thesis.core.serialization.entities.UAVTypeConfigsDAO;
+import thesis.core.serialization.entities.UAVWeaponCfgsDAO;
+import thesis.core.serialization.entities.WeaponProbsDAO;
+import thesis.core.serialization.entities.WeaponTypeConfigsDAO;
 
 public class EntityTypeCSVCodec
 {

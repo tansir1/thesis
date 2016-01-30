@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;
@@ -10,20 +10,19 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.targets.TargetTypeConfigs;
+import thesis.core.uav.UAVSensorCfgs;
 import thesis.core.utilities.LoggerIDs;
 
-public class TargetTypeConfigsDAO
+public class UAVSensorCfgsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "target_type_cfgs";
-   private final String typeColName = "TargetType";
-   private final String angleColName = "BestAngle";
-   private final String spdColName = "MaxSpd";
+   private final String TBL_NAME = "uav_sensors_cfg";
+   private final String uavTypeColName = "UAVType";
+   private final String snsrTypeColName = "SensorType";
 
    private Connection dbCon;
 
-   public TargetTypeConfigsDAO(Connection dbCon)
+   public UAVSensorCfgsDAO(Connection dbCon)
    {
       this.dbCon = dbCon;
    }
@@ -39,12 +38,10 @@ public class TargetTypeConfigsDAO
          StringBuilder initTblSQL = new StringBuilder("create table ");
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
-         initTblSQL.append(typeColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(angleColName);
-         initTblSQL.append(" real not null,");
-         initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(uavTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(snsrTypeColName);
+         initTblSQL.append(" tinyint not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -52,47 +49,38 @@ public class TargetTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to create target type configs table. Details: {}", e.getMessage());
+         logger.error("Failed to create UAV/Sensor loadout configs table. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean loadData(TargetTypeConfigs tgtTypeCfgs)
+   public boolean loadData(UAVSensorCfgs typeCfgs)
    {
       boolean success = true;
       try
       {
          Statement stmt = dbCon.createStatement();
-         ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
-         rs.next();
-         int numTgtTypes = rs.getInt(1);
-         logger.info("Loading {} target types.", numTgtTypes);
-         rs.close();
-
-         tgtTypeCfgs.reset(numTgtTypes);
-
-         rs = stmt.executeQuery("select * from " + TBL_NAME);
+         ResultSet rs = stmt.executeQuery("select * from " + TBL_NAME);
          while (rs.next())
          {
-            int typeID = rs.getInt(typeColName);
-            float spd = rs.getFloat(spdColName);
-            float angle = rs.getFloat(angleColName);
+            int uavID = rs.getInt(uavTypeColName);
+            int snsrID = rs.getInt(snsrTypeColName);
 
-            tgtTypeCfgs.setTargetData(typeID, spd, angle);
+            typeCfgs.addSensorToUAV(uavID, snsrID);
          }
          rs.close();
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load target type configs from db. Details: {}", e.getMessage());
+         logger.error("Failed to load UAV/Sensor loadout configs from db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean saveData(TargetTypeConfigs tgtTypeCfgs)
+   public boolean saveData(UAVSensorCfgs typeCfgs)
    {
       boolean success = true;
       try
@@ -100,22 +88,26 @@ public class TargetTypeConfigsDAO
          StringBuilder sql = new StringBuilder("insert into ");
          sql.append(TBL_NAME);
          sql.append("(");
-         sql.append(typeColName);
+         sql.append(uavTypeColName);
          sql.append(",");
-         sql.append(angleColName);
-         sql.append(",");
-         sql.append(spdColName);
-         sql.append(") values (?,?,?)");
+         sql.append(snsrTypeColName);
+         sql.append(") values (?,?)");
+
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
-         int numTgtTypes = tgtTypeCfgs.getNumTypes();
-
-         for (int i = 0; i < numTgtTypes; ++i)
+         int numUAVs = typeCfgs.getNumUAVTypes();
+         int numSnsrs = typeCfgs.getNumSensorypes();
+         for(int i=0; i<numUAVs; ++i)
          {
-            stmt.setInt(1, i);
-            stmt.setFloat(2, tgtTypeCfgs.getBestAngle(i));
-            stmt.setFloat(3, tgtTypeCfgs.getSpeed(i));
-            stmt.addBatch();
+            for(int j=0; j<numSnsrs; j++)
+            {
+               if(typeCfgs.uavHasSensor(i, j))
+               {
+                  stmt.setInt(1, i);
+                  stmt.setInt(2, j);
+                  stmt.addBatch();
+               }
+            }
          }
          stmt.executeBatch();
 
@@ -123,7 +115,7 @@ public class TargetTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save target type configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save UAV/Sensor loadout configs to db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -140,14 +132,12 @@ public class TargetTypeConfigsDAO
          StringBuilder initTblSQL = new StringBuilder("create table ");
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
-         initTblSQL.append(typeColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(angleColName);
-         initTblSQL.append(" real not null,");
-         initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(uavTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(snsrTypeColName);
+         initTblSQL.append(" tinyint not null");
          initTblSQL.append(") as select ");
-         initTblSQL.append(typeColName + "," + angleColName + "," + spdColName + " ");
+         initTblSQL.append(uavTypeColName + "," + snsrTypeColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -157,7 +147,7 @@ public class TargetTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load target type configs from csv. Details: {}", e.getMessage());
+         logger.error("Failed to load UAV/Sensor loadout configs from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -183,9 +173,10 @@ public class TargetTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save target type configs to csv. Details: {}", e.getMessage());
+         logger.error("Failed to save UAV/Sensor loadout configs to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
+
 }

@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;

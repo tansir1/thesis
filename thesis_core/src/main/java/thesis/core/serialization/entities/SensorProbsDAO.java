@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;
@@ -13,18 +13,19 @@ import org.slf4j.LoggerFactory;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.utilities.LoggerIDs;
 
-public class SensorMisclassifyProbsDAO
+public class SensorProbsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "sensor_misclass_target_probs";
+   private final String TBL_NAME = "sensor_target_probs";
    private final String snsrTypeColName = "SensorType";
-   private final String detectTypeColName = "DtctTgtType";
-   private final String misclassTypeColName = "MisclassTgtType";
-   private final String probColName = "Prob";
+   private final String tgtTypeColName = "TargetType";
+   private final String probDetectColName = "ProbDetect";
+   private final String probConfirmColName = "ProbConfirm";
+   private final String hdgCoefColName = "HdgCoeff";
 
    private Connection dbCon;
 
-   public SensorMisclassifyProbsDAO(Connection dbCon)
+   public SensorProbsDAO(Connection dbCon)
    {
       this.dbCon = dbCon;
    }
@@ -42,11 +43,13 @@ public class SensorMisclassifyProbsDAO
          initTblSQL.append("(");
          initTblSQL.append(snsrTypeColName);
          initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(detectTypeColName);
+         initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(misclassTypeColName);
-         initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(probColName);
+         initTblSQL.append(probDetectColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(probConfirmColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(hdgCoefColName);
          initTblSQL.append(" real not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
@@ -69,14 +72,17 @@ public class SensorMisclassifyProbsDAO
          Statement stmt = dbCon.createStatement();
 
          ResultSet rs = stmt.executeQuery("select * from " + TBL_NAME);
-         while (rs.next())
+         while(rs.next())
          {
             int snsrTypeID = rs.getInt(snsrTypeColName);
-            int detectTypeID = rs.getInt(detectTypeColName);
-            int misclassTypeID = rs.getInt(misclassTypeColName);
-            float prob = rs.getFloat(probColName);
+            int tgtTypeID = rs.getInt(tgtTypeColName);
+            float probDetect = rs.getFloat(probDetectColName);
+            float probConfirm = rs.getFloat(probConfirmColName);
+            float hdgCoeff = rs.getFloat(hdgCoefColName);
 
-            snsrProbs.setSensorMisclassifyProb(snsrTypeID, detectTypeID, misclassTypeID, prob);
+            snsrProbs.setSensorConfirmProb(snsrTypeID, tgtTypeID, probConfirm);
+            snsrProbs.setSensorDetectProb(snsrTypeID, tgtTypeID, probDetect);
+            snsrProbs.setSensorHeadingCoeff(snsrTypeID, tgtTypeID, hdgCoeff);
          }
          rs.close();
 
@@ -100,12 +106,15 @@ public class SensorMisclassifyProbsDAO
          sql.append("(");
          sql.append(snsrTypeColName);
          sql.append(",");
-         sql.append(detectTypeColName);
+         sql.append(tgtTypeColName);
          sql.append(",");
-         sql.append(misclassTypeColName);
+         sql.append(probDetectColName);
          sql.append(",");
-         sql.append(probColName);
-         sql.append(") values (?,?,?,?)");
+         sql.append(probConfirmColName);
+         sql.append(",");
+         sql.append(hdgCoefColName);
+         sql.append(") values (?,?,?,?,?)");
+
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
 
@@ -116,14 +125,12 @@ public class SensorMisclassifyProbsDAO
          {
             for (int j = 0; j < numTgtTypes; ++j)
             {
-               for (int k = 0; k < numTgtTypes; ++k)
-               {
-                  stmt.setInt(1, i);
-                  stmt.setInt(2, j);
-                  stmt.setInt(3, k);
-                  stmt.setFloat(4, snsrProbs.getSensorMisclassifyProb(i, j, k));
-                  stmt.addBatch();
-               }
+               stmt.setInt(1, i);
+               stmt.setInt(2, j);
+               stmt.setFloat(3, snsrProbs.getSensorDetectProb(i, j));
+               stmt.setFloat(4, snsrProbs.getSensorConfirmProb(i,j));
+               stmt.setFloat(5, snsrProbs.getSensorHeadingCoeff(i, j));
+               stmt.addBatch();
             }
          }
 
@@ -133,7 +140,45 @@ public class SensorMisclassifyProbsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save haven configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save sensor probabilities to db. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean loadCSV(File csvFile)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(snsrTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(tgtTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(probDetectColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(probConfirmColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(hdgCoefColName);
+         initTblSQL.append(" real not null");
+         initTblSQL.append(") as select ");
+         initTblSQL.append(snsrTypeColName + "," + tgtTypeColName + "," + probDetectColName + "," + probConfirmColName + "," + hdgCoefColName + " ");
+         initTblSQL.append("from csvread('");
+         initTblSQL.append(csvFile.getAbsolutePath());
+         initTblSQL.append("');");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to load sensor probabilities from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -160,45 +205,6 @@ public class SensorMisclassifyProbsDAO
       catch (SQLException e)
       {
          logger.error("Failed to save sensor probabilities to csv. Details: {}", e.getMessage());
-         success = false;
-      }
-      return success;
-   }
-
-   public boolean loadCSV(File csvFile)
-   {
-      boolean success = true;
-      try
-      {
-         Statement stmt = dbCon.createStatement();
-         stmt.execute("drop table if exists " + TBL_NAME);
-
-         StringBuilder initTblSQL = new StringBuilder("create table ");
-         initTblSQL.append(TBL_NAME);
-         initTblSQL.append("(");
-         initTblSQL.append(snsrTypeColName);
-         initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(detectTypeColName);
-         initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(misclassTypeColName);
-         initTblSQL.append(" tinyint not null,");
-         initTblSQL.append(probColName);
-         initTblSQL.append(" real not null");
-         initTblSQL.append(") as select ");
-         initTblSQL
-               .append(snsrTypeColName + "," + detectTypeColName + "," + misclassTypeColName + "," + probColName + " ");
-         initTblSQL.append("from csvread('");
-         initTblSQL.append(csvFile.getAbsolutePath());
-         initTblSQL.append("');");
-         stmt.execute(initTblSQL.toString());
-
-         stmt.close();
-
-         logger.info("Loaded sensor probabilities.");
-      }
-      catch (SQLException e)
-      {
-         logger.error("Failed to load sensor probabilities. Details: {}", e.getMessage());
          success = false;
       }
       return success;
