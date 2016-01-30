@@ -1,12 +1,8 @@
 package thesis.worldgen;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.DecimalFormat;
-
-import javax.imageio.ImageIO;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -20,15 +16,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.EntityTypeCfgs;
-import thesis.core.SimModel;
 import thesis.core.serialization.DBConnections;
-import thesis.core.serialization.EntityTypeConfigLoader;
+import thesis.core.serialization.EntityTypeCSVCodec;
+import thesis.core.serialization.WorldConfigCSVCodec;
 import thesis.core.serialization.world.WorldConfig;
-import thesis.core.serialization.world.WorldConfigFile;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.VersionID;
-import thesis.core.world.RenderSimState;
 import thesis.core.world.WorldGIS;
 import thesis.worldgen.utilities.GeneratorConfig;
 import thesis.worldgen.utilities.GeneratorConfigLoader;
@@ -128,6 +122,13 @@ public class WorldGenApp
          genCfg.getOutputDir().mkdirs();
       }
 
+      DBConnections dbConns = new DBConnections();
+      if (!dbConns.openWorldsDB())
+      {
+         logger.error("Failed to open worlds database.");
+         return;
+      }
+
       logger.info("Generating {} worlds into directory: {}", genCfg.getNumWorlds(),
             genCfg.getOutputDir().getAbsolutePath());
 
@@ -140,26 +141,27 @@ public class WorldGenApp
       for (int i = 0; i < genCfg.getNumWorlds(); ++i)
       {
 
-         File worldFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".xml");
+         File worldDir = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + "/");
          File screenShotFile = new File(genCfg.getOutputDir(), "world" + numFrmt.format(i) + ".png");
 
          logger.debug("-------------------------------------------------");
          logger.debug("Generating world {}", i);
-         WorldConfig world = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
+         WorldConfig worldCfg = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
                genCfg.getNumStaticTargets(), genCfg.getNumUAVs());
 
-         try
-         {
-            logger.info("Saving world {} into {}.", i, worldFile.getAbsolutePath());
-            if (!WorldConfigFile.saveConfig(worldFile, world))
+         //try
+        // {
+            WorldConfigCSVCodec worldCfgCodec = new WorldConfigCSVCodec();
+            logger.info("Saving world {} into {}.", i, worldDir.getAbsolutePath());
+            if (!worldCfgCodec.writeCSV(dbConns, worldDir, worldCfg))
             {
-               logger.error("Failed to save world {} into {}", i, worldFile.getAbsolutePath());
+               logger.error("Failed to save world {} into {}", i, worldDir.getAbsolutePath());
                System.exit(1);
             }
-
+/*
             logger.debug("Saving world {} screenshot into {}", i, screenShotFile.getAbsolutePath());
             SimModel model = new SimModel();
-            model.reset(0, world, entTypes, 0.0f, 0.0f);
+            model.reset(0, worldCfg, entTypes, 0.0f, 0.0f);
 
             BufferedImage img = RenderSimState.renderToImage(model, 640, 480);
             ImageIO.write(img, "png", screenShotFile);
@@ -168,20 +170,20 @@ public class WorldGenApp
          {
             logger.error("I/O error while saving world {}.  Details: {}", i, e.getMessage());
             System.exit(1);
-         }
+         }*/
       }
       logger.info("World generation complete.");
    }
 
-   private static boolean loadEntityTypeCfgs(Logger logger, EntityTypeCfgs entTypeCfgs)
+   private static boolean loadEntityTypeCfgs(Logger logger, EntityTypeCfgs entTypeCfgs, File entityTypesCfgDir)
    {
       boolean success = true;
 
       DBConnections dbConns = new DBConnections();
       if (dbConns.openConfigDB())
       {
-         EntityTypeConfigLoader cfgLdr = new EntityTypeConfigLoader();
-         if (!cfgLdr.loadConfigs(dbConns, new File("../config"), entTypeCfgs))
+         EntityTypeCSVCodec cfgLdr = new EntityTypeCSVCodec();
+         if (!cfgLdr.loadCSV(dbConns, entityTypesCfgDir, entTypeCfgs))
          {
             logger.error("Failed to load entity configurations database.");
             success = false;
@@ -207,7 +209,7 @@ public class WorldGenApp
          if (parseCmdLine(args, genCfg))
          {
             EntityTypeCfgs entTypeCfgs = new EntityTypeCfgs();
-            if (loadEntityTypeCfgs(logger, entTypeCfgs))
+            if (loadEntityTypeCfgs(logger, entTypeCfgs, genCfg.getEntityTypesDir()))
             {
                generateWorlds(genCfg, entTypeCfgs, logger);
             }

@@ -125,6 +125,7 @@ public class TargetStartLocationDAO
             stmt.setInt(2, cell.getRow());
             stmt.setInt(3, cell.getColumn());
             stmt.setFloat(4, tgt.getOrientation());
+            stmt.addBatch();
          }
          stmt.executeBatch();
 
