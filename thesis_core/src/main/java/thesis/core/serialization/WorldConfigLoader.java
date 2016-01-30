@@ -1,10 +1,9 @@
 package thesis.core.serialization;
 
 import java.io.File;
-import java.util.List;
+import java.sql.Connection;
 
-import thesis.core.serialization.world.TargetStartCfg;
-import thesis.core.serialization.world.UAVStartCfg;
+import thesis.core.serialization.world.WorldConfig;
 import thesis.core.world.World;
 
 public class WorldConfigLoader
@@ -20,9 +19,11 @@ public class WorldConfigLoader
 
    }
 
-   public boolean loadConfigs(DBConnections dbConns, File worldDir, World world, List<UAVStartCfg> uavStartCfgs, List<TargetStartCfg> tgtStartCfgs)
+   public boolean loadConfigs(DBConnections dbConns, File worldDir, WorldConfig worldCfg)
    {
+      final Connection wrldCon = dbConns.getWorldsDBConnection();
       boolean success = true;
+
 
       File gisCfgFile = new File(worldDir, gisCSV);
       File havensCfgFile = new File(worldDir, havensCSV);
@@ -36,28 +37,29 @@ public class WorldConfigLoader
       UAVStartLocationDAO uavStartDAO = new UAVStartLocationDAO(worldDir.getName());
       TargetStartLocationDAO tgtStartDAO = new TargetStartLocationDAO(worldDir.getName());
 
+      World world = worldCfg.getWorld();
 
-      success = gisDAO.loadCSV(dbConns.getWorldsDBConnection(), gisCfgFile, world.getWorldGIS());
+      success = gisDAO.loadCSV(wrldCon, gisCfgFile, world.getWorldGIS());
 
       if (success)
       {
-         success = havensDAO.loadCSV(dbConns.getWorldsDBConnection(), havensCfgFile, world.getHavens());
+         success = havensDAO.loadCSV(wrldCon, havensCfgFile, world.getHavens());
       }
 
       if (success)
       {
          world.getRoadNetwork().reset(world.getWorldGIS().getRowCount(), world.getWorldGIS().getColumnCount());
-         success = roadsDAO.loadCSV(dbConns.getWorldsDBConnection(), roadsCfgFile, world.getRoadNetwork());
+         success = roadsDAO.loadCSV(wrldCon, roadsCfgFile, world.getRoadNetwork());
       }
 
       if (success)
       {
-         success = uavStartDAO.loadCSV(dbConns.getWorldsDBConnection(), uavsCfgFile, uavStartCfgs, world.getWorldGIS());
+         success = uavStartDAO.loadCSV(wrldCon, uavsCfgFile, worldCfg.getUAVCfgs(), world.getWorldGIS());
       }
 
       if (success)
       {
-         success = tgtStartDAO.loadCSV(dbConns.getWorldsDBConnection(), tgtsCfgFile, tgtStartCfgs, world.getWorldGIS());
+         success = tgtStartDAO.loadCSV(wrldCon, tgtsCfgFile, worldCfg.getTargetCfgs(), world.getWorldGIS());
       }
 
       return success;
