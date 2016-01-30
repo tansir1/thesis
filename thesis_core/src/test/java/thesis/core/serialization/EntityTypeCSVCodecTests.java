@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import thesis.core.EntityTypeCfgs;
 
-public class EntityTypeConfigLoaderTests
+public class EntityTypeCSVCodecTests
 {
 
    @Test
@@ -19,10 +19,10 @@ public class EntityTypeConfigLoaderTests
 
       EntityTypeCfgs entCfgs = new EntityTypeCfgs();
 
-      EntityTypeConfigLoader testMe = new EntityTypeConfigLoader();
+      EntityTypeCSVCodec testMe = new EntityTypeCSVCodec();
 
       assertTrue("Failed to load entity configurations.",
-            testMe.loadConfigs(dbConns, new File("./testConfigs"), entCfgs));
+            testMe.loadCSV(dbConns, new File("./testConfigs"), entCfgs));
       dbConns.closeConfigDB();
    }
 }

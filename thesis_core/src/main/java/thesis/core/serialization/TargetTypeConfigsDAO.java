@@ -28,6 +28,36 @@ public class TargetTypeConfigsDAO
       this.dbCon = dbCon;
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(typeColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(angleColName);
+         initTblSQL.append(" real not null,");
+         initTblSQL.append(spdColName);
+         initTblSQL.append(" real not null");
+         initTblSQL.append(");");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create target type configs table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(TargetTypeConfigs tgtTypeCfgs)
    {
       boolean success = true;

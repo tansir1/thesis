@@ -33,6 +33,38 @@ public class TargetStartLocationDAO
       TBL_NAME = "tgtstart_" + worldName + "_cfg";
    }
 
+   public boolean createTable()
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
+
+         StringBuilder initTblSQL = new StringBuilder("create table ");
+         initTblSQL.append(TBL_NAME);
+         initTblSQL.append("(");
+         initTblSQL.append(typeColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(rowColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(colColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(hdgColName);
+         initTblSQL.append(" real not null");
+         initTblSQL.append(");");
+         stmt.execute(initTblSQL.toString());
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to create target start locations table. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
    public boolean loadData(List<TargetStartCfg> tgtStartCfgs, WorldGIS gis)
    {
       boolean success = true;
