@@ -17,9 +17,9 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.UAV;
 import thesis.core.sensors.Sensor;
 import thesis.core.targets.Target;
+import thesis.core.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -434,12 +434,12 @@ public class RenderSimState
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
 
-      final List<CellCoordinate> havenLocs = model.getWorld().getHavenLocations();
-      final int NUM_HAVENS = havenLocs.size();
+      Havens havens = model.getWorld().getHavens();
+      final int NUM_HAVENS = havens.getNumHavens();
 
       for(int i = 0; i < NUM_HAVENS; ++i)
       {
-         cellCoordinateToPixels(havenLocs.get(i), pixels);
+         cellCoordinateToPixels(havens.getHavenByIndx(i), pixels);
          g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }

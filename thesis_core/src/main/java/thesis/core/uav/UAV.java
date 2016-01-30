@@ -1,13 +1,13 @@
-package thesis.core.entities.uav;
+package thesis.core.uav;
 
 import java.util.List;
 
 import thesis.core.common.WorldPose;
 import thesis.core.entities.belief.BeliefState;
-import thesis.core.entities.uav.comms.Message;
-import thesis.core.entities.uav.comms.UAVComms;
-import thesis.core.entities.uav.logic.UAVLogicMgr;
 import thesis.core.sensors.SensorGroup;
+import thesis.core.uav.comms.Message;
+import thesis.core.uav.comms.UAVComms;
+import thesis.core.uav.logic.UAVLogicMgr;
 
 public class UAV
 {

@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.comms;
+package thesis.core.uav.comms;
 
 import thesis.core.common.SimTime;
 

@@ -5,6 +5,7 @@ import thesis.core.common.WorldCoordinate;
 /**
  * Configuration data required to initialize a UAV.
  */
+@Deprecated
 public class UAVEntityConfig
 {
    private int type;

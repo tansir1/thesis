@@ -58,7 +58,7 @@ public class Sensor
       MIN_RNG = cfgs.getMinRange(type);
       MAX_RNG = cfgs.getMaxRange(type);
       FOV = cfgs.getFOV(type);
-      MAX_SLEW_FRAME_RATE = type.getMaxSlewFrameRate();
+      MAX_SLEW_FRAME_RATE = cfgs.getMaxSlewFrameRate(type);
    }
 
    public int getType()

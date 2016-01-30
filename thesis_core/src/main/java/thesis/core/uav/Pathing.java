@@ -1,4 +1,4 @@
-package thesis.core.entities.uav;
+package thesis.core.uav;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.dubins.DubinsPath;
-import thesis.core.entities.uav.dubins.DubinsPathGenerator;
-import thesis.core.entities.uav.dubins.PathPhase;
-import thesis.core.entities.uav.dubins.PathType;
+import thesis.core.uav.dubins.DubinsPath;
+import thesis.core.uav.dubins.DubinsPathGenerator;
+import thesis.core.uav.dubins.PathPhase;
+import thesis.core.uav.dubins.PathType;
 import thesis.core.utilities.LoggerIDs;
 
 public class Pathing
@@ -49,12 +49,12 @@ public class Pathing
    private int numFramesToWypt;
    private int uavID;
 
-   public Pathing(int id, UAVType type)
+   public Pathing(int id, int type, UAVTypeConfigs uavTypeCfgs)
    {
       this.uavID = id;
 
-      minTurnRadius = type.getMinTurnRadius();
-      frameSpd = type.getFrameSpd();
+      minTurnRadius = uavTypeCfgs.getTurnRadius(type);
+      frameSpd = uavTypeCfgs.getFrameSpd(type);
 
       pathPhase = null;
       pose = new WorldPose();

@@ -17,6 +17,13 @@ public class World
       havens = new Havens();
    }
 
+   public void copy(World copy)
+   {
+      roadNet.copy(copy.roadNet);
+      havens.copy(copy.havens);
+      worldGIS.copy(copy.worldGIS);
+   }
+
    public Havens getHavens()
    {
       return havens;

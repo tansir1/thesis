@@ -16,7 +16,7 @@ import javax.swing.SwingUtilities;
 import thesis.core.SimModel;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.UAV;
+import thesis.core.uav.UAV;
 import thesis.core.utilities.ISimStepListener;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 

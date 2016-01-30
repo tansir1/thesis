@@ -19,6 +19,20 @@ public class RoadNetwork
       traversableCache = new ArrayList<CellCoordinate>();
    }
 
+   public void copy(RoadNetwork copy)
+   {
+      int numRows = copy.network.length;
+      int numCols = copy.network[0].length;
+
+      this.reset(numRows, numCols);
+
+      List<CellCoordinate> cells = copy.getTraversableCells();
+      for(CellCoordinate cell : cells)
+      {
+         setTraversable(cell, true);
+      }
+   }
+
    public void reset(int numRows, int numCols)
    {
       network = new boolean[numRows][numCols];

@@ -66,6 +66,6 @@ public class TargetBelief
       //deltaHdg = Angle.normalize360(deltaHdg);
       deltaHdg *= mergePercent;
       final double newHdg = pose.getHeading() - deltaHdg;
-      pose.setHeading(Angle.normalize360(newHdg));
+      pose.setHeading(Angle.normalize360((float)newHdg));
    }
 }

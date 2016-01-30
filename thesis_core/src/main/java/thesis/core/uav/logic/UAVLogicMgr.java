@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.logic;
+package thesis.core.uav.logic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.entities.belief.BeliefState;
 import thesis.core.entities.belief.TargetBelief;
-import thesis.core.entities.uav.comms.BeliefStateMsg;
-import thesis.core.entities.uav.comms.Message;
 import thesis.core.sensors.SensorDetections;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.targets.Target;
+import thesis.core.uav.comms.BeliefStateMsg;
+import thesis.core.uav.comms.Message;
 import thesis.core.utilities.LoggerIDs;
 
 public class UAVLogicMgr
@@ -78,11 +78,9 @@ public class UAVLogicMgr
          for (Target tgt : sd.getTgtsInFOV())
          {
             // TODO Need logic to check state of UAV to determine if it should
-            // be
-            // detecting or identifying
-
-            float detectProb = sensorProbs.getDetectionProb(sd.getSensorType(), tgt.getType());
-            float idProb = sensorProbs.getIdentificationProb(sd.getSensorType(), tgt.getType());
+            // be detecting or identifying
+            float detectProb = sensorProbs.getSensorDetectProb(sd.getSensorType(), tgt.getType());
+            float idProb = sensorProbs.getSensorConfirmProb(sd.getSensorType(), tgt.getType());
             // TODO Need to add probabilities of detection.
             // For now 100% detection to test sensor update logic and beliefs
             TargetBelief tb = new TargetBelief(tgt.getType());

@@ -5,6 +5,7 @@ import thesis.core.common.SimTime;
 /**
  * Performance specification data for a specific type of sensor.
  */
+@Deprecated
 public class SensorType
 {
    private int typeID;

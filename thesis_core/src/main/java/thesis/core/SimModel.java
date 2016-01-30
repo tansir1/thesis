@@ -7,15 +7,14 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.uav.UAV;
-import thesis.core.entities.uav.UAVMgr;
-import thesis.core.entities.uav.comms.CommsConfig;
-import thesis.core.sensors.SensorProbs;
-import thesis.core.serialization.entities.EntityTypes;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.targets.TargetMgr;
+import thesis.core.uav.UAV;
+import thesis.core.uav.UAVMgr;
+import thesis.core.uav.comms.CommsConfig;
 import thesis.core.utilities.ISimStepListener;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
@@ -30,10 +29,7 @@ public class SimModel
    private TargetMgr tgtMgr;
    private UAVMgr uavMgr;
 
-   private EntityTypes entTypes;
-   private WorldConfig worldCfg;
-
-   private SensorProbs sensorProbs;
+   private EntityTypeCfgs entTypes;
 
    private List<ISimStepListener> stepListeners;
 
@@ -55,7 +51,7 @@ public class SimModel
       logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       tgtMgr = new TargetMgr();
       uavMgr = new UAVMgr();
-      sensorProbs = new SensorProbs();
+      world = new World();
 
       stepListeners = new CopyOnWriteArrayList<ISimStepListener>();
    }
@@ -70,22 +66,28 @@ public class SimModel
     * @param entTypes
     *           The types of entities within the world.
     */
-   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypes entTypes, float commsRngPercent,
+   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, float commsRngPercent,
          float commsRelayProb)
    {
       randGen = new Random(randomSeed);
 
       this.entTypes = entTypes;
-      this.worldCfg = worldCfg;
 
       logger.debug("EntityTypes initialized with:\n{}", entTypes);
       logger.debug("World model intiliazed with:\n{}", worldCfg);
 
-      sensorProbs.reset();
-      world = new World(worldCfg);
-      tgtMgr.reset(entTypes, worldCfg, randGen);
+      world.copy(worldCfg.getWorld());
 
-      final double maxComsRng = worldCfg.getMaxWorldDistance() * commsRngPercent;
+      HavenRouting havenRouting = new HavenRouting(world, randGen);
+      tgtMgr.reset(entTypes.getTgtTypeCfgs(), worldCfg.getTargetCfgs(), havenRouting, world.getWorldGIS());
+
+      resetUAVs(worldCfg, commsRngPercent, commsRelayProb);
+   }
+
+   private void resetUAVs(WorldConfig worldCfg, float commsRngPercent,
+         float commsRelayProb)
+   {
+      final double maxComsRng = world.getWorldGIS().getMaxWorldDistance() * commsRngPercent;
 
       final CommsConfig commsCfg = new CommsConfig();
       commsCfg.setCommsRelayProb(commsRelayProb);
@@ -93,7 +95,7 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg, randGen, commsCfg, tgtMgr);
+      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
@@ -113,11 +115,6 @@ public class SimModel
       }
    }
 
-   /**
-    * Get the world map submodel.
-    *
-    * @return The world map of the simulation.
-    */
    public World getWorld()
    {
       return world;
@@ -174,16 +171,7 @@ public class SimModel
       }
    }
 
-   /**
-    *
-    * @return
-    */
-   public WorldConfig getWorldConfig()
-   {
-      return worldCfg;
-   }
-
-   public EntityTypes getEntityTypes()
+   public EntityTypeCfgs getEntityTypeCfgs()
    {
       return entTypes;
    }

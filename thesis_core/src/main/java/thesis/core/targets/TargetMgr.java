@@ -11,7 +11,7 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldPose;
-import thesis.core.serialization.TargetEntitiesCfg;
+import thesis.core.serialization.world.TargetStartCfg;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.WorldGIS;
 
@@ -41,21 +41,23 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(TargetTypeConfigs tgtTypeCfgs, TargetEntitiesCfg tgtEntCfgs, HavenRouting havenRouting, WorldGIS worldGIS)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, List<TargetStartCfg> tgtStartCfgs, HavenRouting havenRouting, WorldGIS worldGIS)
    {
       this.worldGIS = worldGIS;
       this.tgtTypeCfgs = tgtTypeCfgs;
 
       logger.debug("Resetting Target Manager.");
 
-      final int NUM_TARGETS = tgtEntCfgs.getNumTargets();
+      final int NUM_TARGETS = tgtStartCfgs.size();
 
       targets = new Target[NUM_TARGETS];
 
       for(int i=0; i<NUM_TARGETS; ++i)
       {
-         int tgtType = tgtEntCfgs.getTargetType(i);
-         WorldPose pose = tgtEntCfgs.getTargetPose(i);
+         TargetStartCfg startCfg = tgtStartCfgs.get(i);
+         int tgtType = startCfg.getTargetType();
+
+         WorldPose pose = new WorldPose(startCfg.getLocation(), startCfg.getOrientation());
 
          if (tgtTypeCfgs.typeExists(tgtType))
          {

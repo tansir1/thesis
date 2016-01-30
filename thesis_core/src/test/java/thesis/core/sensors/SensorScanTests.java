@@ -11,13 +11,13 @@ import org.junit.Test;
 import thesis.core.EntityTypeCfgs;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
-import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldPose;
 import thesis.core.experimental.WorldBelief;
 import thesis.core.serialization.DBConnections;
-import thesis.core.serialization.TargetEntitiesCfg;
+import thesis.core.serialization.world.TargetStartCfg;
 import thesis.core.targets.TargetMgr;
 import thesis.core.targets.TargetTypeConfigs;
+import thesis.core.world.World;
 import thesis.core.world.WorldGIS;
 
 public class SensorScanTests
@@ -55,7 +55,7 @@ public class SensorScanTests
       return entCfgs;
    }
 
-   private void initTargets(TargetEntitiesCfg tgtEntCfgs, WorldGIS worldGIS)
+   private List<TargetStartCfg> initTargets(WorldGIS worldGIS)
    {
       /*
        * No | 0
@@ -71,9 +71,21 @@ public class SensorScanTests
       worldGIS.convertCellToWorld(cell1, pose1.getCoordinate());
       worldGIS.convertCellToWorld(cell2, pose2.getCoordinate());
 
-      tgtEntCfgs.reset(2);
-      tgtEntCfgs.setTargetData(0, 0, pose1);
-      tgtEntCfgs.setTargetData(1, 1, pose2);
+      List<TargetStartCfg> startCfgs = new ArrayList<TargetStartCfg>();
+
+      TargetStartCfg startCfg = new TargetStartCfg();
+      startCfg.getLocation().setCoordinate(pose1.getCoordinate());
+      startCfg.setOrientation(pose1.getHeading());
+      startCfg.setTargetType(0);
+      startCfgs.add(startCfg);
+
+      startCfg = new TargetStartCfg();
+      startCfg.getLocation().setCoordinate(pose2.getCoordinate());
+      startCfg.setOrientation(pose2.getHeading());
+      startCfg.setTargetType(1);
+      startCfgs.add(startCfg);
+
+      return startCfgs;
    }
 
    @Test
@@ -91,22 +103,16 @@ public class SensorScanTests
       final Random randGen = new Random();
       randGen.setSeed(424242);
 
-      //Don't need roads in this test but we need the object
-      RoadNetwork emptyRoadNet = new RoadNetwork();
-      emptyRoadNet.reset(numRows, numCols);
-
-      //Don't need havens in this test but we need the object
-      List<CellCoordinate> havens = new ArrayList<CellCoordinate>();
+      World world = new World();
+      world.getWorldGIS().reset(100, 100, numRows, numCols);
+      world.getRoadNetwork().reset(1, 1);
+      world.getHavens().reset(1);
 
       //-------------Initialize world sim----------------------
       WorldBelief wb = new WorldBelief(numRows, numCols, numTgtTypes);
-      WorldGIS worldGIS = new WorldGIS();
-      worldGIS.reset(100, 100, numRows, numCols);
-      HavenRouting havenRouting = new HavenRouting(emptyRoadNet, worldGIS, havens, randGen);
-      TargetEntitiesCfg tgtEntCfgs = new TargetEntitiesCfg();
-      initTargets(tgtEntCfgs, worldGIS);
+      HavenRouting havenRouting = new HavenRouting(world, randGen);
       TargetMgr tgtMgr = new TargetMgr();
-      tgtMgr.reset(entCfgs.getTgtTypeCfgs(), tgtEntCfgs, havenRouting, worldGIS);
+      tgtMgr.reset(entCfgs.getTgtTypeCfgs(), initTargets(world.getWorldGIS()), havenRouting, world.getWorldGIS());
 
       //----------------Perform tests---------------------
       List<CellCoordinate> allCells = new ArrayList<CellCoordinate>();

@@ -1,5 +1,7 @@
 package thesis.core.sensors;
 
+import thesis.core.common.SimTime;
+
 /**
  * Performance specification data for all sensor types.
  */
@@ -46,7 +48,7 @@ public class SensorTypeConfigs
       maxRng = new double[numTypes];
       slewRate = new float[numTypes];
 
-      for(int i=0; i<numTypes; ++i)
+      for (int i = 0; i < numTypes; ++i)
       {
          fov[0] = -1f;
          minRng[0] = -1f;
@@ -63,11 +65,25 @@ public class SensorTypeConfigs
       this.slewRate[snsrType] = slewRt;
    }
 
+   /**
+    * Get the field of view angle.
+    *
+    * @param snsrType
+    *           The type of the sensor to lookup.
+    * @return The FOV of the sensor in degrees.
+    */
    public float getFOV(int snsrType)
    {
       return fov[snsrType];
    }
 
+   /**
+    * Get the maximum rate of slewing for this sensor.
+    *
+    * @param snsrType
+    *           The type of the sensor to lookup.
+    * @return The maximum slew rate for the sensor in degrees/second.
+    */
    public float getSlewRate(int snsrType)
    {
       return slewRate[snsrType];
@@ -78,19 +94,44 @@ public class SensorTypeConfigs
       return fov.length;
    }
 
+   /**
+    * Get the minimum sensing range of the sensor.
+    *
+    * @param snsrType
+    *           The type of the sensor to lookup.
+    * @return The minimum range of the sensor in meters.
+    */
    public double getMinRange(int snsrType)
    {
       return minRng[snsrType];
    }
 
+   /**
+    * Get the maximum sensing range of the sensor.
+    *
+    * @param snsrType
+    *           The type of the sensor to lookup.
+    * @return The max range of the sensor in meters.
+    */
    public double getMaxRange(int snsrType)
    {
       return maxRng[snsrType];
    }
 
+   /**
+    * Get the maximum rate of slewing for this sensor.
+    *
+    * @param snsrType
+    *           The type of the sensor to lookup.
+    * @return The maximum slew rate for the sensor in degrees/frame.
+    */
+   public float getMaxSlewFrameRate(int snsrType)
+   {
+      return slewRate[snsrType] * (float)SimTime.SIM_STEP_RATE_S;
+   }
+
    public boolean typeExists(int snsrType)
    {
-      return snsrType >=0 && snsrType < fov.length;
+      return snsrType >= 0 && snsrType < fov.length;
    }
 }
-

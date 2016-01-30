@@ -96,7 +96,7 @@ public class UAVSensorCfgsDAO
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
          int numUAVs = typeCfgs.getNumUAVTypes();
-         int numSnsrs = typeCfgs.getNumSensorypes();
+         int numSnsrs = typeCfgs.getNumSensorTypes();
          for(int i=0; i<numUAVs; ++i)
          {
             for(int j=0; j<numSnsrs; j++)
