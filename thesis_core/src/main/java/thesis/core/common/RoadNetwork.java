@@ -31,6 +31,11 @@ public class RoadNetwork
       }
    }
 
+   public int getNumTraversable()
+   {
+      return getTraversableCells().size();
+   }
+
    public void setTraversable(int row, int col, boolean traversable)
    {
       dirtyCache = true;
