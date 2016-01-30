@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;
@@ -10,21 +10,22 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.sensors.SensorTypeConfigs;
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.weapons.WeaponTypeConfigs;
 
-public class WeaponTypeConfigsDAO
+public class SensorTypeConfigsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "weapon_types_cfg";
-   private final String typeColName = "WeaponType";
+   private final String TBL_NAME = "sensor_types_cfg";
+   private final String typeColName = "SensorType";
    private final String fovColName = "fov";
    private final String minRngColName = "minRng";
    private final String maxRngColName = "maxRng";
+   private final String slewRtColName = "slewRate";
 
    private Connection dbCon;
 
-   public WeaponTypeConfigsDAO(Connection dbCon)
+   public SensorTypeConfigsDAO(Connection dbCon)
    {
       this.dbCon = dbCon;
    }
@@ -48,33 +49,57 @@ public class WeaponTypeConfigsDAO
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
          initTblSQL.append(" double not null,");
-         initTblSQL.append(")");
+         initTblSQL.append(slewRtColName);
+         initTblSQL.append(" real not null");
+         initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to create weapon type configs table. Details: {}", e.getMessage());
+         logger.error("Failed to create sensor types table. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean loadData(WeaponTypeConfigs wpnTypeCfgs)
+   public boolean loadCSV(Connection dbCon, File csvFile, SensorTypeConfigs snsrTypeCfgs)
    {
       boolean success = true;
       try
       {
          Statement stmt = dbCon.createStatement();
+         stmt.execute("drop table if exists " + TBL_NAME);
 
+
+
+
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to load sensor type configs. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+
+   public boolean loadData(SensorTypeConfigs snsrTypeCfgs)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
          ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
          rs.next();
-         int numWpnTypes = rs.getInt(1);
-         logger.info("Loading {} weapon types.", numWpnTypes);
+         int numSnsrTypes = rs.getInt(1);
+         logger.info("Loading {} sensor types.", numSnsrTypes);
          rs.close();
 
-         wpnTypeCfgs.reset(numWpnTypes);
+         snsrTypeCfgs.reset(numSnsrTypes);
 
          rs = stmt.executeQuery("select * from " + TBL_NAME);
          while(rs.next())
@@ -83,21 +108,22 @@ public class WeaponTypeConfigsDAO
             float fov = rs.getFloat(fovColName);
             double minRng = rs.getDouble(minRngColName);
             double maxRng = rs.getDouble(maxRngColName);
+            float slewRt = rs.getFloat(slewRtColName);
 
-            wpnTypeCfgs.setWeaponData(typeID, fov, minRng, maxRng);
+            snsrTypeCfgs.setSensorData(typeID, fov, minRng, maxRng, slewRt);
          }
          rs.close();
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load weapon type configs from db. Details: {}", e.getMessage());
+         logger.error("Failed to load sensor type configs from db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean saveData(WeaponTypeConfigs wpnTypeCfgs)
+   public boolean saveData(SensorTypeConfigs snsrTypeCfgs)
    {
       boolean success = true;
       try
@@ -112,18 +138,21 @@ public class WeaponTypeConfigsDAO
          sql.append(minRngColName);
          sql.append(",");
          sql.append(maxRngColName);
-         sql.append(") values (?,?,?,?)");
+         sql.append(",");
+         sql.append(slewRtColName);
+         sql.append(") values (?,?,?,?,?)");
 
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
 
-         int numCfgs = wpnTypeCfgs.getNumConfigs();
-         for(int i=0; i<numCfgs; ++i)
+         int numTypes = snsrTypeCfgs.getNumTypes();
+         for(int i=0; i<numTypes; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, wpnTypeCfgs.getFOV(i));
-            stmt.setDouble(3, wpnTypeCfgs.getMinRange(i));
-            stmt.setDouble(4, wpnTypeCfgs.getMaxRange(i));
+            stmt.setFloat(2, snsrTypeCfgs.getFOV(i));
+            stmt.setDouble(3, snsrTypeCfgs.getMinRange(i));
+            stmt.setDouble(4, snsrTypeCfgs.getMaxRange(i));
+            stmt.setFloat(5, snsrTypeCfgs.getSlewRate(i));
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -132,7 +161,7 @@ public class WeaponTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save weapon type configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save sensor type configs to db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -157,8 +186,10 @@ public class WeaponTypeConfigsDAO
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
          initTblSQL.append(" double not null,");
+         initTblSQL.append(slewRtColName);
+         initTblSQL.append(" real not null");
          initTblSQL.append(") as select ");
-         initTblSQL.append(typeColName + "," + fovColName + "," + minRngColName + "," + maxRngColName + " ");
+         initTblSQL.append(typeColName + "," + fovColName + "," + minRngColName + "," + maxRngColName + "," + slewRtColName+ " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -168,7 +199,7 @@ public class WeaponTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load weapon type configs from csv. Details: {}", e.getMessage());
+         logger.error("Failed to load sensor type configs from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -194,10 +225,9 @@ public class WeaponTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save weapon type configs to csv. Details: {}", e.getMessage());
+         logger.error("Failed to save sensor type configs to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
-
 }

@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;
@@ -11,23 +11,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
-import thesis.core.world.WorldGIS;
+import thesis.core.weapons.WeaponProbs;
 
-public class WorldGISDAO
+public class WeaponProbsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME;
-   private final String numRowsColName = "rows";
-   private final String numColsColName = "cols";
-   private final String widthColName = "width";
-   private final String heightColName = "height";
+   private final String TBL_NAME = "sensor_target_probs";
+   private final String wpnTypeColName = "WeaponType";
+   private final String tgtTypeColName = "TargetType";
+   private final String probDestroyColName = "ProbDestroy";
 
    private Connection dbCon;
 
-   public WorldGISDAO(Connection dbCon, String worldName)
+   public WeaponProbsDAO(Connection dbCon)
    {
       this.dbCon = dbCon;
-      TBL_NAME = "worldgis_" + worldName + "_cfg";
    }
 
    public boolean createTable()
@@ -41,55 +39,52 @@ public class WorldGISDAO
          StringBuilder initTblSQL = new StringBuilder("create table ");
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
-         initTblSQL.append(numRowsColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(numColsColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(widthColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(heightColName);
-         initTblSQL.append(" int not null");
+         initTblSQL.append(wpnTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(tgtTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(probDestroyColName);
+         initTblSQL.append(" real not null,");
          initTblSQL.append(")");
-         stmt.execute(initTblSQL.toString());;
+         stmt.execute(initTblSQL.toString());
 
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to create GIS configs table. Details: {}", e.getMessage());
+         logger.error("Failed to create weapon probabilities table. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean loadData(WorldGIS gis)
+   public boolean loadData(WeaponProbs wpnProbs)
    {
       boolean success = true;
       try
       {
          Statement stmt = dbCon.createStatement();
          ResultSet rs = stmt.executeQuery("select * from " + TBL_NAME);
-         rs.next();// Should only be a single row
+         while (rs.next())
+         {
+            int wpnTypeID = rs.getInt(wpnTypeColName);
+            int tgtTypeID = rs.getInt(tgtTypeColName);
+            float probDestroy = rs.getFloat(probDestroyColName);
 
-         int numCols = rs.getInt(numRowsColName);
-         int numRows = rs.getInt(numColsColName);
-         int width = rs.getInt(widthColName);
-         int height = rs.getInt(heightColName);
-
-         gis.reset(width, height, numRows, numCols);
-
+            wpnProbs.setWeaponDestroyProb(wpnTypeID, tgtTypeID, probDestroy);
+         }
          rs.close();
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load GIS config from db. Details: {}", e.getMessage());
+         logger.error("Failed to load weapon probabilities from db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean saveData(WorldGIS gis)
+   public boolean saveData(WeaponProbs wpnProbs)
    {
       boolean success = true;
       try
@@ -97,28 +92,34 @@ public class WorldGISDAO
          StringBuilder sql = new StringBuilder("insert into ");
          sql.append(TBL_NAME);
          sql.append("(");
-         sql.append(numRowsColName);
+         sql.append(wpnTypeColName);
          sql.append(",");
-         sql.append(numColsColName);
+         sql.append(tgtTypeColName);
          sql.append(",");
-         sql.append(widthColName);
-         sql.append(",");
-         sql.append(heightColName);
-         sql.append(") values (?,?,?,?)");
+         sql.append(probDestroyColName);
+         sql.append(") values (?,?,?)");
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
 
-         stmt.setInt(1, gis.getRowCount());
-         stmt.setInt(2, gis.getColumnCount());
-         stmt.setDouble(3, gis.getWidth());
-         stmt.setDouble(4, gis.getHeight());
-         stmt.execute();
+         int numWpns = wpnProbs.getNumWeaponTypes();
+         int numTgts = wpnProbs.getNumTargetTypes();
+         for (int i = 0; i < numWpns; ++i)
+         {
+            for (int j = 0; j < numTgts; ++j)
+            {
+               stmt.setInt(1, i);
+               stmt.setInt(2, j);
+               stmt.setFloat(3, wpnProbs.getWeaponDestroyProb(i, j));
+               stmt.addBatch();
+            }
+         }
+         stmt.executeBatch();
 
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save GIS configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save weapon probabilities to db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -135,16 +136,14 @@ public class WorldGISDAO
          StringBuilder initTblSQL = new StringBuilder("create table ");
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
-         initTblSQL.append(numRowsColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(numColsColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(widthColName);
-         initTblSQL.append(" int not null,");
-         initTblSQL.append(heightColName);
-         initTblSQL.append(" int not null");
+         initTblSQL.append(wpnTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(tgtTypeColName);
+         initTblSQL.append(" tinyint not null,");
+         initTblSQL.append(probDestroyColName);
+         initTblSQL.append(" real not null,");
          initTblSQL.append(") as select ");
-         initTblSQL.append(numRowsColName + "," + numColsColName + "," + widthColName + "," + heightColName + " ");
+         initTblSQL.append(wpnTypeColName + "," + tgtTypeColName + "," + probDestroyColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -154,7 +153,7 @@ public class WorldGISDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load GIS configs from csv. Details: {}", e.getMessage());
+         logger.error("Failed to load weapon probabilities from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -180,9 +179,10 @@ public class WorldGISDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save GIS configs to csv. Details: {}", e.getMessage());
+         logger.error("Failed to save weapon probabilities to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
+
 }

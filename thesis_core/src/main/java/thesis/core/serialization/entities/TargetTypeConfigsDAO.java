@@ -1,4 +1,4 @@
-package thesis.core.serialization;
+package thesis.core.serialization.entities;
 
 import java.io.File;
 import java.sql.Connection;
@@ -10,22 +10,20 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.sensors.SensorTypeConfigs;
+import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.utilities.LoggerIDs;
 
-public class SensorTypeConfigsDAO
+public class TargetTypeConfigsDAO
 {
    private static final Logger logger = LoggerFactory.getLogger(LoggerIDs.UTILS);
-   private final String TBL_NAME = "sensor_types_cfg";
-   private final String typeColName = "SensorType";
-   private final String fovColName = "fov";
-   private final String minRngColName = "minRng";
-   private final String maxRngColName = "maxRng";
-   private final String slewRtColName = "slewRate";
+   private final String TBL_NAME = "target_type_cfgs";
+   private final String typeColName = "TargetType";
+   private final String angleColName = "BestAngle";
+   private final String spdColName = "MaxSpd";
 
    private Connection dbCon;
 
-   public SensorTypeConfigsDAO(Connection dbCon)
+   public TargetTypeConfigsDAO(Connection dbCon)
    {
       this.dbCon = dbCon;
    }
@@ -42,14 +40,10 @@ public class SensorTypeConfigsDAO
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
          initTblSQL.append(typeColName);
-         initTblSQL.append(" tinyint primary key not null,");
-         initTblSQL.append(fovColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(angleColName);
          initTblSQL.append(" real not null,");
-         initTblSQL.append(minRngColName);
-         initTblSQL.append(" double not null,");
-         initTblSQL.append(maxRngColName);
-         initTblSQL.append(" double not null,");
-         initTblSQL.append(slewRtColName);
+         initTblSQL.append(spdColName);
          initTblSQL.append(" real not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
@@ -58,36 +52,13 @@ public class SensorTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to create sensor types table. Details: {}", e.getMessage());
+         logger.error("Failed to create target type configs table. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean loadCSV(Connection dbCon, File csvFile, SensorTypeConfigs snsrTypeCfgs)
-   {
-      boolean success = true;
-      try
-      {
-         Statement stmt = dbCon.createStatement();
-         stmt.execute("drop table if exists " + TBL_NAME);
-
-
-
-
-
-         stmt.close();
-      }
-      catch (SQLException e)
-      {
-         logger.error("Failed to load sensor type configs. Details: {}", e.getMessage());
-         success = false;
-      }
-      return success;
-   }
-
-
-   public boolean loadData(SensorTypeConfigs snsrTypeCfgs)
+   public boolean loadData(TargetTypeConfigs tgtTypeCfgs)
    {
       boolean success = true;
       try
@@ -95,35 +66,33 @@ public class SensorTypeConfigsDAO
          Statement stmt = dbCon.createStatement();
          ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
          rs.next();
-         int numSnsrTypes = rs.getInt(1);
-         logger.info("Loading {} sensor types.", numSnsrTypes);
+         int numTgtTypes = rs.getInt(1);
+         logger.info("Loading {} target types.", numTgtTypes);
          rs.close();
 
-         snsrTypeCfgs.reset(numSnsrTypes);
+         tgtTypeCfgs.reset(numTgtTypes);
 
          rs = stmt.executeQuery("select * from " + TBL_NAME);
-         while(rs.next())
+         while (rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float fov = rs.getFloat(fovColName);
-            double minRng = rs.getDouble(minRngColName);
-            double maxRng = rs.getDouble(maxRngColName);
-            float slewRt = rs.getFloat(slewRtColName);
+            float spd = rs.getFloat(spdColName);
+            float angle = rs.getFloat(angleColName);
 
-            snsrTypeCfgs.setSensorData(typeID, fov, minRng, maxRng, slewRt);
+            tgtTypeCfgs.setTargetData(typeID, spd, angle);
          }
          rs.close();
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load sensor type configs from db. Details: {}", e.getMessage());
+         logger.error("Failed to load target type configs from db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
 
-   public boolean saveData(SensorTypeConfigs snsrTypeCfgs)
+   public boolean saveData(TargetTypeConfigs tgtTypeCfgs)
    {
       boolean success = true;
       try
@@ -133,26 +102,19 @@ public class SensorTypeConfigsDAO
          sql.append("(");
          sql.append(typeColName);
          sql.append(",");
-         sql.append(fovColName);
+         sql.append(angleColName);
          sql.append(",");
-         sql.append(minRngColName);
-         sql.append(",");
-         sql.append(maxRngColName);
-         sql.append(",");
-         sql.append(slewRtColName);
-         sql.append(") values (?,?,?,?,?)");
-
+         sql.append(spdColName);
+         sql.append(") values (?,?,?)");
 
          PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
+         int numTgtTypes = tgtTypeCfgs.getNumTypes();
 
-         int numTypes = snsrTypeCfgs.getNumTypes();
-         for(int i=0; i<numTypes; ++i)
+         for (int i = 0; i < numTgtTypes; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, snsrTypeCfgs.getFOV(i));
-            stmt.setDouble(3, snsrTypeCfgs.getMinRange(i));
-            stmt.setDouble(4, snsrTypeCfgs.getMaxRange(i));
-            stmt.setFloat(5, snsrTypeCfgs.getSlewRate(i));
+            stmt.setFloat(2, tgtTypeCfgs.getBestAngle(i));
+            stmt.setFloat(3, tgtTypeCfgs.getSpeed(i));
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -161,7 +123,7 @@ public class SensorTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save sensor type configs to db. Details: {}", e.getMessage());
+         logger.error("Failed to save target type configs to db. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -179,17 +141,13 @@ public class SensorTypeConfigsDAO
          initTblSQL.append(TBL_NAME);
          initTblSQL.append("(");
          initTblSQL.append(typeColName);
-         initTblSQL.append(" tinyint primary key not null,");
-         initTblSQL.append(fovColName);
+         initTblSQL.append(" int not null,");
+         initTblSQL.append(angleColName);
          initTblSQL.append(" real not null,");
-         initTblSQL.append(minRngColName);
-         initTblSQL.append(" double not null,");
-         initTblSQL.append(maxRngColName);
-         initTblSQL.append(" double not null,");
-         initTblSQL.append(slewRtColName);
+         initTblSQL.append(spdColName);
          initTblSQL.append(" real not null");
          initTblSQL.append(") as select ");
-         initTblSQL.append(typeColName + "," + fovColName + "," + minRngColName + "," + maxRngColName + "," + slewRtColName+ " ");
+         initTblSQL.append(typeColName + "," + angleColName + "," + spdColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
@@ -199,7 +157,7 @@ public class SensorTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load sensor type configs from csv. Details: {}", e.getMessage());
+         logger.error("Failed to load target type configs from csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
@@ -225,7 +183,7 @@ public class SensorTypeConfigsDAO
       }
       catch (SQLException e)
       {
-         logger.error("Failed to save sensor type configs to csv. Details: {}", e.getMessage());
+         logger.error("Failed to save target type configs to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
