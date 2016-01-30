@@ -42,7 +42,7 @@ public class GeneratorConfigLoader
 			logger.debug("Loading generation configuration from {}.", propFile);
 
 			cfg.setOutputDir(new File(propsLdr.getString("outputDir", "FILE_NOT_SPECIFIED")));
-			cfg.setEntityTypesFile(new File(propsLdr.getString("entityTypesFile", "FILE_NOT_SPECIFIED")));
+			cfg.setEntityTypesFile(new File(propsLdr.getString("entityTypesDir", "FILE_NOT_SPECIFIED")));
 
 			try
 			{

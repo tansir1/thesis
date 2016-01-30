@@ -99,7 +99,7 @@ public class WorldGISDAO
          sql.append("(");
          sql.append(numRowsColName);
          sql.append(",");
-         sql.append(numRowsColName);
+         sql.append(numColsColName);
          sql.append(",");
          sql.append(widthColName);
          sql.append(",");

@@ -67,7 +67,7 @@ public class RoadNetGenerator
          computeRoadIntersection(roadSeeds.get(i), roadSeeds.get(i + 1), i % 2 == 0, roadNet);
       }
 
-      computeRoadIntersection(roadSeeds.get(roadSeeds.size()), roadSeeds.get(0), roadSeeds.size() % 2 == 0, roadNet);
+      computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), roadSeeds.size() % 2 == 0, roadNet);
 
       // TODO Add more random connections between random seeds
    }

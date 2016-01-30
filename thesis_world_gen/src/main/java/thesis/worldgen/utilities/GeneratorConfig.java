@@ -6,7 +6,7 @@ public class GeneratorConfig
 {
    private int numWorlds;
    private File outputDir;
-   private File entityTypesFile;
+   private File entityTypesDir;
    private int randSeed;
 
    private double worldWidth;
@@ -28,7 +28,7 @@ public class GeneratorConfig
    {
       numWorlds = copy.numWorlds;
       outputDir = copy.outputDir;
-      entityTypesFile = copy.entityTypesFile;
+      entityTypesDir = copy.entityTypesDir;
       randSeed = copy.randSeed;
       worldWidth = copy.worldWidth;
       worldHeight = copy.worldHeight;
@@ -69,14 +69,14 @@ public class GeneratorConfig
       this.randSeed = randSeed;
    }
 
-   public File getEntityTypesFile()
+   public File getEntityTypesDir()
    {
-      return entityTypesFile;
+      return entityTypesDir;
    }
 
    public void setEntityTypesFile(File entityTypesFile)
    {
-      this.entityTypesFile = entityTypesFile;
+      this.entityTypesDir = entityTypesFile;
    }
 
    public double getWorldWidth()
