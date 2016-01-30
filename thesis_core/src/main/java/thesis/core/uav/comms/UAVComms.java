@@ -109,7 +109,7 @@ public class UAVComms
     * Scan through the incoming queue and process everything not destined for
     * this UAV.
     *
-    * NOTE: Broadcast messages are deleted from the queue by this mehod! Be sure
+    * NOTE: Broadcast messages are deleted from the queue by this method! Be sure
     * to invoke {@link #getAllIncoming()} otherwise the UAV will miss broadcast
     * messages.
     *
