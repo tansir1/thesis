@@ -1,16 +1,16 @@
 package thesis.gui;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.EntityTypeCfgs;
 import thesis.core.SimModel;
-import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.serialization.entities.EntityTypesFile;
+import thesis.core.serialization.DBConnections;
+import thesis.core.serialization.EntityTypeCSVCodec;
+import thesis.core.serialization.WorldConfigCSVCodec;
 import thesis.core.serialization.world.WorldConfig;
-import thesis.core.serialization.world.WorldConfigFile;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
@@ -61,6 +61,28 @@ public class ThesisGUIApp
       return cfg;
    }
 
+   private static boolean loadData(Logger logger, DBConnections dbConns, EntityTypeCfgs entityTypes,
+         WorldConfig worldCfg, SimModelConfig simCfg)
+   {
+      boolean success = true;
+      EntityTypeCSVCodec entTypesCfgCodec = new EntityTypeCSVCodec();
+      if (!entTypesCfgCodec.loadCSV(dbConns, simCfg.getEntityTypeDir(), entityTypes))
+      {
+         logger.error("Failed to load entity types configuration data: {}",
+               simCfg.getEntityTypeDir().getAbsolutePath());
+         success = false;
+      }
+
+      WorldConfigCSVCodec worldCfgCodec = new WorldConfigCSVCodec();
+      if (!worldCfgCodec.loadCSV(dbConns, simCfg.getWorldDir(), worldCfg))
+      {
+         logger.error("Failed to load world configuration data: {}",
+               simCfg.getWorldDir().getAbsolutePath());
+         success = false;
+      }
+      return success;
+   }
+
    public static void main(String[] args)
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
@@ -68,46 +90,34 @@ public class ThesisGUIApp
 
       boolean abort = false;
 
-      WorldConfig worldCfg = null;
-      EntityTypes entityTypes = null;
+      DBConnections dbConns = new DBConnections();
 
-      SimModelConfig cfg = loadSimConfig(logger);
-      if (cfg == null)
+      WorldConfig worldCfg = new WorldConfig();
+      EntityTypeCfgs entityTypes = new EntityTypeCfgs();
+
+      SimModelConfig simCfg = loadSimConfig(logger);
+      if (simCfg == null)
       {
          abort = true;
       }
-      else
-      {
-         try
-         {
-            worldCfg = WorldConfigFile.loadConfig(cfg.getWorldFile());
-            if (!abort && worldCfg == null)
-            {
-               logger.error("Failed to load world configuration file: {}", cfg.getWorldFile().getAbsolutePath());
-               abort = true;
-            }
 
-            entityTypes = EntityTypesFile.loadTypes(cfg.getEntityTypeFile());
-            if (!abort && entityTypes == null)
-            {
-               logger.error("Failed to load entity types configuration file: {}",
-                     cfg.getEntityTypeFile().getAbsolutePath());
-               abort = true;
-            }
-         }
-         catch (FileNotFoundException fnfe)
-         {
-            logger.error("{}", fnfe);
-         }
+      if(!abort)
+      {
+         abort = !(dbConns.openConfigDB() && dbConns.openWorldsDB());
+      }
+
+      if(!abort)
+      {
+         abort = !loadData(logger, dbConns, entityTypes, worldCfg, simCfg);
       }
 
       if (!abort)
       {
-         logger.debug("Sim model initialized with:\n{}", cfg);
+         logger.debug("Sim model initialized with:\n{}", simCfg);
 
          SimModel simModel = new SimModel();
-         simModel.reset(cfg.getRandomSeed(), worldCfg, entityTypes, cfg.getCommsRngPercent(),
-               cfg.getCommsRelayProbability());
+         simModel.reset(simCfg.getRandomSeed(), worldCfg, entityTypes, simCfg.getCommsRngPercent(),
+               simCfg.getCommsRelayProbability());
 
          MainWindow mainWin = new MainWindow();
          mainWin.connectSimModel(simModel);

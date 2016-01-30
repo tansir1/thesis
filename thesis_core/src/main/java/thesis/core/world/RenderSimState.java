@@ -14,12 +14,12 @@ import java.util.List;
 
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.common.graph.DirectedEdge;
-import thesis.core.entities.Target;
-import thesis.core.entities.sensors.Sensor;
-import thesis.core.entities.uav.UAV;
+import thesis.core.sensors.Sensor;
+import thesis.core.targets.Target;
+import thesis.core.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -288,8 +288,8 @@ public class RenderSimState
       final double xPercent = (x * 1.0) / (1.0 * bounds.width);
       final double yPercent = (y * 1.0) / (1.0 * bounds.height);
 
-      final double worldH = model.getWorld().getHeight() * yPercent;
-      final double worldW = model.getWorld().getWidth() * xPercent;
+      final double worldH = model.getWorldGIS().getHeight() * yPercent;
+      final double worldW = model.getWorldGIS().getWidth() * xPercent;
 
       return new WorldCoordinate(worldH, worldW);
    }
@@ -306,7 +306,7 @@ public class RenderSimState
    public CellCoordinate pixelsToCellCoordinate(int x, int y)
    {
       // Invert the y axis so that "north" is at the top of the screen.
-      final int rows = model.getWorld().getRowCount() - 1;
+      final int rows = model.getWorldGIS().getRowCount() - 1;
       final int rawRow = y / gridCellH;
       final int invertedRows = rows - rawRow;
       return new CellCoordinate(invertedRows, x / gridCellW);
@@ -331,6 +331,15 @@ public class RenderSimState
       pixels.setLocation(x, y);
    }
 
+   public void cellCoordinateToPixels(final CellCoordinate cc, final Point pixels)
+   {
+      int pixelX = gridCellW * cc.getRow() + gridCellW / 2;
+       //Invert the y axis so that "north" is at the top of the screen.
+      int pixelY = bounds.height - (gridCellH * cc.getColumn() + gridCellH / 2);
+
+      pixels.setLocation(pixelX, pixelY);
+   }
+
    /**
     * Retrieve the rendering options.
     *
@@ -348,14 +357,14 @@ public class RenderSimState
       int pixW = bounds.width - 1;
       int pixH = bounds.height - 1;
 
-      int numCols = model.getWorld().getColumnCount();
-      int numRows = model.getWorld().getRowCount();
+      int numCols = model.getWorldGIS().getColumnCount();
+      int numRows = model.getWorldGIS().getRowCount();
 
       gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
       gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
 
-      pixelsPerMeterH = (pixH * 1.0) / model.getWorld().getHeight();
-      pixelsPerMeterW = (pixW * 1.0) / model.getWorld().getWidth();
+      pixelsPerMeterH = (pixH * 1.0) / model.getWorldGIS().getHeight();
+      pixelsPerMeterW = (pixW * 1.0) / model.getWorldGIS().getWidth();
 
       roadStroke = new BasicStroke(Math.min(gridCellH, gridCellW) * ROAD_WIDTH_VS_GRID_PERCENT);
       roadInterSectionSz = (int) (Math.min(gridCellH, gridCellW) * INTERSECTION_SZ_VS_GRID_PERCENT);
@@ -425,52 +434,58 @@ public class RenderSimState
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
 
-      final List<WorldCoordinate> havenLocs = model.getWorld().getHavenLocations();
-      final int NUM_HAVENS = havenLocs.size();
+      Havens havens = model.getWorld().getHavens();
+      final int NUM_HAVENS = havens.getNumHavens();
 
       for(int i = 0; i < NUM_HAVENS; ++i)
       {
-         worldCoordinateToPixels(havenLocs.get(i), pixels);
+         cellCoordinateToPixels(havens.getHavenByIndx(i), pixels);
          g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }
+
 
    private void drawRoads(Graphics2D g2d)
    {
       g2d.setColor(Color.pink);
       g2d.setStroke(roadStroke);
 
-      final int halfRdSz = roadInterSectionSz / 2;
-
       final Point start = new Point(0, 0);
       final Point end = new Point(0, 0);
+      final CellCoordinate startRow = new CellCoordinate();
+      final CellCoordinate endRow = new CellCoordinate();
 
-      final List<DirectedEdge<WorldCoordinate>> edges = model.getWorld().getRoadNetwork().getEdges();
-      final int NUM_EDGES = edges.size();
-      DirectedEdge<WorldCoordinate> edge = null;
-      for(int i=0; i<NUM_EDGES; ++i)
+      final int numCols = model.getWorldGIS().getColumnCount();
+      final int numRows = model.getWorldGIS().getRowCount();
+      final RoadNetwork roads = model.getWorld().getRoadNetwork();
+
+      for(int i=0; i<numRows; ++i)
       {
-         edge = edges.get(i);
+         for(int j=0; j<numCols; ++j)
+         {
+            if(roads.isTraversable(i, j))
+            {
+               if((i + 1) < numRows && roads.isTraversable(i+1, j))//Check next row
+               {
+                  //Draw road from current cell to cell below
+                  startRow.setCoordinate(i, j);
+                  endRow.setCoordinate(i + 1, j);
+                  cellCoordinateToPixels(startRow, start);
+                  cellCoordinateToPixels(endRow, end);
+                  g2d.drawLine(start.x, start.y, end.x, end.y);
+               }
 
-         worldCoordinateToPixels(edge.getStartVertex().getUserData(), start);
-         worldCoordinateToPixels(edge.getEndVertex().getUserData(), end);
-
-         // Draw a line representing the road
-         g2d.setColor(Color.pink);
-         g2d.drawLine(start.x, start.y, end.x, end.y);
-
-         // Draw squares over the road intersections (road graph vertices)
-         g2d.fillRect(start.x - halfRdSz, start.y - halfRdSz, roadInterSectionSz, roadInterSectionSz);
-         g2d.fillRect(end.x - halfRdSz, end.y - halfRdSz, roadInterSectionSz, roadInterSectionSz);
-
-         // Draw the road intersection/vertex IDs above and to the left of the
-         // intersection
-         g2d.setColor(Color.GREEN);
-         g2d.drawString(Integer.toString(edge.getStartVertex().getID()), start.x - roadInterSectionSz,
-               start.y - roadInterSectionSz);
-         g2d.drawString(Integer.toString(edge.getEndVertex().getID()), end.x - roadInterSectionSz,
-               end.y - roadInterSectionSz);
-
+               if((j + 1) < numCols && roads.isTraversable(i, j+1))//Check next column
+               {
+                  //Draw road from current cell to cell to the right
+                  startRow.setCoordinate(i, j);
+                  endRow.setCoordinate(i, j + 1);
+                  cellCoordinateToPixels(startRow, start);
+                  cellCoordinateToPixels(endRow, end);
+                  g2d.drawLine(start.x, start.y, end.x, end.y);
+               }
+            }
+         }
       }
    }
 
@@ -484,8 +499,8 @@ public class RenderSimState
 
       // White, half alpha
       final Color lineColor = new Color(255, 255, 255, 127);
-      final int numCols = model.getWorld().getColumnCount();
-      final int numRows = model.getWorld().getRowCount();
+      final int numCols = model.getWorldGIS().getColumnCount();
+      final int numRows = model.getWorldGIS().getRowCount();
 
       g2d.setColor(Color.yellow);
       g2d.drawString(Integer.toString(0), bounds.x + 1, bounds.height - 1);

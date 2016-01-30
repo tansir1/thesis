@@ -8,8 +8,8 @@ import java.io.File;
 public class SimModelConfig
 {
    private int randomSeed;
-   private File worldFile;
-   private File entityTypesFile;
+   private File worldDir;
+   private File entityTypesDir;
    /**
     * Maximum range of UAV communication systems expressed as a percentage of
     * the maximum distance across the world.
@@ -24,8 +24,8 @@ public class SimModelConfig
    public SimModelConfig()
    {
       randomSeed = 0;
-      worldFile = null;
-      entityTypesFile = null;
+      worldDir = null;
+      entityTypesDir = null;
       commsRngPercent = 0;
    }
 
@@ -39,32 +39,32 @@ public class SimModelConfig
       this.randomSeed = randomSeed;
    }
 
-   public File getWorldFile()
+   public File getWorldDir()
    {
-      return worldFile;
+      return worldDir;
    }
 
-   public void setWorldFile(File file)
+   public void setWorldDir(File file)
    {
       if (file == null)
       {
-         throw new NullPointerException("World file cannot be null.");
+         throw new NullPointerException("World directory cannot be null.");
       }
-      this.worldFile = file;
+      this.worldDir = file;
    }
 
-   public File getEntityTypeFile()
+   public File getEntityTypeDir()
    {
-      return entityTypesFile;
+      return entityTypesDir;
    }
 
-   public void setEntityTypeFile(File file)
+   public void setEntityTypeDir(File file)
    {
       if (file == null)
       {
-         throw new NullPointerException("Entity Type file cannot be null.");
+         throw new NullPointerException("Entity directory file cannot be null.");
       }
-      this.entityTypesFile = file;
+      this.entityTypesDir = file;
    }
 
    public void setCommsRngPercent(float percent)
@@ -96,9 +96,9 @@ public class SimModelConfig
       sb.append("Random seed: ");
       sb.append(randomSeed);
       sb.append("\nWorld: ");
-      sb.append(worldFile.getAbsolutePath());
+      sb.append(worldDir.getAbsolutePath());
       sb.append("\nEntity Types: ");
-      sb.append(entityTypesFile.getAbsolutePath());
+      sb.append(entityTypesDir.getAbsolutePath());
       sb.append("\nCommsRng: ");
       sb.append(String.format("%.2f", commsRngPercent));
 

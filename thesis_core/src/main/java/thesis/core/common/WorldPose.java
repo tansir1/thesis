@@ -10,7 +10,7 @@ public class WorldPose
    /**
     * Heading in degrees normalized [0,360).
     */
-   private double heading;
+   private float heading;
 
    /**
     * Initialize at the origin location with a zero heading.
@@ -41,7 +41,7 @@ public class WorldPose
     * @param heading
     *           Copy this value internally (degrees).
     */
-   public WorldPose(final WorldCoordinate location, final double heading)
+   public WorldPose(final WorldCoordinate location, final float heading)
    {
       this.coord = new WorldCoordinate(location);
       this.heading = Angle.normalize360(heading);
@@ -81,7 +81,7 @@ public class WorldPose
    /**
     * @return The heading of the UAV in degrees, [0,360).
     */
-   public double getHeading()
+   public float getHeading()
    {
       return heading;
    }
@@ -92,7 +92,7 @@ public class WorldPose
     * @param angle
     *           The heading in degrees.
     */
-   public void setHeading(double angle)
+   public void setHeading(float angle)
    {
       this.heading = Angle.normalize360(angle);
    }

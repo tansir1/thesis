@@ -2,6 +2,7 @@ package thesis.worldgen;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -9,16 +10,17 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.common.WorldCoordinate;
-import thesis.core.common.graph.Graph;
-import thesis.core.common.graph.Vertex;
-import thesis.core.entities.TargetType;
-import thesis.core.entities.uav.UAVType;
-import thesis.core.serialization.entities.EntityTypes;
-import thesis.core.serialization.world.TargetEntityConfig;
-import thesis.core.serialization.world.UAVEntityConfig;
+import thesis.core.EntityTypeCfgs;
+import thesis.core.common.CellCoordinate;
+import thesis.core.common.RoadNetwork;
+import thesis.core.serialization.world.TargetStartCfg;
+import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.serialization.world.WorldConfig;
+import thesis.core.targets.TargetTypeConfigs;
+import thesis.core.uav.UAVTypeConfigs;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.world.Havens;
+import thesis.core.world.WorldGIS;
 
 public class WorldGenerator
 {
@@ -30,222 +32,46 @@ public class WorldGenerator
 
    private Random randGen;
 
-   /**
-    * Width of the world in meters.
-    */
-   private double width;
+   private WorldGIS gis;
 
-   /**
-    * Height of the world in meters.
-    */
-   private double height;
-
-   /**
-    * Number of rows in the world.
-    */
-   private int numRows;
-
-   /**
-    * Number of columns in the world.
-    */
-   private int numCols;
-
-   public WorldGenerator(int randSeed, double width, double height, int numRows, int numCols)
+   public WorldGenerator(int randSeed, WorldGIS gis)
    {
       this.randGen = new Random(randSeed);
-      this.width = width;
-      this.height = height;
-      this.numRows = numRows;
-      this.numCols = numCols;
+      this.gis = gis;
    }
 
-   public WorldConfig generateWorld(EntityTypes entTypes, int numMobileTgts, int numStaticTgts, int numUAVs)
+   public WorldConfig generateWorld(EntityTypeCfgs entTypes, int numMobileTgts, int numStaticTgts, int numUAVs)
    {
       if (entTypes == null)
       {
          throw new NullPointerException("EntityTypes cannot be null.");
       }
 
-      WorldConfig world = new WorldConfig();
-      world.setWorldHeight(height);
-      world.setWorldWidth(width);
-      world.setNumColumns(numCols);
-      world.setNumRows(numRows);
+      WorldConfig worldCfg = new WorldConfig();
+      worldCfg.getWorld().getWorldGIS().copy(gis);
 
-      generateRoadNetwork(world.getRoadNetwork());
-      world.getHavens().addAll(generateHavens(world.getRoadNetwork()));
+      RoadNetGenerator roadNetGen = new RoadNetGenerator(gis.getRowCount(), gis.getColumnCount());
+      roadNetGen.generate(randGen, worldCfg.getWorld().getRoadNetwork());
 
-      generateTargets(world, entTypes, numMobileTgts, numStaticTgts);
-      generateUAVs(world, entTypes, numUAVs);
+      generateHavens(worldCfg.getWorld().getRoadNetwork(), worldCfg.getWorld().getHavens());
 
-      return world;
-   }
+      generateTargets(worldCfg, entTypes.getTgtTypeCfgs(), numMobileTgts, numStaticTgts);
+      generateUAVs(worldCfg, entTypes.getUAVTypeCfgs(), numUAVs);
 
-   private void kdNodeToRoadGroup(Vertex<WorldCoordinate> vertex, KDNode node, Graph<WorldCoordinate> roadNet)
-   {
-      KDNode left = node.getLeftChild();
-      KDNode right = node.getRightChild();
-
-      if (left == null && right == null)
-      {
-         return;// End of the tree branch
-      }
-
-      if (left != null)
-      {
-         insertIntermediateVertices(roadNet, vertex, left, node.isVerticalSplit());
-      }
-
-      if (right != null)
-      {
-         insertIntermediateVertices(roadNet, vertex, right, node.isVerticalSplit());
-      }
-   }
-
-   private void insertIntermediateVertices(Graph<WorldCoordinate> roadNet, Vertex<WorldCoordinate> startVert,
-         KDNode endNode, boolean isVertSplit)
-   {
-      final double minVertexDistBuf = Math.min(width, height) * MIN_INTERSECTION_SPACING_PERCENT;
-
-      WorldCoordinate intersection = computeRoadIntersectionFromNode(startVert.getUserData(), endNode, isVertSplit);
-
-      final double distStartToInter = intersection.distanceTo(startVert.getUserData());
-      final double distInterToEnd = intersection.distanceTo(endNode.getLocation());
-
-      Vertex<WorldCoordinate> endVert = null;
-
-      if (distStartToInter > minVertexDistBuf && distInterToEnd > minVertexDistBuf)
-      {
-         // Connect root to intermediate road intersection
-         Vertex<WorldCoordinate> vertInter = roadNet.createVertex(intersection);
-         roadNet.createBidirectionalEdge(startVert, vertInter, distStartToInter);
-
-         // Connect intersection to the node location
-         endVert = roadNet.createVertex(endNode.getLocation());
-         roadNet.createBidirectionalEdge(vertInter, endVert, distInterToEnd);
-      }
-      else
-      {
-         // Either the start or ending vertex is too close to the
-         // intersection, so drop the intersection and draw a diagonal line
-         // between the two vertices instead of the manhattan line connecting
-         // them
-
-         // Connect start to the end vertex
-         endVert = roadNet.createVertex(endNode.getLocation());
-         roadNet.createBidirectionalEdge(startVert, endVert, distInterToEnd);
-      }
-
-      // Recursively move down the tree
-      kdNodeToRoadGroup(endVert, endNode, roadNet);
-   }
-
-   private WorldCoordinate computeRoadIntersectionFromNode(WorldCoordinate root, KDNode node, boolean isVertical)
-   {
-      WorldCoordinate intersection = null;
-
-      if (isVertical)
-      {
-         intersection = new WorldCoordinate(node.getLocation().getNorth(), root.getEast());
-      }
-      else
-      {
-         intersection = new WorldCoordinate(root.getNorth(), node.getLocation().getEast());
-      }
-
-      return intersection;
-   }
-
-   /**
-    * Checks if the new cell location satisfies all the rules for new road seed
-    * generation.
-    *
-    * @param existingLocations
-    *           All pre-existing road seed coordinates.
-    * @param newLocation
-    *           The potential new seed location to validate.
-    * @return True if the new location is a valid location, false otherwise.
-    */
-   private boolean isValidRoadSeedLocation(List<WorldCoordinate> existingLocations, WorldCoordinate newLocation)
-   {
-      boolean valid = true;
-
-      // Prevents the seeds from clustering together
-      double interSeedDistBuffer = Math.min(width, height) * MIN_INTERSECTION_SPACING_PERCENT;
-
-      if (existingLocations.contains(newLocation))
-      {
-         // Cannot put two seeds on top of each other
-         valid = false;
-      }
-
-      for (WorldCoordinate otherSeed : existingLocations)
-      {
-         if (newLocation.distanceTo(otherSeed) < interSeedDistBuffer)
-         {
-            valid = false;
-            break;
-         }
-      }
-
-      return valid;
-   }
-
-   /**
-    * Randomly/procedurally generate a network of roads for the world.
-    *
-    * @param roadNet
-    *           Generated roads will be stored here.
-    */
-   private void generateRoadNetwork(Graph<WorldCoordinate> roadNet)
-   {
-
-      // This percentage of grid cells will contain road seed locations
-      final double percentRoadCells = 0.01;
-      int numSeeds = (int) (numRows * numCols * percentRoadCells);
-      numSeeds = Math.max(numSeeds, 6);
-      // numSeeds = Math.max(numSeeds, 3);
-
-      Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      logger.debug("Generating road network with {} seeds.", numSeeds);
-
-      List<WorldCoordinate> roadSeeds = new ArrayList<WorldCoordinate>();
-
-      // Generate seed locations
-      for (int i = 0; i < numSeeds; ++i)
-      {
-         double north = randGen.nextDouble() * height;
-         double east = randGen.nextDouble() * width;
-
-         WorldCoordinate seedCoord = new WorldCoordinate(north, east);
-         while (!isValidRoadSeedLocation(roadSeeds, seedCoord))
-         {
-            // Regenerate a new location until we get a valid one
-            north = randGen.nextDouble() * height;
-            east = randGen.nextDouble() * width;
-            seedCoord.setCoordinate(north, east);
-         }
-
-         logger.debug("Road seed {} at {}.", i, seedCoord);
-         roadSeeds.add(seedCoord);
-      }
-
-      // Generate all the roads (edges) in the road network (tree).
-      KDNode rootNode = KDTree.generateTree(roadSeeds);
-      Vertex<WorldCoordinate> rootVert = roadNet.createVertex(rootNode.getLocation());
-      kdNodeToRoadGroup(rootVert, rootNode, roadNet);
+      return worldCfg;
    }
 
    /**
     * Randomly selects locations along the roads to place havens.
     */
-   private Set<WorldCoordinate> generateHavens(Graph<WorldCoordinate> roadNet)
+   private void generateHavens(RoadNetwork roadNet, Havens havensInWorld)
    {
-      Set<WorldCoordinate> havens = new HashSet<WorldCoordinate>();
+      Set<CellCoordinate> havens = new HashSet<CellCoordinate>();
+      List<CellCoordinate> traversable = roadNet.getTraversableCells();
 
       // This percentage of grid cells will contain safe havens for targets
       final double percentHavenCells = 0.05;
-      int numVertices = roadNet.getNumVertices();
+      int numVertices = traversable.size();
       int numHavens = (int) (numVertices * percentHavenCells);
       numHavens = Math.max(numHavens, 3);// Require at least 3 havens
 
@@ -256,20 +82,26 @@ public class WorldGenerator
       for (int i = 0; i < numHavens; ++i)
       {
          int index = randGen.nextInt(numVertices);
-         WorldCoordinate havenCoord = roadNet.getVertexByID(index).getUserData();
+         CellCoordinate havenCoord = traversable.get(index);
          // In case we randomly generate two havens at the same location,
          // move the second one
          while (havens.contains(havenCoord))
          {
             index = randGen.nextInt(numVertices);
-            havenCoord = roadNet.getVertexByID(index).getUserData();
+            havenCoord = traversable.get(index);
          }
          havens.add(havenCoord);
       }
-      return havens;
+
+      havensInWorld.reset(numHavens);
+      Iterator<CellCoordinate> itr = havens.iterator();
+      for(int i=0; i<numHavens; ++i)
+      {
+         havensInWorld.setHavenByIndx(i, itr.next());
+      }
    }
 
-   private void generateUAVs(WorldConfig world, EntityTypes entTypes, int numUAVs)
+   private void generateUAVs(WorldConfig worldCfg, UAVTypeConfigs uavTypes, int numUAVs)
    {
       final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 
@@ -279,24 +111,19 @@ public class WorldGenerator
          return;
       }
 
-      final double maxEastM = world.getWorldWidth();
-      final double maxNorthM = world.getWorldHeight();
-
-      List<UAVType> types = new ArrayList<UAVType>(entTypes.getAllUAVTypes());
-
       for (int i = 0; i < numUAVs; ++i)
       {
-         final int typeIndex = randGen.nextInt(types.size());
+         final int typeIndex = randGen.nextInt(uavTypes.getNumTypes());
 
-         UAVEntityConfig uavCfg = new UAVEntityConfig();
+         int row = randGen.nextInt(worldCfg.getWorld().getWorldGIS().getRowCount());
+         int col = randGen.nextInt(worldCfg.getWorld().getWorldGIS().getColumnCount());
 
-         uavCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
-         uavCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
-         uavCfg.setOrientation(randGen.nextDouble() * 360);
+         UAVStartCfg uavStartCfg = new UAVStartCfg();
+         uavStartCfg.setOrientation(randGen.nextFloat() * 360f);
+         uavStartCfg.setUAVType(typeIndex);
+         worldCfg.getWorld().getWorldGIS().convertCellToWorld(row, col, uavStartCfg.getLocation());
 
-         uavCfg.setUAVType(types.get(typeIndex).getTypeID());
-
-         world.uavCfgs.add(uavCfg);
+         worldCfg.getUAVCfgs().add(uavStartCfg);
       }
    }
 
@@ -312,22 +139,23 @@ public class WorldGenerator
     * @param numStaticTgts
     *           The number of static tarets to generate.
     */
-   private void generateTargets(WorldConfig world, EntityTypes entTypes, int numMobileTgts, int numStaticTgts)
+   private void generateTargets(WorldConfig world, TargetTypeConfigs tgtTypeCfgs, int numMobileTgts, int numStaticTgts)
    {
       final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      final List<TargetType> mobileTypes = new ArrayList<TargetType>();
-      final List<TargetType> staticTypes = new ArrayList<TargetType>();
+      final List<Integer> mobileTypes = new ArrayList<Integer>();
+      final List<Integer> staticTypes = new ArrayList<Integer>();
 
       // Sort the target types between static and mobile targets
-      for (TargetType tt : entTypes.getAllTargetTypes())
+      int NUM_TGT_TYPES = tgtTypeCfgs.getNumTypes();
+      for (int i = 0; i < NUM_TGT_TYPES; ++i)
       {
-         if (tt.isMobile())
+         if (tgtTypeCfgs.isMobile(i))
          {
-            mobileTypes.add(tt);
+            mobileTypes.add(i);
          }
          else
          {
-            staticTypes.add(tt);
+            staticTypes.add(i);
          }
       }
 
@@ -351,22 +179,14 @@ public class WorldGenerator
       for (int i = 0; i < numStaticTgts; ++i)
       {
          final int typeIndex = randGen.nextInt(staticTypes.size());
-
-         TargetEntityConfig tgtCfg = generateRandomTarget(world);
-         tgtCfg.setTargetType(staticTypes.get(typeIndex).getTypeID());
-
-         world.targetCfgs.add(tgtCfg);
+         generateRandomTarget(world, typeIndex);
       }
 
       // Generate mobile targets
       for (int i = 0; i < numMobileTgts; ++i)
       {
          final int typeIndex = randGen.nextInt(mobileTypes.size());
-
-         TargetEntityConfig tgtCfg = generateRandomTarget(world);
-         tgtCfg.setTargetType(mobileTypes.get(typeIndex).getTypeID());
-
-         world.targetCfgs.add(tgtCfg);
+         generateRandomTarget(world, typeIndex);
       }
 
    }
@@ -380,16 +200,16 @@ public class WorldGenerator
     *           location.
     * @return A randomly generated tareget entity configuration.
     */
-   private TargetEntityConfig generateRandomTarget(WorldConfig world)
+   private void generateRandomTarget(WorldConfig world, int type)
    {
-      final double maxEastM = world.getWorldWidth();
-      final double maxNorthM = world.getWorldHeight();
+      int row = randGen.nextInt(world.getWorld().getWorldGIS().getRowCount());
+      int col = randGen.nextInt(world.getWorld().getWorldGIS().getColumnCount());
 
-      TargetEntityConfig tgtCfg = new TargetEntityConfig();
-      tgtCfg.getLocation().setNorth(randGen.nextDouble() * maxNorthM);
-      tgtCfg.getLocation().setEast(randGen.nextDouble() * maxEastM);
-      tgtCfg.setOrientation(randGen.nextDouble() * 360);
+      TargetStartCfg tgtStartCfg = new TargetStartCfg();
+      tgtStartCfg.setOrientation(randGen.nextFloat() * 360f);
+      tgtStartCfg.setTargetType(type);
+      world.getWorld().getWorldGIS().convertCellToWorld(row, col, tgtStartCfg.getLocation());
 
-      return tgtCfg;
+      world.getTargetCfgs().add(tgtStartCfg);
    }
 }
