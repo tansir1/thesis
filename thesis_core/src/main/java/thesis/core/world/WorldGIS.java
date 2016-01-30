@@ -44,6 +44,11 @@ public class WorldGIS
 
    }
 
+   public void copy(WorldGIS copy)
+   {
+      this.reset(copy.width, copy.height, copy.numRows, copy.numCols);
+   }
+
    /**
     * @param width Width of the world in meters.
     * @param height Height of the world in meters.
@@ -204,5 +209,23 @@ public class WorldGIS
       double east = fromCol * distPerCol + (distPerCol * 0.5);
 
       to.setCoordinate(north, east);
+   }
+
+   /**
+    * @return The maximum distance between the farthest points in the world in meters.
+    */
+   public double getMaxWorldDistance()
+   {
+      WorldCoordinate origin = new WorldCoordinate();
+      WorldCoordinate maxWidthHeight = new WorldCoordinate(height, width);
+      return origin.distanceTo(maxWidthHeight);
+   }
+
+
+   @Override
+   public String toString()
+   {
+      return "WorldGIS [width=" + width + ", height=" + height + ", numRows=" + numRows + ", numCols=" + numCols
+            + "]";
    }
 }
