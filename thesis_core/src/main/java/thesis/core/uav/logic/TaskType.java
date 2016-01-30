@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.logic;
+package thesis.core.uav.logic;
 
 public enum TaskType
 {

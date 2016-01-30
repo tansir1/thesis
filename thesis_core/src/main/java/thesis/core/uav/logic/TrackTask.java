@@ -1,10 +1,11 @@
-package thesis.core.entities.uav.logic;
+package thesis.core.uav.logic;
 
 import java.util.List;
 
 import thesis.core.common.SimTime;
 import thesis.core.entities.belief.TargetBelief;
-import thesis.core.entities.uav.UAV;
+import thesis.core.uav.UAV;
+
 
 public class TrackTask extends UAVTask
 {
