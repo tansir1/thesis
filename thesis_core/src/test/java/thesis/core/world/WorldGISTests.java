@@ -16,7 +16,8 @@ public class WorldGISTests
       final double oneHundredKM = 100000;
 
       //100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      WorldGIS testMe = new WorldGIS(oneHundredKM, oneHundredKM, 10, 10);
+      WorldGIS testMe = new WorldGIS();
+      testMe.reset(oneHundredKM, oneHundredKM, 10, 10);
 
       final double fifteenKM = 15000;
       final double thirtyFiveKM = 35000;
