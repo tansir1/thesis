@@ -34,7 +34,6 @@ public class Sensor
    private final WorldCoordinate lookAtCur;
    private final Rectangle viewRegion;
 
-
    public Sensor(int type, SensorTypeConfigs cfgs, TargetMgr tgtMgr)
    {
       if (cfgs == null)
@@ -81,7 +80,9 @@ public class Sensor
     * Set the current azimuth of the sensor in relation to the world's zero
     * degree mark. This angle is in absolute world coordinates.
     *
-    * @param azimuth The azimuth of the sensor in absolute world coordinates (degrees).
+    * @param azimuth
+    *           The azimuth of the sensor in absolute world coordinates
+    *           (degrees).
     */
    public void setAzimuth(float azimuth)
    {
@@ -113,29 +114,39 @@ public class Sensor
       return new SensorDetections(type, tgtMgr.getTargetsInRegion(viewRegion));
    }
 
+   public boolean isInRange(WorldCoordinate coord)
+   {
+      return pose.getCoordinate().distanceTo(coord) < MAX_RNG;
+   }
+
+   public boolean isInView(WorldCoordinate coord)
+   {
+      return viewRegion.isCoordinateInRegion(coord);
+   }
+
    private void slew()
    {
       float desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
 
       float lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
 
-      //If the lookDelta < one frame's worth of slewing
-      if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
+      // If the lookDelta < one frame's worth of slewing
+      if (Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
       {
-         //Prevent overshooting the look angle
+         // Prevent overshooting the look angle
          pose.setHeading(desiredAngle);
       }
       else
       {
          float slew = 0;
-         if(((lookDelta+360) % 360) > 180)
+         if (((lookDelta + 360) % 360) > 180)
          {
-            //turn left
+            // turn left
             slew = MAX_SLEW_FRAME_RATE;
          }
          else
          {
-            //turn right
+            // turn right
             slew = -MAX_SLEW_FRAME_RATE;
          }
          pose.setHeading(pose.getHeading() + slew);
@@ -155,7 +166,7 @@ public class Sensor
       double midRngDist = 0;
       double fovFar = 0;
       double fovNear = 0;
-      if(distToStarePt < (MAX_RNG - frustrumHeight))
+      if (distToStarePt < (MAX_RNG - frustrumHeight))
       {
          double distToStareM = distToStarePt;
 
@@ -170,17 +181,17 @@ public class Sensor
          midRngDist = (frustrumHeight / 2.0) + MIN_RNG;
       }
 
-      //Update viewpoint center position
+      // Update viewpoint center position
       lookAtCur.setCoordinate(pose.getCoordinate());
       lookAtCur.translatePolar(hdg, midRngDist);
 
-      //Reset all view region locations to the sensor
+      // Reset all view region locations to the sensor
       viewRegion.getTopLeft().setCoordinate(pose.getCoordinate());
       viewRegion.getTopRight().setCoordinate(pose.getCoordinate());
       viewRegion.getBottomLeft().setCoordinate(pose.getCoordinate());
       viewRegion.getBottomRight().setCoordinate(pose.getCoordinate());
 
-      //Project out from the sensor position along the view heading
+      // Project out from the sensor position along the view heading
       viewRegion.getTopLeft().translatePolar(leftAngleDeg, fovFar);
       viewRegion.getTopRight().translatePolar(rightAngleDeg, fovFar);
       viewRegion.getBottomLeft().translatePolar(leftAngleDeg, fovNear);

@@ -28,7 +28,7 @@ public class SensorGroup
    {
       List<SensorDetections> detections = new ArrayList<SensorDetections>();
 
-      for(Sensor s : sensors)
+      for (Sensor s : sensors)
       {
          detections.add(s.stepSimulation(hostUAVLocation));
       }
@@ -38,9 +38,37 @@ public class SensorGroup
 
    public void stareAtAll(WorldCoordinate starePoint)
    {
-      for(Sensor s : sensors)
+      for (Sensor s : sensors)
       {
          s.slewToLookAt(starePoint);
       }
+   }
+
+   public boolean isInSensorRange(WorldCoordinate coord)
+   {
+      boolean inRng = false;
+      for (Sensor s : sensors)
+      {
+         inRng = s.isInRange(coord);
+         if (inRng)
+         {
+            break;
+         }
+      }
+      return inRng;
+   }
+
+   public boolean isInView(WorldCoordinate coord)
+   {
+      boolean inView = false;
+      for (Sensor s : sensors)
+      {
+         inView = s.isInView(coord);
+         if (inView)
+         {
+            break;
+         }
+      }
+      return inView;
    }
 }
