@@ -1,7 +1,10 @@
 package thesis.core.serialization;
 
 import java.io.File;
+import java.util.List;
 
+import thesis.core.serialization.world.TargetStartCfg;
+import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.world.World;
 
 public class WorldConfigLoader
@@ -17,7 +20,7 @@ public class WorldConfigLoader
 
    }
 
-   public boolean loadConfigs(DBConnections dbConns, File worldDir, World world)
+   public boolean loadConfigs(DBConnections dbConns, File worldDir, World world, List<UAVStartCfg> uavStartCfgs, List<TargetStartCfg> tgtStartCfgs)
    {
       boolean success = true;
 
@@ -30,6 +33,8 @@ public class WorldConfigLoader
       WorldGISDAO gisDAO = new WorldGISDAO(worldDir.getName());
       HavensDAO havensDAO = new HavensDAO(worldDir.getName());
       RoadNetworkDAO roadsDAO = new RoadNetworkDAO(worldDir.getName());
+      UAVStartLocationDAO uavStartDAO = new UAVStartLocationDAO(worldDir.getName());
+      TargetStartLocationDAO tgtStartDAO = new TargetStartLocationDAO(worldDir.getName());
 
 
       success = gisDAO.loadCSV(dbConns.getWorldsDBConnection(), gisCfgFile, world.getWorldGIS());
@@ -43,6 +48,16 @@ public class WorldConfigLoader
       {
          world.getRoadNetwork().reset(world.getWorldGIS().getRowCount(), world.getWorldGIS().getColumnCount());
          success = roadsDAO.loadCSV(dbConns.getWorldsDBConnection(), roadsCfgFile, world.getRoadNetwork());
+      }
+
+      if (success)
+      {
+         success = uavStartDAO.loadCSV(dbConns.getWorldsDBConnection(), uavsCfgFile, uavStartCfgs, world.getWorldGIS());
+      }
+
+      if (success)
+      {
+         success = tgtStartDAO.loadCSV(dbConns.getWorldsDBConnection(), tgtsCfgFile, tgtStartCfgs, world.getWorldGIS());
       }
 
       return success;
