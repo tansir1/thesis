@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import thesis.core.serialization.world.WorldConfig;
 
-public class WorldConfigLoaderTests
+public class WorldConfigCSVCodecTests
 {
    @Test
    public void loadEntityCfgs()
@@ -17,11 +17,11 @@ public class WorldConfigLoaderTests
       assertTrue("Failed to open world db.", dbConns.openWorldsDB());
 
       WorldConfig worldCfg = new WorldConfig();
-      WorldConfigLoader testMe = new WorldConfigLoader();
+      WorldConfigCSVCodec testMe = new WorldConfigCSVCodec();
 
 
       assertTrue("Failed to load world configurations.",
-            testMe.loadConfigs(dbConns, new File("./testWorlds/test1"), worldCfg));
+            testMe.loadCSV(dbConns, new File("./testWorlds/test1"), worldCfg));
       dbConns.closeWorldsDB();
    }
 }
