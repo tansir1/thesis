@@ -2,6 +2,7 @@ package thesis.core.serialization;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -21,12 +22,118 @@ public class SensorMisclassifyProbsDAO
    private final String misclassTypeColName = "MisclassTgtType";
    private final String probColName = "Prob";
 
-   public SensorMisclassifyProbsDAO()
-   {
+   private Connection dbCon;
 
+   public SensorMisclassifyProbsDAO(Connection dbCon)
+   {
+      this.dbCon = dbCon;
    }
 
-   public boolean loadCSV(Connection dbCon, File csvFile, SensorProbs snsrProbs)
+   public boolean loadData(SensorProbs snsrProbs)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+
+         ResultSet rs = stmt.executeQuery("select * from " + TBL_NAME);
+         while (rs.next())
+         {
+            int snsrTypeID = rs.getInt(snsrTypeColName);
+            int detectTypeID = rs.getInt(detectTypeColName);
+            int misclassTypeID = rs.getInt(misclassTypeColName);
+            float prob = rs.getFloat(probColName);
+
+            snsrProbs.setSensorMisclassifyProb(snsrTypeID, detectTypeID, misclassTypeID, prob);
+         }
+         rs.close();
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to load sensor probabilities from db. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean saveData(SensorProbs snsrProbs)
+   {
+      boolean success = true;
+      try
+      {
+         StringBuilder sql = new StringBuilder("insert into ");
+         sql.append(TBL_NAME);
+         sql.append("(");
+         sql.append(snsrTypeColName);
+         sql.append(",");
+         sql.append(detectTypeColName);
+         sql.append(",");
+         sql.append(misclassTypeColName);
+         sql.append(",");
+         sql.append(probColName);
+         sql.append(") values (?,?,?,?)");
+
+         PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
+
+         int numSnsrTypes = snsrProbs.getNumSensorTypes();
+         int numTgtTypes = snsrProbs.getNumTargetTypes();
+
+         for (int i = 0; i < numSnsrTypes; ++i)
+         {
+            for (int j = 0; j < numTgtTypes; ++j)
+            {
+               for (int k = 0; k < numTgtTypes; ++k)
+               {
+                  stmt.setInt(1, i);
+                  stmt.setInt(2, j);
+                  stmt.setInt(3, k);
+                  stmt.setFloat(4, snsrProbs.getSensorMisclassifyProb(i, j, k));
+                  stmt.addBatch();
+               }
+            }
+         }
+
+         stmt.executeBatch();
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to save haven configs to db. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean writeCSV(File csvFile)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         StringBuilder sql = new StringBuilder("call csvwrite('");
+         sql.append(csvFile.getAbsolutePath());
+         sql.append("', 'select * from ");
+         sql.append(TBL_NAME);
+         sql.append("');");
+         if (!stmt.execute(sql.toString()))
+         {
+            logger.error("Failed to export into csv file.");
+         }
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to save sensor probabilities to csv. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean loadCSV(File csvFile)
    {
       boolean success = true;
       try
@@ -52,18 +159,6 @@ public class SensorMisclassifyProbsDAO
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");
          stmt.execute(initTblSQL.toString());
-
-         ResultSet rs = stmt.executeQuery("select * from " + TBL_NAME);
-         while (rs.next())
-         {
-            int snsrTypeID = rs.getInt(snsrTypeColName);
-            int detectTypeID = rs.getInt(detectTypeColName);
-            int misclassTypeID = rs.getInt(misclassTypeColName);
-            float prob = rs.getFloat(probColName);
-
-            snsrProbs.setSensorMisclassifyProb(snsrTypeID, detectTypeID, misclassTypeID, prob);
-         }
-         rs.close();
 
          stmt.close();
 

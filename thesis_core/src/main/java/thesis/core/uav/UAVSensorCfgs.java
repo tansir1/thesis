@@ -11,6 +11,16 @@ public class UAVSensorCfgs
 
    }
 
+   public int getNumUAVTypes()
+   {
+      return snsrsOnUAV.length;
+   }
+
+   public int getNumSensorypes()
+   {
+      return snsrsOnUAV[0].size();
+   }
+
    public void reset(int numUAVTypes, int numSnsrTypes)
    {
       snsrsOnUAV = new BitSet[numUAVTypes];

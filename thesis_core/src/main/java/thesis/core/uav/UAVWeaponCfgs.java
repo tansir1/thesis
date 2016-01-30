@@ -8,6 +8,18 @@ public class UAVWeaponCfgs
 
    }
 
+   public int getNumUAVTypes()
+   {
+      // TODO Implement me
+      return 0;
+   }
+
+   public int getNumWeaponTypes()
+   {
+      // TODO Implement me
+      return 0;
+   }
+
    public void reset(int numUAVTypes, int numWpnTypes)
    {
       // TODO Implement me
@@ -30,11 +42,7 @@ public class UAVWeaponCfgs
       return 0;
    }
    /*
-
-   private static class WpnQty
-   {
-      public int wpnType;
-      public int initQty;
-   }
-   */
+    *
+    * private static class WpnQty { public int wpnType; public int initQty; }
+    */
 }

@@ -9,6 +9,16 @@ public class WeaponProbs
 
    }
 
+   public int getNumWeaponTypes()
+   {
+      return wpnDestroy.length;
+   }
+
+   public int getNumTargetTypes()
+   {
+      return wpnDestroy[0].length;
+   }
+
    public void reset(int numWpnTypes, int numTgtTypes)
    {
       wpnDestroy = new float[numWpnTypes][numTgtTypes];

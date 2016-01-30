@@ -24,6 +24,11 @@ public class WeaponTypeConfigs
 
    }
 
+   public int getNumConfigs()
+   {
+      return fov.length;
+   }
+
    public void copy(WeaponTypeConfigs copy)
    {
       int numTypes = copy.fov.length;

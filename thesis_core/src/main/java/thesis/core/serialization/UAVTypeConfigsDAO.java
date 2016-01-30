@@ -2,6 +2,7 @@ package thesis.core.serialization;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,12 +21,86 @@ public class UAVTypeConfigsDAO
    private final String turnRadColName = "turnRadius";
    private final String spdColName = "speed";
 
-   public UAVTypeConfigsDAO()
-   {
+   private Connection dbCon;
 
+   public UAVTypeConfigsDAO(Connection dbCon)
+   {
+      this.dbCon = dbCon;
    }
 
-   public boolean loadCSV(Connection dbCon, File csvFile, UAVTypeConfigs uavTypeCfgs)
+   public boolean loadData(UAVTypeConfigs uavTypeCfgs)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+
+         ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
+         rs.next();
+         int numTypes = rs.getInt(1);
+         logger.info("Loading {} UAV types.", numTypes);
+         rs.close();
+
+         uavTypeCfgs.reset(numTypes);
+
+         rs = stmt.executeQuery("select * from " + TBL_NAME);
+         while (rs.next())
+         {
+            int typeID = rs.getInt(typeColName);
+            float spd = rs.getFloat(spdColName);
+            float turnRadius = rs.getFloat(turnRadColName);
+
+            uavTypeCfgs.setUAVData(typeID, spd, turnRadius);
+         }
+         rs.close();
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to load weapon type configs from db. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean saveData(UAVTypeConfigs uavTypeCfgs)
+   {
+      boolean success = true;
+      try
+      {
+         StringBuilder sql = new StringBuilder("insert into ");
+         sql.append(TBL_NAME);
+         sql.append("(");
+         sql.append(typeColName);
+         sql.append(",");
+         sql.append(turnRadColName);
+         sql.append(",");
+         sql.append(spdColName);
+         sql.append(") values (?,?,?)");
+
+         PreparedStatement stmt = dbCon.prepareStatement(sql.toString());
+         int numUAVTypes = uavTypeCfgs.getNumTypes();
+
+         for (int i = 0; i < numUAVTypes; ++i)
+         {
+            stmt.setInt(1, i);
+            stmt.setFloat(2, uavTypeCfgs.getMaxTurnRt(i));
+            stmt.setFloat(3, uavTypeCfgs.getSpeed(i));
+            stmt.addBatch();
+         }
+         stmt.executeBatch();
+
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to save weapon type configs to db. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
+
+   public boolean loadCSV(File csvFile)
    {
       boolean success = true;
       try
@@ -49,32 +124,40 @@ public class UAVTypeConfigsDAO
          initTblSQL.append("');");
          stmt.execute(initTblSQL.toString());
 
-         ResultSet rs = stmt.executeQuery("select count(*) from " + TBL_NAME);
-         rs.next();
-         int numTypes = rs.getInt(1);
-         logger.info("Loading {} UAV types.", numTypes);
-         rs.close();
+         stmt.close();
+      }
+      catch (SQLException e)
+      {
+         logger.error("Failed to load weapon type configs from csv. Details: {}", e.getMessage());
+         success = false;
+      }
+      return success;
+   }
 
-         uavTypeCfgs.reset(numTypes);
-
-         rs = stmt.executeQuery("select * from " + TBL_NAME);
-         while (rs.next())
+   public boolean writeCSV(File csvFile)
+   {
+      boolean success = true;
+      try
+      {
+         Statement stmt = dbCon.createStatement();
+         StringBuilder sql = new StringBuilder("call csvwrite('");
+         sql.append(csvFile.getAbsolutePath());
+         sql.append("', 'select * from ");
+         sql.append(TBL_NAME);
+         sql.append("');");
+         if (!stmt.execute(sql.toString()))
          {
-            int typeID = rs.getInt(typeColName);
-            float spd = rs.getFloat(spdColName);
-            float turnRadius = rs.getFloat(turnRadColName);
-
-            uavTypeCfgs.setUAVData(typeID, spd, turnRadius);
+            logger.error("Failed to export into csv file.");
          }
-         rs.close();
 
          stmt.close();
       }
       catch (SQLException e)
       {
-         logger.error("Failed to load weapon type configs. Details: {}", e.getMessage());
+         logger.error("Failed to save weapon type configs to csv. Details: {}", e.getMessage());
          success = false;
       }
       return success;
    }
+
 }

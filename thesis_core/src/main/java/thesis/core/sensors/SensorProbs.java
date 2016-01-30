@@ -37,6 +37,16 @@ public class SensorProbs
       }
    }
 
+   public int getNumSensorTypes()
+   {
+      return snsrConfirm.length;
+   }
+
+   public int getNumTargetTypes()
+   {
+      return snsrConfirm[0].length;
+   }
+
    public float getSensorDetectProb(int snsrType, int tgtType)
    {
       return snsrDetect[snsrType][tgtType];
