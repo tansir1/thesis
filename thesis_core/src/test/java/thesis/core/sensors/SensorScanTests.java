@@ -100,7 +100,8 @@ public class SensorScanTests
 
       //-------------Initialize world sim----------------------
       WorldBelief wb = new WorldBelief(numRows, numCols, numTgtTypes);
-      WorldGIS worldGIS = new WorldGIS(100, 100, numRows, numCols);
+      WorldGIS worldGIS = new WorldGIS();
+      worldGIS.reset(100, 100, numRows, numCols);
       HavenRouting havenRouting = new HavenRouting(emptyRoadNet, worldGIS, havens, randGen);
       TargetEntitiesCfg tgtEntCfgs = new TargetEntitiesCfg();
       initTargets(tgtEntCfgs, worldGIS);
@@ -113,7 +114,7 @@ public class SensorScanTests
       allCells.add(new CellCoordinate(0,1));
       allCells.add(new CellCoordinate(1,0));
       allCells.add(new CellCoordinate(1,1));
-      SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr);
-      testMe.simulateScan(wb, 0, allCells);
+      SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
+      testMe.simulateScan(0, 0, wb, allCells, 0L);
    }
 }

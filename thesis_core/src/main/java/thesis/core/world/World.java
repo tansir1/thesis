@@ -1,17 +1,10 @@
 package thesis.core.world;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 
 public class World
 {
-   /**
-    * The locations of all safe havens for targets.
-    */
-   private List<CellCoordinate> havens;
+   private Havens havens;
 
    private RoadNetwork roadNet;
 
@@ -21,15 +14,10 @@ public class World
    {
       worldGIS = new WorldGIS();
       roadNet = new RoadNetwork();
-      havens = new ArrayList<CellCoordinate>();
+      havens = new Havens();
    }
 
-   /**
-    * Get the location of all safe havens in the world.
-    *
-    * @return The location of each haven.
-    */
-   public List<CellCoordinate> getHavenLocations()
+   public Havens getHavens()
    {
       return havens;
    }
