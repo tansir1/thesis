@@ -3,6 +3,11 @@ package thesis.core.targets;
 public class TargetTypeConfigs
 {
    /**
+    * Target type ID used for the 'no target' case.
+    */
+   public static final int NULL_TGT_TYPE = 0;
+
+   /**
     * If the target moves, it moves at this speed in m/s.
     */
    private float spds[];
