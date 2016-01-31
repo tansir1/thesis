@@ -10,8 +10,8 @@ public class TargetTypeConfigs
    /**
     * If the target moves, it moves at this speed in m/s.
     */
-   private float spds[];
-   private float bestAngles[];
+   private double spds[];
+   private double bestAngles[];
 
    public TargetTypeConfigs()
    {
@@ -29,8 +29,8 @@ public class TargetTypeConfigs
 
    public void reset(int numTgtTypes)
    {
-      spds = new float[numTgtTypes];
-      bestAngles = new float[numTgtTypes];
+      spds = new double[numTgtTypes];
+      bestAngles = new double[numTgtTypes];
 
       for(int i=0; i<spds.length; ++i)
       {
@@ -44,18 +44,18 @@ public class TargetTypeConfigs
     * @param spd Set to a negative value to indicate that the target is stationary.  Units of m/s.
     * @param bestAngle The best angle to attack or scan the target.  Degrees from north.
     */
-   public void setTargetData(int tgtType, float spd, float bestAngle)
+   public void setTargetData(int tgtType, double spd, double bestAngle)
    {
       spds[tgtType] = spd;
       bestAngles[tgtType] = bestAngle;
    }
 
-   public float getBestAngle(int tgtType)
+   public double getBestAngle(int tgtType)
    {
       return bestAngles[tgtType];
    }
 
-   public float getSpeed(int tgtType)
+   public double getSpeed(int tgtType)
    {
       return spds[tgtType];
    }

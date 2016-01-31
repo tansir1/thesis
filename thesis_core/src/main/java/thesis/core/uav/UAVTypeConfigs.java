@@ -11,12 +11,12 @@ public class UAVTypeConfigs
    /**
     * Cruise speed of the UAVs in meters per second.
     */
-   private float spds[];
+   private double spds[];
 
    /**
     * The minimum radius required for the UAV to turn 180 degrees (meters).
     */
-   private float turnRadius[];
+   private double turnRadius[];
 
    public UAVTypeConfigs()
    {
@@ -25,8 +25,8 @@ public class UAVTypeConfigs
 
    public void reset(int numTypes)
    {
-      spds = new float[numTypes];
-      turnRadius = new float[numTypes];
+      spds = new double[numTypes];
+      turnRadius = new double[numTypes];
 
       for (int i = 0; i < numTypes; ++i)
       {
@@ -48,7 +48,7 @@ public class UAVTypeConfigs
     * @param turnRadius
     *           Radius in meters to turn 180 degrees.
     */
-   public void setUAVData(int type, float spd, float turnRadius)
+   public void setUAVData(int type, double spd, double turnRadius)
    {
       this.spds[type] = spd;
       this.turnRadius[type] = turnRadius;
@@ -62,7 +62,7 @@ public class UAVTypeConfigs
     *
     * @return The maximum speed of the UAV.
     */
-   public float getSpeed(int type)
+   public double getSpeed(int type)
    {
       return spds[type];
    }
@@ -75,7 +75,7 @@ public class UAVTypeConfigs
     *           The type of the UAV to lookup.
     * @return The distance required to turn around at max speed in meters.
     */
-   public float getTurnRadius(int type)
+   public double getTurnRadius(int type)
    {
       return turnRadius[type];
    }
@@ -100,10 +100,10 @@ public class UAVTypeConfigs
     *           The UAV type.
     * @return The maximum turning rate (degrees / sec).
     */
-   public float getMaxTurnRt(int type)
+   public double getMaxTurnRt(int type)
    {
-      float spd = spds[type];
-      float radius = turnRadius[type];
-      return (float) Math.toDegrees(spd / radius);
+      double spd = spds[type];
+      double radius = turnRadius[type];
+      return Math.toDegrees(spd / radius);
    }
 }

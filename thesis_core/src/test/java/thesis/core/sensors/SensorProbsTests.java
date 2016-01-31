@@ -10,7 +10,7 @@ public class SensorProbsTests
    @Test
    public void lookupTests()
    {
-      final float COMPARE_THRESH = 0.000001f;
+      final double COMPARE_THRESH = 0.000001f;
       final int numSnsrs = 2;
       final int numTgts = 2;
 

@@ -9,7 +9,7 @@ public class TargetStartCfg
 {
    private int type;
    private WorldCoordinate location;
-   private float orientation;
+   private double orientation;
 
    public TargetStartCfg()
    {
@@ -33,12 +33,12 @@ public class TargetStartCfg
       return location;
    }
 
-   public float getOrientation()
+   public double getOrientation()
    {
       return orientation;
    }
 
-   public void setOrientation(float angle)
+   public void setOrientation(double angle)
    {
       orientation = angle;
    }

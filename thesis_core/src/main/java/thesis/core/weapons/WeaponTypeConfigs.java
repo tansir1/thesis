@@ -9,7 +9,7 @@ public class WeaponTypeConfigs
    /**
     * Field of view in degrees of the weapon.
     */
-   private float fov[];
+   private double fov[];
    /**
     * Minimum launch distance in meters.
     */
@@ -41,7 +41,7 @@ public class WeaponTypeConfigs
 
    public void reset(int numWpnTypes)
    {
-      fov = new float[numWpnTypes];
+      fov = new double[numWpnTypes];
       minRng = new double[numWpnTypes];
       maxRng = new double[numWpnTypes];
 
@@ -53,14 +53,14 @@ public class WeaponTypeConfigs
       }
    }
 
-   public void setWeaponData(int wpnType, float fov, double minRng, double maxRng)
+   public void setWeaponData(int wpnType, double fov, double minRng, double maxRng)
    {
       this.fov[wpnType] = fov;
       this.minRng[wpnType] = minRng;
       this.maxRng[wpnType] = maxRng;
    }
 
-   public float getFOV(int wpnType)
+   public double getFOV(int wpnType)
    {
       return fov[wpnType];
    }

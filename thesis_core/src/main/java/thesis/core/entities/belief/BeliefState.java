@@ -30,8 +30,8 @@ public class BeliefState
     * The confidence of all belief states drop by this much per frame.
     * TODO This should be set externally somehow.
     */
-   private final float CONF_DECAY_RATE = //2% per second
-         (float)(0.02 * SimTime.SIM_STEP_RATE_S);
+   private final double CONF_DECAY_RATE = //2% per second
+         (0.02 * SimTime.SIM_STEP_RATE_S);
 
    /**
     * When this amount of simulation time elapses the UAV will broadcast its

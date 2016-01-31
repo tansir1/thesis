@@ -9,6 +9,7 @@ import org.junit.Test;
 import thesis.core.EntityTypeCfgs;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.experimental.CellBelief;
 import thesis.core.experimental.WorldBelief;
@@ -26,11 +27,6 @@ public class SensorScanTests
       final int numSnsrTypes = 1;
 
       EntityTypeCfgs entCfgs = new EntityTypeCfgs();
-      /*
-       * SensorTypeConfigs snsrTypeCfgs = entCfgs.getSnsrTypeCfgs();
-       * snsrTypeCfgs.reset(numSnsrTypes); snsrTypeCfgs.setSensorData(0, 45, 0,
-       * 1000, 10);
-       */
 
       TargetTypeConfigs tgtTypeCfgs = entCfgs.getTgtTypeCfgs();
       tgtTypeCfgs.reset(numTgtTypes);
@@ -39,13 +35,17 @@ public class SensorScanTests
 
       SensorProbs pyldProb = entCfgs.getSnsrProbs();
       pyldProb.reset(numSnsrTypes, numTgtTypes);
-      pyldProb.setSensorDetectProb(0, 0, 0.6f);
-      pyldProb.setSensorDetectProb(0, 1, 0.3f);
+      pyldProb.setSensorDetectProb(0, 0, 0.3f);
+      pyldProb.setSensorDetectProb(0, 1, 0.7f);
       pyldProb.setSensorDetectProb(0, 2, 0.6f);
 
-      pyldProb.setSensorConfirmProb(0, 0, 0.7f);
-      pyldProb.setSensorConfirmProb(0, 1, 0.4f);
-      pyldProb.setSensorConfirmProb(0, 2, 0.7f);
+      pyldProb.setSensorConfirmProb(0, 0, 0.4f);
+      pyldProb.setSensorConfirmProb(0, 1, 0.7f);
+      pyldProb.setSensorConfirmProb(0, 2, 0.6f);
+
+      pyldProb.setSensorHeadingCoeff(0, 0, 0.5f);
+      pyldProb.setSensorHeadingCoeff(0, 1, 0.5f);
+      pyldProb.setSensorHeadingCoeff(0, 2, 0.5f);
 
       pyldProb.setSensorMisclassifyProb(0, 0, 1, 0.2f);
       pyldProb.setSensorMisclassifyProb(0, 0, 2, 0.2f);
@@ -59,30 +59,18 @@ public class SensorScanTests
 
    private List<TargetStartCfg> initTargets(WorldGIS worldGIS)
    {
-      /*
-       * Tgt1 | Tgt2 |
-       */
-      CellCoordinate cell1 = new CellCoordinate(0, 0);
-      CellCoordinate cell2 = new CellCoordinate(0, 1);
+      CellCoordinate cell = new CellCoordinate(0, 0);
 
-      WorldPose pose1 = new WorldPose();
-      WorldPose pose2 = new WorldPose();
+      WorldPose pose = new WorldPose();
 
-      worldGIS.convertCellToWorld(cell1, pose1.getCoordinate());
-      worldGIS.convertCellToWorld(cell2, pose2.getCoordinate());
+      worldGIS.convertCellToWorld(cell, pose.getCoordinate());
 
       List<TargetStartCfg> startCfgs = new ArrayList<TargetStartCfg>();
 
       TargetStartCfg startCfg = new TargetStartCfg();
-      startCfg.getLocation().setCoordinate(pose1.getCoordinate());
-      startCfg.setOrientation(pose1.getHeading());
+      startCfg.getLocation().setCoordinate(pose.getCoordinate());
+      startCfg.setOrientation(pose.getHeading());
       startCfg.setTargetType(1);
-      startCfgs.add(startCfg);
-
-      startCfg = new TargetStartCfg();
-      startCfg.getLocation().setCoordinate(pose2.getCoordinate());
-      startCfg.setOrientation(pose2.getHeading());
-      startCfg.setTargetType(2);
       startCfgs.add(startCfg);
 
       return startCfgs;
@@ -93,7 +81,7 @@ public class SensorScanTests
    {
       final int numTgtTypes = 3;
       final int numRows = 1;
-      final int numCols = 2;
+      final int numCols = 1;
 
       EntityTypeCfgs entCfgs = initEntityCfgs(numTgtTypes);
 
@@ -114,15 +102,14 @@ public class SensorScanTests
       // ----------------Perform tests---------------------
       List<CellCoordinate> allCells = new ArrayList<CellCoordinate>();
       allCells.add(new CellCoordinate(0, 0));
-      allCells.add(new CellCoordinate(0, 1));
       SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
 
-      int numSimulations = 4;
+      int numSimulations = 40;
 
       for (int i = 0; i < numSimulations; ++i)
       {
-         System.out.println(String.format("--------Pass %d---------", i));
-         testMe.simulateScan(0, 45, wb, allCells, 0L);
+         System.out.println(String.format("--------Simulation Frame %d---------", i));
+         testMe.simulateScan(0, 115, wb, allCells, i * SimTime.SIM_STEP_RATE_MS);
 
          for (int cellIdx = 0; cellIdx < numCols; ++cellIdx)
          {

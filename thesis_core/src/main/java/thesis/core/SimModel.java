@@ -66,8 +66,8 @@ public class SimModel
     * @param entTypes
     *           The types of entities within the world.
     */
-   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, float commsRngPercent,
-         float commsRelayProb)
+   public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, double commsRngPercent,
+         double commsRelayProb)
    {
       randGen = new Random(randomSeed);
 
@@ -84,8 +84,8 @@ public class SimModel
       resetUAVs(worldCfg, commsRngPercent, commsRelayProb);
    }
 
-   private void resetUAVs(WorldConfig worldCfg, float commsRngPercent,
-         float commsRelayProb)
+   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent,
+         double commsRelayProb)
    {
       final double maxComsRng = world.getWorldGIS().getMaxWorldDistance() * commsRngPercent;
 

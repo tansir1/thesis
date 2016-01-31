@@ -44,13 +44,13 @@ public class SensorTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(fovColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(minRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(slewRtColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -105,10 +105,10 @@ public class SensorTypeConfigsDAO
          while(rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float fov = rs.getFloat(fovColName);
+            double fov = rs.getDouble(fovColName);
             double minRng = rs.getDouble(minRngColName);
             double maxRng = rs.getDouble(maxRngColName);
-            float slewRt = rs.getFloat(slewRtColName);
+            double slewRt = rs.getDouble(slewRtColName);
 
             snsrTypeCfgs.setSensorData(typeID, fov, minRng, maxRng, slewRt);
          }
@@ -149,10 +149,10 @@ public class SensorTypeConfigsDAO
          for(int i=0; i<numTypes; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, snsrTypeCfgs.getFOV(i));
+            stmt.setDouble(2, snsrTypeCfgs.getFOV(i));
             stmt.setDouble(3, snsrTypeCfgs.getMinRange(i));
             stmt.setDouble(4, snsrTypeCfgs.getMaxRange(i));
-            stmt.setFloat(5, snsrTypeCfgs.getSlewRate(i));
+            stmt.setDouble(5, snsrTypeCfgs.getSlewRate(i));
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -181,13 +181,13 @@ public class SensorTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(fovColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(minRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(slewRtColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
          initTblSQL.append(typeColName + "," + fovColName + "," + minRngColName + "," + maxRngColName + "," + slewRtColName+ " ");
          initTblSQL.append("from csvread('");
