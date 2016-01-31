@@ -26,7 +26,8 @@ public class SensorScan
       this.randGen = randGen;
    }
 
-   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV, long simTime)
+   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV,
+         long simTime)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       final int NUM_COORDS = snsrFOV.size();
@@ -169,7 +170,7 @@ public class SensorScan
          double suspectedTgtTypeHdgEst)
    {
       double worstProbOfMisclass = snsrProbs.getSensorMisclassifyProb(snsrType, suspectedRealTgtType, detectedType);
-      double probOfMisClass = 0;
+      double probOfMisClass = 0.0000001;
 
       if (worstProbOfMisclass > 0d)
       {
@@ -202,34 +203,52 @@ public class SensorScan
       }
 
       CellBelief cellBelief = belief.getCellBelief(cell);
-int x=0;
+
       // Simulate the sensor scan of the environment
-      int detectedTgtType = determineSensorResult(snsrType, cell, snsrHdg, cellBelief);
+      int detectedTgtType = 0;
+      double probOfScanTgt = 0;
+
+      do
+      {
+         detectedTgtType = determineSensorResult(snsrType, cell, snsrHdg, cellBelief);
+         if (tgtType == detectedTgtType)
+         {
+            probOfScanTgt = probOfDetect(snsrType, detectedTgtType, snsrHdg,
+                  cellBelief.getTargetHeading(detectedTgtType));
+         }
+         else
+         {
+            double suspectedTgtTypeHdgEst = cellBelief.getTargetHeading(tgtType);
+            probOfScanTgt = probOfMisclassify(snsrType, tgtType, detectedTgtType, snsrHdg, suspectedTgtTypeHdgEst);
+         }
+
+         // If given the current conditions there's a 0% chance of
+         // misclassification and the detected type != to the target type then
+         // rescan to prevent a degenerate edge case. If this happens and we
+         // didn't rescan then the bayesian equation would set the probability
+         // of the target to 0% and it would become stuck there for the rest of
+         // the simulation.
+         //
+         // This occurs when the sensor and target are perfectly aligned but the
+         // random number generator causes the target to not be detected
+         // in determineSensorResult().
+      } while (probOfScanTgt < 0.0000001 && tgtType != detectedTgtType);
 
       // ---Update bayesian belief model for the target type in the scanned
       // cell---
 
-      // prob(tgt type exists Y) = prob(detect tgt type Y) * prob(previous
-      // belief tgt Y exists)
-      // ---------------------------------------------------------
-      // sum(prob(detect tgt type X as Y) * prob(previous belief off type X))
-      // for all tgt type X
-      double probOfScanTgt = 0;
-      if (tgtType == detectedTgtType)
-      {
-         probOfScanTgt = probOfDetect(snsrType, detectedTgtType, snsrHdg, cellBelief.getTargetHeading(detectedTgtType));
-      }
-      else
-      {
-         double suspectedTgtTypeHdgEst = cellBelief.getTargetHeading(tgtType);
-         probOfScanTgt = probOfMisclassify(snsrType, tgtType, detectedTgtType, snsrHdg, suspectedTgtTypeHdgEst);
-      }
+      //@formatter:off
+      // prob(tgt type exists Y) = prob(detect tgt type Y) * prob(previous belief tgt Y exists)
+      //                           ---------------------------------------------------------
+      //                           sum(prob(detect tgt type X as Y) * prob(previous belief off type X)) for all tgt type X
+      //@formatter:on
 
       double probDetectTgtExistsPreviously = cellBelief.getTargetProb(tgtType);
       double bayesianNumerator = probOfScanTgt * probDetectTgtExistsPreviously;
 
       // Bayesian update denominator. Acts as a normalizing factor.
-      //double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, tgtType, probOfScanTgt);
+      // double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg,
+      // cellBelief, tgtType, probOfScanTgt);
       double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, detectedTgtType, probOfScanTgt);
 
       // New probability that the detected target type actually exists at the
@@ -247,7 +266,6 @@ int x=0;
 
    }
 
-
    private double getSumProbsAllTargets(int snsrType, double snsrHdg, CellBelief cellBelief, int detectedTgtType,
          double probDetectTgtType)
    {
@@ -263,8 +281,7 @@ int x=0;
          {
             // Probability that the true target is an 'i' and it was
             // misclassified as detectedTgtType
-            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg,
-                  tgtHdgEst);
+            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg, tgtHdgEst);
 
             accumulator += probMisClass * probExistsPrior;
          }
@@ -294,8 +311,7 @@ int x=0;
          {
             // Probability that the true target is an 'i' and it was
             // misclassified as detectedTgtType
-            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg,
-                  tgtHdgEst);
+            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg, tgtHdgEst);
 
             accumulator += probMisClass * probExistsPrior;
          }
@@ -326,7 +342,8 @@ int x=0;
 
    private double computeHeadingEstimate(int tgtType, double hdgConfCoeff, double prevEstHdg, CellCoordinate cell)
    {
-      //Assume all sensors can get a measurement within 90 degrees even at worst case scenario
+      // Assume all sensors can get a measurement within 90 degrees even at
+      // worst case scenario
       double errorRange = 90 * (1.0f - hdgConfCoeff);
       double halfRng = errorRange / 2.0f;
 
@@ -341,7 +358,7 @@ int x=0;
       double newEstHdg = 0;
       if (tgtTruth != null)
       {
-         //newEstHdg = tgtTruth.getHeading() + error;
+         // newEstHdg = tgtTruth.getHeading() + error;
          newEstHdg = tgtTruth.getHeading();
       }
       else
