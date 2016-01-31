@@ -62,6 +62,7 @@ public class SensorScanTests
       CellCoordinate cell = new CellCoordinate(0, 0);
 
       WorldPose pose = new WorldPose();
+      pose.setHeading(22);
 
       worldGIS.convertCellToWorld(cell, pose.getCoordinate());
 
@@ -104,22 +105,27 @@ public class SensorScanTests
       allCells.add(new CellCoordinate(0, 0));
       SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
 
-      int numSimulations = 40;
+      int numSimulations = 400;
 
       for (int i = 0; i < numSimulations; ++i)
       {
-         System.out.println(String.format("--------Simulation Frame %d---------", i));
+         //System.out.println(String.format("--------Simulation Frame %d---------", i));
          testMe.simulateScan(0, 115, wb, allCells, i * SimTime.SIM_STEP_RATE_MS);
 
          for (int cellIdx = 0; cellIdx < numCols; ++cellIdx)
          {
             CellBelief cell = wb.getCellBelief(0, cellIdx);
-
+            System.out.print(Integer.toString(i) + ",");
             for (int tgtTypeIdx = 0; tgtTypeIdx < numTgtTypes; ++tgtTypeIdx)
             {
-               System.out.println(String.format("Cell %d Tgt %d - Prob:%.2f, Hdg:%.2f", cellIdx, tgtTypeIdx,
-                     cell.getTargetProb(tgtTypeIdx), cell.getTargetHeading(tgtTypeIdx)));
+               // System.out.println(String.format("Cell %d Tgt %d - Prob:%.2f,
+               // Hdg:%.2f", cellIdx, tgtTypeIdx,
+               // cell.getTargetProb(tgtTypeIdx),
+               // cell.getTargetHeading(tgtTypeIdx)));
+               System.out.print(
+                     String.format("%.2f,%.2f,", cell.getTargetProb(tgtTypeIdx), cell.getTargetHeading(tgtTypeIdx)));
             }
+            System.out.println("");
          }
 
       }

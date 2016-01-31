@@ -13,7 +13,7 @@ import thesis.core.targets.TargetTypeConfigs;
 public class SensorScan
 {
    static final double detectAngleDegradationSlope = -0.005555556f;
-   static final double minDetectValue = 0;
+   static final double minDetectValue = 0.001;
 
    private SensorProbs snsrProbs;
    private TargetMgr tgtMgr;
@@ -89,6 +89,10 @@ public class SensorScan
                break;
             }
          }
+      }
+      else
+      {
+
       }
 
       // TODO Should we able to detect an empty cell? If so, should there be a
@@ -199,7 +203,7 @@ public class SensorScan
       {
          // Sensor performance is not good enough to operate in these
          // conditions. Do nothing.
-         return;
+         //return;
       }
 
       CellBelief cellBelief = belief.getCellBelief(cell);
@@ -208,8 +212,8 @@ public class SensorScan
       int detectedTgtType = 0;
       double probOfScanTgt = 0;
 
-      do
-      {
+      //do
+     // {
          detectedTgtType = determineSensorResult(snsrType, cell, snsrHdg, cellBelief);
          if (tgtType == detectedTgtType)
          {
@@ -232,7 +236,7 @@ public class SensorScan
          // This occurs when the sensor and target are perfectly aligned but the
          // random number generator causes the target to not be detected
          // in determineSensorResult().
-      } while (probOfScanTgt < 0.0000001 && tgtType != detectedTgtType);
+      //} while (probOfScanTgt < 0.0000001 && tgtType != detectedTgtType);
 
       // ---Update bayesian belief model for the target type in the scanned
       // cell---
@@ -261,6 +265,11 @@ public class SensorScan
       double snsrEstHdg = computeHeadingEstimate(detectedTgtType, hdgConfCoeff, prevEstHdg, cell);
       // Weighted alpha filter to update heading value
       double newEstHdg = (1d - hdgConfCoeff) * prevEstHdg + hdgConfCoeff * snsrEstHdg;
+
+      //Prevent degenerate cases where the bayesian state gets railed and blocks further
+      //updates from adjusting the values due to everything being exactly zero and one
+      bayesianUpdate = Math.max(bayesianUpdate, 0.001);
+      bayesianUpdate = Math.min(bayesianUpdate, 0.999);
 
       cellBelief.updateTargetEstimates(tgtType, bayesianUpdate, newEstHdg, simTime);
 
@@ -322,7 +331,6 @@ public class SensorScan
          }
 
       }
-      // accumulator /= NUM_TGT_TYPES;
       return accumulator;
    }
 
@@ -358,8 +366,7 @@ public class SensorScan
       double newEstHdg = 0;
       if (tgtTruth != null)
       {
-         // newEstHdg = tgtTruth.getHeading() + error;
-         newEstHdg = tgtTruth.getHeading();
+         newEstHdg = tgtTruth.getHeading() + error;
       }
       else
       {
