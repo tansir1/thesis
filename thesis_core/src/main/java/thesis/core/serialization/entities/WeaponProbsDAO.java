@@ -44,7 +44,7 @@ public class WeaponProbsDAO
          initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDestroyColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(")");
          stmt.execute(initTblSQL.toString());
 
@@ -69,7 +69,7 @@ public class WeaponProbsDAO
          {
             int wpnTypeID = rs.getInt(wpnTypeColName);
             int tgtTypeID = rs.getInt(tgtTypeColName);
-            float probDestroy = rs.getFloat(probDestroyColName);
+            double probDestroy = rs.getDouble(probDestroyColName);
 
             wpnProbs.setWeaponDestroyProb(wpnTypeID, tgtTypeID, probDestroy);
          }
@@ -109,7 +109,7 @@ public class WeaponProbsDAO
             {
                stmt.setInt(1, i);
                stmt.setInt(2, j);
-               stmt.setFloat(3, wpnProbs.getWeaponDestroyProb(i, j));
+               stmt.setDouble(3, wpnProbs.getWeaponDestroyProb(i, j));
                stmt.addBatch();
             }
          }
@@ -141,7 +141,7 @@ public class WeaponProbsDAO
          initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDestroyColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(") as select ");
          initTblSQL.append(wpnTypeColName + "," + tgtTypeColName + "," + probDestroyColName + " ");
          initTblSQL.append("from csvread('");

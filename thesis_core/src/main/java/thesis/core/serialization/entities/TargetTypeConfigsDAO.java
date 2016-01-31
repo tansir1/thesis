@@ -42,9 +42,9 @@ public class TargetTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" int not null,");
          initTblSQL.append(angleColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -76,8 +76,8 @@ public class TargetTypeConfigsDAO
          while (rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float spd = rs.getFloat(spdColName);
-            float angle = rs.getFloat(angleColName);
+            double spd = rs.getDouble(spdColName);
+            double angle = rs.getDouble(angleColName);
 
             tgtTypeCfgs.setTargetData(typeID, spd, angle);
          }
@@ -113,8 +113,8 @@ public class TargetTypeConfigsDAO
          for (int i = 0; i < numTgtTypes; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, tgtTypeCfgs.getBestAngle(i));
-            stmt.setFloat(3, tgtTypeCfgs.getSpeed(i));
+            stmt.setDouble(2, tgtTypeCfgs.getBestAngle(i));
+            stmt.setDouble(3, tgtTypeCfgs.getSpeed(i));
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -143,9 +143,9 @@ public class TargetTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" int not null,");
          initTblSQL.append(angleColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
          initTblSQL.append(typeColName + "," + angleColName + "," + spdColName + " ");
          initTblSQL.append("from csvread('");

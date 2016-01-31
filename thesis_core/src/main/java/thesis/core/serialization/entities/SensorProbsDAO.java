@@ -46,11 +46,11 @@ public class SensorProbsDAO
          initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDetectColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(probConfirmColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(hdgCoefColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -76,9 +76,9 @@ public class SensorProbsDAO
          {
             int snsrTypeID = rs.getInt(snsrTypeColName);
             int tgtTypeID = rs.getInt(tgtTypeColName);
-            float probDetect = rs.getFloat(probDetectColName);
-            float probConfirm = rs.getFloat(probConfirmColName);
-            float hdgCoeff = rs.getFloat(hdgCoefColName);
+            double probDetect = rs.getDouble(probDetectColName);
+            double probConfirm = rs.getDouble(probConfirmColName);
+            double hdgCoeff = rs.getDouble(hdgCoefColName);
 
             snsrProbs.setSensorConfirmProb(snsrTypeID, tgtTypeID, probConfirm);
             snsrProbs.setSensorDetectProb(snsrTypeID, tgtTypeID, probDetect);
@@ -127,9 +127,9 @@ public class SensorProbsDAO
             {
                stmt.setInt(1, i);
                stmt.setInt(2, j);
-               stmt.setFloat(3, snsrProbs.getSensorDetectProb(i, j));
-               stmt.setFloat(4, snsrProbs.getSensorConfirmProb(i,j));
-               stmt.setFloat(5, snsrProbs.getSensorHeadingCoeff(i, j));
+               stmt.setDouble(3, snsrProbs.getSensorDetectProb(i, j));
+               stmt.setDouble(4, snsrProbs.getSensorConfirmProb(i,j));
+               stmt.setDouble(5, snsrProbs.getSensorHeadingCoeff(i, j));
                stmt.addBatch();
             }
          }
@@ -162,11 +162,11 @@ public class SensorProbsDAO
          initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDetectColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(probConfirmColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(hdgCoefColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
          initTblSQL.append(snsrTypeColName + "," + tgtTypeColName + "," + probDetectColName + "," + probConfirmColName + "," + hdgCoefColName + " ");
          initTblSQL.append("from csvread('");

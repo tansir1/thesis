@@ -12,8 +12,8 @@ import thesis.core.targets.TargetTypeConfigs;
 
 public class SensorScan
 {
-   static final float detectAngleDegradationSlope = -0.005555556f;
-   static final float minDetectValue = 0;
+   static final double detectAngleDegradationSlope = -0.005555556f;
+   static final double minDetectValue = 0;
 
    private SensorProbs snsrProbs;
    private TargetMgr tgtMgr;
@@ -26,7 +26,7 @@ public class SensorScan
       this.randGen = randGen;
    }
 
-   public void simulateScan(int snsrType, float snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV, long simTime)
+   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV, long simTime)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       final int NUM_COORDS = snsrFOV.size();
@@ -41,7 +41,7 @@ public class SensorScan
 
    }
 
-   private int determineSensorResult(int snsrType, CellCoordinate cell, float snsrHdg, CellBelief cellBelief)
+   private int determineSensorResult(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief)
    {
       // This assumes a 100% detection rate of an empty cell
       int detectedTgtType = TargetTypeConfigs.NULL_TGT_TYPE;
@@ -51,7 +51,7 @@ public class SensorScan
       {
          for (Target tgt : tgtsTruth)
          {
-            float estTgtHdg = cellBelief.getTargetHeading(tgt.getType());
+            double estTgtHdg = cellBelief.getTargetHeading(tgt.getType());
             double probDetect = probOfDetect(snsrType, tgt.getType(), snsrHdg, estTgtHdg);
             if (randGen.nextDouble() < probDetect)
             {
@@ -62,8 +62,8 @@ public class SensorScan
                {
                   // -1f is the default probability if no misclassification data
                   // is available
-                  float misclassProb = snsrProbs.getSensorMisclassifyProb(snsrType, tgt.getType(), i);
-                  if (randGen.nextFloat() < misclassProb)
+                  double misclassProb = probOfMisclassify(snsrType, tgt.getType(), i, snsrHdg, estTgtHdg);
+                  if (randGen.nextDouble() < misclassProb)
                   {
                      // TODO Iterating target types in order weights occurrence
                      // of misclassifcation to target types with lower type ID
@@ -79,8 +79,7 @@ public class SensorScan
                if (detectedTgtType == TargetTypeConfigs.NULL_TGT_TYPE)
                {
                   // Target was not misclassified so set the detected type to
-                  // the true
-                  // value
+                  // the true value
                   detectedTgtType = tgt.getType();
                }
 
@@ -99,8 +98,11 @@ public class SensorScan
 
    private double computeSenseDetectMetric(int snsrType, int tgtType)
    {
+      // double bestAngle = tgtMgr.getTypeConfigs().getBestAngle(tgtType);
+      // double maxMetric = probOfDetect(snsrType, tgtType, bestAngle, 0);
       double maxMetric = 0;
-      for (float relAngle = 0; relAngle < 180; relAngle += 1.0)
+
+      for (double relAngle = 0; relAngle < 180; relAngle += 1.0)
       {
          double prob = probOfDetect(snsrType, tgtType, relAngle, 0);
          double metric = prob / (1.0 - prob);
@@ -126,13 +128,14 @@ public class SensorScan
     * @param tgtHdg
     * @return
     */
-   private double probOfDetect(int snsrType, int tgtType, float snsrHdg, double tgtHdg)
+   private double probOfDetect(int snsrType, int tgtType, double snsrHdg, double tgtHdg)
    {
       double relHdg = Math.abs(tgtHdg - snsrHdg);
       double deltaFromBestAngle = Math.abs(relHdg - tgtMgr.getTypeConfigs().getBestAngle(tgtType));
 
-      double percentOfBestProbAngle = detectAngleDegradationSlope * deltaFromBestAngle + minDetectValue;
-      double probDetection = (1.0 - percentOfBestProbAngle) * snsrProbs.getSensorDetectProb(snsrType, tgtType);
+      double percentOfBestProbAngle = (1.0 - Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
+            + minDetectValue;
+      double probDetection = percentOfBestProbAngle * snsrProbs.getSensorDetectProb(snsrType, tgtType);
       return probDetection;
    }
 
@@ -162,8 +165,8 @@ public class SensorScan
     * @return The probability that the suspected target type was misclassified
     *         as the detected target type.
     */
-   private double probOfMisclassify(int snsrType, int suspectedRealTgtType, int detectedType, float snsrHdg,
-         float suspectedTgtTypeHdgEst)
+   private double probOfMisclassify(int snsrType, int suspectedRealTgtType, int detectedType, double snsrHdg,
+         double suspectedTgtTypeHdgEst)
    {
       double worstProbOfMisclass = snsrProbs.getSensorMisclassifyProb(snsrType, suspectedRealTgtType, detectedType);
       double probOfMisClass = 0;
@@ -173,8 +176,8 @@ public class SensorScan
          double relHdg = Math.abs(suspectedTgtTypeHdgEst - snsrHdg);
          double deltaFromBestAngle = Math.abs(relHdg - tgtMgr.getTypeConfigs().getBestAngle(suspectedRealTgtType));
 
-         double percentOfBestProbAngle = detectAngleDegradationSlope * deltaFromBestAngle + minDetectValue;
-         probOfMisClass = percentOfBestProbAngle * probOfMisClass;
+         double percentOfBestProbAngle = Math.abs(detectAngleDegradationSlope * deltaFromBestAngle) + minDetectValue;
+         probOfMisClass = percentOfBestProbAngle * worstProbOfMisclass;
       }
       else
       {
@@ -188,7 +191,7 @@ public class SensorScan
       return probOfMisClass;
    }
 
-   private void scanCell(int snsrType, int tgtType, CellCoordinate cell, float snsrHdg, WorldBelief belief,
+   private void scanCell(int snsrType, int tgtType, CellCoordinate cell, double snsrHdg, WorldBelief belief,
          long simTime)
    {
       if (computeSenseDetectMetric(snsrType, tgtType) < 1d)
@@ -199,7 +202,7 @@ public class SensorScan
       }
 
       CellBelief cellBelief = belief.getCellBelief(cell);
-
+int x=0;
       // Simulate the sensor scan of the environment
       int detectedTgtType = determineSensorResult(snsrType, cell, snsrHdg, cellBelief);
 
@@ -211,30 +214,41 @@ public class SensorScan
       // ---------------------------------------------------------
       // sum(prob(detect tgt type X as Y) * prob(previous belief off type X))
       // for all tgt type X
-      double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg,
-            cellBelief.getTargetEstTime(detectedTgtType));
-      double probDetectTgtExistsPreviously = cellBelief.getTargetProb(detectedTgtType);
-      double bayesianNumerator = probDetect * probDetectTgtExistsPreviously;
+      double probOfScanTgt = 0;
+      if (tgtType == detectedTgtType)
+      {
+         probOfScanTgt = probOfDetect(snsrType, detectedTgtType, snsrHdg, cellBelief.getTargetHeading(detectedTgtType));
+      }
+      else
+      {
+         double suspectedTgtTypeHdgEst = cellBelief.getTargetHeading(tgtType);
+         probOfScanTgt = probOfMisclassify(snsrType, tgtType, detectedTgtType, snsrHdg, suspectedTgtTypeHdgEst);
+      }
+
+      double probDetectTgtExistsPreviously = cellBelief.getTargetProb(tgtType);
+      double bayesianNumerator = probOfScanTgt * probDetectTgtExistsPreviously;
 
       // Bayesian update denominator. Acts as a normalizing factor.
-      double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, detectedTgtType, probDetect);
+      //double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, tgtType, probOfScanTgt);
+      double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, detectedTgtType, probOfScanTgt);
 
       // New probability that the detected target type actually exists at the
       // cell location
-      float bayesianUpdate = (float)(bayesianNumerator / sumAllTgtProbs);
+      double bayesianUpdate = bayesianNumerator / sumAllTgtProbs;
 
       // Update heading
-      float prevEstHdg = cellBelief.getTargetHeading(detectedTgtType);
-      float hdgConfCoeff = computeHeadingConfidenceCoeff(snsrType, detectedTgtType, snsrHdg, prevEstHdg);
-      float snsrEstHdg = computeHeadingEstimate(detectedTgtType, hdgConfCoeff, prevEstHdg, cell);
-      //Weighted alpha filter to update heading value
-      float newEstHdg = (1.0f - hdgConfCoeff) * prevEstHdg + hdgConfCoeff * snsrEstHdg;
+      double prevEstHdg = cellBelief.getTargetHeading(detectedTgtType);
+      double hdgConfCoeff = computeHeadingConfidenceCoeff(snsrType, detectedTgtType, snsrHdg, prevEstHdg);
+      double snsrEstHdg = computeHeadingEstimate(detectedTgtType, hdgConfCoeff, prevEstHdg, cell);
+      // Weighted alpha filter to update heading value
+      double newEstHdg = (1d - hdgConfCoeff) * prevEstHdg + hdgConfCoeff * snsrEstHdg;
 
       cellBelief.updateTargetEstimates(tgtType, bayesianUpdate, newEstHdg, simTime);
 
    }
 
-   private double getSumProbsAllTargets(int snsrType, float snsrHdg, CellBelief cellBelief, int detectedTgtType,
+
+   private double getSumProbsAllTargets(int snsrType, double snsrHdg, CellBelief cellBelief, int detectedTgtType,
          double probDetectTgtType)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
@@ -243,45 +257,80 @@ public class SensorScan
       for (int i = 0; i < NUM_TGT_TYPES; ++i)
       {
          double probExistsPrior = cellBelief.getTargetProb(i);
+         double tgtHdgEst = cellBelief.getTargetHeading(i);
 
          if (i != detectedTgtType)
          {
             // Probability that the true target is an 'i' and it was
             // misclassified as detectedTgtType
             double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg,
-                  cellBelief.getTargetHeading(i));
+                  tgtHdgEst);
 
             accumulator += probMisClass * probExistsPrior;
          }
          else
          {
-            accumulator += probDetectTgtType * probExistsPrior;
+            double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg, tgtHdgEst);
+            accumulator += probDetect * probExistsPrior;
          }
 
       }
-      accumulator /= NUM_TGT_TYPES;
+      // accumulator /= NUM_TGT_TYPES;
       return accumulator;
    }
 
-   private float computeHeadingConfidenceCoeff(int snsrType, int tgtType, float snsrHdg, float tgtHdg)
+   private double getSumProbsAllTargetsORIG(int snsrType, double snsrHdg, CellBelief cellBelief, int detectedTgtType,
+         double probDetectTgtType)
    {
-      float bestHdgCoeff = snsrProbs.getSensorHeadingCoeff(snsrType, tgtType);
-      float bestProb = snsrProbs.getSensorDetectProb(snsrType, tgtType);
+      final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
+      double accumulator = 0;
 
-      float relHdg = Math.abs(tgtHdg - snsrHdg);
-      float deltaFromBestAngle = Math.abs(relHdg - bestProb);
+      for (int i = 0; i < NUM_TGT_TYPES; ++i)
+      {
+         double probExistsPrior = cellBelief.getTargetProb(i);
+         double tgtHdgEst = cellBelief.getTargetHeading(i);
 
-      float percentOfBestProbAngle = detectAngleDegradationSlope * deltaFromBestAngle + minDetectValue;
-      float hdgConfCoeff = (1.0f - percentOfBestProbAngle) * bestHdgCoeff;
+         if (i != detectedTgtType)
+         {
+            // Probability that the true target is an 'i' and it was
+            // misclassified as detectedTgtType
+            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg,
+                  tgtHdgEst);
+
+            accumulator += probMisClass * probExistsPrior;
+         }
+         else
+         {
+            double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg, tgtHdgEst);
+            accumulator += probDetect * probExistsPrior;
+         }
+
+      }
+      // accumulator /= NUM_TGT_TYPES;
+      return accumulator;
+   }
+
+   private double computeHeadingConfidenceCoeff(int snsrType, int tgtType, double snsrHdg, double tgtHdg)
+   {
+      double bestHdgCoeff = snsrProbs.getSensorHeadingCoeff(snsrType, tgtType);
+      double bestAngle = tgtMgr.getTypeConfigs().getBestAngle(tgtType);
+
+      double relHdg = Math.abs(tgtHdg - snsrHdg);
+      double deltaFromBestAngle = Math.abs(relHdg - bestAngle);
+
+      double percentOfBestProbAngle = (1.0 - Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
+            + minDetectValue;
+      double hdgConfCoeff = percentOfBestProbAngle * bestHdgCoeff;
       return hdgConfCoeff;
    }
 
-   private float computeHeadingEstimate(int tgtType, float hdgConfCoeff, float prevEstHdg, CellCoordinate cell)
+   private double computeHeadingEstimate(int tgtType, double hdgConfCoeff, double prevEstHdg, CellCoordinate cell)
    {
-      float errorRange = 180 * (1.0f - hdgConfCoeff);
-      float halfRng = errorRange / 2.0f;
+      //Assume all sensors can get a measurement within 90 degrees even at worst case scenario
+      double errorRange = 90 * (1.0f - hdgConfCoeff);
+      double halfRng = errorRange / 2.0f;
 
-      float error = halfRng * randGen.nextFloat();
+      double error = halfRng * randGen.nextDouble();
       if (randGen.nextBoolean())
       {
          error = -error;
@@ -289,10 +338,11 @@ public class SensorScan
 
       Target tgtTruth = tgtMgr.getTargetInRegion(cell, tgtType);
 
-      float newEstHdg = 0;
+      double newEstHdg = 0;
       if (tgtTruth != null)
       {
-         newEstHdg = tgtTruth.getHeading() + error;
+         //newEstHdg = tgtTruth.getHeading() + error;
+         newEstHdg = tgtTruth.getHeading();
       }
       else
       {

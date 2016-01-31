@@ -62,7 +62,7 @@ public class TargetMgr
 
          if (tgtTypeCfgs.typeExists(tgtType))
          {
-            float tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
+            double tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
 
             Target tgt = new Target(tgtType, tgtSpd, havenRouting);
             tgt.getCoordinate().setCoordinate(pose.getCoordinate());

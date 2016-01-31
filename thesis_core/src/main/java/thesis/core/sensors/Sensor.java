@@ -24,7 +24,7 @@ public class Sensor
    /**
     * Max speed that the sensor can slew in degrees/frame.
     */
-   private final float MAX_SLEW_FRAME_RATE;
+   private final double MAX_SLEW_FRAME_RATE;
 
    private final TargetMgr tgtMgr;
 
@@ -83,7 +83,7 @@ public class Sensor
     *
     * @param azimuth The azimuth of the sensor in absolute world coordinates (degrees).
     */
-   public void setAzimuth(float azimuth)
+   public void setAzimuth(double azimuth)
    {
       pose.setHeading(azimuth);
    }
@@ -115,9 +115,9 @@ public class Sensor
 
    private void slew()
    {
-      float desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
+      double desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
 
-      float lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
+      double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
 
       //If the lookDelta < one frame's worth of slewing
       if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
@@ -127,7 +127,7 @@ public class Sensor
       }
       else
       {
-         float slew = 0;
+         double slew = 0;
          if(((lookDelta+360) % 360) > 180)
          {
             //turn left

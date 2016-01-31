@@ -43,7 +43,7 @@ public class WeaponTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(fovColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(minRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
@@ -80,7 +80,7 @@ public class WeaponTypeConfigsDAO
          while(rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float fov = rs.getFloat(fovColName);
+            double fov = rs.getDouble(fovColName);
             double minRng = rs.getDouble(minRngColName);
             double maxRng = rs.getDouble(maxRngColName);
 
@@ -121,7 +121,7 @@ public class WeaponTypeConfigsDAO
          for(int i=0; i<numCfgs; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, wpnTypeCfgs.getFOV(i));
+            stmt.setDouble(2, wpnTypeCfgs.getFOV(i));
             stmt.setDouble(3, wpnTypeCfgs.getMinRange(i));
             stmt.setDouble(4, wpnTypeCfgs.getMaxRange(i));
             stmt.addBatch();
@@ -152,7 +152,7 @@ public class WeaponTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(fovColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(minRngColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(maxRngColName);
