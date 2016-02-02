@@ -1,5 +1,10 @@
 package thesis.core.sensors;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,7 +49,7 @@ public class SensorScanTests
       pyldProb.setSensorConfirmProb(0, 2, 0.6f);
 
       pyldProb.setSensorHeadingCoeff(0, 0, 0.5f);
-      pyldProb.setSensorHeadingCoeff(0, 1, 0.5f);
+      pyldProb.setSensorHeadingCoeff(0, 1, 0.8f);
       pyldProb.setSensorHeadingCoeff(0, 2, 0.5f);
 
       pyldProb.setSensorMisclassifyProb(0, 0, 1, 0.2f);
@@ -78,7 +83,7 @@ public class SensorScanTests
    }
 
    @Test
-   public void scanTest()
+   public void scanTest() throws IOException
    {
       final int numTgtTypes = 3;
       final int numRows = 1;
@@ -105,7 +110,10 @@ public class SensorScanTests
       allCells.add(new CellCoordinate(0, 0));
       SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
 
-      int numSimulations = 400;
+      int numSimulations = 4000;
+
+      File testDataFile = new File("../telecons/data.csv");
+      PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(testDataFile)));
 
       for (int i = 0; i < numSimulations; ++i)
       {
@@ -115,19 +123,24 @@ public class SensorScanTests
          for (int cellIdx = 0; cellIdx < numCols; ++cellIdx)
          {
             CellBelief cell = wb.getCellBelief(0, cellIdx);
-            System.out.print(Integer.toString(i) + ",");
+            //System.out.print(Integer.toString(i) + ",");
+            pw.print(Integer.toString(i) + ",");
             for (int tgtTypeIdx = 0; tgtTypeIdx < numTgtTypes; ++tgtTypeIdx)
             {
                // System.out.println(String.format("Cell %d Tgt %d - Prob:%.2f,
                // Hdg:%.2f", cellIdx, tgtTypeIdx,
                // cell.getTargetProb(tgtTypeIdx),
                // cell.getTargetHeading(tgtTypeIdx)));
-               System.out.print(
+               //System.out.print(
+               pw.print(
                      String.format("%.2f,%.2f,", cell.getTargetProb(tgtTypeIdx), cell.getTargetHeading(tgtTypeIdx)));
             }
-            System.out.println("");
+            //System.out.println("");
+            pw.println("");
          }
 
+
       }
+      pw.close();
    }
 }
