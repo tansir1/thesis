@@ -135,13 +135,14 @@ public class SensorScan
     */
    private double probOfDetect(int snsrType, int tgtType, double snsrHdg, double tgtHdg)
    {
-      double relHdg = Math.abs(tgtHdg - snsrHdg);
-      double deltaFromBestAngle = Math.abs(relHdg - tgtMgr.getTypeConfigs().getBestAngle(tgtType));
-
-      double percentOfBestProbAngle = (1.0 - Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
-            + minDetectValue;
-      double probDetection = percentOfBestProbAngle * snsrProbs.getSensorDetectProb(snsrType, tgtType);
-      return probDetection;
+//      double relHdg = Math.abs(tgtHdg - snsrHdg);
+//      double deltaFromBestAngle = Math.abs(relHdg - tgtMgr.getTypeConfigs().getBestAngle(tgtType));
+//
+//      double percentOfBestProbAngle = (1.0 - Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
+//            + minDetectValue;
+//      double probDetection = percentOfBestProbAngle * snsrProbs.getSensorDetectProb(snsrType, tgtType);
+//      return probDetection;
+      return snsrProbs.getSensorDetectProb(snsrType, tgtType);
    }
 
    /**
@@ -272,6 +273,7 @@ public class SensorScan
       bayesianUpdate = Math.min(bayesianUpdate, 0.999);
 
       cellBelief.updateTargetEstimates(tgtType, bayesianUpdate, newEstHdg, simTime);
+      //cellBelief.updateTargetEstimates(tgtType, bayesianUpdate, snsrEstHdg, simTime);
 
    }
 
@@ -301,7 +303,7 @@ public class SensorScan
          }
 
       }
-      // accumulator /= NUM_TGT_TYPES;
+
       return accumulator;
    }
 
@@ -372,6 +374,7 @@ public class SensorScan
       {
          newEstHdg = prevEstHdg + error;
       }
+
       return newEstHdg;
    }
 
