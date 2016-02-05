@@ -61,8 +61,8 @@ public class SimModelConfigLoader
          cfg.setWorldDir(new File(props.getString("sim.worldDir", "FILE_NOT_SPECIFIED")));
          cfg.setEntityTypeDir(new File(props.getString("sim.entityDir", "FILE_NOT_SPECIFIED")));
          int commsRngPercent = props.getInt("sim.commsRngPercent");
-         cfg.setCommsRngPercent((float)(commsRngPercent / 100.0));
-         cfg.setCommsRelayProbability((float)props.getDouble("sim.commsRelayProb"));
+         cfg.setCommsRngPercent(commsRngPercent / 100.0);
+         cfg.setCommsRelayProbability(props.getDouble("sim.commsRelayProb"));
       }
       catch (Exception e)
       {

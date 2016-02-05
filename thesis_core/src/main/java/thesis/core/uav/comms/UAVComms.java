@@ -36,7 +36,7 @@ public class UAVComms
    /**
     * The probability that the UAV will relay a message.
     */
-   private float commsRelayProb;
+   private double commsRelayProb;
 
    public UAVComms(int hostUavId, UAVMgr uavMgr, Random randGen, CommsConfig commsCfg)
    {
@@ -131,7 +131,7 @@ public class UAVComms
             Message toSend = msg.copy();
             toSend.setNumHops(msg.getNumHops() + 1);
 
-            if (randGen.nextFloat() < commsRelayProb)
+            if (randGen.nextDouble() < commsRelayProb)
             {
                for (UAV uav : uavs)
                {

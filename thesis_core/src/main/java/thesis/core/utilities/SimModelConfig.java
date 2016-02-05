@@ -14,12 +14,12 @@ public class SimModelConfig
     * Maximum range of UAV communication systems expressed as a percentage of
     * the maximum distance across the world.
     */
-   private float commsRngPercent;
+   private double commsRngPercent;
 
    /**
     * The probability [0,1] that a UAV will relay a message.
     */
-   private float probMsgFwd;
+   private double probMsgFwd;
 
    public SimModelConfig()
    {
@@ -67,22 +67,22 @@ public class SimModelConfig
       this.entityTypesDir = file;
    }
 
-   public void setCommsRngPercent(float percent)
+   public void setCommsRngPercent(double percent)
    {
       this.commsRngPercent = percent;
    }
 
-   public float getCommsRngPercent()
+   public double getCommsRngPercent()
    {
       return commsRngPercent;
    }
 
-   public void setCommsRelayProbability(float prob)
+   public void setCommsRelayProbability(double prob)
    {
       this.probMsgFwd = prob;
    }
 
-   public float getCommsRelayProbability()
+   public double getCommsRelayProbability()
    {
       return probMsgFwd;
    }

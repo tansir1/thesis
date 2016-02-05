@@ -166,11 +166,11 @@ public class WorldCoordinate
     *           Find the bearing to this coordinate.
     * @return The bearing angle from this coordinate to the given coordinate in degrees.
     */
-   public float bearingTo(final WorldCoordinate wc)
+   public double bearingTo(final WorldCoordinate wc)
    {
       double delNorth = wc.north - north;
       double delEast = wc.east - east;
-      float bearing = (float) Math.toDegrees(Math.atan2(delNorth, delEast));
+      double bearing = Math.toDegrees(Math.atan2(delNorth, delEast));
       return Angle.normalize360(bearing);
    }
 

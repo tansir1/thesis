@@ -119,7 +119,7 @@ public class WorldGenerator
          int col = randGen.nextInt(worldCfg.getWorld().getWorldGIS().getColumnCount());
 
          UAVStartCfg uavStartCfg = new UAVStartCfg();
-         uavStartCfg.setOrientation(randGen.nextFloat() * 360f);
+         uavStartCfg.setOrientation(randGen.nextDouble() * 360d);
          uavStartCfg.setUAVType(typeIndex);
          worldCfg.getWorld().getWorldGIS().convertCellToWorld(row, col, uavStartCfg.getLocation());
 
@@ -206,7 +206,7 @@ public class WorldGenerator
       int col = randGen.nextInt(world.getWorld().getWorldGIS().getColumnCount());
 
       TargetStartCfg tgtStartCfg = new TargetStartCfg();
-      tgtStartCfg.setOrientation(randGen.nextFloat() * 360f);
+      tgtStartCfg.setOrientation(randGen.nextDouble() * 360d);
       tgtStartCfg.setTargetType(type);
       world.getWorld().getWorldGIS().convertCellToWorld(row, col, tgtStartCfg.getLocation());
 

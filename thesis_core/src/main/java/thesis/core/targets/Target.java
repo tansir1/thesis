@@ -20,9 +20,9 @@ public class Target
    /**
     * Meters/second
     */
-   private final float maxSpd;
+   private final double maxSpd;
 
-   public Target(int tgtType, float tgtSpd, HavenRouting havenRouting)
+   public Target(int tgtType, double tgtSpd, HavenRouting havenRouting)
    {
       this.type = tgtType;
       this.maxSpd = tgtSpd;
@@ -56,12 +56,12 @@ public class Target
       return pose.getCoordinate();
    }
 
-   public float getHeading()
+   public double getHeading()
    {
       return pose.getHeading();
    }
 
-   public void setHeading(float hdg)
+   public void setHeading(double hdg)
    {
       pose.setHeading(hdg);
    }
@@ -85,7 +85,7 @@ public class Target
          {
             selectNewDestination();
 
-            float newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
+            double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
             pose.setHeading(newHdg);
          }
 

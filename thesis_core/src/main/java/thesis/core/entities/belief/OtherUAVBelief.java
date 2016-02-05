@@ -9,7 +9,7 @@ import thesis.core.common.WorldPose;
 public class OtherUAVBelief
 {
    private WorldPose pose;
-   private float confidence;
+   private double confidence;
    private int uavID;
 
    public OtherUAVBelief(int id)
@@ -33,7 +33,7 @@ public class OtherUAVBelief
     * @return A value [0,1] indicating how confident that this teammate
     *         information is correct.
     */
-   public float getConfidence()
+   public double getConfidence()
    {
       return confidence;
    }
@@ -43,7 +43,7 @@ public class OtherUAVBelief
     *           A value [0,1] indicating how confident that this teammate
     *           information is correct.
     */
-   public void setConfidence(float confidence)
+   public void setConfidence(double confidence)
    {
       this.confidence = confidence;
    }
