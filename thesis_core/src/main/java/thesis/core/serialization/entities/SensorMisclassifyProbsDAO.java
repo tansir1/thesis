@@ -47,7 +47,7 @@ public class SensorMisclassifyProbsDAO
          initTblSQL.append(misclassTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -74,7 +74,7 @@ public class SensorMisclassifyProbsDAO
             int snsrTypeID = rs.getInt(snsrTypeColName);
             int detectTypeID = rs.getInt(detectTypeColName);
             int misclassTypeID = rs.getInt(misclassTypeColName);
-            float prob = rs.getFloat(probColName);
+            double prob = rs.getDouble(probColName);
 
             snsrProbs.setSensorMisclassifyProb(snsrTypeID, detectTypeID, misclassTypeID, prob);
          }
@@ -121,7 +121,7 @@ public class SensorMisclassifyProbsDAO
                   stmt.setInt(1, i);
                   stmt.setInt(2, j);
                   stmt.setInt(3, k);
-                  stmt.setFloat(4, snsrProbs.getSensorMisclassifyProb(i, j, k));
+                  stmt.setDouble(4, snsrProbs.getSensorMisclassifyProb(i, j, k));
                   stmt.addBatch();
                }
             }
@@ -183,7 +183,7 @@ public class SensorMisclassifyProbsDAO
          initTblSQL.append(misclassTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
          initTblSQL
                .append(snsrTypeColName + "," + detectTypeColName + "," + misclassTypeColName + "," + probColName + " ");

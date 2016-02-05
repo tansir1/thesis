@@ -11,7 +11,7 @@ public class SensorTypeConfigs
    /**
     * Field of view in degrees of the sensor.
     */
-   private float fov[];
+   private double fov[];
    /**
     * Minimum sensing distance in meters.
     */
@@ -23,7 +23,7 @@ public class SensorTypeConfigs
    /**
     * Speed that the sensor slews in degrees/second.
     */
-   private float slewRate[];
+   private double slewRate[];
 
    public SensorTypeConfigs()
    {
@@ -43,10 +43,10 @@ public class SensorTypeConfigs
 
    public void reset(int numTypes)
    {
-      fov = new float[numTypes];
+      fov = new double[numTypes];
       minRng = new double[numTypes];
       maxRng = new double[numTypes];
-      slewRate = new float[numTypes];
+      slewRate = new double[numTypes];
 
       for (int i = 0; i < numTypes; ++i)
       {
@@ -57,7 +57,7 @@ public class SensorTypeConfigs
       }
    }
 
-   public void setSensorData(int snsrType, float fov, double minRng, double maxRng, float slewRt)
+   public void setSensorData(int snsrType, double fov, double minRng, double maxRng, double slewRt)
    {
       this.fov[snsrType] = fov;
       this.minRng[snsrType] = minRng;
@@ -72,7 +72,7 @@ public class SensorTypeConfigs
     *           The type of the sensor to lookup.
     * @return The FOV of the sensor in degrees.
     */
-   public float getFOV(int snsrType)
+   public double getFOV(int snsrType)
    {
       return fov[snsrType];
    }
@@ -84,7 +84,7 @@ public class SensorTypeConfigs
     *           The type of the sensor to lookup.
     * @return The maximum slew rate for the sensor in degrees/second.
     */
-   public float getSlewRate(int snsrType)
+   public double getSlewRate(int snsrType)
    {
       return slewRate[snsrType];
    }
@@ -125,9 +125,9 @@ public class SensorTypeConfigs
     *           The type of the sensor to lookup.
     * @return The maximum slew rate for the sensor in degrees/frame.
     */
-   public float getMaxSlewFrameRate(int snsrType)
+   public double getMaxSlewFrameRate(int snsrType)
    {
-      return slewRate[snsrType] * (float)SimTime.SIM_STEP_RATE_S;
+      return slewRate[snsrType] * SimTime.SIM_STEP_RATE_S;
    }
 
    public boolean typeExists(int snsrType)

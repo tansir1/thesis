@@ -2,7 +2,7 @@ package thesis.core.weapons;
 
 public class WeaponProbs
 {
-   private float wpnDestroy[][];
+   private double wpnDestroy[][];
 
    public WeaponProbs()
    {
@@ -21,7 +21,7 @@ public class WeaponProbs
 
    public void reset(int numWpnTypes, int numTgtTypes)
    {
-      wpnDestroy = new float[numWpnTypes][numTgtTypes];
+      wpnDestroy = new double[numWpnTypes][numTgtTypes];
 
       for(int i=0; i<wpnDestroy.length; ++i)
       {
@@ -32,12 +32,12 @@ public class WeaponProbs
       }
    }
 
-   public float getWeaponDestroyProb(int wpnType, int tgtType)
+   public double getWeaponDestroyProb(int wpnType, int tgtType)
    {
       return wpnDestroy[wpnType][tgtType];
    }
 
-   public void setWeaponDestroyProb(int wpnType, int tgtType, float prob)
+   public void setWeaponDestroyProb(int wpnType, int tgtType, double prob)
    {
       wpnDestroy[wpnType][tgtType] = prob;
    }

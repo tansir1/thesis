@@ -11,7 +11,7 @@ public class TargetBelief
 {
    private final WorldPose pose;
    private final int type;
-   private float confidence;
+   private double confidence;
 
    public TargetBelief(int type)
    {
@@ -34,7 +34,7 @@ public class TargetBelief
     * @return A value [0,1] indicating how confident that this target
     *         information is correct.
     */
-   public float getConfidence()
+   public double getConfidence()
    {
       return confidence;
    }
@@ -44,7 +44,7 @@ public class TargetBelief
     *           A value [0,1] indicating how confident that this target
     *           information is correct.
     */
-   public void setConfidence(float confidence)
+   public void setConfidence(double confidence)
    {
       this.confidence = confidence;
    }
@@ -66,6 +66,6 @@ public class TargetBelief
       //deltaHdg = Angle.normalize360(deltaHdg);
       deltaHdg *= mergePercent;
       final double newHdg = pose.getHeading() - deltaHdg;
-      pose.setHeading(Angle.normalize360((float)newHdg));
+      pose.setHeading(Angle.normalize360(newHdg));
    }
 }

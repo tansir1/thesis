@@ -15,7 +15,7 @@ public class CommsConfig
    /**
     * The probability that the UAV will relay a message [0,1].
     */
-   private float commsRelayProb;
+   private double commsRelayProb;
 
    public CommsConfig()
    {
@@ -42,12 +42,12 @@ public class CommsConfig
       this.maxCommsRng = maxCommsRng;
    }
 
-   public float getCommsRelayProb()
+   public double getCommsRelayProb()
    {
       return commsRelayProb;
    }
 
-   public void setCommsRelayProb(float commsRelayProb)
+   public void setCommsRelayProb(double commsRelayProb)
    {
       this.commsRelayProb = commsRelayProb;
    }

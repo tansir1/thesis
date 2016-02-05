@@ -80,7 +80,7 @@ public class Pathing
     * @param hdg
     *           The UAV's heading in degrees.
     */
-   public void setHeading(float hdg)
+   public void setHeading(double hdg)
    {
       pose.setHeading(hdg);
    }
@@ -160,7 +160,7 @@ public class Pathing
       double turnRate = turnCoeff * (frameSpd / minTurnRadius);
 
       double hdgRads = Math.toRadians(pose.getHeading()) + turnRate;
-      pose.setHeading((float) Math.toDegrees(hdgRads));
+      pose.setHeading(Math.toDegrees(hdgRads));
 
       final double northing = frameSpd * Math.sin(Math.toRadians(pose.getHeading()));
       final double easting = frameSpd * Math.cos(Math.toRadians(pose.getHeading()));

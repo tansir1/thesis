@@ -50,7 +50,7 @@ public class UAVStartLocationDAO
          initTblSQL.append(colColName);
          initTblSQL.append(" int not null,");
          initTblSQL.append(hdgColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -78,7 +78,7 @@ public class UAVStartLocationDAO
             int typeID = rs.getInt(typeColName);
             int col = rs.getInt(colColName);
             int row = rs.getInt(rowColName);
-            float hdg = rs.getFloat(hdgColName);
+            double hdg = rs.getDouble(hdgColName);
 
             cfg = new UAVStartCfg();
             cfg.setUAVType(typeID);
@@ -123,7 +123,7 @@ public class UAVStartLocationDAO
             stmt.setInt(1, uav.getUAVType());
             stmt.setInt(2, cell.getRow());
             stmt.setInt(3, cell.getColumn());
-            stmt.setFloat(4, uav.getOrientation());
+            stmt.setDouble(4, uav.getOrientation());
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -156,7 +156,7 @@ public class UAVStartLocationDAO
          initTblSQL.append(colColName);
          initTblSQL.append(" int not null,");
          initTblSQL.append(hdgColName);
-         initTblSQL.append(" real not null");
+         initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
          initTblSQL.append(typeColName + "," + rowColName + "," + colColName + "," + hdgColName + " ");
          initTblSQL.append("from csvread('");

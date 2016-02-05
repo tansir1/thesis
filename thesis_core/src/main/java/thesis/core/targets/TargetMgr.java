@@ -22,7 +22,7 @@ public class TargetMgr
 {
    private Logger logger;
    private Target[] targets;
-   private WorldGIS worldGIS;//Used for coordinate conversions
+   private WorldGIS worldGIS;// Used for coordinate conversions
    private TargetTypeConfigs tgtTypeCfgs;
 
    public TargetMgr()
@@ -41,7 +41,8 @@ public class TargetMgr
     *           Targets will be generated based on configuration data from here
     *           and types will be cross referenced from entTypes.
     */
-   public void reset(TargetTypeConfigs tgtTypeCfgs, List<TargetStartCfg> tgtStartCfgs, HavenRouting havenRouting, WorldGIS worldGIS)
+   public void reset(TargetTypeConfigs tgtTypeCfgs, List<TargetStartCfg> tgtStartCfgs, HavenRouting havenRouting,
+         WorldGIS worldGIS)
    {
       this.worldGIS = worldGIS;
       this.tgtTypeCfgs = tgtTypeCfgs;
@@ -52,7 +53,7 @@ public class TargetMgr
 
       targets = new Target[NUM_TARGETS];
 
-      for(int i=0; i<NUM_TARGETS; ++i)
+      for (int i = 0; i < NUM_TARGETS; ++i)
       {
          TargetStartCfg startCfg = tgtStartCfgs.get(i);
          int tgtType = startCfg.getTargetType();
@@ -61,12 +62,12 @@ public class TargetMgr
 
          if (tgtTypeCfgs.typeExists(tgtType))
          {
-            float tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
+            double tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
 
             Target tgt = new Target(tgtType, tgtSpd, havenRouting);
             tgt.getCoordinate().setCoordinate(pose.getCoordinate());
             tgt.setHeading(pose.getHeading());
-            targets[i]=tgt;
+            targets[i] = tgt;
          }
          else
          {
@@ -91,7 +92,7 @@ public class TargetMgr
     */
    public void stepSimulation()
    {
-      for(int i=0; i<targets.length; ++i)
+      for (int i = 0; i < targets.length; ++i)
       {
          targets[i].stepSimulation();
       }
@@ -131,7 +132,7 @@ public class TargetMgr
       List<Target> inRegion = new ArrayList<Target>();
       CellCoordinate tgtTemp = new CellCoordinate();
 
-      for(CellCoordinate searchCell : region)
+      for (CellCoordinate searchCell : region)
       {
          for (Target tar : targets)
          {
@@ -171,5 +172,28 @@ public class TargetMgr
       }
 
       return inRegion;
+   }
+
+   public Target getTargetInRegion(CellCoordinate region, int tgtType)
+   {
+      Target searchResult = null;
+
+      CellCoordinate tgtTemp = new CellCoordinate();
+
+      for (Target tar : targets)
+      {
+         if (tar.getType() == tgtType)
+         {
+            worldGIS.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+
+            if (tgtTemp.equals(region))
+            {
+               searchResult = tar;
+               break;
+            }
+         }
+      }
+
+      return searchResult;
    }
 }

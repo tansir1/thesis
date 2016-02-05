@@ -42,9 +42,9 @@ public class UAVTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(turnRadColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(");");
          stmt.execute(initTblSQL.toString());
 
@@ -77,8 +77,8 @@ public class UAVTypeConfigsDAO
          while (rs.next())
          {
             int typeID = rs.getInt(typeColName);
-            float spd = rs.getFloat(spdColName);
-            float turnRadius = rs.getFloat(turnRadColName);
+            double spd = rs.getDouble(spdColName);
+            double turnRadius = rs.getDouble(turnRadColName);
 
             uavTypeCfgs.setUAVData(typeID, spd, turnRadius);
          }
@@ -114,8 +114,8 @@ public class UAVTypeConfigsDAO
          for (int i = 0; i < numUAVTypes; ++i)
          {
             stmt.setInt(1, i);
-            stmt.setFloat(2, uavTypeCfgs.getMaxTurnRt(i));
-            stmt.setFloat(3, uavTypeCfgs.getSpeed(i));
+            stmt.setDouble(2, uavTypeCfgs.getMaxTurnRt(i));
+            stmt.setDouble(3, uavTypeCfgs.getSpeed(i));
             stmt.addBatch();
          }
          stmt.executeBatch();
@@ -144,9 +144,9 @@ public class UAVTypeConfigsDAO
          initTblSQL.append(typeColName);
          initTblSQL.append(" tinyint primary key not null,");
          initTblSQL.append(turnRadColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(spdColName);
-         initTblSQL.append(" real not null,");
+         initTblSQL.append(" double not null,");
          initTblSQL.append(") as select ");
          initTblSQL.append(typeColName + "," + turnRadColName + "," + spdColName  + " ");
          initTblSQL.append("from csvread('");

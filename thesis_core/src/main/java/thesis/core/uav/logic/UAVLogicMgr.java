@@ -79,8 +79,8 @@ public class UAVLogicMgr
          {
             // TODO Need logic to check state of UAV to determine if it should
             // be detecting or identifying
-            float detectProb = sensorProbs.getSensorDetectProb(sd.getSensorType(), tgt.getType());
-            float idProb = sensorProbs.getSensorConfirmProb(sd.getSensorType(), tgt.getType());
+            double detectProb = sensorProbs.getSensorDetectProb(sd.getSensorType(), tgt.getType());
+            double idProb = sensorProbs.getSensorConfirmProb(sd.getSensorType(), tgt.getType());
             // TODO Need to add probabilities of detection.
             // For now 100% detection to test sensor update logic and beliefs
             TargetBelief tb = new TargetBelief(tgt.getType());
