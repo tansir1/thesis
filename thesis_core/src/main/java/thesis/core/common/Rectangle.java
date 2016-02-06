@@ -15,6 +15,14 @@ public class Rectangle
       bottomRight = new WorldCoordinate();
    }
 
+   public void copy(Rectangle copy)
+   {
+      topLeft.setCoordinate(copy.topLeft);
+      topRight.setCoordinate(copy.topRight);
+      bottomLeft.setCoordinate(copy.bottomLeft);
+      bottomRight.setCoordinate(copy.bottomRight);
+   }
+
    public WorldCoordinate getTopLeft()
    {
       return topLeft;

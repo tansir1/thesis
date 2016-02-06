@@ -38,8 +38,14 @@ public class PartialMsgBuf
          buf.flip();
 
          msgHdr.decodeData(buf);
+
          if((InfrastructMsgHdr.HEADER_SIZE + msgHdr.getMessageSize()) <= numBytesToParse)
          {
+            if(msgHdr.getMessageType() == null)
+            {
+               throw new NullPointerException("Failed to parse message type. Was a new message type added?");
+            }
+
             InfrastructureMsg msg = InfrastructMsgFact.createMessage(msgHdr.getMessageType());
             msg.decodeData(buf);
             msgs.add(msg);
@@ -54,6 +60,7 @@ public class PartialMsgBuf
             buf.position(numBytesToParse);
          }
       }
+
       return msgs;
    }
 }

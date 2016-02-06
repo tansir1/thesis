@@ -4,6 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -14,12 +18,13 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
-import thesis.core.SimModel;
+import thesis.core.statedump.SimStateDump;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
+import thesis.network.messages.InfrastructureMsg;
 
 /**
  * Contains the GUI application's main window frame.
@@ -27,133 +32,153 @@ import thesis.gui.simpanel.RenderableSimWorldPanel;
  */
 public class MainWindow implements IMapMouseListener
 {
-	private JFrame frame;
-	private RenderableSimWorldPanel simPanel;
-	private UAVViewPanel uavViewPan;
-	private SimStatusPanel simStatPan;
+   private final int MSG_QUEUE_PROCESS_RATE_MS = 100;
 
-	private Actions actions;
+   private JFrame frame;
+   private SimStateDump simStateDump;
+   private RenderableSimWorldPanel simPanel;
+   private UAVViewPanel uavViewPan;
+   private SimStatusPanel simStatPan;
 
-	private JLabel statusLbl;
+   private Actions actions;
 
-	private SimTimer simTimer;
+   private JLabel statusLbl;
 
-	public MainWindow()
-	{
-		frame = new JFrame("Thesis Simulator");
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e)
-			{
-				onClose();
-			}
-		});
+   private SimTimer simTimer;
 
-		simPanel = new RenderableSimWorldPanel();
-		uavViewPan = new UAVViewPanel();
-		simStatPan = new SimStatusPanel();
-		simTimer = new SimTimer(simPanel);
-		actions = new Actions(frame, simPanel, simTimer);
+   private LinkedBlockingQueue<InfrastructureMsg> sendQ;
+   private ScheduledExecutorService execSvc;
 
-		MenuBar menuBar = new MenuBar(this, actions);
-		frame.setJMenuBar(menuBar.getMenuBar());
+   public MainWindow()
+   {
+      frame = new JFrame("Thesis Simulator");
+      frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+      frame.addWindowListener(new WindowAdapter()
+      {
+         @Override
+         public void windowClosing(WindowEvent e)
+         {
+            onClose();
+         }
+      });
 
-		statusLbl = new JLabel("");
+      simStateDump = new SimStateDump();
 
-		buildGUI();
+      simPanel = new RenderableSimWorldPanel();
+      uavViewPan = new UAVViewPanel();
+      simStatPan = new SimStatusPanel();
+      simTimer = new SimTimer(simPanel);
+      actions = new Actions(frame, simPanel, simTimer);
 
-		frame.pack();
-		frame.setVisible(true);
+      MenuBar menuBar = new MenuBar(this, actions);
+      frame.setJMenuBar(menuBar.getMenuBar());
 
-		simPanel.getListenerSupport().addListener(this);
-	}
+      statusLbl = new JLabel("");
 
-	private void buildGUI()
-	{
-		frame.setLayout(new BorderLayout());
-		frame.add(simPanel, BorderLayout.CENTER);
+      buildGUI();
 
-		JPanel westPan = new JPanel();
-		westPan.setLayout(new BoxLayout(westPan, BoxLayout.Y_AXIS));
-		westPan.add(uavViewPan.getRenderable());
-		westPan.add(simStatPan.getRenderable());
+      frame.pack();
+      frame.setVisible(true);
 
+      simPanel.getListenerSupport().addListener(this);
+      execSvc = Executors.newSingleThreadScheduledExecutor();
+   }
 
-		frame.add(buildToolbar(), BorderLayout.NORTH);
-		frame.add(westPan, BorderLayout.WEST);
+   private void buildGUI()
+   {
+      frame.setLayout(new BorderLayout());
+      frame.add(simPanel, BorderLayout.CENTER);
 
-		JPanel statusPanel = new JPanel();
-		statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
-		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
-		statusPanel.add(statusLbl);
+      JPanel westPan = new JPanel();
+      westPan.setLayout(new BoxLayout(westPan, BoxLayout.Y_AXIS));
+      westPan.add(uavViewPan.getRenderable());
+      westPan.add(simStatPan.getRenderable());
 
-		frame.add(statusPanel, BorderLayout.SOUTH);
-	}
+      frame.add(buildToolbar(), BorderLayout.NORTH);
+      frame.add(westPan, BorderLayout.WEST);
 
-	protected void onClose()
-	{
-		// TODO Check if there is data to save
-		// TODO Confirm exit
-		int userChoice = JOptionPane.showConfirmDialog(frame, "Are you sure you want to exit Thesis Simulator?",
-				"Confirm exit", JOptionPane.YES_NO_OPTION);
-		if (userChoice == JOptionPane.YES_OPTION)
-		{
-			// TODO Close external resources
-			frame.dispose();
-			System.exit(0);
-		}
-	}
+      JPanel statusPanel = new JPanel();
+      statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+      statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
+      statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+      statusPanel.add(statusLbl);
 
-	/**
-	 * Get a reference to the main window's frame for passing into dialogs.
-	 *
-	 * @return The main window's frame.
-	 */
-	protected JFrame getParentFrame()
-	{
-		return frame;
-	}
+      frame.add(statusPanel, BorderLayout.SOUTH);
+   }
 
-	private JToolBar buildToolbar()
-	{
-		JToolBar toolbar = new JToolBar();
-		toolbar.setFloatable(false);
-		toolbar.add(actions.getPlayAction());
-		toolbar.add(actions.getPauseAction());
-		toolbar.add(actions.getStepSimAction());
-		toolbar.addSeparator();
-		toolbar.add(actions.getPlay5XAction());
-		toolbar.add(actions.getPlay10XAction());
-		toolbar.add(actions.getPlay20XAction());
-		toolbar.add(actions.getPlay50XAction());
-		toolbar.add(actions.getPlay100XAction());
-		toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
-		return toolbar;
-	}
+   protected void onClose()
+   {
+      // TODO Check if there is data to save
+      // TODO Confirm exit
+      int userChoice = JOptionPane.showConfirmDialog(frame, "Are you sure you want to exit Thesis Simulator?",
+            "Confirm exit", JOptionPane.YES_NO_OPTION);
+      if (userChoice == JOptionPane.YES_OPTION)
+      {
+         // TODO Close external resources
+         frame.dispose();
+         System.exit(0);
+      }
+   }
 
-	/**
-	 * Connect the event listeners of the GUI to the event triggers in the
-	 * model.
-	 *
-	 * @param simModel
-	 *            The model to listen to and to render.
-	 */
-	public void connectSimModel(SimModel simModel)
-	{
-		simPanel.connectSimModel(simModel, actions);
-		uavViewPan.connectSimModel(simModel, simPanel);
-		simStatPan.connectSimModel(simModel);
-		simTimer.reset(simModel);
-	}
+   /**
+    * Get a reference to the main window's frame for passing into dialogs.
+    *
+    * @return The main window's frame.
+    */
+   protected JFrame getParentFrame()
+   {
+      return frame;
+   }
 
-	/**
-	 * Request that the sim panel repaint itself.
-	 */
-	public void repaintSimPanel()
-	{
-	   SwingUtilities.invokeLater(new Runnable()
+   private JToolBar buildToolbar()
+   {
+      JToolBar toolbar = new JToolBar();
+      toolbar.setFloatable(false);
+      toolbar.add(actions.getPlayAction());
+      toolbar.add(actions.getPauseAction());
+      toolbar.add(actions.getStepSimAction());
+      toolbar.addSeparator();
+      toolbar.add(actions.getPlay5XAction());
+      toolbar.add(actions.getPlay10XAction());
+      toolbar.add(actions.getPlay20XAction());
+      toolbar.add(actions.getPlay50XAction());
+      toolbar.add(actions.getPlay100XAction());
+      toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
+      return toolbar;
+   }
+
+   public void connectQueues(LinkedBlockingQueue<InfrastructureMsg> sendQ, LinkedBlockingQueue<InfrastructureMsg> recvQ)
+   {
+      this.sendQ = sendQ;
+      execSvc.scheduleAtFixedRate(new RecvQConsumer(this, recvQ), 100, MSG_QUEUE_PROCESS_RATE_MS,
+            TimeUnit.MILLISECONDS);
+   }
+
+   /**
+    * Connect the event listeners of the GUI to the event triggers in the model.
+    *
+    * @param simModel
+    *           The model to listen to and to render.
+    */
+   private void connectSimModel(SimStateDump simModel)
+   {
+      simPanel.connectSimModel(simModel, actions);
+      // uavViewPan.connectSimModel(simModel, simPanel);
+      // simStatPan.connectSimModel(simModel);
+      // simTimer.reset(simModel);
+   }
+
+   protected SimStatusPanel getSimStatusPanel()
+   {
+      return simStatPan;
+   }
+
+   /**
+    * Request that the sim panel repaint itself.
+    */
+   public void repaintSimPanel()
+   {
+      SwingUtilities.invokeLater(new Runnable()
       {
 
          @Override
@@ -162,11 +187,11 @@ public class MainWindow implements IMapMouseListener
             simPanel.repaint();
          }
       });
-	}
+   }
 
-	@Override
-	public void onMapMouseUpdate(MapMouseData event)
-	{
-		statusLbl.setText(event.toString());
-	}
+   @Override
+   public void onMapMouseUpdate(MapMouseData event)
+   {
+      statusLbl.setText(event.toString());
+   }
 }

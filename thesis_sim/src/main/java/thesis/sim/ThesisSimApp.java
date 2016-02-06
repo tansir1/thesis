@@ -1,10 +1,14 @@
 package thesis.sim;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
 import thesis.core.common.SimTime;
+import thesis.core.statedump.SimStateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ClientComms;
 import thesis.network.messages.InfrastructureMsg;
@@ -29,6 +33,8 @@ public class ThesisSimApp
    private long lastNetworkTime;
    private long frameCnt;
 
+   private SimStateDump simStateDump;
+
    public ThesisSimApp()
    {
       network = new ClientComms();
@@ -37,6 +43,8 @@ public class ThesisSimApp
 
       lastNetworkTime = 0;
       frameCnt = -1;
+
+      simStateDump = new SimStateDump();
    }
 
    public boolean init(SimAppConfig cfg, SimModel simModel)
@@ -49,6 +57,7 @@ public class ThesisSimApp
       }
 
       this.simModel = simModel;
+      simStateDump.init(simModel);
 
       return success;
    }
@@ -66,18 +75,23 @@ public class ThesisSimApp
       }
 
       logger.trace("Processing data from server");
-      for (InfrastructureMsg msg : network.getData())
+      List<InfrastructureMsg> msgs = network.getData();
+      if(msgs != null)
       {
-         switch (msg.getMessageType())
+         for (InfrastructureMsg msg : network.getData())
          {
-         default:
-            logger.warn("No handlers exist for messages of type {}.", msg.getMessageType());
-            break;
+            switch (msg.getMessageType())
+            {
+            default:
+               logger.warn("No handlers exist for messages of type {}.", msg.getMessageType());
+               break;
+            }
          }
       }
+
    }
 
-   private void transmitPeriodicStatus()
+   private void transmitData()
    {
       if(!network.isReady())
       {
@@ -85,12 +99,17 @@ public class ThesisSimApp
       }
 
       logger.trace("Transmitting data to server");
+      List<InfrastructureMsg> msgs = new ArrayList<InfrastructureMsg>();
+
       SimTimeMsg simTimeMsg = new SimTimeMsg();
       simTimeMsg.setFrameCount(frameCnt);
       simTimeMsg.setSimTime(SimTime.CURRENT_SIM_TIME_MS);
       simTimeMsg.setSimWallTime(SimTime.getWallTime());
+      msgs.add(simTimeMsg);
 
+      simStateDump.getUpdateMsgs(msgs);
 
+      network.sendData(msgs);
    }
 
    public void runSim()
@@ -119,7 +138,8 @@ public class ThesisSimApp
 
          if (processNetwork)
          {
-            transmitPeriodicStatus();
+            simStateDump.update(simModel);
+            transmitData();
             processNetwork = false;
          }
 

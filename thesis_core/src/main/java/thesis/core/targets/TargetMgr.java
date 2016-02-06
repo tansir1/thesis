@@ -64,7 +64,7 @@ public class TargetMgr
          {
             double tgtSpd = tgtTypeCfgs.getSpeed(tgtType);
 
-            Target tgt = new Target(tgtType, tgtSpd, havenRouting);
+            Target tgt = new Target(tgtType, i, tgtSpd, havenRouting);
             tgt.getCoordinate().setCoordinate(pose.getCoordinate());
             tgt.setHeading(pose.getHeading());
             targets[i] = tgt;
