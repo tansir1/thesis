@@ -67,7 +67,7 @@ public class MainWindow implements IMapMouseListener
       simPanel = new RenderableSimWorldPanel();
       uavViewPan = new UAVViewPanel();
       simStatPan = new SimStatusPanel();
-      simTimer = new SimTimer(simPanel);
+      simTimer = new SimTimer();
       actions = new Actions(frame, simPanel, simTimer);
 
       MenuBar menuBar = new MenuBar(this, actions);
@@ -150,6 +150,7 @@ public class MainWindow implements IMapMouseListener
    public void connectQueues(LinkedBlockingQueue<InfrastructureMsg> sendQ, LinkedBlockingQueue<InfrastructureMsg> recvQ)
    {
       this.sendQ = sendQ;
+      simTimer.connectQueue(sendQ);
       execSvc.scheduleAtFixedRate(new RecvQConsumer(this, recvQ), 100, MSG_QUEUE_PROCESS_RATE_MS,
             TimeUnit.MILLISECONDS);
    }

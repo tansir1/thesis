@@ -96,7 +96,7 @@ public class Target
             pose.setHeading(newHdg);
          }
 
-         double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
+         double deltaSeconds = SimTime.SIM_STEP_RATE_S;
 
          // east distance = time * speed * east component
          double easting = deltaSeconds * maxSpd * Math.cos(Math.toRadians(pose.getHeading()));

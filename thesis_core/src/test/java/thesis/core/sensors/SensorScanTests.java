@@ -14,7 +14,6 @@ import org.junit.Test;
 import thesis.core.EntityTypeCfgs;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
-import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.experimental.CellBelief;
 import thesis.core.experimental.WorldBelief;
@@ -118,7 +117,7 @@ public class SensorScanTests
       for (int i = 0; i < numSimulations; ++i)
       {
          //System.out.println(String.format("--------Simulation Frame %d---------", i));
-         testMe.simulateScan(0, 115, wb, allCells, i * SimTime.SIM_STEP_RATE_MS);
+         testMe.simulateScan(0, 115, wb, allCells);
 
          for (int cellIdx = 0; cellIdx < numCols; ++cellIdx)
          {

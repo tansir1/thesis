@@ -4,7 +4,8 @@ public enum InfrastructureMsgType
 {
 
    Test(0),
-   SimTime(1);
+   SimTime(1),
+   SetSimStepRate(2);
 
    private byte id;
    private InfrastructureMsgType(int id)
@@ -27,6 +28,9 @@ public enum InfrastructureMsgType
          break;
       case 1:
          type = SimTime;
+         break;
+      case 2:
+         type = SetSimStepRate;
          break;
       }
       return type;
