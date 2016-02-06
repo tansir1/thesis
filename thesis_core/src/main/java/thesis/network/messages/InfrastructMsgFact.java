@@ -22,6 +22,9 @@ public class InfrastructMsgFact
       InfrastructureMsg msg = null;
       switch (msgType)
       {
+      case SetSimStepRate:
+         msg = new SetSimStepRateMsg();
+         break;
       case SimTime:
          msg = new SimTimeMsg();
          break;

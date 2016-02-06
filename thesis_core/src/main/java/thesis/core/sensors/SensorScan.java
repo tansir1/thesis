@@ -26,8 +26,7 @@ public class SensorScan
       this.randGen = randGen;
    }
 
-   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV,
-         long simTime)
+   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       final int NUM_COORDS = snsrFOV.size();

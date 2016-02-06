@@ -25,7 +25,7 @@ public class Pathing
     *
     * @see #pathTrail
     */
-   private static long TRAIL_SAMPLE_INTERVAL_MS = 250;
+   private static double TRAIL_SAMPLE_INTERVAL_MS = 250;
 
    /**
     * The radius required for the UAV to turn 180 degrees.
@@ -43,7 +43,7 @@ public class Pathing
    private DubinsPath path;
    private PathPhase pathPhase;
 
-   private long lastTrailSampleTimeAccumulator;
+   private double lastTrailSampleTimeAccumulator;
    private List<WorldPose> pathTrail;
 
    private int numFramesToWypt;

@@ -2,15 +2,16 @@ package thesis.core.common;
 
 public class SimTime
 {
+   public static int SIM_STEP_RATE_HZ = 60;
    /**
     * The time in milliseconds between simulation frames.
     */
-   public static long SIM_STEP_RATE_MS = 16;//60Hz update rate
+   public static double SIM_STEP_RATE_MS = SIM_STEP_RATE_HZ / 1000.0;
 
    /**
     * The time in second between simulation frames.
     */
-   public static double SIM_STEP_RATE_S = (SIM_STEP_RATE_MS*1.0) / 1000.0;
+   public static double SIM_STEP_RATE_S = SIM_STEP_RATE_MS / 1000.0;
 
    /**
     * The amount of simulated time that has elapsed in milliseconds.
@@ -38,5 +39,12 @@ public class SimTime
    public static long getWallTime()
    {
       return wallTime;
+   }
+
+   public static void changeStepRate(int hertz)
+   {
+      SIM_STEP_RATE_HZ = hertz;
+      SIM_STEP_RATE_MS = SIM_STEP_RATE_HZ / 1000.0;
+      SIM_STEP_RATE_S = SIM_STEP_RATE_MS / 1000.0;
    }
 }

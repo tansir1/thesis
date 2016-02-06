@@ -12,6 +12,7 @@ import thesis.core.statedump.SimStateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ClientComms;
 import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.SetSimStepRateMsg;
 import thesis.network.messages.SimTimeMsg;
 import thesis.sim.utilities.SimAppConfig;
 
@@ -29,6 +30,7 @@ public class ThesisSimApp
    private ClientComms network;
    private volatile boolean terminateApp;
    private boolean pause;
+   private boolean stepOneFrame;
 
    private long lastNetworkTime;
    private long frameCnt;
@@ -40,6 +42,7 @@ public class ThesisSimApp
       network = new ClientComms();
       terminateApp = false;
       pause = false;
+      stepOneFrame = false;
 
       lastNetworkTime = 0;
       frameCnt = -1;
@@ -78,10 +81,13 @@ public class ThesisSimApp
       List<InfrastructureMsg> msgs = network.getData();
       if(msgs != null)
       {
-         for (InfrastructureMsg msg : network.getData())
+         for (InfrastructureMsg msg : msgs)
          {
             switch (msg.getMessageType())
             {
+            case SetSimStepRate:
+               processSetSimStepRateMsg(msg);
+               break;
             default:
                logger.warn("No handlers exist for messages of type {}.", msg.getMessageType());
                break;
@@ -122,7 +128,6 @@ public class ThesisSimApp
       while (!terminateApp)
       {
          wallTime = System.currentTimeMillis();
-         frameCnt++;
 
          if ((wallTime - lastNetworkTime) > NETWORK_INTERVAL_MS)
          {
@@ -131,8 +136,15 @@ public class ThesisSimApp
             processIncomingMessages();
          }
 
-         if (!pause)
+         if (!pause || stepOneFrame)
          {
+            if(stepOneFrame)
+            {
+               stepOneFrame = false;
+               logger.info("Stepping one frame.");
+            }
+
+            frameCnt++;
             simModel.stepSimulation();
          }
 
@@ -150,7 +162,7 @@ public class ThesisSimApp
 
          // Compute how much time is left from now until the next scheduled
          // frame and sleep.
-         long remainingStepTime = SimTime.SIM_STEP_RATE_MS - frameTime;
+         long remainingStepTime = (long)SimTime.SIM_STEP_RATE_MS - frameTime;
          if (remainingStepTime > 0)
          {
             try
@@ -169,4 +181,26 @@ public class ThesisSimApp
       network.disconnect();
    }
 
+   private void processSetSimStepRateMsg(InfrastructureMsg rawMsg)
+   {
+      SetSimStepRateMsg msg = (SetSimStepRateMsg)rawMsg;
+      int hertz = msg.getStepRate();
+      SimTime.changeStepRate(hertz);
+
+      if(hertz <= 0)
+      {
+         pause = true;
+         logger.info("Simulation paused.");
+      }
+      else
+      {
+         pause = false;
+         logger.info("Simulation unpaused.  Running at {}hz.", hertz);
+      }
+
+      if(hertz == -1)
+      {
+         stepOneFrame = true;
+      }
+   }
 }
