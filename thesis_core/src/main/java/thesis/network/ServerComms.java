@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.List;
 
@@ -14,24 +15,56 @@ import thesis.core.utilities.LoggerIDs;
 import thesis.network.messages.InfrastructMsgHdr;
 import thesis.network.messages.InfrastructureMsg;
 
-public class ClientComms
+public class ServerComms
 {
    private final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN_NET);
 
    private SocketChannel channel;
+   private ServerSocketChannel serverChannel;
    private PartialMsgBuf recvBuf;
 
    private final int BUFFER_SZ;
    private ByteBuffer sendBuf;
 
-   public ClientComms()
+   public ServerComms()
    {
       BUFFER_SZ = 1024 * 1024 * 5;// 5 MB buffer
       sendBuf = ByteBuffer.allocate(BUFFER_SZ);
       recvBuf = new PartialMsgBuf();
    }
 
-   public boolean connect(String ip, int port)
+
+   public void listenForClient(String ip, int port)
+   {
+      if (channel != null)
+      {
+         logger.warn("Already have a connected client.  Disconnecting first before reconnecting.");
+         disconnect();
+      }
+      SocketAddress listenOnAddr = new InetSocketAddress(ip, port);
+
+      try
+      {
+         serverChannel = ServerSocketChannel.open();
+         serverChannel.bind(listenOnAddr);
+         serverChannel.configureBlocking(false);
+
+         while(channel == null)
+         {
+            channel = serverChannel.accept();
+            Thread.sleep(200);
+         }
+
+         channel.configureBlocking(false);
+         logger.info("Client connected.");
+      }
+      catch (IOException | InterruptedException e)
+      {
+         logger.error("Failed to listen for client. Details: {}", e.getMessage());
+      }
+   }
+
+   public boolean listenForConnections(String ip, int port)
    {
       if (channel != null)
       {
@@ -75,15 +108,10 @@ public class ClientComms
       for (int i = 0; i < numMsgs; ++i)
       {
          InfrastructureMsg msg = msgs.get(i);
-         if (msg.getEncodedSize() > BUFFER_SZ)
+         if(msg.getEncodedSize() > BUFFER_SZ)
          {
             throw new IllegalArgumentException("Encoded message size is larger than sending buffer size.");
          }
-
-         // TODO This could be optimized to encode all messages at once and
-         // perform a single write to the channel. That would require
-         // maintaining a count of remaining bytes in the buffer to be sure we
-         // didn't overflow it.
 
          msgHdr.setMessageSize(msg.getEncodedSize());
          msgHdr.setMessageType(msg.getMessageType());
@@ -95,21 +123,19 @@ public class ClientComms
          {
             while (sendBuf.hasRemaining())
             {
-               int numWritten = channel.write(sendBuf);
-               System.out.println(numWritten);
+               channel.write(sendBuf);
             }
          }
          catch (IOException e)
          {
-            logger.error("Failed to send data to server. Details: {}", e.getMessage());
+            logger.error("Failed to send data to client. Details: {}", e.getMessage());
          }
          sendBuf.clear();
       }
    }
 
    /**
-    * @return A list of parsed messages from the server or null if no messages
-    *         exist.
+    * @return A list of parsed messages from the server or null if no messages exist.
     */
    public List<InfrastructureMsg> getData()
    {
@@ -117,20 +143,20 @@ public class ClientComms
       try
       {
          int bytesRead = channel.read(recvBuf.getBuffer());
-         if (bytesRead != -1)
+         if(bytesRead != -1)
          {
             data = recvBuf.assembleMessages();
          }
          else
          {
-            logger.error("Connection to server is closed.  Disconnecting.");
+            logger.error("Connection to client is closed.  Disconnecting.");
             disconnect();
          }
 
       }
       catch (IOException e)
       {
-         logger.error("Failed to read data from server.  Details: {}", e.getMessage());
+         logger.error("Failed to read data from client.  Details: {}", e.getMessage());
       }
 
       return data;
@@ -140,14 +166,29 @@ public class ClientComms
    {
       if (channel != null)
       {
-         logger.debug("Disconnected from server.");
+         logger.debug("Disconnecting client.");
          try
          {
             channel.close();
+            channel = null;
          }
          catch (IOException e)
          {
-            logger.error("Failed to disconnect from server. Details: {}", e.getMessage());
+            logger.error("Failed to disconnect the client. Details: {}", e.getMessage());
+         }
+      }
+
+      if(serverChannel != null)
+      {
+         logger.debug("Closing server channel.");
+         try
+         {
+            serverChannel.close();
+            serverChannel = null;
+         }
+         catch (IOException e)
+         {
+            logger.error("Failed to terminate the server channel. Details: {}", e.getMessage());
          }
       }
    }

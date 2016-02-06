@@ -44,9 +44,9 @@ public class TestMsg extends InfrastructureMsg
    }
 
    @Override
-   public int getEncodedSize()
+   public short getEncodedSize()
    {
-      return data.length;
+      return (short) ((data.length + 1) * Integer.BYTES);
    }
 
 }
