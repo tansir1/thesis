@@ -36,27 +36,31 @@ public class PartialMsgBuf
       }
    }
 
-   public List<InfrastructureMsg> assembleMessages(int bytesRead)
+   public List<InfrastructureMsg> assembleMessages()
    {
       List<InfrastructureMsg> msgs = new ArrayList<InfrastructureMsg>();
+      boolean incompleteMsg = false;
+      int numBytesToParse = buf.position();
+      while(numBytesToParse >= InfrastructMsgHdr.HEADER_SIZE && !incompleteMsg)
+      {
+         buf.flip();
 
-      if(msgHdr.getMessageSize() > -1)
-      {
-         do
+         msgHdr.decodeData(buf);
+         if((InfrastructMsgHdr.HEADER_SIZE + msgHdr.getMessageSize()) <= numBytesToParse)
          {
-            if (buf.limit() >= msgHdr.getMessageSize())
-            {
-               InfrastructureMsg msg = InfrastructMsgFact.createMessage(msgHdr.getMessageType());
-               msgs.add(msg);
-               msgHdr.reset();
-               buf.compact();
-               decodeHeader();
-            }
-         }while (msgHdr.getMessageSize() > -1);
-      }
-      else
-      {
-         decodeHeader();
+            InfrastructureMsg msg = InfrastructMsgFact.createMessage(msgHdr.getMessageType());
+            msg.decodeData(buf);
+            msgs.add(msg);
+            msgHdr.reset();
+            buf.compact();
+            numBytesToParse = buf.position();
+         }
+         else
+         {
+            //Not enough bytes to decode message, reset the position to the end of the buffer and wait for more bytes.
+            incompleteMsg = true;
+            buf.position(numBytesToParse);
+         }
       }
       return msgs;
    }

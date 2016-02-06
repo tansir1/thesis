@@ -18,5 +18,5 @@ public abstract class InfrastructureMsg
 
    public abstract void encodeData(ByteBuffer buf);
    public abstract void decodeData(ByteBuffer buf);
-   public abstract int getEncodedSize();
+   public abstract short getEncodedSize();
 }

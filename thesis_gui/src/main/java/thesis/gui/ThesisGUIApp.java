@@ -1,6 +1,8 @@
 package thesis.gui;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,9 @@ import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.utilities.SimModelConfigLoader;
 import thesis.gui.mainwindow.MainWindow;
+import thesis.network.ServerComms;
+import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.TestMsg;
 
 public class ThesisGUIApp
 {
@@ -83,8 +88,38 @@ public class ThesisGUIApp
       return success;
    }
 
+   public static void netTest()
+   {
+      ServerComms comms = new ServerComms();
+      comms.listenForClient("127.0.0.1", 10555);
+
+      List<InfrastructureMsg> msgs = comms.getData();
+      while(msgs == null || msgs.isEmpty())
+      {
+         msgs = comms.getData();
+      }
+      TestMsg recvMsg = (TestMsg)msgs.get(0);
+      int data[] = recvMsg.getData();
+      for(int i=0; i<data.length; ++i)
+      {
+         System.out.println(data[i]);
+      }
+
+      data[0]=3;
+      data[1]=4;
+      data[2]=5;
+      TestMsg sendMsg = new TestMsg();
+      sendMsg.setData(data);
+
+      msgs = new ArrayList<InfrastructureMsg>();
+      msgs.add(sendMsg);
+      comms.sendData(msgs);
+      comms.disconnect();
+   }
+
    public static void main(String[] args)
    {
+      netTest();
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
       logger.info("Starting simulation version {}", CoreUtils.loadVersionID());
 
