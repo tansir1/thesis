@@ -1,5 +1,6 @@
 package thesis.gui.mainwindow;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -77,15 +78,28 @@ public class SimTimer
          model.stepSimulation();
 
          guiRefreshAccumulator = 0;
-         SwingUtilities.invokeLater(new Runnable()
+         try
          {
-
-            @Override
-            public void run()
+            SwingUtilities.invokeAndWait(new Runnable()
             {
-               simPanel.repaint();
-            }
-         });
+
+               @Override
+               public void run()
+               {
+                  simPanel.repaint();
+               }
+            });
+         }
+         catch (InvocationTargetException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+         catch (InterruptedException e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
       }
    }
 

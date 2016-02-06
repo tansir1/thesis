@@ -24,11 +24,19 @@ public class ClientComms
    private final int BUFFER_SZ;
    private ByteBuffer sendBuf;
 
+   private boolean ready;
+
    public ClientComms()
    {
       BUFFER_SZ = 1024 * 1024 * 5;// 5 MB buffer
       sendBuf = ByteBuffer.allocate(BUFFER_SZ);
       recvBuf = new PartialMsgBuf();
+      ready = false;
+   }
+
+   public boolean isReady()
+   {
+      return ready;
    }
 
    public boolean connect(String ip, int port)
@@ -60,6 +68,7 @@ public class ClientComms
 
          logger.info("Connected to server.");
          success = true;
+         ready = true;
       }
       catch (IOException | InterruptedException e)
       {

@@ -3,7 +3,8 @@ package thesis.network.messages;
 public enum InfrastructureMsgType
 {
 
-   Test(0);
+   Test(0),
+   SimTime(1);
 
    private byte id;
    private InfrastructureMsgType(int id)

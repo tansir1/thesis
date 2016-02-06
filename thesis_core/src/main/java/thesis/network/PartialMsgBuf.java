@@ -28,14 +28,6 @@ public class PartialMsgBuf
       return buf;
    }
 
-   private void decodeHeader()
-   {
-      if(buf.limit() > InfrastructMsgHdr.HEADER_SIZE)
-      {
-         msgHdr.decodeData(buf);
-      }
-   }
-
    public List<InfrastructureMsg> assembleMessages()
    {
       List<InfrastructureMsg> msgs = new ArrayList<InfrastructureMsg>();
