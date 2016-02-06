@@ -61,12 +61,14 @@ public class UAVMgr
       {
          uavStartCfg = uavStartCfgs.get(i);
          int type = uavStartCfg.getUAVType();
+         int snsrIDCnt = 0;
 
          for (int j = 0; j < NUM_SNSR_TYPES; ++j)
          {
             if (uavSensorCfgs.uavHasSensor(type, j))
             {
-               Sensor sensor = new Sensor(j, entTypes.getSnsrTypeCfgs(), tgtMgr);
+               Sensor sensor = new Sensor(j, snsrIDCnt, entTypes.getSnsrTypeCfgs(), tgtMgr);
+               snsrIDCnt++;
                // Align sensor to point straight ahead at startup
                sensor.setAzimuth(uavStartCfg.getOrientation());
                sensors.addSensor(sensor);

@@ -25,6 +25,9 @@ public enum InfrastructureMsgType
       case 0:
          type = Test;
          break;
+      case 1:
+         type = SimTime;
+         break;
       }
       return type;
    }

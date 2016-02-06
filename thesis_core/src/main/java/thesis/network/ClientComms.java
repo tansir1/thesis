@@ -79,6 +79,11 @@ public class ClientComms
 
    public void sendData(List<InfrastructureMsg> msgs)
    {
+      if(!ready)
+      {
+         return;
+      }
+
       int numMsgs = msgs.size();
       InfrastructMsgHdr msgHdr = new InfrastructMsgHdr();
       for (int i = 0; i < numMsgs; ++i)
@@ -104,8 +109,7 @@ public class ClientComms
          {
             while (sendBuf.hasRemaining())
             {
-               int numWritten = channel.write(sendBuf);
-               System.out.println(numWritten);
+               /*int numWritten = */channel.write(sendBuf);
             }
          }
          catch (IOException e)
@@ -122,6 +126,11 @@ public class ClientComms
     */
    public List<InfrastructureMsg> getData()
    {
+      if(!ready)
+      {
+         return null;
+      }
+
       List<InfrastructureMsg> data = null;
       try
       {
@@ -137,9 +146,10 @@ public class ClientComms
          }
 
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          logger.error("Failed to read data from server.  Details: {}", e.getMessage());
+         disconnect();
       }
 
       return data;
@@ -153,6 +163,8 @@ public class ClientComms
          try
          {
             channel.close();
+            channel = null;
+            ready = false;
          }
          catch (IOException e)
          {

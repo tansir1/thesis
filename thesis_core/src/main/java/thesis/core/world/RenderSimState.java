@@ -12,13 +12,14 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
-import thesis.core.sensors.Sensor;
-import thesis.core.targets.Target;
+import thesis.core.statedump.SensorDump;
+import thesis.core.statedump.SimStateDump;
+import thesis.core.statedump.TargetDump;
+import thesis.core.statedump.UAVDump;
 import thesis.core.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
@@ -70,7 +71,8 @@ public class RenderSimState
     */
    private BasicStroke sensorFOVStroke;
 
-   private SimModel model;
+   private SimStateDump simStateDump;
+   private WorldGIS gis;
 
    private Rectangle bounds;
 
@@ -107,14 +109,14 @@ public class RenderSimState
     * @param model
     *           The model to render.
     */
-   public RenderSimState(SimModel model)
+   public RenderSimState(SimStateDump simStateDump)
    {
-      if (model == null)
+      if (simStateDump == null)
       {
-         throw new NullPointerException("SimModel to render cannot be null.");
+         throw new NullPointerException("SimStateDump to render cannot be null.");
       }
 
-      this.model = model;
+      this.simStateDump = simStateDump;
       renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
@@ -127,42 +129,7 @@ public class RenderSimState
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
       selectedUAV = -1;
-   }
-
-   /**
-    * Initialize a renderer with the specified bounds size.
-    *
-    * @param render
-    *           The model to render.
-    * @param minX
-    *           The minimum X pixel coordinate for the world will start here.
-    *           This allows the user to offset the rendering.
-    * @param minY
-    *           The minimum Y pixel coordinate for the world will start here.
-    *           This allows the user to offset the rendering.
-    * @param width
-    *           The width of the rendering space in pixels.
-    * @param height
-    *           The height of the rendering space in pixels.
-    */
-   public RenderSimState(SimModel model, int minX, int minY, int width, int height)
-   {
-      if (model == null)
-      {
-         throw new NullPointerException("SimModel to render cannot be null.");
-      }
-
-      this.model = model;
-      renderOpts = new RenderOptions();
-      bounds = new Rectangle();
-      roadStroke = new BasicStroke(1f);
-      historyStroke = new BasicStroke(3f);
-      sensorFOVStroke = new BasicStroke(1f);
-      rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
-      rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
-      rawGreenMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.GREEN_MOBILE_IMG_PATH);
-      rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
-      rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
+      gis = simStateDump.getWorldGIS();
    }
 
    /**
@@ -235,39 +202,42 @@ public class RenderSimState
       Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.4f);
       gfx.setFont(newFont);
 
-      if (renderOpts.isOptionEnabled(RenderOption.Graticule))
+      synchronized (simStateDump)
       {
-         drawGridLines(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.Graticule))
+         {
+            drawGridLines(gfx);
+         }
 
-      if (renderOpts.isOptionEnabled(RenderOption.Roads))
-      {
-         drawRoads(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.Roads))
+         {
+            drawRoads(gfx);
+         }
 
-      if (renderOpts.isOptionEnabled(RenderOption.Havens))
-      {
-         drawHavens(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.Havens))
+         {
+            drawHavens(gfx);
+         }
 
-      if (renderOpts.isOptionEnabled(RenderOption.Targets))
-      {
-         drawTargets(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.Targets))
+         {
+            drawTargets(gfx);
+         }
 
-      if (renderOpts.isOptionEnabled(RenderOption.UavHistoryTrail))
-      {
-         drawUAVHistoryTrails(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.UavHistoryTrail))
+         {
+            drawUAVHistoryTrails(gfx);
+         }
 
-      if (renderOpts.isOptionEnabled(RenderOption.UAVs))
-      {
-         drawUAVs(gfx);
-      }
+         if (renderOpts.isOptionEnabled(RenderOption.UAVs))
+         {
+            drawUAVs(gfx);
+         }
 
-      if(renderOpts.isOptionEnabled(RenderOption.SensorFOV))
-      {
-         drawSensorFOVs(gfx);
+         if (renderOpts.isOptionEnabled(RenderOption.SensorFOV))
+         {
+            drawSensorFOVs(gfx);
+         }
       }
    }
 
@@ -288,8 +258,8 @@ public class RenderSimState
       final double xPercent = (x * 1.0) / (1.0 * bounds.width);
       final double yPercent = (y * 1.0) / (1.0 * bounds.height);
 
-      final double worldH = model.getWorldGIS().getHeight() * yPercent;
-      final double worldW = model.getWorldGIS().getWidth() * xPercent;
+      final double worldH = gis.getHeight() * yPercent;
+      final double worldW = gis.getWidth() * xPercent;
 
       return new WorldCoordinate(worldH, worldW);
    }
@@ -306,7 +276,7 @@ public class RenderSimState
    public CellCoordinate pixelsToCellCoordinate(int x, int y)
    {
       // Invert the y axis so that "north" is at the top of the screen.
-      final int rows = model.getWorldGIS().getRowCount() - 1;
+      final int rows = gis.getRowCount() - 1;
       final int rawRow = y / gridCellH;
       final int invertedRows = rows - rawRow;
       return new CellCoordinate(invertedRows, x / gridCellW);
@@ -315,10 +285,10 @@ public class RenderSimState
    public Point worldCoordinateToPixels(final WorldCoordinate wc)
    {
       final double x = pixelsPerMeterW * wc.getEast();
-      //Invert the y axis so that "north" is at the top of the screen.
+      // Invert the y axis so that "north" is at the top of the screen.
       final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth());
 
-      final Point p = new Point(0,0);
+      final Point p = new Point(0, 0);
       p.setLocation(x, y);
       return p;
    }
@@ -326,7 +296,7 @@ public class RenderSimState
    public void worldCoordinateToPixels(final WorldCoordinate wc, final Point pixels)
    {
       final double x = pixelsPerMeterW * wc.getEast();
-      //Invert the y axis so that "north" is at the top of the screen.
+      // Invert the y axis so that "north" is at the top of the screen.
       final double y = bounds.height - (int) (pixelsPerMeterH * wc.getNorth());
       pixels.setLocation(x, y);
    }
@@ -334,7 +304,7 @@ public class RenderSimState
    public void cellCoordinateToPixels(final CellCoordinate cc, final Point pixels)
    {
       int pixelX = gridCellW * cc.getRow() + gridCellW / 2;
-       //Invert the y axis so that "north" is at the top of the screen.
+      // Invert the y axis so that "north" is at the top of the screen.
       int pixelY = bounds.height - (gridCellH * cc.getColumn() + gridCellH / 2);
 
       pixels.setLocation(pixelX, pixelY);
@@ -357,14 +327,14 @@ public class RenderSimState
       int pixW = bounds.width - 1;
       int pixH = bounds.height - 1;
 
-      int numCols = model.getWorldGIS().getColumnCount();
-      int numRows = model.getWorldGIS().getRowCount();
+      int numCols = gis.getColumnCount();
+      int numRows = gis.getRowCount();
 
       gridCellW = (int) Math.round((pixW * 1.0) / (numCols * 1.0));
       gridCellH = (int) Math.round((pixH * 1.0) / (numRows * 1.0));
 
-      pixelsPerMeterH = (pixH * 1.0) / model.getWorldGIS().getHeight();
-      pixelsPerMeterW = (pixW * 1.0) / model.getWorldGIS().getWidth();
+      pixelsPerMeterH = (pixH * 1.0) / gis.getHeight();
+      pixelsPerMeterW = (pixW * 1.0) / gis.getWidth();
 
       roadStroke = new BasicStroke(Math.min(gridCellH, gridCellW) * ROAD_WIDTH_VS_GRID_PERCENT);
       roadInterSectionSz = (int) (Math.min(gridCellH, gridCellW) * INTERSECTION_SZ_VS_GRID_PERCENT);
@@ -434,16 +404,15 @@ public class RenderSimState
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
 
-      Havens havens = model.getWorld().getHavens();
+      Havens havens = simStateDump.getWorld().getHavens();
       final int NUM_HAVENS = havens.getNumHavens();
 
-      for(int i = 0; i < NUM_HAVENS; ++i)
+      for (int i = 0; i < NUM_HAVENS; ++i)
       {
          cellCoordinateToPixels(havens.getHavenByIndx(i), pixels);
          g2d.drawImage(scaledHavenImg, pixels.x - halfRdSz, pixels.y - halfRdSz, null);
       }
    }
-
 
    private void drawRoads(Graphics2D g2d)
    {
@@ -455,19 +424,21 @@ public class RenderSimState
       final CellCoordinate startRow = new CellCoordinate();
       final CellCoordinate endRow = new CellCoordinate();
 
-      final int numCols = model.getWorldGIS().getColumnCount();
-      final int numRows = model.getWorldGIS().getRowCount();
-      final RoadNetwork roads = model.getWorld().getRoadNetwork();
+      final int numCols = gis.getColumnCount();
+      final int numRows = gis.getRowCount();
+      final RoadNetwork roads = simStateDump.getWorld().getRoadNetwork();
 
-      for(int i=0; i<numRows; ++i)
+      for (int i = 0; i < numRows; ++i)
       {
-         for(int j=0; j<numCols; ++j)
+         for (int j = 0; j < numCols; ++j)
          {
-            if(roads.isTraversable(i, j))
+            if (roads.isTraversable(i, j))
             {
-               if((i + 1) < numRows && roads.isTraversable(i+1, j))//Check next row
+               if ((i + 1) < numRows && roads.isTraversable(i + 1, j)) // Check
+                                                                       // next
+                                                                       // row
                {
-                  //Draw road from current cell to cell below
+                  // Draw road from current cell to cell below
                   startRow.setCoordinate(i, j);
                   endRow.setCoordinate(i + 1, j);
                   cellCoordinateToPixels(startRow, start);
@@ -475,9 +446,11 @@ public class RenderSimState
                   g2d.drawLine(start.x, start.y, end.x, end.y);
                }
 
-               if((j + 1) < numCols && roads.isTraversable(i, j+1))//Check next column
+               if ((j + 1) < numCols && roads.isTraversable(i, j + 1)) // Check
+                                                                       // next
+                                                                       // column
                {
-                  //Draw road from current cell to cell to the right
+                  // Draw road from current cell to cell to the right
                   startRow.setCoordinate(i, j);
                   endRow.setCoordinate(i, j + 1);
                   cellCoordinateToPixels(startRow, start);
@@ -499,8 +472,8 @@ public class RenderSimState
 
       // White, half alpha
       final Color lineColor = new Color(255, 255, 255, 127);
-      final int numCols = model.getWorldGIS().getColumnCount();
-      final int numRows = model.getWorldGIS().getRowCount();
+      final int numCols = gis.getColumnCount();
+      final int numRows = gis.getRowCount();
 
       g2d.setColor(Color.yellow);
       g2d.drawString(Integer.toString(0), bounds.x + 1, bounds.height - 1);
@@ -552,17 +525,17 @@ public class RenderSimState
       int halfImgH = -1;
 
       final AffineTransform trans = new AffineTransform();
-      final Point pixels = new Point(0,0);
+      final Point pixels = new Point(0, 0);
 
-      final Target[] targets = model.getTargetManager().getAllTargets();
-      final int NUM_TARGETS = targets.length;
-      Target tgt = null;
-      for(int i=0; i<NUM_TARGETS; ++i)
+      final List<TargetDump> targets = simStateDump.getTargets();
+      final int NUM_TARGETS = simStateDump.getTargets().size();
+      TargetDump tgt = null;
+      for (int i = 0; i < NUM_TARGETS; ++i)
       {
-         tgt = targets[i];
+         tgt = targets.get(i);
          trans.setToIdentity();
 
-         wc.setCoordinate(tgt.getCoordinate());
+         wc.setCoordinate(tgt.getPose().getCoordinate());
 
          worldCoordinateToPixels(wc, pixels);
 
@@ -574,8 +547,8 @@ public class RenderSimState
                halfImgH = scaledRedMobileImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
-               //trans.rotate(-tgt.getHeading().asRadians());
-               double deg = tgt.getHeading() - 90;
+               // trans.rotate(-tgt.getHeading().asRadians());
+               double deg = tgt.getPose().getHeading() - 90;
                trans.rotate(-Math.toRadians(deg));
 
                g2d.drawImage(scaledRedMobileImg, trans, null);
@@ -589,7 +562,7 @@ public class RenderSimState
                halfImgH = scaledRedStaticImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
-               trans.rotate(Math.toRadians(-tgt.getHeading()));
+               trans.rotate(Math.toRadians(-tgt.getPose().getHeading()));
 
                g2d.drawImage(scaledRedStaticImg, trans, null);
             }
@@ -605,15 +578,15 @@ public class RenderSimState
       }
 
       final WorldCoordinate wc = new WorldCoordinate();
-      final Point pixels = new Point(0,0);
+      final Point pixels = new Point(0, 0);
       final int halfImgW = scaledBlueMobileImg.getWidth() / 2;
       final int halfImgH = scaledBlueMobileImg.getHeight() / 2;
 
       final AffineTransform trans = new AffineTransform();
 
-      final UAV[] uavs = model.getUAVManager().getAllUAVs();
+      final UAV[] uavs = (UAV[]) simStateDump.getUAVs().toArray();
       UAV uav = null;
-      for(int i=0; i<uavs.length; ++i)
+      for (int i = 0; i < uavs.length; ++i)
       {
          uav = uavs[i];
 
@@ -624,11 +597,11 @@ public class RenderSimState
          worldCoordinateToPixels(wc, pixels);
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
-         //trans.rotate(-uav.getHeading().asRadians());
+         // trans.rotate(-uav.getHeading().asRadians());
          double deg = uav.getPathing().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
-         if(uav.getID() != selectedUAV)
+         if (uav.getID() != selectedUAV)
          {
             g2d.drawImage(scaledBlueMobileImg, trans, null);
          }
@@ -648,19 +621,19 @@ public class RenderSimState
    private void drawUAVHistoryTrails(Graphics2D g2d)
    {
       g2d.setColor(Color.blue);
-      final Point curPixels = new Point(0,0);
-      final Point prevPix = new Point(0,0);
-      //BasicStroke historyStroke = new BasicStroke(3f);
+      final Point curPixels = new Point(0, 0);
+      final Point prevPix = new Point(0, 0);
+      // BasicStroke historyStroke = new BasicStroke(3f);
       g2d.setStroke(historyStroke);
 
       List<WorldPose> history = new ArrayList<WorldPose>();
 
-      final UAV[] uavs = model.getUAVManager().getAllUAVs();
+      final UAV[] uavs = (UAV[]) simStateDump.getUAVs().toArray();
       UAV uav = null;
-      for(int i=0; i<uavs.length; ++i)
+      for (int i = 0; i < uavs.length; ++i)
       {
          uav = uavs[i];
-         prevPix.setLocation(-1,-1);
+         prevPix.setLocation(-1, -1);
 
          history.clear();
          uav.getPathing().getFlightHistoryTrail(history);
@@ -689,28 +662,29 @@ public class RenderSimState
       final int frustrumX[] = new int[5];
       final int frustrumY[] = new int[5];
 
-      final UAV[] uavs = model.getUAVManager().getAllUAVs();
-      UAV uav = null;
-      List<Sensor> sensors = null;
-      Sensor sensor = null;
-      for(int i=0; i<uavs.length; ++i)
+      final List<UAVDump> uavs = simStateDump.getUAVs();
+      final int NUM_UAVS = uavs.size();
+      UAVDump uav = null;
+      List<SensorDump> sensors = null;
+      SensorDump sensor = null;
+      for (int i = 0; i < NUM_UAVS; ++i)
       {
-         uav = uavs[i];
-         worldCoordinateToPixels(uav.getPathing().getCoordinate(), uavPix);
+         uav = uavs.get(i);
+         worldCoordinateToPixels(uav.getPose().getCoordinate(), uavPix);
 
-         sensors = uav.getSensors().getSensors();
+         sensors = uav.getSensors();
          final int NUM_SENSORS = sensors.size();
 
-         for(int j = 0; j<NUM_SENSORS; ++j)
+         for (int j = 0; j < NUM_SENSORS; ++j)
          {
             sensor = sensors.get(j);
             final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
 
-            //Line from UAV to center of FOV
+            // Line from UAV to center of FOV
             worldCoordinateToPixels(sensor.getViewCenter(), frustrumPix);
             gfx.drawLine(uavPix.x, uavPix.y, frustrumPix.x, frustrumPix.y);
 
-            //Coordinates for drawing region box
+            // Coordinates for drawing region box
             worldCoordinateToPixels(viewRect.getTopLeft(), frustrumPix);
             frustrumX[0] = frustrumPix.x;
             frustrumY[0] = frustrumPix.y;
@@ -727,7 +701,7 @@ public class RenderSimState
             frustrumX[3] = frustrumPix.x;
             frustrumY[3] = frustrumPix.y;
 
-            //Connect back to start
+            // Connect back to start
             worldCoordinateToPixels(viewRect.getTopLeft(), frustrumPix);
             frustrumX[4] = frustrumPix.x;
             frustrumY[4] = frustrumPix.y;
@@ -753,7 +727,7 @@ public class RenderSimState
     * Convenience wrapper function to render the given world into an image of
     * the specified size. This provides a screenshot of the world.
     *
-    * @param model
+    * @param dump
     *           The model to render.
     * @param imgW
     *           The width of the final image in pixels.
@@ -763,15 +737,15 @@ public class RenderSimState
     *           Custom rendering options to apply to the rendered image.
     * @return The world rendered into the image.
     */
-   public static BufferedImage renderToImage(SimModel model, int imgW, int imgH, RenderOptions opts)
+   public static BufferedImage renderToImage(SimStateDump dump, int imgW, int imgH, RenderOptions opts)
    {
-      if (model == null)
+      if (dump == null)
       {
          throw new NullPointerException("SimModel cannot be null.");
       }
 
       BufferedImage img = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
-      RenderSimState render = new RenderSimState(model);
+      RenderSimState render = new RenderSimState(dump);
 
       if (opts != null)
       {
@@ -788,7 +762,7 @@ public class RenderSimState
     * the specified size. This provides a screenshot of the world using default
     * rendering options.
     *
-    * @param model
+    * @param dump
     *           The model to render.
     * @param imgW
     *           The width of the final image in pixels.
@@ -796,9 +770,9 @@ public class RenderSimState
     *           The height of the final image in pixels.
     * @return The world rendered into the image.
     */
-   public static BufferedImage renderToImage(SimModel model, int imgW, int imgH)
+   public static BufferedImage renderToImage(SimStateDump dump, int imgW, int imgH)
    {
-      return renderToImage(model, imgW, imgH, null);
+      return renderToImage(dump, imgW, imgH, null);
    }
 
 }

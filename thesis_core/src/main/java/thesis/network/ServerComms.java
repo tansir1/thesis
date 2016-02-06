@@ -64,43 +64,6 @@ public class ServerComms
       }
    }
 
-   public boolean listenForConnections(String ip, int port)
-   {
-      if (channel != null)
-      {
-         logger.warn("Already connected to the server.  Disconnecting first before reconnecting.");
-         disconnect();
-      }
-
-      boolean success = false;
-      SocketAddress server = new InetSocketAddress(ip, port);
-      logger.info("Connecting to server.");
-
-      try
-      {
-         channel = SocketChannel.open();
-         channel.configureBlocking(false);
-         channel.connect(server);
-
-         while (!channel.finishConnect())
-         {
-            // TODO Add a time limited failure condition
-            logger.debug("Waiting on server response...");
-            Thread.sleep(200);
-         }
-
-         logger.debug("Setting socket options");
-
-         logger.info("Connected to server.");
-         success = true;
-      }
-      catch (IOException | InterruptedException e)
-      {
-         logger.error("Failed to connect to server.  Details: {}", e.getMessage());
-      }
-      return success;
-   }
-
    public void sendData(List<InfrastructureMsg> msgs)
    {
       int numMsgs = msgs.size();
@@ -154,7 +117,7 @@ public class ServerComms
          }
 
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          logger.error("Failed to read data from client.  Details: {}", e.getMessage());
       }
