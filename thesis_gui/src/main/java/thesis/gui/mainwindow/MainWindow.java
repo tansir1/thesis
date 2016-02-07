@@ -20,6 +20,7 @@ import javax.swing.border.BevelBorder;
 
 import thesis.core.EntityTypeCfgs;
 import thesis.core.statedump.SimStateDump;
+import thesis.core.statedump.SimStateUpdateDump;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
@@ -200,6 +201,18 @@ public class MainWindow implements IMapMouseListener
       this.simStateDump = simState;
       //TODO EntityTypeConfigs?
       connectSimModel(simState);
+   }
+
+   protected void onSimStateUpdate(SimStateUpdateDump simUpdate)
+   {
+      if(simStateDump != null)
+      {
+         synchronized(simStateDump)
+         {
+            simStateDump.update(simUpdate);
+         }
+         simPanel.repaint();
+      }
    }
 
 }

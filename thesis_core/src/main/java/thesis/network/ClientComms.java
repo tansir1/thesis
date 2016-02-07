@@ -101,7 +101,8 @@ public class ClientComms
       {
          while (sendBuf.hasRemaining())
          {
-            /* int numWritten = */channel.write(sendBuf);
+             int numWritten = channel.write(sendBuf);
+             System.out.println(numWritten);
          }
       }
       catch (IOException e)
@@ -144,7 +145,7 @@ public class ClientComms
          {
             while (sendBuf.hasRemaining())
             {
-               /* int numWritten = */channel.write(sendBuf);
+               int numWritten = channel.write(sendBuf);
             }
          }
          catch (IOException e)

@@ -6,7 +6,7 @@ import thesis.core.sensors.Sensor;
 
 public class SensorDump
 {
-   private final int type;
+   private final int type;//Will be -1 on an update dump
    private final int id;
    private double heading;
    private final WorldCoordinate lookAtGoal;
@@ -37,7 +37,26 @@ public class SensorDump
       viewRegion = new Rectangle();
    }
 
+   public SensorDump(int id)
+   {
+      this.type = -1;
+      this.id = id;
+
+      heading = 0;
+      lookAtGoal = new WorldCoordinate();
+      lookAtCur = new WorldCoordinate();
+      viewRegion = new Rectangle();
+   }
+
    public void dumpUpdate(Sensor snsr)
+   {
+      heading = snsr.getAzimuth();
+      lookAtCur.setCoordinate(snsr.getViewCenter());
+      lookAtGoal.setCoordinate(snsr.getLookAtGoal());
+      viewRegion.copy(snsr.getViewFootPrint());
+   }
+
+   public void dumpUpdate(SensorDump snsr)
    {
       heading = snsr.getAzimuth();
       lookAtCur.setCoordinate(snsr.getViewCenter());

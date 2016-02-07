@@ -9,11 +9,13 @@ import org.slf4j.LoggerFactory;
 import thesis.core.SimModel;
 import thesis.core.common.SimTime;
 import thesis.core.statedump.SimStateDump;
+import thesis.core.statedump.SimStateUpdateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ClientComms;
 import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
 import thesis.network.messages.SetSimStepRateMsg;
+import thesis.network.messages.SimStateUpdateMsg;
 import thesis.network.messages.SimTimeMsg;
 import thesis.sim.utilities.SimAppConfig;
 
@@ -37,6 +39,8 @@ public class ThesisSimApp
    private long frameCnt;
 
    private SimStateDump simStateDump;
+   private SimStateUpdateDump simStateUpdateDump;
+   private boolean serverReadyForUpdates;
 
    public ThesisSimApp()
    {
@@ -49,6 +53,8 @@ public class ThesisSimApp
       frameCnt = -1;
 
       simStateDump = new SimStateDump();
+      simStateUpdateDump = new SimStateUpdateDump();
+      serverReadyForUpdates = false;
    }
 
    public boolean init(SimAppConfig cfg, SimModel simModel)
@@ -103,7 +109,7 @@ public class ThesisSimApp
 
    private void transmitData()
    {
-      if(!network.isReady())
+      if(!network.isReady() || !serverReadyForUpdates)
       {
          return;
       }
@@ -117,7 +123,10 @@ public class ThesisSimApp
       simTimeMsg.setSimWallTime(SimTime.getWallTime());
       msgs.add(simTimeMsg);
 
-      simStateDump.getUpdateMsgs(msgs);
+      SimStateUpdateMsg simUpdateMsg = new SimStateUpdateMsg();
+      simStateDump.fillUpdateDump(simStateUpdateDump);
+      simUpdateMsg.setUpdateDump(simStateUpdateDump);
+      msgs.add(simUpdateMsg);
 
       network.sendData(msgs);
    }
@@ -214,5 +223,6 @@ public class ThesisSimApp
       msg.setSimStateDump(simStateDump);
       msg.setEntityTypeConfigs(simModel.getEntityTypeCfgs());
       network.sendData(msg);
+      serverReadyForUpdates = true;
    }
 }

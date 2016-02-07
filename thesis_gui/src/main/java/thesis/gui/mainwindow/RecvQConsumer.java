@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.SimStateUpdateMsg;
 import thesis.network.messages.SimTimeMsg;
 
 public class RecvQConsumer implements Runnable
@@ -35,6 +36,10 @@ public class RecvQConsumer implements Runnable
             {
             case FullInitReponse:
                handleFullInitReponseMsg(msg);
+               break;
+            case SimStateUpdate:
+               handleSimStateUpdateMsg(msg);
+               break;
             case SimTime:
                handleSimTime(msg);
                break;
@@ -43,22 +48,32 @@ public class RecvQConsumer implements Runnable
                break;
             }
          }
-         catch (InterruptedException e)
+         catch (Exception e)
          {
-            logger.error("Failed to take message from receiving queue. Details: {}", e.getMessage());
+            logger.error("Failed to handle message from receiving queue. Details: {}", e.getMessage());
          }
       }
    }
 
    private void handleSimTime(InfrastructureMsg rawMsg)
    {
+      logger.trace("Received sim time update.");
       SimTimeMsg msg = (SimTimeMsg)rawMsg;
       window.getSimStatusPanel().update(msg);
    }
 
    private void handleFullInitReponseMsg(InfrastructureMsg rawMsg)
    {
+      logger.info("Received full simulation init response msg.");
       FullInitReponseMsg msg = (FullInitReponseMsg)rawMsg;
       window.onFullInitResponseMsg(msg.getSimStateDump(), msg.getEntityTypeConfigs());
    }
+
+   private void handleSimStateUpdateMsg(InfrastructureMsg rawMsg)
+   {
+      logger.trace("Received simulation update message.");
+      SimStateUpdateMsg msg = (SimStateUpdateMsg)rawMsg;
+      window.onSimStateUpdate(msg.getUpdateDump());
+   }
+
 }
