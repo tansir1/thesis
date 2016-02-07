@@ -22,14 +22,26 @@ public class InfrastructMsgFact
       InfrastructureMsg msg = null;
       switch (msgType)
       {
+      case FullInitReponse:
+         msg = new FullInitReponseMsg();
+         break;
+      case RequestFullStateDump:
+         msg = new RequestFullStateDumpMsg();
+         break;
       case SetSimStepRate:
          msg = new SetSimStepRateMsg();
          break;
       case SimTime:
          msg = new SimTimeMsg();
          break;
+      case TargetsInit:
+         msg = new TargetsInitMsg();
+         break;
       case Test:
          msg = new TestMsg();
+         break;
+      case WorldCfg:
+         msg = new WorldCfgMsg();
          break;
       default:
          logger.warn("Could not convert unknown message type {} to a message object.", msgType);

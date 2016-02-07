@@ -1,8 +1,6 @@
 package thesis.core;
 
-import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +13,6 @@ import thesis.core.targets.TargetMgr;
 import thesis.core.uav.UAV;
 import thesis.core.uav.UAVMgr;
 import thesis.core.uav.comms.CommsConfig;
-import thesis.core.utilities.ISimStepListener;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.SimModelConfig;
 import thesis.core.world.World;
@@ -30,8 +27,6 @@ public class SimModel
    private UAVMgr uavMgr;
 
    private EntityTypeCfgs entTypes;
-
-   private List<ISimStepListener> stepListeners;
 
    /**
     * A shared random number generator that is initialized with a known seed
@@ -52,8 +47,6 @@ public class SimModel
       tgtMgr = new TargetMgr();
       uavMgr = new UAVMgr();
       world = new World();
-
-      stepListeners = new CopyOnWriteArrayList<ISimStepListener>();
    }
 
    /**
@@ -164,25 +157,10 @@ public class SimModel
 
       final long end = System.nanoTime() / 1000000;
       SimTime.incrementWallTime(end - start);
-
-      for(ISimStepListener listener : stepListeners)
-      {
-         listener.onSimulationStep();
-      }
    }
 
    public EntityTypeCfgs getEntityTypeCfgs()
    {
       return entTypes;
-   }
-
-   public void addStepListener(ISimStepListener listener)
-   {
-      stepListeners.add(listener);
-   }
-
-   public void removeStepListener(ISimStepListener listener)
-   {
-      stepListeners.remove(listener);
    }
 }

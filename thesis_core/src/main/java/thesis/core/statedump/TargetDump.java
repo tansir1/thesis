@@ -19,6 +19,14 @@ public class TargetDump
       dumpUpdate(tgt);
    }
 
+   public TargetDump(int id, int type, boolean mobile, WorldPose pose)
+   {
+      this.id = id;
+      this.type = type;
+      this.mobile = mobile;
+      this.pose = new WorldPose(pose);
+   }
+
    public void dumpUpdate(Target tgt)
    {
       pose.copy(tgt.getPose());

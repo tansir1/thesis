@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
+import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
 import thesis.network.messages.SimTimeMsg;
 
@@ -32,6 +33,8 @@ public class RecvQConsumer implements Runnable
             InfrastructureMsg msg = recvQ.take();
             switch (msg.getMessageType())
             {
+            case FullInitReponse:
+               handleFullInitReponseMsg(msg);
             case SimTime:
                handleSimTime(msg);
                break;
@@ -51,5 +54,11 @@ public class RecvQConsumer implements Runnable
    {
       SimTimeMsg msg = (SimTimeMsg)rawMsg;
       window.getSimStatusPanel().update(msg);
+   }
+
+   private void handleFullInitReponseMsg(InfrastructureMsg rawMsg)
+   {
+      FullInitReponseMsg msg = (FullInitReponseMsg)rawMsg;
+      window.onFullInitResponseMsg(msg.getSimStateDump(), msg.getEntityTypeConfigs());
    }
 }

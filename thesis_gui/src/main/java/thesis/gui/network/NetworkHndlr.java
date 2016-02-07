@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ServerComms;
 import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.RequestFullStateDumpMsg;
 
 public class NetworkHndlr implements Runnable
 {
@@ -49,6 +50,8 @@ public class NetworkHndlr implements Runnable
 
    protected void enqueueSelf()
    {
+      RequestFullStateDumpMsg msg = new RequestFullStateDumpMsg();
+      outQ.add(msg);
       execSvc.scheduleAtFixedRate(this, 0, NETWORK_RATE_MS, TimeUnit.MILLISECONDS);
    }
 
