@@ -6,7 +6,7 @@ public class SimTime
    /**
     * The time in milliseconds between simulation frames.
     */
-   public static double SIM_STEP_RATE_MS = SIM_STEP_RATE_HZ / 1000.0;
+   public static double SIM_STEP_RATE_MS = 1000.0 / SIM_STEP_RATE_HZ;
 
    /**
     * The time in second between simulation frames.
@@ -39,12 +39,5 @@ public class SimTime
    public static long getWallTime()
    {
       return wallTime;
-   }
-
-   public static void changeStepRate(int hertz)
-   {
-      SIM_STEP_RATE_HZ = hertz;
-      SIM_STEP_RATE_MS = SIM_STEP_RATE_HZ / 1000.0;
-      SIM_STEP_RATE_S = SIM_STEP_RATE_MS / 1000.0;
    }
 }
