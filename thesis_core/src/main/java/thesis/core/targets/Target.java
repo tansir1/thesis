@@ -10,6 +10,7 @@ import thesis.core.common.WorldPose;
 
 public class Target
 {
+   private final int id;
    private final int type;
    private final WorldPose pose;
 
@@ -22,8 +23,9 @@ public class Target
     */
    private final double maxSpd;
 
-   public Target(int tgtType, double tgtSpd, HavenRouting havenRouting)
+   public Target(int tgtType, int id, double tgtSpd, HavenRouting havenRouting)
    {
+      this.id = id;
       this.type = tgtType;
       this.maxSpd = tgtSpd;
       this.havenRouting = havenRouting;
@@ -31,6 +33,11 @@ public class Target
       pose = new WorldPose();
       destination = new WorldCoordinate();
 
+   }
+
+   public int getID()
+   {
+      return id;
    }
 
    public int getType()
@@ -89,7 +96,7 @@ public class Target
             pose.setHeading(newHdg);
          }
 
-         double deltaSeconds = SimTime.SIM_STEP_RATE_MS / 1000.0;
+         double deltaSeconds = SimTime.SIM_STEP_RATE_S;
 
          // east distance = time * speed * east component
          double easting = deltaSeconds * maxSpd * Math.cos(Math.toRadians(pose.getHeading()));

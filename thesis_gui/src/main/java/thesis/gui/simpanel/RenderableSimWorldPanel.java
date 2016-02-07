@@ -12,9 +12,9 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 
-import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.statedump.SimStateDump;
 import thesis.core.world.RenderSimState;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.actions.renderopts.RenderOptAction;
@@ -59,7 +59,7 @@ public class RenderableSimWorldPanel extends JPanel
 		return listeners;
 	}
 
-	public void connectSimModel(final SimModel simModel, final Actions actions)
+	public void connectSimModel(final SimStateDump simModel, final Actions actions)
 	{
 		renderWorld = new RenderSimState(simModel);
 		this.addMouseListener(mouseState);

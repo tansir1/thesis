@@ -11,20 +11,15 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import thesis.core.SimModel;
-import thesis.core.common.SimTime;
-import thesis.core.common.WorldPose;
-import thesis.core.uav.UAV;
-import thesis.core.utilities.ISimStepListener;
+import thesis.core.statedump.SimStateDump;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
-public class UAVViewPanel implements ISimStepListener
+public class UAVViewPanel
 {
    private static final long UPDATE_GUI_RATE_MS = 500;
 
-   private SimModel simModel;
+   private SimStateDump simModel;
    private JComboBox<Integer> uavSelCB;
    private JPanel renderable;
 
@@ -91,11 +86,13 @@ public class UAVViewPanel implements ISimStepListener
       gbc.gridy++;
    }
 
-   public void connectSimModel(final SimModel simModel, RenderableSimWorldPanel renderSim)
+   public void connectSimModel(final SimStateDump simModel, RenderableSimWorldPanel renderSim)
    {
       this.simModel = simModel;
       this.renderSim = renderSim;
 
+      //FIXME Need to update to use sim state dump
+      /*
       for(UAV uav : simModel.getUAVManager().getAllUAVs())
       {
          uavSelCB.addItem(uav.getID());
@@ -105,8 +102,7 @@ public class UAVViewPanel implements ISimStepListener
       {
          uavSelCB.setSelectedIndex(0);
          update();
-      }
-      simModel.addStepListener(this);
+      }*/
    }
 
    public JComponent getRenderable()
@@ -116,6 +112,8 @@ public class UAVViewPanel implements ISimStepListener
 
    public void update()
    {
+    //FIXME Need to update to use sim state dump
+      /*
       int selUAV = (Integer)uavSelCB.getSelectedItem();
       final UAV uav = simModel.getUAVManager().getUAV(selUAV);
 
@@ -139,9 +137,10 @@ public class UAVViewPanel implements ISimStepListener
             hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
 
          }
-      });
+      });*/
    }
 
+   /*
    @Override
    public void onSimulationStep()
    {
@@ -151,5 +150,5 @@ public class UAVViewPanel implements ISimStepListener
          update();
          updateTimeAccumulator = 0;
       }
-   }
+   }*/
 }

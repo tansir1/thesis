@@ -16,7 +16,7 @@ public class SensorTests
       SensorTypeConfigs snsrTypeCfgs = new SensorTypeConfigs();
       snsrTypeCfgs.reset(1);
       snsrTypeCfgs.setSensorData(0, 45, 0, 1000, 10);
-      Sensor testMe = new Sensor(0, snsrTypeCfgs, new TargetMgr());
+      Sensor testMe = new Sensor(0, 0, snsrTypeCfgs, new TargetMgr());
 
       WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
 
