@@ -1,146 +1,88 @@
 package thesis.gui.mainwindow;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.SwingUtilities;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import thesis.core.SimModel;
-import thesis.core.common.SimTime;
 import thesis.core.utilities.LoggerIDs;
-import thesis.gui.simpanel.RenderableSimWorldPanel;
+import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.SetSimStepRateMsg;
 
 public class SimTimer
 {
-   private static final long UPDATE_GUI_RATE_MS = 250;
-
-   private ScheduledExecutorService execSvc;
-
-   private SimModel model;
-   private ScheduledFuture<?> future;
+   private static final int PAUSE = -1;
+   private static final int STEP = -2;
+   private static final int PLAY = -3;
 
    private Logger logger;
+   private LinkedBlockingQueue<InfrastructureMsg> sendQ;
+   private int currentDelay;
 
-   private RenderableSimWorldPanel simPanel;
-
-   private long guiRefreshAccumulator;
-
-   /**
-    * Initialize a timer to drive the simulation. Does nothing without a
-    * simulation model being set.
-    *
-    * @param simPanel
-    *           After stepping the simulation the a request to repaint this
-    *           panel will be queued in the application's main EDT.
-    *
-    * @see #reset(SimModel)
-    */
-   public SimTimer(RenderableSimWorldPanel simPanel)
+   public SimTimer()
    {
-      if (simPanel == null)
-      {
-         throw new NullPointerException("SimPanel cannot be null.");
-      }
-      this.simPanel = simPanel;
-
       logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      execSvc = Executors.newSingleThreadScheduledExecutor();
-
-      guiRefreshAccumulator = 0;
+      currentDelay = -1;
    }
 
-   public void reset(SimModel model)
+   public void connectQueue(LinkedBlockingQueue<InfrastructureMsg> sendQ)
    {
-      if (model == null)
-      {
-         throw new NullPointerException("Model cannot be null.");
-      }
-
-      this.model = model;
+      this.sendQ = sendQ;
    }
 
    public void step()
    {
-      if (model != null)
-      {
-         if (future != null)
-         {
-            future.cancel(false);
-         }
-
-         logger.info("Stepping simulation.");
-         model.stepSimulation();
-
-         guiRefreshAccumulator = 0;
-         SwingUtilities.invokeLater(new Runnable()
-         {
-
-            @Override
-            public void run()
-            {
-               simPanel.repaint();
-            }
-         });
-      }
+      logger.info("Stepping simulation");
+      sendRate(STEP);
    }
 
    public void pause()
    {
-      if (model != null && future != null)
-      {
-         logger.info("Simulation paused.");
-         future.cancel(false);
-      }
+      logger.info("Pausing simulation");
+      sendRate(PAUSE);
    }
 
-   public void run(int fastMultiplier)
+   public void play()
    {
-      if (future != null)
+      logger.info("Resuming simulation.");
+      sendRate(PLAY);
+   }
+
+   public void run(int interFrameDelayMS)
+   {
+      if(interFrameDelayMS >= 0)
       {
-         future.cancel(false);
+         currentDelay = interFrameDelayMS;
       }
 
-      if (model != null)
+      if(interFrameDelayMS > 0)
       {
-         double stepRate = SimTime.SIM_STEP_RATE_MS / (fastMultiplier * 1.0) * 1000;
-         logger.info("Free running simulation at {}x", fastMultiplier);
-         future = execSvc.scheduleAtFixedRate(new Runnable()
-         {
+         int hertz = 1000 / interFrameDelayMS;
+         logger.info("Free running simulation at {}Hz", hertz);
+      }
+      else
+      {
+         logger.info("Free running simulation at CPU speed");
+      }
 
-            @Override
-            public void run()
-            {
-               try
-               {
-                  if (model != null)
-                  {
-                     model.stepSimulation();
-                     guiRefreshAccumulator += SimTime.SIM_STEP_RATE_MS;
-                     if(guiRefreshAccumulator > UPDATE_GUI_RATE_MS)
-                     {
-                        guiRefreshAccumulator = 0;
-                        SwingUtilities.invokeLater(new Runnable()
-                        {
-                           @Override
-                           public void run()
-                           {
-                              simPanel.repaint();
-                           }
-                        });
-                     }
-                  }
-               }
-               catch (Exception e)
-               {
-                  logger.error("{}", e);
-               }
-            }
-         }, 0, (long) stepRate, TimeUnit.MICROSECONDS);
+      sendRate(interFrameDelayMS);
+   }
+
+   private void sendRate(int interFrameDelayMS)
+   {
+      SetSimStepRateMsg msg = new SetSimStepRateMsg();
+      msg.setInterFrameDelay(interFrameDelayMS);
+
+      if(sendQ != null)
+      {
+         try
+         {
+            sendQ.put(msg);
+         }
+         catch (InterruptedException e)
+         {
+            logger.error("Failed to enqueue SetSimRateMsg. Details: {}", e.getMessage());
+         }
       }
    }
 

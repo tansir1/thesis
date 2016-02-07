@@ -37,11 +37,7 @@ public class SimModelConfigLoader
       if (success)
       {
          logger.debug("Loading simulation configuration from {}.", propFile);
-
-         //loadWorldData(propsLdr);
-
          success = loadGenericSimData(propsLdr, logger);
-
       }
 
       if (!success)

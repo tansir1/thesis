@@ -3,31 +3,21 @@ package thesis.gui.mainwindow;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
-import thesis.core.SimModel;
-import thesis.core.common.SimTime;
-import thesis.core.utilities.ISimStepListener;
+import thesis.network.messages.SimTimeMsg;
 
-public class SimStatusPanel implements ISimStepListener
+public class SimStatusPanel
 {
-   private static final long UPDATE_GUI_RATE_MS = 500;
-   private long updateTimeAccumulator;
-
    private JLabel totalSimTimeLbl;
    private JLabel totalWallTimeLbl;
    private JLabel simFPSLbl;
    private JPanel renderable;
-
-   private long frameCnt;
 
    public SimStatusPanel()
    {
@@ -35,7 +25,6 @@ public class SimStatusPanel implements ISimStepListener
       totalWallTimeLbl = new JLabel();
       simFPSLbl = new JLabel();
       renderable = new JPanel();
-      updateTimeAccumulator = 0;
 
       renderable.setBorder(BorderFactory.createTitledBorder("Sim Status"));
 
@@ -44,20 +33,6 @@ public class SimStatusPanel implements ISimStepListener
       renderable.setPreferredSize(size);
 
       buildGUI();
-
-      // frameCnt is incremented by onSimulationStep() every frame. Every
-      // second this ActionListener will fire, reset the counter, and update the
-      // GUI.
-      ActionListener fpsUpdater = new ActionListener()
-      {
-         @Override
-         public void actionPerformed(ActionEvent evt)
-         {
-            simFPSLbl.setText(Long.toString(frameCnt));
-            frameCnt = 0;
-         }
-      };
-      new Timer(1000, fpsUpdater).start();
    }
 
    private void buildGUI()
@@ -87,39 +62,28 @@ public class SimStatusPanel implements ISimStepListener
       return renderable;
    }
 
-   public void connectSimModel(final SimModel simModel)
+   public void update(final SimTimeMsg msg)
    {
-      simModel.addStepListener(this);
-   }
-
-   @Override
-   public void onSimulationStep()
-   {
-      frameCnt++;
-
-      updateTimeAccumulator += SimTime.SIM_STEP_RATE_MS;
-      if (updateTimeAccumulator > UPDATE_GUI_RATE_MS)
+      SwingUtilities.invokeLater(new Runnable()
       {
-         updateTimeAccumulator = 0;
-         SwingUtilities.invokeLater(new Runnable()
+
+         @Override
+         public void run()
          {
+            long totalSimTime = msg.getSimTime();
+            int seconds = (int) (totalSimTime / 1000) % 60;
+            int minutes = (int) ((totalSimTime / (1000 * 60)) % 60);
+            int hours = (int) ((totalSimTime / (1000 * 60 * 60)) % 24);
+            totalSimTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-            @Override
-            public void run()
-            {
-               long totalSimTime = SimTime.CURRENT_SIM_TIME_MS;
-               int seconds = (int) (totalSimTime / 1000) % 60;
-               int minutes = (int) ((totalSimTime / (1000 * 60)) % 60);
-               int hours = (int) ((totalSimTime / (1000 * 60 * 60)) % 24);
-               totalSimTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            long totalWallTime = msg.getSimWallTime();
+            seconds = (int) (totalWallTime / 1000) % 60;
+            minutes = (int) ((totalWallTime / (1000 * 60)) % 60);
+            hours = (int) ((totalWallTime / (1000 * 60 * 60)) % 24);
+            totalWallTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-               long totalWallTime = SimTime.getWallTime();
-               seconds = (int) (totalWallTime / 1000) % 60;
-               minutes = (int) ((totalWallTime / (1000 * 60)) % 60);
-               hours = (int) ((totalWallTime / (1000 * 60 * 60)) % 24);
-               totalWallTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-            }
-         });
-      }
+            simFPSLbl.setText(Long.toString(msg.getFrameCount()));
+         }
+      });
    }
 }

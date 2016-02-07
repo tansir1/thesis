@@ -163,4 +163,9 @@ public class PropertiesLoader
    {
       return props.getProperty(key, dfltVal);
    }
+
+   public boolean getBool(String key, boolean dfltVal)
+   {
+      return Boolean.parseBoolean(props.getProperty(key, Boolean.toString(dfltVal)));
+   }
 }

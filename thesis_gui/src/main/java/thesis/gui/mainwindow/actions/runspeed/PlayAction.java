@@ -34,7 +34,7 @@ public class PlayAction extends AbstractAction
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
-		simTimer.run(1);
+		simTimer.play();
 	}
 
 }

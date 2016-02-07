@@ -37,9 +37,9 @@ public class BeliefState
     * When this amount of simulation time elapses the UAV will broadcast its
     * current belief state.
     */
-   private static long BELIEF_BROADCAST_RATE_MS = 1000;//Broadcast at 1hz
+   private static double BELIEF_BROADCAST_RATE_MS = 1000;//Broadcast at 1hz
 
-   private long lastBeliefBroadcastTimeAccumulator;
+   private double lastBeliefBroadcastTimeAccumulator;
 
    public BeliefState()
    {

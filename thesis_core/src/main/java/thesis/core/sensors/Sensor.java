@@ -34,8 +34,9 @@ public class Sensor
    private final WorldCoordinate lookAtCur;
    private final Rectangle viewRegion;
 
+   private int id;
 
-   public Sensor(int type, SensorTypeConfigs cfgs, TargetMgr tgtMgr)
+   public Sensor(int type, int id, SensorTypeConfigs cfgs, TargetMgr tgtMgr)
    {
       if (cfgs == null)
       {
@@ -48,6 +49,7 @@ public class Sensor
       }
 
       this.type = type;
+      this.id = id;
       this.tgtMgr = tgtMgr;
 
       pose = new WorldPose();
@@ -64,6 +66,11 @@ public class Sensor
    public int getType()
    {
       return type;
+   }
+
+   public int getID()
+   {
+      return id;
    }
 
    /**
@@ -103,6 +110,11 @@ public class Sensor
       return lookAtCur;
    }
 
+   public WorldCoordinate getLookAtGoal()
+   {
+      return lookAtGoal;
+   }
+
    public SensorDetections stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
@@ -111,6 +123,11 @@ public class Sensor
       updateViewRegion();
 
       return new SensorDetections(type, tgtMgr.getTargetsInRegion(viewRegion));
+   }
+
+   public WorldPose getPose()
+   {
+      return pose;
    }
 
    private void slew()
