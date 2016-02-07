@@ -5,36 +5,36 @@ import java.nio.ByteBuffer;
 public class SetSimStepRateMsg extends InfrastructureMsg
 {
    /**
-    * Step rate in hertz.
+    * Delay between frames in milliseconds.
     */
-   private int rateInHz;
+   private int interFrameDelay;
 
    public SetSimStepRateMsg()
    {
       super(InfrastructureMsgType.SetSimStepRate);
-      rateInHz = 0;
+      interFrameDelay = 0;
    }
 
-   public void setStepRate(int hertz)
+   public void setInterFrameDelay(int hertz)
    {
-      this.rateInHz = hertz;
+      this.interFrameDelay = hertz;
    }
 
-   public int getStepRate()
+   public int getInterFrameDelay()
    {
-      return this.rateInHz;
+      return this.interFrameDelay;
    }
 
    @Override
    public void encodeData(ByteBuffer buf)
    {
-      buf.putInt(rateInHz);
+      buf.putInt(interFrameDelay);
    }
 
    @Override
    public void decodeData(ByteBuffer buf)
    {
-      rateInHz = buf.getInt();
+      interFrameDelay = buf.getInt();
    }
 
    @Override

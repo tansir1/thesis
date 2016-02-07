@@ -11,11 +11,11 @@ import thesis.gui.mainwindow.SimTimer;
 import thesis.gui.utilities.GuiRsrcPaths;
 
 @SuppressWarnings("serial")
-public class Play5XAction extends AbstractAction
+public class Play30HzAction extends AbstractAction
 {
    private SimTimer simTimer;
 
-   public Play5XAction(SimTimer simTimer)
+   public Play30HzAction(SimTimer simTimer)
    {
       if(simTimer == null)
       {
@@ -23,16 +23,16 @@ public class Play5XAction extends AbstractAction
       }
       this.simTimer = simTimer;
 
-      putValue(SHORT_DESCRIPTION, "Run the simulation at 5X.");
+      putValue(SHORT_DESCRIPTION, "Run the simulation at 30Hz.");
 
-      Icon icon = new ImageIcon(CoreUtils.getResourceAsImage(GuiRsrcPaths.RUN_5X_IMG_PATH));
+      Icon icon = new ImageIcon(CoreUtils.getResourceAsImage(GuiRsrcPaths.RUN_30HZ_IMG_PATH));
       putValue(LARGE_ICON_KEY, icon);
    }
 
    @Override
    public void actionPerformed(ActionEvent arg0)
    {
-      simTimer.run(5);
+      simTimer.run(33);
    }
 
 }

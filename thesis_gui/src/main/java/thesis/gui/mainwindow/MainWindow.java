@@ -18,9 +18,13 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import thesis.core.EntityTypeCfgs;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.statedump.SimStateUpdateDump;
+import thesis.core.utilities.LoggerIDs;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
@@ -34,6 +38,7 @@ import thesis.network.messages.InfrastructureMsg;
  */
 public class MainWindow implements IMapMouseListener
 {
+   private Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
    private final int MSG_QUEUE_PROCESS_RATE_MS = 100;
 
    private JFrame frame;
@@ -138,11 +143,11 @@ public class MainWindow implements IMapMouseListener
       toolbar.add(actions.getPauseAction());
       toolbar.add(actions.getStepSimAction());
       toolbar.addSeparator();
-      toolbar.add(actions.getPlay5XAction());
-      toolbar.add(actions.getPlay10XAction());
-      toolbar.add(actions.getPlay20XAction());
-      toolbar.add(actions.getPlay50XAction());
-      toolbar.add(actions.getPlay100XAction());
+      toolbar.add(actions.getPlay2HzAction());
+      toolbar.add(actions.getPlay4HzAction());
+      toolbar.add(actions.getPlay15HzAction());
+      toolbar.add(actions.getPlay30HzAction());
+      toolbar.add(actions.getPlayCPUAction());
       toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
       return toolbar;
    }
@@ -211,6 +216,7 @@ public class MainWindow implements IMapMouseListener
          {
             simStateDump.update(simUpdate);
          }
+         logger.info("Render state update");
          simPanel.repaint();
       }
    }
