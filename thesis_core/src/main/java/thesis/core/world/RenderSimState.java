@@ -20,7 +20,6 @@ import thesis.core.statedump.SensorDump;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.statedump.TargetDump;
 import thesis.core.statedump.UAVDump;
-import thesis.core.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -584,21 +583,22 @@ public class RenderSimState
 
       final AffineTransform trans = new AffineTransform();
 
-      final UAV[] uavs = (UAV[]) simStateDump.getUAVs().toArray();
-      UAV uav = null;
-      for (int i = 0; i < uavs.length; ++i)
+      List<UAVDump> uavs = simStateDump.getUAVs();
+      int numUAVs = uavs.size();
+      UAVDump uav = null;
+      for (int i = 0; i < numUAVs; ++i)
       {
-         uav = uavs[i];
+         uav = uavs.get(i);
 
          trans.setToIdentity();
 
-         wc.setCoordinate(uav.getPathing().getCoordinate());
+         wc.setCoordinate(uav.getPose().getCoordinate());
 
          worldCoordinateToPixels(wc, pixels);
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          // trans.rotate(-uav.getHeading().asRadians());
-         double deg = uav.getPathing().getHeading() - 90;
+         double deg = uav.getPose().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
          if (uav.getID() != selectedUAV)
@@ -627,12 +627,13 @@ public class RenderSimState
       g2d.setStroke(historyStroke);
 
       List<WorldPose> history = new ArrayList<WorldPose>();
-
-      final UAV[] uavs = (UAV[]) simStateDump.getUAVs().toArray();
-      UAV uav = null;
-      for (int i = 0; i < uavs.length; ++i)
+/*
+      List<UAVDump> uavs = simStateDump.getUAVs();
+      int numUAVs = uavs.size();
+      UAVDump uav = null;
+      for (int i = 0; i < numUAVs; ++i)
       {
-         uav = uavs[i];
+         uav = uavs.get(i);
          prevPix.setLocation(-1, -1);
 
          history.clear();
@@ -648,7 +649,7 @@ public class RenderSimState
 
             prevPix.setLocation(curPixels);
          }
-      }
+      }*/
    }
 
    private void drawSensorFOVs(Graphics2D gfx)
