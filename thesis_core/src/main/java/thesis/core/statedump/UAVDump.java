@@ -24,6 +24,14 @@ public class UAVDump
       dumpUpdate(uav);
    }
 
+   public UAVDump(int type, int id, WorldPose pose)
+   {
+      this.type = type;
+      this.id = id;
+      this.pose = new WorldPose(pose);
+      snsrs = new ArrayList<SensorDump>();
+   }
+
    public void dumpUpdate(UAV uav)
    {
       pose.copy(uav.getPathing().getPose());
@@ -63,7 +71,7 @@ public class UAVDump
       return type;
    }
 
-   public int getId()
+   public int getID()
    {
       return id;
    }

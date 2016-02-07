@@ -2,14 +2,13 @@ package thesis.core.statedump;
 
 import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 
 public class SensorDump
 {
    private final int type;
    private final int id;
-   private final WorldPose pose;
+   private double heading;
    private final WorldCoordinate lookAtGoal;
    private final WorldCoordinate lookAtCur;
    private final Rectangle viewRegion;
@@ -20,16 +19,27 @@ public class SensorDump
       this.type = snsr.getType();
       this.id = snsr.getID();
 
-      pose = new WorldPose();
+      heading = 0;
       lookAtGoal = new WorldCoordinate();
       lookAtCur = new WorldCoordinate();
       viewRegion = new Rectangle();
       dumpUpdate(snsr);
    }
 
+   public SensorDump(int type, int id)
+   {
+      this.type = type;
+      this.id = id;
+
+      heading = 0;
+      lookAtGoal = new WorldCoordinate();
+      lookAtCur = new WorldCoordinate();
+      viewRegion = new Rectangle();
+   }
+
    public void dumpUpdate(Sensor snsr)
    {
-      pose.copy(snsr.getPose());
+      heading = snsr.getAzimuth();
       lookAtCur.setCoordinate(snsr.getViewCenter());
       lookAtGoal.setCoordinate(snsr.getLookAtGoal());
       viewRegion.copy(snsr.getViewFootPrint());
@@ -53,7 +63,12 @@ public class SensorDump
     */
    public double getAzimuth()
    {
-      return pose.getHeading();
+      return heading;
+   }
+
+   public void setAzimuth(double az)
+   {
+      this.heading = az;
    }
 
    public Rectangle getViewFootPrint()

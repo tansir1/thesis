@@ -68,7 +68,7 @@ public class SimStateDump
          int numDumps = uavs.size();
          for(int j=0; j<numDumps; ++j)
          {
-            if(uavs.get(j).getId() == simUAVs[i].getID())
+            if(uavs.get(j).getID() == simUAVs[i].getID())
             {
                dumpedData = true;
                uavs.get(j).dumpUpdate(simUAVs[i]);
