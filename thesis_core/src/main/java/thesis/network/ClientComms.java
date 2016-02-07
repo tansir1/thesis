@@ -77,9 +77,44 @@ public class ClientComms
       return success;
    }
 
+   public void sendData(InfrastructureMsg msg)
+   {
+      if (!ready)
+      {
+         return;
+      }
+
+      InfrastructMsgHdr msgHdr = new InfrastructMsgHdr();
+
+      if (msg.getEncodedSize() > BUFFER_SZ)
+      {
+         throw new IllegalArgumentException("Encoded message size is larger than sending buffer size.");
+      }
+
+      msgHdr.setMessageSize(msg.getEncodedSize());
+      msgHdr.setMessageType(msg.getMessageType());
+      msgHdr.encodeData(sendBuf);
+      msg.encodeData(sendBuf);
+      sendBuf.flip();
+
+      try
+      {
+         while (sendBuf.hasRemaining())
+         {
+            /* int numWritten = */channel.write(sendBuf);
+         }
+      }
+      catch (IOException e)
+      {
+         logger.error("Failed to send data to server. Details: {}", e.getMessage());
+      }
+      sendBuf.clear();
+
+   }
+
    public void sendData(List<InfrastructureMsg> msgs)
    {
-      if(!ready)
+      if (!ready)
       {
          return;
       }
@@ -109,7 +144,7 @@ public class ClientComms
          {
             while (sendBuf.hasRemaining())
             {
-               /*int numWritten = */channel.write(sendBuf);
+               /* int numWritten = */channel.write(sendBuf);
             }
          }
          catch (IOException e)
@@ -126,7 +161,7 @@ public class ClientComms
     */
    public List<InfrastructureMsg> getData()
    {
-      if(!ready)
+      if (!ready)
       {
          return null;
       }

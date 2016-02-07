@@ -5,7 +5,11 @@ public enum InfrastructureMsgType
 
    Test(0),
    SimTime(1),
-   SetSimStepRate(2);
+   SetSimStepRate(2),
+   RequestFullStateDump(3),
+   WorldCfg(4),
+   TargetsInit(5),
+   FullInitReponse(6);
 
    private byte id;
    private InfrastructureMsgType(int id)
@@ -31,6 +35,18 @@ public enum InfrastructureMsgType
          break;
       case 2:
          type = SetSimStepRate;
+         break;
+      case 3:
+         type = RequestFullStateDump;
+         break;
+      case 4:
+         type = WorldCfg;
+         break;
+      case 5:
+         type = TargetsInit;
+         break;
+      case 6:
+         type = FullInitReponse;
          break;
       }
       return type;

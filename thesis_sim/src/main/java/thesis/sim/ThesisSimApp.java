@@ -11,6 +11,7 @@ import thesis.core.common.SimTime;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ClientComms;
+import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
 import thesis.network.messages.SetSimStepRateMsg;
 import thesis.network.messages.SimTimeMsg;
@@ -85,6 +86,9 @@ public class ThesisSimApp
          {
             switch (msg.getMessageType())
             {
+            case RequestFullStateDump:
+               processRequestFullStateDump();
+               break;
             case SetSimStepRate:
                processSetSimStepRateMsg(msg);
                break;
@@ -202,5 +206,13 @@ public class ThesisSimApp
       {
          stepOneFrame = true;
       }
+   }
+
+   private void processRequestFullStateDump()
+   {
+      FullInitReponseMsg msg = new FullInitReponseMsg();
+      msg.setSimStateDump(simStateDump);
+      msg.setEntityTypeConfigs(simModel.getEntityTypeCfgs());
+      network.sendData(msg);
    }
 }

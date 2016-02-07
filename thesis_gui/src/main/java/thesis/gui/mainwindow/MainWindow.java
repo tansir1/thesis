@@ -18,6 +18,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 
+import thesis.core.EntityTypeCfgs;
 import thesis.core.statedump.SimStateDump;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
@@ -61,8 +62,6 @@ public class MainWindow implements IMapMouseListener
             onClose();
          }
       });
-
-      simStateDump = new SimStateDump();
 
       simPanel = new RenderableSimWorldPanel();
       uavViewPan = new UAVViewPanel();
@@ -195,4 +194,12 @@ public class MainWindow implements IMapMouseListener
    {
       statusLbl.setText(event.toString());
    }
+
+   protected void onFullInitResponseMsg(SimStateDump simState, EntityTypeCfgs entTypeCfgs)
+   {
+      this.simStateDump = simState;
+      //TODO EntityTypeConfigs?
+      connectSimModel(simState);
+   }
+
 }
