@@ -9,7 +9,8 @@ public enum InfrastructureMsgType
    RequestFullStateDump(3),
    WorldCfg(4),
    TargetsInit(5),
-   FullInitReponse(6);
+   FullInitReponse(6),
+   SimStateUpdate(7);
 
    private byte id;
    private InfrastructureMsgType(int id)
@@ -47,6 +48,9 @@ public enum InfrastructureMsgType
          break;
       case 6:
          type = FullInitReponse;
+         break;
+      case 7:
+         type = SimStateUpdate;
          break;
       }
       return type;
