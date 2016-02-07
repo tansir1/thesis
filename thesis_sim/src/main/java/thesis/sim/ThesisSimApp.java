@@ -38,6 +38,11 @@ public class ThesisSimApp
    private long lastNetworkTime;
    private long frameCnt;
 
+   /**
+    * User specified delay between frames in milliseconds.
+    */
+   private int interFrameDelayMS;
+
    private SimStateDump simStateDump;
    private SimStateUpdateDump simStateUpdateDump;
    private boolean serverReadyForUpdates;
@@ -79,14 +84,14 @@ public class ThesisSimApp
 
    private void processIncomingMessages()
    {
-      if(!network.isReady())
+      if (!network.isReady())
       {
          return;
       }
 
       logger.trace("Processing data from server");
       List<InfrastructureMsg> msgs = network.getData();
-      if(msgs != null)
+      if (msgs != null)
       {
          for (InfrastructureMsg msg : msgs)
          {
@@ -109,7 +114,7 @@ public class ThesisSimApp
 
    private void transmitData()
    {
-      if(!network.isReady() || !serverReadyForUpdates)
+      if (!network.isReady() || !serverReadyForUpdates)
       {
          return;
       }
@@ -136,10 +141,9 @@ public class ThesisSimApp
       long wallTime = 0;
       boolean processNetwork = false;
 
-      long lastUpdateTime = 0;
-      long frameTime = 0;
       while (!terminateApp)
       {
+         // logger.trace("---Frame {}---", frameCnt);
          wallTime = System.currentTimeMillis();
 
          if ((wallTime - lastNetworkTime) > NETWORK_INTERVAL_MS)
@@ -151,7 +155,7 @@ public class ThesisSimApp
 
          if (!pause || stepOneFrame)
          {
-            if(stepOneFrame)
+            if (stepOneFrame)
             {
                stepOneFrame = false;
                logger.info("Stepping one frame.");
@@ -168,24 +172,17 @@ public class ThesisSimApp
             processNetwork = false;
          }
 
-         wallTime = System.currentTimeMillis();
-
-         frameTime = wallTime - lastUpdateTime;
-         lastUpdateTime = wallTime;
-
-         // Compute how much time is left from now until the next scheduled
-         // frame and sleep.
-         long remainingStepTime = (long)SimTime.SIM_STEP_RATE_MS - frameTime;
-         if (remainingStepTime > 0)
+         if (interFrameDelayMS > 0)
          {
             try
             {
-               Thread.sleep(remainingStepTime);
+               // logger.trace("sleeping {}", interFrameDelayMS);
+               Thread.sleep(interFrameDelayMS);
+
             }
             catch (InterruptedException e)
             {
-               logger.error("Failed to sleep and delay for the remaining steady frame time.  Details: {}",
-                     e.getMessage());
+               logger.error("Failed to sleep between frames.  Details: {}", e.getMessage());
             }
          }
       }
@@ -196,25 +193,37 @@ public class ThesisSimApp
 
    private void processSetSimStepRateMsg(InfrastructureMsg rawMsg)
    {
-      SetSimStepRateMsg msg = (SetSimStepRateMsg)rawMsg;
-      int hertz = msg.getStepRate();
-      SimTime.changeStepRate(hertz);
+      SetSimStepRateMsg msg = (SetSimStepRateMsg) rawMsg;
+      int interFrameDelay = msg.getInterFrameDelay();
 
-      if(hertz <= 0)
+      if (interFrameDelay == -1)
       {
          pause = true;
          logger.info("Simulation paused.");
       }
-      else
-      {
-         pause = false;
-         logger.info("Simulation unpaused.  Running at {}hz.", hertz);
-      }
 
-      if(hertz == -1)
+      if (interFrameDelay == -2)
       {
          stepOneFrame = true;
+         if (!pause)
+         {
+            pause = true;
+            logger.info("Simulation paused.");
+         }
       }
+
+      if (interFrameDelay == -3)
+      {
+         pause = false;
+         logger.info("Simulation unpaused.  Running with {}ms inter-frame delay.", interFrameDelayMS);
+      }
+
+      if (interFrameDelay >= 0 && interFrameDelay != this.interFrameDelayMS)
+      {
+         logger.info("Inter-frame delay changed from {}ms to {}ms.", this.interFrameDelayMS, interFrameDelay);
+         this.interFrameDelayMS = interFrameDelay;
+      }
+
    }
 
    private void processRequestFullStateDump()
