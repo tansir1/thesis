@@ -25,7 +25,7 @@ public class ThesisSimApp
     * If the time between now and the last network processing is greater than
     * this value (milliseconds) then process the network communications.
     */
-   private final long NETWORK_INTERVAL_MS = 500;
+   private final long NETWORK_INTERVAL_MS = 100;
 
    private Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 
@@ -51,7 +51,8 @@ public class ThesisSimApp
    {
       network = new ClientComms();
       terminateApp = false;
-      pause = false;
+      pause = true;
+      interFrameDelayMS = 250;
       stepOneFrame = false;
 
       lastNetworkTime = 0;
