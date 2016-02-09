@@ -45,7 +45,7 @@ public class SimStatusPanel
 
       addGridFormRow(gbc, "Sim Time:", totalSimTimeLbl);
       addGridFormRow(gbc, "Wall Time:", totalWallTimeLbl);
-      addGridFormRow(gbc, "Sim FPS:", simFrameCntLbl);
+      addGridFormRow(gbc, "Sim Frame Count:", simFrameCntLbl);
    }
 
    private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
