@@ -207,6 +207,15 @@ public class Sensor
    @Override
    public String toString()
    {
-      return "Type: " + Integer.toString(type);
+      StringBuilder sb = new StringBuilder();
+      sb.append("Type: ");
+      sb.append(type);
+      sb.append(" Goal: ");
+      sb.append(lookAtGoal);
+      sb.append(" Cur: ");
+      sb.append(lookAtCur);
+      sb.append(" - Hdg: ");
+      sb.append(String.format("%.2f", pose.getHeading()));
+      return sb.toString();
    }
 }
