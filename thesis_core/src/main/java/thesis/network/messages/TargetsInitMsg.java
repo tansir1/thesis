@@ -78,9 +78,9 @@ public class TargetsInitMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
-      short size = 0;
+      long size = 0;
 
       size += Integer.BYTES;//numTgts
 

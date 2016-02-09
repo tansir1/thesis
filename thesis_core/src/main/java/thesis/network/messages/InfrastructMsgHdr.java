@@ -8,7 +8,7 @@ public class InfrastructMsgHdr
                                            // size
 
    private InfrastructureMsgType msgType;
-   private short msgSz;
+   private long msgSz;
 
    public InfrastructMsgHdr()
    {
@@ -34,7 +34,7 @@ public class InfrastructMsgHdr
    public void encodeData(ByteBuffer buf)
    {
       buf.put(msgType.getMsgID());
-      buf.putShort(msgSz);
+      buf.putLong(msgSz);
    }
 
    public boolean decodeData(ByteBuffer buf)
@@ -43,18 +43,18 @@ public class InfrastructMsgHdr
       if (buf.limit() >= HEADER_SIZE)
       {
          msgType = InfrastructureMsgType.fromMsgID(buf.get());
-         msgSz = buf.getShort();
+         msgSz = buf.getLong();
          success = true;
       }
       return success;
    }
 
-   public short getMessageSize()
+   public long getMessageSize()
    {
       return msgSz;
    }
 
-   public void setMessageSize(short sz)
+   public void setMessageSize(long sz)
    {
       this.msgSz = sz;
    }

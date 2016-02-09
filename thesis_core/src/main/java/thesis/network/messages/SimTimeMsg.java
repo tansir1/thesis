@@ -33,7 +33,7 @@ public class SimTimeMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
       return 3 * Long.BYTES;
    }

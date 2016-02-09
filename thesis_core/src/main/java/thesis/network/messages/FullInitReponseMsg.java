@@ -70,9 +70,9 @@ public class FullInitReponseMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
-      short size = 0;
+      long size = 0;
       size += getWorldByteSize();
       size += getTargetByteSize();
       size += getUAVByteSize();
@@ -135,10 +135,10 @@ public class FullInitReponseMsg extends InfrastructureMsg
       }
    }
 
-   private short getWorldByteSize()
+   private long getWorldByteSize()
    {
       World world = simState.getWorld();
-      short size = 0;
+      long size = 0;
 
       // world gis
       size += Integer.BYTES * 2;
@@ -207,10 +207,10 @@ public class FullInitReponseMsg extends InfrastructureMsg
       }
    }
 
-   private short getTargetByteSize()
+   private long getTargetByteSize()
    {
       List<TargetDump> tgts = simState.getTargets();
-      short size = 0;
+      long size = 0;
 
       size += Integer.BYTES;// numTgts
 
@@ -312,10 +312,10 @@ public class FullInitReponseMsg extends InfrastructureMsg
       }
    }
 
-   private short getUAVByteSize()
+   private long getUAVByteSize()
    {
       List<UAVDump> uavs = simState.getUAVs();
-      short size = 0;
+      long size = 0;
 
       size += Integer.BYTES;// numUAVs
 
