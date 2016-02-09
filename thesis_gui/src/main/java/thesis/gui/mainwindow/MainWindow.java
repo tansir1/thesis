@@ -31,6 +31,7 @@ import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 import thesis.network.messages.InfrastructureMsg;
+import thesis.network.messages.ShutdownMsg;
 
 /**
  * Contains the GUI application's main window frame.
@@ -119,7 +120,18 @@ public class MainWindow implements IMapMouseListener
             "Confirm exit", JOptionPane.YES_NO_OPTION);
       if (userChoice == JOptionPane.YES_OPTION)
       {
-         // TODO Close external resources
+         logger.info("Sending shutdown message to simulation.");
+         sendQ.add(new ShutdownMsg());
+
+         try
+         {
+            Thread.sleep(250);
+         }
+         catch (InterruptedException e)
+         {
+            logger.error("Interrupted while waiting for shutdown message to be sent.");
+         }
+         execSvc.shutdown();
          frame.dispose();
          System.exit(0);
       }

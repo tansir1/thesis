@@ -31,6 +31,9 @@ public class InfrastructMsgFact
       case SetSimStepRate:
          msg = new SetSimStepRateMsg();
          break;
+      case Shutdown:
+         msg = new ShutdownMsg();
+         break;
       case SimStateUpdate:
          msg = new SimStateUpdateMsg();
          break;
