@@ -10,7 +10,8 @@ public enum InfrastructureMsgType
    WorldCfg(4),
    TargetsInit(5),
    FullInitReponse(6),
-   SimStateUpdate(7);
+   SimStateUpdate(7),
+   Shutdown(8);
 
    private byte id;
    private InfrastructureMsgType(int id)
@@ -51,6 +52,9 @@ public enum InfrastructureMsgType
          break;
       case 7:
          type = SimStateUpdate;
+         break;
+      case 8:
+         type = Shutdown;
          break;
       }
       return type;

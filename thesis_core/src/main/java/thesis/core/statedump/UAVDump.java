@@ -13,6 +13,7 @@ public class UAVDump
    private int id;
    private WorldPose pose;
    private List<SensorDump> snsrs;
+   private List<WorldPose> pathTrail;
 
    public UAVDump(UAV uav)
    {
@@ -20,6 +21,7 @@ public class UAVDump
       id = uav.getID();
       pose = new WorldPose();
       snsrs = new ArrayList<SensorDump>();
+      pathTrail = new ArrayList<WorldPose>();
 
       dumpUpdate(uav);
    }
@@ -30,6 +32,7 @@ public class UAVDump
       this.id = id;
       this.pose = new WorldPose(pose);
       snsrs = new ArrayList<SensorDump>();
+      pathTrail = new ArrayList<WorldPose>();
    }
 
    public void dumpUpdate(UAV uav)
@@ -59,6 +62,13 @@ public class UAVDump
          }
       }
 
+      pathTrail.clear();
+      uav.getPathing().getFlightHistoryTrail(pathTrail);
+   }
+
+   public List<WorldPose> getFlightPathHistory()
+   {
+      return pathTrail;
    }
 
    public List<SensorDump> getSensors()

@@ -25,7 +25,7 @@ public class ThesisSimApp
     * If the time between now and the last network processing is greater than
     * this value (milliseconds) then process the network communications.
     */
-   private final long NETWORK_INTERVAL_MS = 100;
+   private final long NETWORK_INTERVAL_MS = 25;
 
    private Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 
@@ -103,6 +103,9 @@ public class ThesisSimApp
                break;
             case SetSimStepRate:
                processSetSimStepRateMsg(msg);
+               break;
+            case Shutdown:
+               processShutdownMsg();
                break;
             default:
                logger.warn("No handlers exist for messages of type {}.", msg.getMessageType());
@@ -234,5 +237,11 @@ public class ThesisSimApp
       msg.setEntityTypeConfigs(simModel.getEntityTypeCfgs());
       network.sendData(msg);
       serverReadyForUpdates = true;
+   }
+
+   private void processShutdownMsg()
+   {
+      logger.debug("Received shutdown message.");
+      terminateApp = true;
    }
 }
