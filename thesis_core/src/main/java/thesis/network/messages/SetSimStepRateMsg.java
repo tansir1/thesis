@@ -38,9 +38,9 @@ public class SetSimStepRateMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
-     return (short)Integer.BYTES;
+     return Integer.BYTES;
    }
 
 }

@@ -38,7 +38,8 @@ public class SimStateUpdateMsg extends InfrastructureMsg
       buf.putInt(uavPoses.size());
       for (Entry<Integer, WorldPose> entry : uavPoses.entrySet())
       {
-         buf.putInt(entry.getKey());
+         int uavID = entry.getKey();
+         buf.putInt(uavID);
          buf.putDouble(entry.getValue().getHeading());
          buf.putDouble(entry.getValue().getNorth());
          buf.putDouble(entry.getValue().getEast());
@@ -150,12 +151,12 @@ public class SimStateUpdateMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
       int numUAVs = updateDump.getNumUAVPoses();
       int numTgts = updateDump.getNumTargets();
 
-      short size =0;
+      long size =0;
       size += Integer.BYTES;//numUAVs
       size += Integer.BYTES * numUAVs;//uav ID
       size += Double.BYTES * numUAVs * 3;//hdg, north, east

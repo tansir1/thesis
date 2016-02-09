@@ -23,7 +23,7 @@ public class ShutdownMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
       return 0;
    }

@@ -82,9 +82,9 @@ public class WorldCfgMsg extends InfrastructureMsg
    }
 
    @Override
-   public short getEncodedSize()
+   public long getEncodedSize()
    {
-      short size = 0;
+      long size = 0;
 
       //world gis
       size += Integer.BYTES * 2;
