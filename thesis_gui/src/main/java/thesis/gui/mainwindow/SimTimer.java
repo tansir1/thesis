@@ -17,12 +17,10 @@ public class SimTimer
 
    private Logger logger;
    private LinkedBlockingQueue<InfrastructureMsg> sendQ;
-   private int currentDelay;
 
    public SimTimer()
    {
       logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-      currentDelay = -1;
    }
 
    public void connectQueue(LinkedBlockingQueue<InfrastructureMsg> sendQ)
@@ -50,11 +48,6 @@ public class SimTimer
 
    public void run(int interFrameDelayMS)
    {
-      if(interFrameDelayMS >= 0)
-      {
-         currentDelay = interFrameDelayMS;
-      }
-
       if(interFrameDelayMS > 0)
       {
          int hertz = 1000 / interFrameDelayMS;

@@ -181,7 +181,7 @@ public class MainWindow implements IMapMouseListener
    private void connectSimModel(SimStateDump simModel)
    {
       simPanel.connectSimModel(simModel, actions);
-      // uavViewPan.connectSimModel(simModel, simPanel);
+      uavViewPan.connectSimModel(simModel, simPanel);
       // simStatPan.connectSimModel(simModel);
       // simTimer.reset(simModel);
    }
@@ -230,6 +230,7 @@ public class MainWindow implements IMapMouseListener
          }
          logger.info("Render state update");
          simPanel.repaint();
+         uavViewPan.update();
       }
    }
 

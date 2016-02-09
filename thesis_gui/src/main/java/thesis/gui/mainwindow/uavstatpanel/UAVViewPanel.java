@@ -11,21 +11,21 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
+import thesis.core.common.WorldPose;
 import thesis.core.statedump.SimStateDump;
+import thesis.core.statedump.UAVDump;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
 {
-   private static final long UPDATE_GUI_RATE_MS = 500;
-
    private SimStateDump simModel;
    private JComboBox<Integer> uavSelCB;
    private JPanel renderable;
 
    private JLabel northLbl, eastLbl, hdgLbl;
 
-   private long updateTimeAccumulator;
    private RenderableSimWorldPanel renderSim;
 
    public UAVViewPanel()
@@ -39,8 +39,6 @@ public class UAVViewPanel
       renderable.setMinimumSize(size);
       renderable.setPreferredSize(size);
 
-      updateTimeAccumulator = 0;
-
       uavSelCB.addItemListener(new ItemListener()
       {
 
@@ -48,7 +46,7 @@ public class UAVViewPanel
          public void itemStateChanged(ItemEvent e)
          {
             update();
-            if(renderSim != null)
+            if (renderSim != null)
             {
                renderSim.repaint();
             }
@@ -76,7 +74,6 @@ public class UAVViewPanel
       addGridFormRow(gbc, "Heading:", hdgLbl);
    }
 
-
    private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
    {
       renderable.add(new JLabel(lblText), gbc);
@@ -91,18 +88,20 @@ public class UAVViewPanel
       this.simModel = simModel;
       this.renderSim = renderSim;
 
-      //FIXME Need to update to use sim state dump
-      /*
-      for(UAV uav : simModel.getUAVManager().getAllUAVs())
+      synchronized (simModel)
       {
-         uavSelCB.addItem(uav.getID());
+         for (UAVDump uav : simModel.getUAVs())
+         {
+            uavSelCB.addItem(uav.getID());
+         }
       }
 
-      if(uavSelCB.getModel().getSize() > 0)
+      if (uavSelCB.getModel().getSize() > 0)
       {
          uavSelCB.setSelectedIndex(0);
          update();
-      }*/
+      }
+
    }
 
    public JComponent getRenderable()
@@ -112,43 +111,44 @@ public class UAVViewPanel
 
    public void update()
    {
-    //FIXME Need to update to use sim state dump
-      /*
-      int selUAV = (Integer)uavSelCB.getSelectedItem();
-      final UAV uav = simModel.getUAVManager().getUAV(selUAV);
+      int selUAVID = (Integer) uavSelCB.getSelectedItem();
 
-      SwingUtilities.invokeLater(new Runnable()
+      synchronized (simModel)
       {
-
-         @Override
-         public void run()
+         for (UAVDump dump : simModel.getUAVs())
          {
-            if(uav == null)
+            if (dump.getID() == selUAVID)
             {
-               return;
+               SwingUtilities.invokeLater(new Runnable()
+               {
+
+                  @Override
+                  public void run()
+                  {
+                     updateSelectedUAVData(dump);
+                  }
+               });
+               break;
             }
-
-            renderSim.getWorldRenderer().setSelectedUAV(selUAV);
-
-            WorldPose pose = uav.getPathing().getPose();
-            northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
-            eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));
-            // \u00B0 is unicode for degree symbol
-            hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
-
          }
-      });*/
+      }
    }
 
-   /*
-   @Override
-   public void onSimulationStep()
+   private void updateSelectedUAVData(final UAVDump dump)
    {
-      updateTimeAccumulator += SimTime.SIM_STEP_RATE_MS;
-      if(updateTimeAccumulator > UPDATE_GUI_RATE_MS)
+      // This function runs on the EDT due to SwingUtilitiesInvokeLater() in
+      // update()
+
+      renderSim.getWorldRenderer().setSelectedUAV(dump.getID());
+
+      synchronized (simModel)
       {
-         update();
-         updateTimeAccumulator = 0;
+         WorldPose pose = dump.getPose();
+         northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
+         eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));
+         hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
+         // \u00B0 is unicode for degree symbol
+
       }
-   }*/
+   }
 }
