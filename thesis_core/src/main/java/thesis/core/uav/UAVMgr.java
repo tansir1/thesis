@@ -56,9 +56,9 @@ public class UAVMgr
 
       UAVStartCfg uavStartCfg = null;
 
-      final SensorGroup sensors = new SensorGroup();
       for (int i = 0; i < NUM_UAVS; ++i)
       {
+         final SensorGroup sensors = new SensorGroup();
          uavStartCfg = uavStartCfgs.get(i);
          int type = uavStartCfg.getUAVType();
          int snsrIDCnt = 0;
