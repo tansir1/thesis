@@ -101,13 +101,14 @@ public class ClientComms
       {
          while (sendBuf.hasRemaining())
          {
-             /*int numWritten = */channel.write(sendBuf);
-             //System.out.println(numWritten);
+             int numWritten = channel.write(sendBuf);
+             System.out.println(numWritten);
          }
       }
-      catch (IOException e)
+      catch (Exception e)
       {
          logger.error("Failed to send data to server. Details: {}", e.getMessage());
+         disconnect();
       }
       sendBuf.clear();
 
@@ -121,38 +122,9 @@ public class ClientComms
       }
 
       int numMsgs = msgs.size();
-      InfrastructMsgHdr msgHdr = new InfrastructMsgHdr();
       for (int i = 0; i < numMsgs; ++i)
       {
-         InfrastructureMsg msg = msgs.get(i);
-         if (msg.getEncodedSize() > BUFFER_SZ)
-         {
-            throw new IllegalArgumentException("Encoded message size is larger than sending buffer size.");
-         }
-
-         // TODO This could be optimized to encode all messages at once and
-         // perform a single write to the channel. That would require
-         // maintaining a count of remaining bytes in the buffer to be sure we
-         // didn't overflow it.
-
-         msgHdr.setMessageSize(msg.getEncodedSize());
-         msgHdr.setMessageType(msg.getMessageType());
-         msgHdr.encodeData(sendBuf);
-         msg.encodeData(sendBuf);
-         sendBuf.flip();
-
-         try
-         {
-            while (sendBuf.hasRemaining())
-            {
-               /*int numWritten = */channel.write(sendBuf);
-            }
-         }
-         catch (IOException e)
-         {
-            logger.error("Failed to send data to server. Details: {}", e.getMessage());
-         }
-         sendBuf.clear();
+         sendData(msgs.get(i));
       }
    }
 

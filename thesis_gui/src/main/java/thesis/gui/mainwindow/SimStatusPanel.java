@@ -16,14 +16,14 @@ public class SimStatusPanel
 {
    private JLabel totalSimTimeLbl;
    private JLabel totalWallTimeLbl;
-   private JLabel simFPSLbl;
+   private JLabel simFrameCntLbl;
    private JPanel renderable;
 
    public SimStatusPanel()
    {
       totalSimTimeLbl = new JLabel();
       totalWallTimeLbl = new JLabel();
-      simFPSLbl = new JLabel();
+      simFrameCntLbl = new JLabel();
       renderable = new JPanel();
 
       renderable.setBorder(BorderFactory.createTitledBorder("Sim Status"));
@@ -45,7 +45,7 @@ public class SimStatusPanel
 
       addGridFormRow(gbc, "Sim Time:", totalSimTimeLbl);
       addGridFormRow(gbc, "Wall Time:", totalWallTimeLbl);
-      addGridFormRow(gbc, "Sim FPS:", simFPSLbl);
+      addGridFormRow(gbc, "Sim FPS:", simFrameCntLbl);
    }
 
    private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
@@ -82,7 +82,7 @@ public class SimStatusPanel
             hours = (int) ((totalWallTime / (1000 * 60 * 60)) % 24);
             totalWallTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-            simFPSLbl.setText(Long.toString(msg.getFrameCount()));
+            simFrameCntLbl.setText(Long.toString(msg.getFrameCount()));
          }
       });
    }

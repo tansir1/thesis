@@ -71,12 +71,13 @@ public class ServerComms
       for (int i = 0; i < numMsgs; ++i)
       {
          InfrastructureMsg msg = msgs.get(i);
-         if(msg.getEncodedSize() > BUFFER_SZ)
+         long msgByteSz = msg.getEncodedSize();
+         if(msgByteSz > BUFFER_SZ)
          {
             throw new IllegalArgumentException("Encoded message size is larger than sending buffer size.");
          }
 
-         msgHdr.setMessageSize(msg.getEncodedSize());
+         msgHdr.setMessageSize(msgByteSz);
          msgHdr.setMessageType(msg.getMessageType());
          msgHdr.encodeData(sendBuf);
          msg.encodeData(sendBuf);
@@ -89,7 +90,7 @@ public class ServerComms
                channel.write(sendBuf);
             }
          }
-         catch (IOException e)
+         catch (Exception e)
          {
             logger.error("Failed to send data to client. Details: {}", e.getMessage());
          }
@@ -120,6 +121,7 @@ public class ServerComms
       catch (Exception e)
       {
          logger.error("Failed to read data from client.  Details: {}", e.getMessage());
+         disconnect();
       }
 
       return data;

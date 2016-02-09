@@ -49,6 +49,7 @@ public class SimStateDump
       {
          WorldPose pose = dump.getUAVPose(uavs.get(i).getID());
          uavs.get(i).getPose().copy(pose);
+
          List<SensorDump> snsrs = uavs.get(i).getSensors();
          for(SensorDump sd : snsrs)
          {

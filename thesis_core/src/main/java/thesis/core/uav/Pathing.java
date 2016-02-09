@@ -28,6 +28,13 @@ public class Pathing
    private static double TRAIL_SAMPLE_INTERVAL_MS = 250;
 
    /**
+    * Only store this much time worth of trail data.  Drop anything older.
+    */
+   private static double TRAIL_TIME_LIMIT_MS = 75000;
+
+   private static int MAX_TRAIL_ENTRIES = (int)(TRAIL_TIME_LIMIT_MS / TRAIL_SAMPLE_INTERVAL_MS);
+
+   /**
     * The radius required for the UAV to turn 180 degrees.
     */
    private final double minTurnRadius;
@@ -109,6 +116,11 @@ public class Pathing
             lastTrailSampleTimeAccumulator = 0;
             WorldPose curPose = new WorldPose(pose);
             pathTrail.add(curPose);
+
+            if(pathTrail.size() > MAX_TRAIL_ENTRIES)
+            {
+               pathTrail.remove(0);
+            }
          }
       }
       // Check if the aircraft needs to start heading towards a new location
