@@ -275,7 +275,7 @@ public class FullInitReponseMsg extends InfrastructureMsg
          WorldPose pose = new WorldPose();
          pose.setHeading(hdg);
          pose.getCoordinate().setCoordinate(north, east);
-         UAVDump uavDump = new UAVDump(id, type, pose);
+         UAVDump uavDump = new UAVDump(type, id, pose);
 
          uavs.add(uavDump);
 
