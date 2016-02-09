@@ -10,12 +10,13 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.common.WorldPose;
 import thesis.core.statedump.SensorDump;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.statedump.TargetDump;
@@ -99,6 +100,9 @@ public class RenderSimState
 
    private RenderOptions renderOpts;
 
+   private final int MAX_NUM_TRAIL_PTS = 100;
+   private Map<Integer, List<Point>> uavTrails;
+
    /**
     * Initialize a renderer with a bounds size of zero.
     *
@@ -127,6 +131,7 @@ public class RenderSimState
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
+      uavTrails = new HashMap<Integer, List<Point>>();
       selectedUAV = -1;
       gis = simStateDump.getWorldGIS();
    }
@@ -621,35 +626,52 @@ public class RenderSimState
    private void drawUAVHistoryTrails(Graphics2D g2d)
    {
       g2d.setColor(Color.blue);
-      final Point curPixels = new Point(0, 0);
-      final Point prevPix = new Point(0, 0);
-      // BasicStroke historyStroke = new BasicStroke(3f);
       g2d.setStroke(historyStroke);
 
-      List<WorldPose> history = new ArrayList<WorldPose>();
-/*
       List<UAVDump> uavs = simStateDump.getUAVs();
       int numUAVs = uavs.size();
       UAVDump uav = null;
       for (int i = 0; i < numUAVs; ++i)
       {
+         final Point curPixels = new Point(0, 0);
          uav = uavs.get(i);
-         prevPix.setLocation(-1, -1);
 
-         history.clear();
-         uav.getPathing().getFlightHistoryTrail(history);
-         for (WorldPose pose : history)
+         List<Point> trail = uavTrails.get(uav.getID());
+         if(trail == null)
          {
-            worldCoordinateToPixels(pose.getCoordinate(), curPixels);
+            trail = new ArrayList<Point>(MAX_NUM_TRAIL_PTS);
+            uavTrails.put(uav.getID(), trail);
+         }
 
+         worldCoordinateToPixels(uav.getPose().getCoordinate(), curPixels);
+         if(!trail.isEmpty())
+         {
+            Point lastPt = trail.get(trail.size()-1);
+            if(!lastPt.equals(curPixels))
+            {
+               trail.add(curPixels);
+               if(trail.size() > MAX_NUM_TRAIL_PTS)
+               {
+                  trail.remove(0);
+               }
+            }
+         }
+         else
+         {
+            trail.add(curPixels);
+         }
+
+         final Point prevPix = new Point(-1, -1);
+         for (Point curPt : trail)
+         {
             if (prevPix.x != -1 && prevPix.y != -1)
             {
-               g2d.drawLine(prevPix.x, prevPix.y, curPixels.x, curPixels.y);
+               g2d.drawLine(prevPix.x, prevPix.y, curPt.x, curPt.y);
             }
 
-            prevPix.setLocation(curPixels);
+            prevPix.setLocation(curPt);
          }
-      }*/
+      }
    }
 
    private void drawSensorFOVs(Graphics2D gfx)
