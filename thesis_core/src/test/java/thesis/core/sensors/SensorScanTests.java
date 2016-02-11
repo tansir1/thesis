@@ -36,19 +36,20 @@ public class SensorScanTests
       tgtTypeCfgs.reset(numTgtTypes);
       tgtTypeCfgs.setTargetData(0, -1f, 45);
       tgtTypeCfgs.setTargetData(1, -1f, 115);
+      tgtTypeCfgs.setTargetData(1, -1f, 0);
 
       SensorProbs pyldProb = entCfgs.getSnsrProbs();
       pyldProb.reset(numSnsrTypes, numTgtTypes);
       pyldProb.setSensorDetectProb(0, 0, 0.3f);
-      pyldProb.setSensorDetectProb(0, 1, 0.7f);
-      pyldProb.setSensorDetectProb(0, 2, 0.6f);
+      pyldProb.setSensorDetectProb(0, 1, 0.4f);
+      pyldProb.setSensorDetectProb(0, 2, 0.35f);
 
       pyldProb.setSensorConfirmProb(0, 0, 0.4f);
       pyldProb.setSensorConfirmProb(0, 1, 0.7f);
       pyldProb.setSensorConfirmProb(0, 2, 0.6f);
 
       pyldProb.setSensorHeadingCoeff(0, 0, 0.5f);
-      pyldProb.setSensorHeadingCoeff(0, 1, 0.8f);
+      pyldProb.setSensorHeadingCoeff(0, 1, 0.5f);
       pyldProb.setSensorHeadingCoeff(0, 2, 0.5f);
 
       pyldProb.setSensorMisclassifyProb(0, 0, 1, 0.2f);

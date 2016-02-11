@@ -25,9 +25,13 @@ print("Tgt0 mean prob: {} std dev: {}".format(np.mean(tgt0Probs), np.std(tgt0Pro
 print("Tgt1 mean prob: {} std dev: {}".format(np.mean(tgt1Probs), np.std(tgt1Probs)))
 print("Tgt2 mean prob: {} std dev: {}".format(np.mean(tgt2Probs), np.std(tgt2Probs)))
 
-plt.plot(frames, tgt0Probs, label='No targets')
-plt.plot(frames, tgt1Probs, label='Target Type 1')
-plt.plot(frames, tgt2Probs, label='Target Type 2')
+plotLineWidth=5
+plt.plot(frames, tgt0Probs, label='No targets', linestyle="-", linewidth=plotLineWidth)
+plt.plot(frames, tgt1Probs, label='Target Type 1', linestyle=":", linewidth=plotLineWidth)
+plt.plot(frames, tgt2Probs, label='Target Type 2', linestyle="--", linewidth=plotLineWidth)
+axes = plt.gca()
+#axes.set_xlim([xmin,xmax])
+axes.set_ylim([-0.1,1.1])
 plt.xlabel('Frames')
 plt.ylabel('Probability target type exists')
 plt.title('Change in target belief over time for a single cell')
@@ -42,3 +46,4 @@ plt.ylabel('Heading in degrees')
 plt.title('Change in target belief over time for a single cell')
 plt.legend()
 plt.show()
+
