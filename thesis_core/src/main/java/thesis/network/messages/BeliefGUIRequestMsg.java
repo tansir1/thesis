@@ -4,28 +4,39 @@ import java.nio.ByteBuffer;
 
 public class BeliefGUIRequestMsg extends InfrastructureMsg
 {
-
+   private int uavID;
    public BeliefGUIRequestMsg()
    {
       super(InfrastructureMsgType.BeliefGUIRequest);
+      uavID = -1;
+   }
+
+   public int getUAVID()
+   {
+      return uavID;
+   }
+
+   public void setUAVID(int uavID)
+   {
+      this.uavID = uavID;
    }
 
    @Override
    public void encodeData(ByteBuffer buf)
    {
-      // Nothing to do
+      buf.putInt(uavID);
    }
 
    @Override
    public void decodeData(ByteBuffer buf)
    {
-      // Nothing to do
+      uavID = buf.getInt();
    }
 
    @Override
    public long getEncodedSize()
    {
-      return 0;
+      return Integer.BYTES;
    }
 
 }

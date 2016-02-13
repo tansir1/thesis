@@ -3,6 +3,7 @@ package thesis.core.statedump;
 import java.util.ArrayList;
 import java.util.List;
 
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 import thesis.core.uav.UAV;
@@ -13,6 +14,8 @@ public class UAVDump
    private int id;
    private WorldPose pose;
    private List<SensorDump> snsrs;
+
+   private WorldBelief belief;
 
    public UAVDump(UAV uav)
    {
@@ -78,6 +81,19 @@ public class UAVDump
    public WorldPose getPose()
    {
       return pose;
+   }
+
+   public void setBelief(WorldBelief belief)
+   {
+      this.belief = belief;
+   }
+
+   /**
+    * @return Can be null if not yet set.
+    */
+   public WorldBelief getBelief()
+   {
+      return belief;
    }
 
 }

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
+import thesis.network.messages.BeliefGUIResponseMsg;
 import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
 import thesis.network.messages.SimStateUpdateMsg;
@@ -34,6 +35,9 @@ public class RecvQConsumer implements Runnable
             InfrastructureMsg msg = recvQ.take();
             switch (msg.getMessageType())
             {
+            case BeliefGUIResponse:
+               handleBeliefGUIResponseMsg(msg);
+               break;
             case FullInitReponse:
                handleFullInitReponseMsg(msg);
                break;
@@ -76,4 +80,10 @@ public class RecvQConsumer implements Runnable
       window.onSimStateUpdate(msg.getUpdateDump());
    }
 
+   private void handleBeliefGUIResponseMsg(InfrastructureMsg rawMsg)
+   {
+      logger.trace("Received Belief GUI response message.");
+      BeliefGUIResponseMsg msg = (BeliefGUIResponseMsg)rawMsg;
+      window.onBeliefGUIResponse(msg.getBelief());
+   }
 }

@@ -19,6 +19,11 @@ public class BeliefGUIResponseMsg extends InfrastructureMsg
       this.belief = wb;
    }
 
+   public WorldBelief getBelief()
+   {
+      return belief;
+   }
+
    @Override
    public void encodeData(ByteBuffer buf)
    {

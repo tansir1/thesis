@@ -22,10 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.belief.WorldBelief;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.statedump.SimStateUpdateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.gui.mainwindow.actions.Actions;
+import thesis.gui.mainwindow.uavstatpanel.PeriodicMsgAction;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
@@ -87,7 +89,8 @@ public class MainWindow implements IMapMouseListener
       frame.setVisible(true);
 
       simPanel.getListenerSupport().addListener(this);
-      execSvc = Executors.newSingleThreadScheduledExecutor();
+      // execSvc = Executors.newSingleThreadScheduledExecutor();
+      execSvc = Executors.newScheduledThreadPool(2);
    }
 
    private void buildGUI()
@@ -182,8 +185,10 @@ public class MainWindow implements IMapMouseListener
    {
       simPanel.connectSimModel(simModel, actions);
       uavViewPan.connectSimModel(simModel, simPanel);
-      // simStatPan.connectSimModel(simModel);
-      // simTimer.reset(simModel);
+
+      execSvc.scheduleAtFixedRate(new PeriodicMsgAction(sendQ, simPanel.getWorldRenderer()), 10, 1000,
+            TimeUnit.MILLISECONDS);
+
    }
 
    protected SimStatusPanel getSimStatusPanel()
@@ -216,22 +221,33 @@ public class MainWindow implements IMapMouseListener
    protected void onFullInitResponseMsg(SimStateDump simState, EntityTypeCfgs entTypeCfgs)
    {
       this.simStateDump = simState;
-      //TODO EntityTypeConfigs?
+      // TODO EntityTypeConfigs?
       connectSimModel(simState);
    }
 
    protected void onSimStateUpdate(SimStateUpdateDump simUpdate)
    {
-      if(simStateDump != null)
+      if (simStateDump != null)
       {
-         synchronized(simStateDump)
+         synchronized (simStateDump)
          {
             simStateDump.update(simUpdate);
          }
-         logger.info("Render state update");
+         logger.trace("Render state update");
          simPanel.repaint();
          uavViewPan.update();
       }
    }
 
+   protected void onBeliefGUIResponse(WorldBelief belief)
+   {
+      if (simStateDump != null)
+      {
+         int uavID = simPanel.getWorldRenderer().getSelectedUAV();
+         synchronized (simStateDump)
+         {
+            simStateDump.updateUAVWorldBelief(uavID, belief);
+         }
+      }
+   }
 }

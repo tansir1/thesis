@@ -10,8 +10,11 @@ import thesis.core.SimModel;
 import thesis.core.common.SimTime;
 import thesis.core.statedump.SimStateDump;
 import thesis.core.statedump.SimStateUpdateDump;
+import thesis.core.uav.UAV;
 import thesis.core.utilities.LoggerIDs;
 import thesis.network.ClientComms;
+import thesis.network.messages.BeliefGUIRequestMsg;
+import thesis.network.messages.BeliefGUIResponseMsg;
 import thesis.network.messages.FullInitReponseMsg;
 import thesis.network.messages.InfrastructureMsg;
 import thesis.network.messages.SetSimStepRateMsg;
@@ -98,6 +101,9 @@ public class ThesisSimApp
          {
             switch (msg.getMessageType())
             {
+            case BeliefGUIRequest:
+               processBeliefGUIRequest(msg);
+               break;
             case RequestFullStateDump:
                processRequestFullStateDump();
                break;
@@ -243,5 +249,23 @@ public class ThesisSimApp
    {
       logger.debug("Received shutdown message.");
       terminateApp = true;
+   }
+
+   private void processBeliefGUIRequest(InfrastructureMsg rawMsg)
+   {
+      logger.trace("Received Belief GUI request message.");
+      BeliefGUIRequestMsg msg = (BeliefGUIRequestMsg)rawMsg;
+      int uavID = msg.getUAVID();
+
+
+      UAV uav = simModel.getUAVManager().getUAV(uavID);
+      if(uav != null)
+      {
+         logger.trace("Sending Belief GUI response message.");
+         BeliefGUIResponseMsg response = new BeliefGUIResponseMsg();
+         response.setWorldBelief(uav.getBelief());
+         network.sendData(response);
+      }
+
    }
 }

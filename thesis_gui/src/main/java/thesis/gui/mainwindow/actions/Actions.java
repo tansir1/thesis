@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JFrame;
 
 import thesis.gui.mainwindow.SimTimer;
+import thesis.gui.mainwindow.actions.renderopts.BeliefOptAction;
 import thesis.gui.mainwindow.actions.renderopts.GraticuleOptAction;
 import thesis.gui.mainwindow.actions.renderopts.HavensOptAction;
 import thesis.gui.mainwindow.actions.renderopts.RenderOptAction;
@@ -15,12 +16,12 @@ import thesis.gui.mainwindow.actions.renderopts.TargetsOptAction;
 import thesis.gui.mainwindow.actions.renderopts.UAVHistoryOptAction;
 import thesis.gui.mainwindow.actions.renderopts.UAVsOptAction;
 import thesis.gui.mainwindow.actions.runspeed.PauseAction;
-import thesis.gui.mainwindow.actions.runspeed.PlayCPUAction;
-import thesis.gui.mainwindow.actions.runspeed.Play4HzAction;
 import thesis.gui.mainwindow.actions.runspeed.Play15HzAction;
-import thesis.gui.mainwindow.actions.runspeed.Play30HzAction;
 import thesis.gui.mainwindow.actions.runspeed.Play2HzAction;
+import thesis.gui.mainwindow.actions.runspeed.Play30HzAction;
+import thesis.gui.mainwindow.actions.runspeed.Play4HzAction;
 import thesis.gui.mainwindow.actions.runspeed.PlayAction;
+import thesis.gui.mainwindow.actions.runspeed.PlayCPUAction;
 import thesis.gui.mainwindow.actions.runspeed.StepSimAction;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
@@ -63,6 +64,7 @@ public class Actions
       renderOptActions.add(new SensorFOVOptAction());
       renderOptActions.add(new TargetsOptAction());
       renderOptActions.add(new UAVsOptAction());
+      renderOptActions.add(new BeliefOptAction());
    }
 
    public ScreenShotAction getScreenShotAction()

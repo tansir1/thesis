@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.SimModel;
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.WorldPose;
 import thesis.core.targets.Target;
 import thesis.core.uav.UAV;
@@ -51,7 +52,7 @@ public class SimStateDump
          uavs.get(i).getPose().copy(pose);
 
          List<SensorDump> snsrs = uavs.get(i).getSensors();
-         for(SensorDump sd : snsrs)
+         for (SensorDump sd : snsrs)
          {
             SensorDump snsrUpdate = dump.getSensorUpdate(uavs.get(i).getID(), sd.getID());
             sd.dumpUpdate(snsrUpdate);
@@ -95,6 +96,42 @@ public class SimStateDump
    public List<UAVDump> getUAVs()
    {
       return uavs;
+   }
+
+   public UAVDump getUAV(int uavID)
+   {
+      UAVDump retVal = null;
+
+      final int numUAVs = uavs.size();
+      for(int i=0; i<numUAVs; ++i)
+      {
+         if(uavs.get(i).getID() == uavID)
+         {
+            retVal = uavs.get(i);
+            break;
+         }
+      }
+
+      return retVal;
+   }
+
+   public void updateUAVWorldBelief(int uavID, WorldBelief wb)
+   {
+      final int numUAVs = uavs.size();
+      for (int i = 0; i < numUAVs; ++i)
+      {
+         if(uavs.get(i).getID() == uavID)
+         {
+            if(uavs.get(i).getBelief() == null)
+            {
+               uavs.get(i).setBelief(wb);
+            }
+            else
+            {
+               uavs.get(i).getBelief().copy(wb);
+            }
+         }
+      }
    }
 
    public List<TargetDump> getTargets()

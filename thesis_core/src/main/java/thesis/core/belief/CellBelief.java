@@ -39,6 +39,17 @@ public class CellBelief
       }
    }
 
+   public void copy(CellBelief copy)
+   {
+      //NOTE: Assumes both CellBeliefs are initialized to the same size
+      for (int i = 0; i < tgtProbs.length; ++i)
+      {
+         tgtProbs[i] = copy.tgtProbs[i];
+         tgtHdgs[i] = copy.tgtHdgs[i];
+         pseudoTimestamp[i] = copy.pseudoTimestamp[i];
+      }
+   }
+
    public void mergeBelief(CellBelief other)
    {
       final double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
