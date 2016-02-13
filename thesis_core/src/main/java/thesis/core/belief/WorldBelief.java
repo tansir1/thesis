@@ -1,4 +1,4 @@
-package thesis.core.experimental;
+package thesis.core.belief;
 
 import thesis.core.common.CellCoordinate;
 

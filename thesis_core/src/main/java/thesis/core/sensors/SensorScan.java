@@ -3,9 +3,9 @@ package thesis.core.sensors;
 import java.util.List;
 import java.util.Random;
 
+import thesis.core.belief.CellBelief;
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
-import thesis.core.experimental.CellBelief;
-import thesis.core.experimental.WorldBelief;
 import thesis.core.targets.Target;
 import thesis.core.targets.TargetMgr;
 import thesis.core.targets.TargetTypeConfigs;
