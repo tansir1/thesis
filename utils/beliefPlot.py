@@ -8,7 +8,7 @@ tgt1Probs = []
 tgt1Hdg = []
 tgt2Probs = []
 tgt2Hdg = []
-with open('data.csv') as csvFile:
+with open('sensorScanTest.csv') as csvFile:
    for line in csvFile:
       dataLine = line.split(',')
       if line == '\n':
