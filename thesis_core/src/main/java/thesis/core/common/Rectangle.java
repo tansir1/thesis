@@ -43,33 +43,67 @@ public class Rectangle
       return bottomRight;
    }
 
-   public boolean isValidForm()
+   public boolean isCanonicalForm()
    {
       boolean valid = true;
 
       // Ensure left points are more west than right points
-      if (topLeft.getEast() < topRight.getEast()
-            || topLeft.getEast() < bottomRight.getEast()
-            || bottomLeft.getEast() < topRight.getEast()
-            || bottomLeft.getEast() < bottomRight.getEast())
+      if (topLeft.getEast() > topRight.getEast() || topLeft.getEast() > bottomRight.getEast()
+            || bottomLeft.getEast() > topRight.getEast() || bottomLeft.getEast() > bottomRight.getEast())
       {
          valid = false;
       }
       // Ensure top points are more north than bottom points
-      else if (topLeft.getNorth() < bottomLeft.getNorth()
-            || topLeft.getNorth() < bottomRight.getNorth()
-            || topRight.getNorth() < bottomLeft.getNorth()
-            || topRight.getNorth() < bottomRight.getNorth())
+      else if (topLeft.getNorth() < bottomLeft.getNorth() || topLeft.getNorth() < bottomRight.getNorth()
+            || topRight.getNorth() < bottomLeft.getNorth() || topRight.getNorth() < bottomRight.getNorth())
       {
          valid = false;
       }
-      else if (topLeft.getEast() < topRight.getEast()
-            || bottomLeft.getEast() < bottomRight.getEast())
+      else if (topLeft.getEast() > topRight.getEast() || bottomLeft.getEast() > bottomRight.getEast())
       {
          valid = false;
       }
 
       return valid;
+   }
+
+   /**
+    * Swaps coordinates internally to make sure that all four corners are in
+    * their canonical locations.
+    */
+   public void convertToCanonicalForm()
+   {
+      double temp = 0;
+
+      // ---Check verticals---
+      if (topLeft.getNorth() < bottomLeft.getNorth())
+      {
+         temp = topLeft.getNorth();
+         topLeft.setNorth(bottomLeft.getNorth());
+         bottomLeft.setNorth(temp);
+      }
+
+      if (topRight.getNorth() < bottomRight.getNorth())
+      {
+         temp = topRight.getNorth();
+         topRight.setNorth(bottomRight.getNorth());
+         bottomRight.setNorth(temp);
+      }
+
+      // ---Check horizontals---
+      if (topLeft.getEast() > topRight.getEast())
+      {
+         temp = topLeft.getEast();
+         topLeft.setEast(topRight.getEast());
+         topRight.setEast(temp);
+      }
+
+      if (bottomLeft.getEast() > bottomRight.getEast())
+      {
+         temp = bottomRight.getEast();
+         bottomRight.setEast(bottomLeft.getEast());
+         bottomLeft.setEast(temp);
+      }
    }
 
    public double getWidth()
