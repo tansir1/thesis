@@ -9,15 +9,18 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.EntityTypeCfgs;
 import thesis.core.SimModel;
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.Circle;
 import thesis.core.sensors.Sensor;
 import thesis.core.sensors.SensorGroup;
+import thesis.core.sensors.SensorScanLogic;
 import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.targets.TargetMgr;
 import thesis.core.uav.comms.CommsConfig;
 import thesis.core.uav.comms.UAVComms;
 import thesis.core.uav.logic.UAVLogicMgr;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.world.WorldGIS;
 
 /**
  * High level manager that maintains all UAVs in the simulation.
@@ -44,9 +47,11 @@ public class UAVMgr
     *           types will be cross referenced from entTypes.
     */
    public void reset(EntityTypeCfgs entTypes, List<UAVStartCfg> uavStartCfgs, TargetMgr tgtMgr, Random randGen,
-         CommsConfig commsCfg)
+         CommsConfig commsCfg, WorldGIS gis)
    {
       logger.debug("Resetting UAV Manager.");
+
+      SensorScanLogic snsrScanner = new SensorScanLogic(entTypes.getSnsrProbs(), tgtMgr, randGen);
 
       final int NUM_UAVS = uavStartCfgs.size();
       uavs = new UAV[NUM_UAVS];
@@ -58,7 +63,7 @@ public class UAVMgr
 
       for (int i = 0; i < NUM_UAVS; ++i)
       {
-         final SensorGroup sensors = new SensorGroup();
+         final SensorGroup sensors = new SensorGroup(snsrScanner, gis);
          uavStartCfg = uavStartCfgs.get(i);
          int type = uavStartCfg.getUAVType();
          int snsrIDCnt = 0;
@@ -81,9 +86,11 @@ public class UAVMgr
          pathing.getCoordinate().setCoordinate(uavStartCfg.getLocation());
          pathing.setHeading(uavStartCfg.getOrientation());
 
-         final UAVLogicMgr logicMgr = new UAVLogicMgr(entTypes.getSnsrProbs(), randGen, i);
+         final UAVLogicMgr logicMgr = new UAVLogicMgr(i);
 
-         uavs[i] = new UAV(type, i, sensors, comms, pathing, logicMgr);
+         WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(),
+               tgtMgr.getTypeConfigs().getNumTypes());
+         uavs[i] = new UAV(type, i, sensors, comms, pathing, logicMgr, wb);
       }
    }
 

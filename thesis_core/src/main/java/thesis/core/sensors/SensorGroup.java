@@ -3,14 +3,21 @@ package thesis.core.sensors;
 import java.util.ArrayList;
 import java.util.List;
 
+import thesis.core.belief.WorldBelief;
+import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.world.WorldGIS;
 
 public class SensorGroup
 {
    private List<Sensor> sensors;
+   private SensorScanLogic scanner;
+   private WorldGIS gis;
 
-   public SensorGroup()
+   public SensorGroup(SensorScanLogic scanner, WorldGIS gis)
    {
+      this.scanner = scanner;
+      this.gis = gis;
       sensors = new ArrayList<Sensor>();
    }
 
@@ -24,16 +31,13 @@ public class SensorGroup
       return sensors;
    }
 
-   public List<SensorDetections> stepSimulation(WorldCoordinate hostUAVLocation)
+   public void stepSimulation(WorldCoordinate hostUAVLocation, WorldBelief belief)
    {
-      List<SensorDetections> detections = new ArrayList<SensorDetections>();
-
       for(Sensor s : sensors)
       {
-         detections.add(s.stepSimulation(hostUAVLocation));
+         Rectangle fov = s.getViewFootPrint();
+         scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov));
       }
-
-      return detections;
    }
 
    public void stareAtAll(WorldCoordinate starePoint)

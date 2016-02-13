@@ -1,6 +1,10 @@
 package thesis.core.world;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 
 /**
@@ -221,6 +225,66 @@ public class WorldGIS
       return origin.distanceTo(maxWidthHeight);
    }
 
+   public List<CellCoordinate> getCellsInRectangle(Rectangle rect)
+   {
+      List<CellCoordinate> cells = new ArrayList<CellCoordinate>();
+      getCellsInRectangle(rect, cells);
+      return cells;
+   }
+
+   public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
+   {
+      int ranges[] = new int[4];
+      findRowColExtremes(ranges, rect);
+      final int minRow = ranges[0];
+      final int maxRow = ranges[1];
+      final int minCol = ranges[2];
+      final int maxCol = ranges[3];
+
+      WorldCoordinate tempWC = new WorldCoordinate();
+      CellCoordinate tempCC = new CellCoordinate();
+      for(int i=minRow; i<=maxRow; ++i)
+      {
+         for(int j=minCol; j<=maxCol; ++j)
+         {
+            tempCC.setCoordinate(i, j);
+            convertCellToWorld(tempCC, tempWC);
+            if(rect.isCoordinateInRegion(tempWC))
+            {
+               cellsInRect.add(new CellCoordinate(tempCC));
+            }
+         }
+      }
+   }
+
+   private void findRowColExtremes(int[] ranges, Rectangle rect)
+   {
+      rect.convertToCanonicalForm();
+
+      CellCoordinate temp1 = new CellCoordinate();
+      CellCoordinate temp2 = new CellCoordinate();
+
+      convertWorldToCell(rect.getTopLeft(), temp1);
+      convertWorldToCell(rect.getTopRight(), temp2);
+      int maxRow = Math.max(temp1.getRow(), temp2.getRow());
+
+      convertWorldToCell(rect.getBottomLeft(), temp1);
+      convertWorldToCell(rect.getBottomRight(), temp2);
+      int minRow = Math.min(temp1.getRow(), temp2.getRow());
+
+      convertWorldToCell(rect.getBottomRight(), temp1);
+      convertWorldToCell(rect.getTopRight(), temp2);
+      int maxCol = Math.max(temp1.getColumn(), temp2.getColumn());
+
+      convertWorldToCell(rect.getBottomLeft(), temp1);
+      convertWorldToCell(rect.getTopLeft(), temp2);
+      int minCol = Math.min(temp1.getColumn(), temp2.getColumn());
+
+      ranges[0] = minRow;
+      ranges[1] = maxRow;
+      ranges[2] = minCol;
+      ranges[3] = maxCol;
+   }
 
    @Override
    public String toString()
