@@ -10,7 +10,7 @@ import thesis.core.targets.Target;
 import thesis.core.targets.TargetMgr;
 import thesis.core.targets.TargetTypeConfigs;
 
-public class SensorScan
+public class SensorScanLogic
 {
    static final double detectAngleDegradationSlope = -0.005555556f;
    static final double minDetectValue = 0.001;
@@ -19,7 +19,7 @@ public class SensorScan
    private TargetMgr tgtMgr;
    private Random randGen;
 
-   public SensorScan(SensorProbs pyldProbs, TargetMgr tgtMgr, Random randGen)
+   public SensorScanLogic(SensorProbs pyldProbs, TargetMgr tgtMgr, Random randGen)
    {
       this.snsrProbs = pyldProbs;
       this.tgtMgr = tgtMgr;

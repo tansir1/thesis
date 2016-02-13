@@ -108,7 +108,7 @@ public class SensorScanTests
       // ----------------Perform tests---------------------
       List<CellCoordinate> allCells = new ArrayList<CellCoordinate>();
       allCells.add(new CellCoordinate(0, 0));
-      SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
+      SensorScanLogic testMe = new SensorScanLogic(entCfgs.getSnsrProbs(), tgtMgr, randGen);
 
       int numSimulations = 4000;
 

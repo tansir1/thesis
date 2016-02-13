@@ -3,7 +3,6 @@ package thesis.core.belief;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.Test;
 
 public class CellBeliefTests
 {

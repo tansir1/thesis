@@ -1,18 +1,18 @@
 package thesis.core.uav.comms;
 
-import thesis.core.entities.belief.BeliefState;
+import thesis.core.belief.WorldBelief;
 
-public class BeliefStateMsg extends Message
+public class WorldBeliefMsg extends Message
 {
-   private BeliefState belief;
+   private WorldBelief belief;
 
-   public BeliefStateMsg(BeliefState belief)
+   public WorldBeliefMsg(WorldBelief belief)
    {
-      super(MsgType.BeliefState);
+      super(MsgType.WorldBelief);
       this.belief = belief;
    }
 
-   public BeliefState getBelief()
+   public WorldBelief getBelief()
    {
       return belief;
    }
@@ -22,7 +22,7 @@ public class BeliefStateMsg extends Message
    {
       //No need for a deep-copy/clone since receivers of this message will
       //use this data in a read-only fashion within the same process
-      BeliefStateMsg clone = new BeliefStateMsg(belief);
+      WorldBeliefMsg clone = new WorldBeliefMsg(belief);
       return clone;
    }
 }
