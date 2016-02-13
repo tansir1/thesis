@@ -2,8 +2,8 @@ package thesis.core.uav;
 
 import java.util.List;
 
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.WorldPose;
-import thesis.core.entities.belief.BeliefState;
 import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.comms.UAVComms;
@@ -20,11 +20,11 @@ public class UAV
    private UAVComms comms;
 
    private SensorGroup sensors;
-   private BeliefState belief;
+   private WorldBelief belief;
    private Pathing pathing;
    private UAVLogicMgr logicMgr;
 
-   public UAV(int type, int id, SensorGroup sensors, UAVComms comms, Pathing pathing, UAVLogicMgr logicMgr)
+   public UAV(int type, int id, SensorGroup sensors, UAVComms comms, Pathing pathing, UAVLogicMgr logicMgr, WorldBelief wb)
    {
       if (sensors == null)
       {
@@ -46,14 +46,18 @@ public class UAV
          throw new NullPointerException("UAV Logic mgr cannot be null.");
       }
 
+      if (wb == null)
+      {
+         throw new NullPointerException("Worldbelief cannot be null.");
+      }
+
       this.id = id;
       this.type = type;
       this.sensors = sensors;
       this.comms = comms;
       this.pathing = pathing;
       this.logicMgr = logicMgr;
-
-      belief = new BeliefState();
+      this.belief = wb;
    }
 
    public int getID()
@@ -78,8 +82,9 @@ public class UAV
       List<Message> msgs = comms.getAllIncoming();
 
       comms.stepSimulation(pathing.getCoordinate());
-      logicMgr.stepSimulation(sensors.stepSimulation(pathing.getCoordinate()), belief, msgs);
-      //belief.stepSimulation(comms);
+      sensors.stepSimulation(pathing.getCoordinate(), belief);
+      logicMgr.stepSimulation(belief, msgs);
+      belief.stepSimulation(comms);
    }
 
    public Pathing getPathing()
@@ -97,7 +102,7 @@ public class UAV
       return sensors;
    }
 
-   public BeliefState getBelief()
+   public WorldBelief getBelief()
    {
       return belief;
    }

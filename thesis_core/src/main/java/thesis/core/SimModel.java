@@ -77,8 +77,7 @@ public class SimModel
       resetUAVs(worldCfg, commsRngPercent, commsRelayProb);
    }
 
-   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent,
-         double commsRelayProb)
+   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb)
    {
       final double maxComsRng = world.getWorldGIS().getMaxWorldDistance() * commsRngPercent;
 
@@ -88,7 +87,7 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg);
+      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS());
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.

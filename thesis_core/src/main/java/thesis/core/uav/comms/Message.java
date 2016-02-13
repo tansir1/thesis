@@ -15,7 +15,7 @@ public abstract class Message
 
    public enum MsgType
    {
-      BeliefState,
+      WorldBelief,
 
       AuctionAnnounce, AuctionBid, AuctionWin, AuctionLose,
    }
