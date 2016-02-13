@@ -54,7 +54,7 @@ public class UAVMgrTests
       worldGIS.reset(100000, 100000, 10, 10);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, initUAVs(), new TargetMgr(), new Random(), new CommsConfig());
+      testMe.reset(entTypes, initUAVs(), new TargetMgr(), new Random(), new CommsConfig(), worldGIS);
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();

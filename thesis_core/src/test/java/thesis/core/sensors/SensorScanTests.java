@@ -12,11 +12,11 @@ import java.util.Random;
 import org.junit.Test;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.belief.CellBelief;
+import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.WorldPose;
-import thesis.core.experimental.CellBelief;
-import thesis.core.experimental.WorldBelief;
 import thesis.core.serialization.world.TargetStartCfg;
 import thesis.core.targets.TargetMgr;
 import thesis.core.targets.TargetTypeConfigs;
@@ -108,7 +108,7 @@ public class SensorScanTests
       // ----------------Perform tests---------------------
       List<CellCoordinate> allCells = new ArrayList<CellCoordinate>();
       allCells.add(new CellCoordinate(0, 0));
-      SensorScan testMe = new SensorScan(entCfgs.getSnsrProbs(), tgtMgr, randGen);
+      SensorScanLogic testMe = new SensorScanLogic(entCfgs.getSnsrProbs(), tgtMgr, randGen);
 
       int numSimulations = 4000;
 
