@@ -118,6 +118,9 @@ public class Rectangle
 
    public boolean isCoordinateInRegion(final WorldCoordinate testPt)
    {
+      //Tolerance factor to deal with floating point comparisons
+      final double AREA_TOLERANCE = 0.001;
+
       boolean inRegion = true;
 
       // This algorithm requires substantial computation but can work with any
@@ -135,7 +138,7 @@ public class Rectangle
       testArea += triangularAreaM2(bottomRight, testPt, topRight);
       testArea += triangularAreaM2(testPt, topRight, topLeft);
 
-      if (testArea > rectAreaM2)
+      if (testArea > rectAreaM2 && Math.abs(testArea - rectAreaM2) > AREA_TOLERANCE)
       {
          inRegion = false;
       }
