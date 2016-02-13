@@ -22,6 +22,12 @@ public class InfrastructMsgFact
       InfrastructureMsg msg = null;
       switch (msgType)
       {
+      case BeliefGUIResponse:
+         msg = new BeliefGUIResponseMsg();
+         break;
+      case BeliefGUIRequest:
+         msg = new BeliefGUIRequestMsg();
+         break;
       case FullInitReponse:
          msg = new FullInitReponseMsg();
          break;

@@ -65,4 +65,18 @@ public class WorldBelief
       return cells[row][col];
    }
 
+   public int getNumRows()
+   {
+      return cells.length;
+   }
+
+   public int getNumCols()
+   {
+      return cells[0].length;
+   }
+
+   public int getNumTgtTypes()
+   {
+      return cells[0][0].getNumTgtTypes();
+   }
 }

@@ -11,7 +11,9 @@ public enum InfrastructureMsgType
    TargetsInit(5),
    FullInitReponse(6),
    SimStateUpdate(7),
-   Shutdown(8);
+   Shutdown(8),
+   BeliefGUIResponse(9),
+   BeliefGUIRequest(10);
 
    private byte id;
    private InfrastructureMsgType(int id)
@@ -55,6 +57,12 @@ public enum InfrastructureMsgType
          break;
       case 8:
          type = Shutdown;
+         break;
+      case 9:
+         type = BeliefGUIResponse;
+         break;
+      case 10:
+         type = BeliefGUIRequest;
          break;
       }
       return type;

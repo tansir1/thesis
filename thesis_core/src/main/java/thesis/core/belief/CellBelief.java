@@ -90,4 +90,9 @@ public class CellBelief
       tgtHdgs[tgtType] = hdg;
       pseudoTimestamp[tgtType] = timestamp;
    }
+
+   public int getNumTgtTypes()
+   {
+      return tgtProbs.length;
+   }
 }
