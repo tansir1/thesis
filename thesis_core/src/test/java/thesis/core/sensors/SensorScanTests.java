@@ -40,9 +40,9 @@ public class SensorScanTests
 
       SensorProbs pyldProb = entCfgs.getSnsrProbs();
       pyldProb.reset(numSnsrTypes, numTgtTypes);
-      pyldProb.setSensorDetectProb(0, 0, 0.3f);
-      pyldProb.setSensorDetectProb(0, 1, 0.4f);
-      pyldProb.setSensorDetectProb(0, 2, 0.35f);
+      pyldProb.setSensorDetectProb(0, 0, 0.2f);
+      pyldProb.setSensorDetectProb(0, 1, 0.2f);
+      pyldProb.setSensorDetectProb(0, 2, 0.2f);
 
       pyldProb.setSensorConfirmProb(0, 0, 0.4f);
       pyldProb.setSensorConfirmProb(0, 1, 0.7f);
@@ -112,7 +112,7 @@ public class SensorScanTests
 
       int numSimulations = 4000;
 
-      File testDataFile = new File("../telecons/data.csv");
+      File testDataFile = new File("../utils/sensorScanTest.csv");
       PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(testDataFile)));
 
       for (int i = 0; i < numSimulations; ++i)
