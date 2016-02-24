@@ -2,7 +2,8 @@ package thesis.core.sensors;
 
 public class SensorProbs
 {
-   private double snsrDetect[][];
+   private double snsrDetectEmpty[];
+   private double snsrDetectTgt[][];
    private double snsrConfirm[][];
    private double snsrHdgCoef[][];
 
@@ -15,16 +16,18 @@ public class SensorProbs
 
    public void reset(int numSnsrTypes, int numTgtTypes)
    {
-      snsrDetect = new double[numSnsrTypes][numTgtTypes];
+      snsrDetectEmpty = new double[numSnsrTypes];
+      snsrDetectTgt = new double[numSnsrTypes][numTgtTypes];
       snsrConfirm = new double[numSnsrTypes][numTgtTypes];
       snsrHdgCoef = new double[numSnsrTypes][numTgtTypes];
       snsrMisClass = new double[numSnsrTypes][numTgtTypes][numTgtTypes];
 
-      for(int i=0; i<snsrDetect.length; ++i)
+      for(int i=0; i<snsrDetectTgt.length; ++i)
       {
-         for(int j=0; j<snsrDetect[i].length; ++j)
+         snsrDetectEmpty[i] = -1d;
+         for(int j=0; j<snsrDetectTgt[i].length; ++j)
          {
-            snsrDetect[i][j] = -1d;//-1 probability is used as an unset error flag
+            snsrDetectTgt[i][j] = -1d;//-1 probability is used as an unset error flag
             snsrConfirm[i][j] = -1d;
             snsrHdgCoef[i][j] = -1d;
 
@@ -47,9 +50,9 @@ public class SensorProbs
       return snsrConfirm[0].length;
    }
 
-   public double getSensorDetectProb(int snsrType, int tgtType)
+   public double getSensorDetectTgtProb(int snsrType, int tgtType)
    {
-      return snsrDetect[snsrType][tgtType];
+      return snsrDetectTgt[snsrType][tgtType];
    }
 
    public double getSensorConfirmProb(int snsrType, int tgtType)
@@ -67,9 +70,14 @@ public class SensorProbs
       return snsrHdgCoef[snsrType][tgtType];
    }
 
-   public void setSensorDetectProb(int snsrType, int tgtType, double prob)
+   public double getSensorDetectEmptyProb(int snsrType)
    {
-      snsrDetect[snsrType][tgtType] = prob;
+      return snsrDetectEmpty[snsrType];
+   }
+
+   public void setSensorDetectTgtProb(int snsrType, int tgtType, double prob)
+   {
+      snsrDetectTgt[snsrType][tgtType] = prob;
    }
 
    public void setSensorConfirmProb(int snsrType, int tgtType, double prob)
@@ -85,5 +93,10 @@ public class SensorProbs
    public void setSensorMisclassifyProb(int snsrType, int detectTgtType, int misclassTgtType, double prob)
    {
       snsrMisClass[snsrType][detectTgtType][misclassTgtType] = prob;
+   }
+
+   public void setSensorDetectEmptyProb(int snsrType, double prob)
+   {
+      snsrDetectEmpty[snsrType] = prob;
    }
 }
