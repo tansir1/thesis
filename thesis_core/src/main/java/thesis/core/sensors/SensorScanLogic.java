@@ -77,12 +77,16 @@ public class SensorScanLogic
             trueTgtBelief.setHeadingEstimate(hdgUpdate);
             trueTgtBelief.setTimestamp(simTime);
             trueTgtBelief.setTypeProbability(detectedTgtType, bayesianUpdate);
+
+            //cellBelief.updateBayesian(simTime, true, 0.7);
+            computeCellEmptyBayesian(false, snsrType, cellBelief, simTime, trueTgts, probOfScanTgt);
          }
-         cellBelief.updateBayesian(simTime, true);
+
       }
       else
       {
-         cellBelief.updateBayesian(simTime, false);
+         //cellBelief.updateBayesian(simTime, false, 0.7);
+         computeCellEmptyBayesian(true, snsrType, cellBelief, simTime, trueTgts, -1);
       }
    }
 
@@ -178,6 +182,36 @@ public class SensorScanLogic
       return newEstHdg;
    }
 
+   private void computeCellEmptyBayesian(boolean emptyCellDetected, int snsrType, CellBelief cellBelief, long simTime, List<Target> trueTgts, double probScanTgt)
+   {
+      double prevEmptyProb = cellBelief.getProbabilityEmptyCell();
+      double prevNotEmptyProb = cellBelief.getProbabilityNotEmptyCell();
+
+      double probDetectEmpty = snsrProbs.getSensorDetectEmptyProb(snsrType);
+      double probMisclassAsEmpty = 1d;
+      for(Target trueTgt : trueTgts)
+      {
+         double missedTgt = 1d - snsrProbs.getSensorDetectTgtProb(snsrType, trueTgt.getType());
+         probMisclassAsEmpty *= missedTgt;
+      }
+
+      if(emptyCellDetected)
+      {
+         double numerator = probDetectEmpty * prevEmptyProb;
+         double denominator = (probDetectEmpty * prevEmptyProb) + (probMisclassAsEmpty * prevNotEmptyProb);
+         cellBelief.updateEmptyBelief(simTime, numerator/denominator);
+      }
+      else
+      {
+         double numerator = probScanTgt * prevNotEmptyProb;
+         //0% chance of false positive target detections, numerator and denominator are equal
+         double denominator = (probScanTgt * prevNotEmptyProb);
+
+         double bayes = numerator / denominator;
+         cellBelief.updateEmptyBelief(simTime, 1d - bayes);
+      }
+   }
+
    private int determineSensorResult(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief)
    {
       int detectedTgtType = TargetTypeConfigs.NULL_TGT_TYPE;
@@ -270,17 +304,17 @@ public class SensorScanLogic
     */
    private double probOfDetect(int snsrType, int tgtType, double snsrHdg, double tgtHdg)
    {
-      // double relHdg = Math.abs(tgtHdg - snsrHdg);
-      // double deltaFromBestAngle = Math.abs(relHdg -
-      // tgtMgr.getTypeConfigs().getBestAngle(tgtType));
-      //
-      // double percentOfBestProbAngle = (1.0 -
-      // Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
-      // + minDetectValue;
-      // double probDetection = percentOfBestProbAngle *
-      // snsrProbs.getSensorDetectProb(snsrType, tgtType);
-      // return probDetection;
-      return snsrProbs.getSensorDetectProb(snsrType, tgtType);
+       double relHdg = Math.abs(tgtHdg - snsrHdg);
+       double deltaFromBestAngle = Math.abs(relHdg -
+       tgtMgr.getTypeConfigs().getBestAngle(tgtType));
+
+       double percentOfBestProbAngle = (1.0 -
+       Math.abs(detectAngleDegradationSlope * deltaFromBestAngle))
+       + minDetectValue;
+       double probDetection = percentOfBestProbAngle *
+       snsrProbs.getSensorDetectTgtProb(snsrType, tgtType);
+       return probDetection;
+      //return snsrProbs.getSensorDetectTgtProb(snsrType, tgtType);
    }
 
    /**

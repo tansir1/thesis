@@ -17,8 +17,8 @@ public class SensorProbsTests
       SensorProbs testMe = new SensorProbs();
       testMe.reset(numSnsrs, numTgts);
 
-      testMe.setSensorDetectProb(0, 1, 0.5f);
-      assertEquals("Failed to retrieve detection prob.", 0.5f, testMe.getSensorDetectProb(0, 1), COMPARE_THRESH);
+      testMe.setSensorDetectTgtProb(0, 1, 0.5f);
+      assertEquals("Failed to retrieve detection prob.", 0.5f, testMe.getSensorDetectTgtProb(0, 1), COMPARE_THRESH);
 
       testMe.setSensorConfirmProb(1, 0, 0.1f);
       testMe.setSensorConfirmProb(1, 1, 0.8f);

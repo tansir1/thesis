@@ -24,7 +24,7 @@ public class CellBelief
 
    private int numTgtTypes = 0;//FIXME This hsouldn't be stored here
 
-   private double probTgtExists;
+   private double probCellEmpty;
 
    public CellBelief(int numTgtTypes)
    {
@@ -36,19 +36,19 @@ public class CellBelief
 
    public void reset()
    {
-      probTgtExists = 0.5;
+      probCellEmpty = 0.5;
       pseudoTimestamp = 0;
       tgtBeliefs.clear();
    }
 
    public double getProbabilityEmptyCell()
    {
-      return 1d - probTgtExists;
+      return probCellEmpty;
    }
 
    public double getProbabilityNotEmptyCell()
    {
-      return probTgtExists;
+      return 1d - probCellEmpty;
    }
 
    public TargetBelief getTargetBelief(int tgtID)
@@ -141,19 +141,9 @@ public class CellBelief
 
    }
 
-   public void updateBayesian(long simTime, boolean detectedTgt)
+   public void updateEmptyBelief(long simTime, double probEmpty)
    {
       pseudoTimestamp = simTime;
-
-      //The cell is empty or it isn't, 50% chance either way
-      double denominator = (0.5 * probTgtExists) + ((1d - probTgtExists) * 0.5);
-      if(detectedTgt)
-      {
-         probTgtExists = (0.5 * probTgtExists) / denominator;
-      }
-      else
-      {
-         probTgtExists = (0.5 * (1d-probTgtExists)) / denominator;
-      }
+      probCellEmpty = probEmpty;
    }
 }

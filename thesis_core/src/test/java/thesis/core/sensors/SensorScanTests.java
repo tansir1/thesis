@@ -43,9 +43,11 @@ public class SensorScanTests
 
       SensorProbs pyldProb = entCfgs.getSnsrProbs();
       pyldProb.reset(numSnsrTypes, numTgtTypes);
-      pyldProb.setSensorDetectProb(0, 0, 0.6f);
-      pyldProb.setSensorDetectProb(0, 1, 0.6f);
-      pyldProb.setSensorDetectProb(0, 2, 0.6f);
+      pyldProb.setSensorDetectTgtProb(0, 0, 0.6f);
+      pyldProb.setSensorDetectTgtProb(0, 1, 0.6f);
+      pyldProb.setSensorDetectTgtProb(0, 2, 0.6f);
+
+      pyldProb.setSensorDetectEmptyProb(0, 0.7f);
 
       pyldProb.setSensorConfirmProb(0, 0, 0.4f);
       pyldProb.setSensorConfirmProb(0, 1, 0.7f);
@@ -119,7 +121,7 @@ public class SensorScanTests
       final int numRows = 1;
       final int numCols = 1;
 
-      EntityTypeCfgs entCfgs = initEntityCfgs(numTgtTypes, false);
+      EntityTypeCfgs entCfgs = initEntityCfgs(numTgtTypes, true);
 
       final Random randGen = new Random();
       randGen.setSeed(424242);
