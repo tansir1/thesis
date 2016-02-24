@@ -3,6 +3,7 @@ package thesis.core.uav;
 import java.util.List;
 
 import thesis.core.belief.WorldBelief;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.comms.Message;
@@ -82,7 +83,7 @@ public class UAV
       List<Message> msgs = comms.getAllIncoming();
 
       comms.stepSimulation(pathing.getCoordinate());
-      sensors.stepSimulation(pathing.getCoordinate(), belief);
+      sensors.stepSimulation(pathing.getCoordinate(), belief, SimTime.CURRENT_SIM_TIME_MS);
       logicMgr.stepSimulation(belief, msgs);
       belief.stepSimulation(comms);
    }
