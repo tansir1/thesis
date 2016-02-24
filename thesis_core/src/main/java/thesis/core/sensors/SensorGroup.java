@@ -31,12 +31,12 @@ public class SensorGroup
       return sensors;
    }
 
-   public void stepSimulation(WorldCoordinate hostUAVLocation, WorldBelief belief)
+   public void stepSimulation(WorldCoordinate hostUAVLocation, WorldBelief belief, long simTime)
    {
       for(Sensor s : sensors)
       {
          Rectangle fov = s.getViewFootPrint();
-         scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov));
+         scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
       }
    }
 

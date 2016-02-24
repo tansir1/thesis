@@ -10,7 +10,7 @@ public class CellBelief
     * Coefficient to use in the alpha filter for merging the newest target data
     * between two cell beliefs.
     */
-   public static double NEWER_TGT_ALPHA = 0.5;//Default to 0.5
+   public static double NEWER_TGT_ALPHA = 0.5;// Default to 0.5
 
    private List<TargetBelief> tgtBeliefs;
 
@@ -22,7 +22,7 @@ public class CellBelief
     */
    private long pseudoTimestamp;
 
-   private int numTgtTypes = 0;//FIXME This hsouldn't be stored here
+   private int numTgtTypes = 0;// FIXME This hsouldn't be stored here
 
    private double probCellEmpty;
 
@@ -57,16 +57,16 @@ public class CellBelief
       boolean tgtFound = false;
 
       Iterator<TargetBelief> itr = tgtBeliefs.iterator();
-      while(itr.hasNext() && !tgtFound)
+      while (itr.hasNext() && !tgtFound)
       {
          tgtBelief = itr.next();
-         if(tgtBelief.getTrueTargetID() == tgtID)
+         if (tgtBelief.getTrueTargetID() == tgtID)
          {
             tgtFound = true;
          }
       }
 
-      if(tgtBelief == null)
+      if (tgtBelief == null)
       {
          tgtBelief = new TargetBelief(numTgtTypes, tgtID);
          tgtBeliefs.add(tgtBelief);
@@ -79,9 +79,9 @@ public class CellBelief
       boolean tgtFound = false;
       Iterator<TargetBelief> itr = tgtBeliefs.iterator();
 
-      while(itr.hasNext() && !tgtFound)
+      while (itr.hasNext() && !tgtFound)
       {
-         if(itr.next().getTrueTargetID() == tgtID)
+         if (itr.next().getTrueTargetID() == tgtID)
          {
             tgtFound = true;
          }
@@ -95,10 +95,10 @@ public class CellBelief
       Iterator<TargetBelief> itr = tgtBeliefs.iterator();
       TargetBelief tgtBelief = null;
 
-      while(itr.hasNext() && !tgtFound)
+      while (itr.hasNext() && !tgtFound)
       {
          tgtBelief = itr.next();
-         if(tgtBelief.getTrueTargetID() == tgtID)
+         if (tgtBelief.getTrueTargetID() == tgtID)
          {
             itr.remove();
             tgtFound = true;
@@ -114,36 +114,55 @@ public class CellBelief
    public void mergeBelief(CellBelief other)
    {
       final double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
-      for (int i = 0; i < tgtProbs.length; ++i)
+
+      if (other.pseudoTimestamp > pseudoTimestamp)
       {
-         if (other.pseudoTimestamp[i] > pseudoTimestamp[i])
-         {
-            // TODO How/Could/Should merging handle expertise in sensing
-            // different target types? Currently if a weak sensor scans 'now' it
-            // will trump a strong sensor that scanned a second ago.
+         // TODO How/Could/Should merging handle expertise in sensing
+         // different target types? Currently if a weak sensor scans 'now' it
+         // will trump a strong sensor that scanned a second ago.
 
-            // If the other belief has newer data then merge it in with an alpha
-            // filter.
-            tgtProbs[i] = (NEWER_TGT_ALPHA * other.tgtProbs[i]) + (INVERSE_NEWER_ALPHA * tgtProbs[i]);
-            tgtHdgs[i] = (NEWER_TGT_ALPHA * other.tgtHdgs[i]) + (INVERSE_NEWER_ALPHA * tgtHdgs[i]);
+         // If the other belief has newer data then merge it in with an alpha
+         // filter.
+         probCellEmpty = (NEWER_TGT_ALPHA * other.probCellEmpty) + (INVERSE_NEWER_ALPHA * probCellEmpty);
 
-            // Move this belief's timestamp forward towards the other belief's
-            // time. This is an artifact of the merging process and why time is
-            // called 'pseudoTime' instead of just 'time.' The time must be
-            // adjusted so that transitively merging this data with a 3rd belief
-            // doesn't cause oscillations in the probabilities due to the order
-            // of merging.
-            double timeDiff = Math.abs(pseudoTimestamp[i] - other.pseudoTimestamp[i]);
-            pseudoTimestamp[i] += (long) (INVERSE_NEWER_ALPHA * timeDiff);
-         }
-         // else: My data is newer so ignore the other belief's data
+         // Move this belief's timestamp forward towards the other belief's
+         // time. This is an artifact of the merging process and why time is
+         // called 'pseudoTime' instead of just 'time.' The time must be
+         // adjusted so that transitively merging this data with a 3rd belief
+         // doesn't cause oscillations in the probabilities due to the order
+         // of merging.
+         double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
+         pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
+
+         mergeTargetBeliefs(other);
       }
-
+      // else: My data is newer so ignore the other belief's data
    }
 
    public void updateEmptyBelief(long simTime, double probEmpty)
    {
       pseudoTimestamp = simTime;
       probCellEmpty = probEmpty;
+   }
+
+   private void mergeTargetBeliefs(CellBelief other)
+   {
+      List<TargetBelief> otherBeliefs = new ArrayList<TargetBelief>(other.tgtBeliefs);
+      Iterator<TargetBelief> itr = otherBeliefs.iterator();
+
+      while(itr.hasNext())
+      {
+         TargetBelief otherBelief = itr.next();
+         if(hasDetectedTarget(otherBelief.getTrueTargetID()))
+         {
+            TargetBelief myBelief = getTargetBelief(otherBelief.getTrueTargetID());
+            myBelief.merge(otherBelief, NEWER_TGT_ALPHA);
+         }
+         else
+         {
+            //Other belief has information on new targets
+            tgtBeliefs.add(new TargetBelief(otherBelief));
+         }
+      }
    }
 }
