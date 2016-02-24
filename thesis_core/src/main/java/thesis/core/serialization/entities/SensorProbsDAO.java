@@ -81,7 +81,7 @@ public class SensorProbsDAO
             double hdgCoeff = rs.getDouble(hdgCoefColName);
 
             snsrProbs.setSensorConfirmProb(snsrTypeID, tgtTypeID, probConfirm);
-            snsrProbs.setSensorDetectProb(snsrTypeID, tgtTypeID, probDetect);
+            snsrProbs.setSensorDetectTgtProb(snsrTypeID, tgtTypeID, probDetect);
             snsrProbs.setSensorHeadingCoeff(snsrTypeID, tgtTypeID, hdgCoeff);
          }
          rs.close();
@@ -127,7 +127,7 @@ public class SensorProbsDAO
             {
                stmt.setInt(1, i);
                stmt.setInt(2, j);
-               stmt.setDouble(3, snsrProbs.getSensorDetectProb(i, j));
+               stmt.setDouble(3, snsrProbs.getSensorDetectTgtProb(i, j));
                stmt.setDouble(4, snsrProbs.getSensorConfirmProb(i,j));
                stmt.setDouble(5, snsrProbs.getSensorHeadingCoeff(i, j));
                stmt.addBatch();
