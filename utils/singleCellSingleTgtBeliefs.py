@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 frames = []
 emptyCellProbs = []
 notEmptyCellProbs = []
+shannonUncert = []
 hdgEst = []
 type0Probs = []
 type1Probs = []
@@ -18,9 +19,10 @@ with open('sensorScanTest.csv') as csvFile:
       emptyCellProbs.append(float(dataLine[1]))
       notEmptyCellProbs.append(float(dataLine[2]))
       hdgEst.append(float(dataLine[3]))
-      type0Probs.append(float(dataLine[4]))
-      type1Probs.append(float(dataLine[5]))
-      type2Probs.append(float(dataLine[6]))
+      shannonUncert.append(float(dataLine[4]))
+      type0Probs.append(float(dataLine[5]))
+      type1Probs.append(float(dataLine[6]))
+      type2Probs.append(float(dataLine[7]))
 
 print("Type 0 mean prob: {} std dev: {}".format(np.mean(type0Probs), np.std(type0Probs)))
 print("Type 1 mean prob: {} std dev: {}".format(np.mean(type1Probs), np.std(type1Probs)))
@@ -32,6 +34,7 @@ plt.plot(frames, type1Probs, label='Type 1 Prob', linestyle=":", linewidth=plotL
 plt.plot(frames, type2Probs, label='Type 2 Prob', linestyle="--", linewidth=plotLineWidth)
 plt.plot(frames, emptyCellProbs, label='Empty Cell Prob', linestyle="-.", linewidth=plotLineWidth/2)
 plt.plot(frames, notEmptyCellProbs, label='Not Empty Cell Prob', linestyle="-", linewidth=plotLineWidth/2)
+plt.plot(frames, shannonUncert, label='Shannon Uncert', linestyle="--", linewidth=plotLineWidth/2)
 axes = plt.gca()
 #axes.set_xlim([xmin,xmax])
 axes.set_ylim([-0.1,1.1])
