@@ -1,9 +1,11 @@
 package thesis.core.sensors;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import thesis.core.belief.CellBelief;
+import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
 import thesis.core.targets.Target;
@@ -26,19 +28,154 @@ public class SensorScanLogic
       this.randGen = randGen;
    }
 
-   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV)
+   public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV, long simTime)
    {
-      final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
+      //final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       final int NUM_COORDS = snsrFOV.size();
 
       for (int coordIdx = 0; coordIdx < NUM_COORDS; ++coordIdx)
       {
-         for (int tgtIdx = 0; tgtIdx < NUM_TGT_TYPES; ++tgtIdx)
-         {
-            scanCell(snsrType, tgtIdx, snsrFOV.get(coordIdx), snsrHdg, belief, 0L);
-         }
+         newScan(snsrType, snsrFOV.get(coordIdx), snsrHdg, simTime, belief);
+//         for (int tgtIdx = 0; tgtIdx < NUM_TGT_TYPES; ++tgtIdx)
+//         {
+//            scanCell(snsrType, tgtIdx, snsrFOV.get(coordIdx), snsrHdg, belief, 0L);
+//         }
       }
 
+   }
+
+   private void newScan(int snsrType, CellCoordinate cell, double snsrHdg, long simTime, WorldBelief worldBelief)
+   {
+      CellBelief cellBelief = worldBelief.getCellBelief(cell);
+      List<Target> trueTgts = detectTargets(snsrType, cell, snsrHdg, cellBelief);
+
+      if(!trueTgts.isEmpty())
+      {
+         for(Target trueTgt : trueTgts)
+         {
+            int trueTgtType = trueTgt.getType();
+            TargetBelief trueTgtBelief = cellBelief.getTargetBelief(trueTgt.getID());
+            double estTgtHdg = trueTgtBelief.getHeadingEstimate();
+
+            // Simulate the sensor scan of the environment
+            double probOfScanTgt = 0;
+
+            int detectedTgtType = classifyTarget(snsrType, estTgtHdg, snsrHdg, trueTgtType);
+            if (trueTgtType == detectedTgtType)
+            {
+               probOfScanTgt = probOfDetect(snsrType, detectedTgtType, snsrHdg, estTgtHdg);
+            }
+            else
+            {
+               probOfScanTgt = probOfMisclassify(snsrType, trueTgtType, detectedTgtType, snsrHdg, estTgtHdg);
+            }
+
+            //double prevEstHdg = cellBelief.getTargetHeading(detectedTgtType);
+            double bayesianUpdate = computeTargetBayesianUpdate(snsrType, cellBelief, snsrHdg, probOfScanTgt, trueTgtBelief.getTypeProbability(detectedTgtType), detectedTgtType, estTgtHdg);
+            double hdgUpdate = computeHeadingUpdate(snsrType, snsrHdg, cell, estTgtHdg, detectedTgtType);
+
+            trueTgtBelief.setHeadingEstimate(hdgUpdate);
+            trueTgtBelief.setTimestamp(simTime);
+            trueTgtBelief.setTypeProbability(detectedTgtType, bayesianUpdate);
+         }
+         cellBelief.updateBayesian(simTime, true);
+      }
+      else
+      {
+         cellBelief.updateBayesian(simTime, false);
+      }
+   }
+
+   private List<Target> detectTargets(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief)
+   {
+      List<Target> tgtsTruth = tgtMgr.getTargetsInRegion(cell);
+      if (tgtsTruth.size() > 0)
+      {
+         Iterator<Target> itr = tgtsTruth.iterator();
+         Target tgt = itr.next();
+
+         //Determine if the target was detected or not
+         double estTgtHdg = 0;
+         if(cellBelief.hasDetectedTarget(tgt.getID()))
+         {
+            //Target was seen in the past, get the last estimated heading
+            estTgtHdg = cellBelief.getTargetBelief(tgt.getID()).getHeadingEstimate();
+         }
+
+         double probDetect = probOfDetect(snsrType, tgt.getType(), snsrHdg, estTgtHdg);
+         if (randGen.nextDouble() > probDetect)
+         {
+            //Target not detected, remove it from the returned results list
+            itr.remove();
+         }
+         //else target was detected
+      }
+      return tgtsTruth;
+   }
+
+   private int classifyTarget(int snsrType, double estTgtHdg, double snsrHdg, int trueTgtType)
+   {
+      int estimatedTgtType = trueTgtType;
+
+      int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
+      for (int i = 0; i < NUM_TGT_TYPES; ++i)
+      {
+         if(i == trueTgtType)
+         {
+            continue;//Do not misclassify the true type as the true type
+         }
+
+         // -1f is the default probability if no misclassification data
+         // is available
+         double misclassProb = probOfMisclassify(snsrType, trueTgtType, i, snsrHdg, estTgtHdg);
+         if (randGen.nextDouble() < misclassProb)
+         {
+            // TODO Iterating target types in order weights occurrence
+            // of misclassifcation to target types with lower type ID
+            // numbers. Should probably iterate randomly through all
+            // types.
+
+            // Sensor will misclassify the target type
+            estimatedTgtType = i;
+            break;
+         }
+      }
+      return estimatedTgtType;
+   }
+
+   private double computeTargetBayesianUpdate(int snsrType, CellBelief cellBelief, double snsrHdg, double probOfSensorResult, double prevProbOfSensorResult, int detectedTgtType, double tgtHdgEst)
+   {
+      // ---Update bayesian belief model for the target type in the scanned
+      // cell---
+
+      //@formatter:off
+      // prob(tgt type exists Y) = prob(detect tgt type Y) * prob(previous belief tgt Y exists)
+      //                           ---------------------------------------------------------
+      //                           sum(prob(detect tgt type X as Y) * prob(previous belief off type X)) for all tgt type X
+      //@formatter:on
+
+      double bayesianNumerator = probOfSensorResult * prevProbOfSensorResult;
+
+      // Bayesian update denominator. Acts as a normalizing factor.
+      // double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg,
+      // cellBelief, tgtType, probOfScanTgt);
+      double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, detectedTgtType, probOfSensorResult, prevProbOfSensorResult, tgtHdgEst);
+
+      // New probability that the detected target type actually exists at the
+      // cell location
+      double bayesianUpdate = bayesianNumerator / sumAllTgtProbs;
+      return bayesianUpdate;
+   }
+
+   private double computeHeadingUpdate(int snsrType, double snsrHdg, CellCoordinate cell, double prevTgtHdgEst, int detectedTgtType)
+   {
+      // Update heading
+      double hdgConfCoeff = computeHeadingConfidenceCoeff(snsrType, detectedTgtType, snsrHdg, prevTgtHdgEst);
+      double snsrEstHdg = computeHeadingEstimate(detectedTgtType, hdgConfCoeff, prevTgtHdgEst, cell);
+      // Weighted alpha filter to update heading value
+      double newEstHdg = (1d - hdgConfCoeff) * prevTgtHdgEst + hdgConfCoeff * snsrEstHdg;
+
+      return newEstHdg;
    }
 
    private int determineSensorResult(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief)
@@ -175,6 +312,8 @@ public class SensorScanLogic
    private double probOfMisclassify(int snsrType, int suspectedRealTgtType, int detectedType, double snsrHdg,
          double suspectedTgtTypeHdgEst)
    {
+      //TODO Add error catching if suspected type and detected type match
+
       double worstProbOfMisclass = snsrProbs.getSensorMisclassifyProb(snsrType, suspectedRealTgtType, detectedType);
       double probOfMisClass = 0.0000001;
 
@@ -201,12 +340,12 @@ public class SensorScanLogic
    private void scanCell(int snsrType, int tgtType, CellCoordinate cell, double snsrHdg, WorldBelief belief,
          long simTime)
    {
-//      if (computeSenseDetectMetric(snsrType, tgtType) < 1d)
-//      {
-//         // Sensor performance is not good enough to operate in these
-//         // conditions. Do nothing.
-//         return;
-//      }
+      // if (computeSenseDetectMetric(snsrType, tgtType) < 1d)
+      // {
+      // // Sensor performance is not good enough to operate in these
+      // // conditions. Do nothing.
+      // return;
+      // }
 
       CellBelief cellBelief = belief.getCellBelief(cell);
 
@@ -217,7 +356,7 @@ public class SensorScanLogic
       detectedTgtType = determineSensorResult(snsrType, cell, snsrHdg, cellBelief);
       if (detectedTgtType == TargetTypeConfigs.NULL_TGT_TYPE)
       {
-         //System.out.println("FAILED TO DETECT ANYTHING!");
+         // System.out.println("FAILED TO DETECT ANYTHING!");
          return;
       }
 
@@ -263,35 +402,32 @@ public class SensorScanLogic
       // blocks further
       // updates from adjusting the values due to everything being exactly zero
       // and one
-      //bayesianUpdate = Math.max(bayesianUpdate, 0.001);
-      //bayesianUpdate = Math.min(bayesianUpdate, 0.999);
+      // bayesianUpdate = Math.max(bayesianUpdate, 0.001);
+      // bayesianUpdate = Math.min(bayesianUpdate, 0.999);
 
       cellBelief.updateTargetEstimates(tgtType, bayesianUpdate, newEstHdg, simTime);
    }
 
    private double getSumProbsAllTargets(int snsrType, double snsrHdg, CellBelief cellBelief, int detectedTgtType,
-         double probDetectTgtType)
+         double probDetectTgtType, double prevProbOfSensorResult, double tgtHdgEst)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       double accumulator = 0;
 
       for (int i = 0; i < NUM_TGT_TYPES; ++i)
       {
-         double probExistsPrior = cellBelief.getTargetProb(i);
-         double tgtHdgEst = cellBelief.getTargetHeading(i);
-
          if (i != detectedTgtType)
          {
             // Probability that the true target is an 'i' and it was
             // misclassified as detectedTgtType
             double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg, tgtHdgEst);
 
-            accumulator += probMisClass * probExistsPrior;
+            accumulator += probMisClass * prevProbOfSensorResult;
          }
          else
          {
             double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg, tgtHdgEst);
-            accumulator += probDetect * probExistsPrior;
+            accumulator += probDetect * prevProbOfSensorResult;
          }
 
       }

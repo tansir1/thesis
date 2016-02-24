@@ -1,5 +1,9 @@
 package thesis.core.belief;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class CellBelief
 {
    /**
@@ -8,8 +12,7 @@ public class CellBelief
     */
    public static double NEWER_TGT_ALPHA = 0.5;//Default to 0.5
 
-   private double tgtProbs[];
-   private double tgtHdgs[];
+   private List<TargetBelief> tgtBeliefs;
 
    /**
     * This is the time of the probability update if the data was updated by
@@ -17,26 +20,95 @@ public class CellBelief
     * data to maintain synchronicity when propagating beliefs through more than
     * 2 agents.
     */
-   private long pseudoTimestamp[];
+   private long pseudoTimestamp;
+
+   private int numTgtTypes = 0;//FIXME This hsouldn't be stored here
+
+   private double probTgtExists;
 
    public CellBelief(int numTgtTypes)
    {
-      tgtProbs = new double[numTgtTypes];
-      tgtHdgs = new double[numTgtTypes];
-      pseudoTimestamp = new long[numTgtTypes];
+      this.numTgtTypes = numTgtTypes;
+      tgtBeliefs = new ArrayList<TargetBelief>();
 
       reset();
    }
 
    public void reset()
    {
-      double equalProb = 1d / tgtProbs.length;
-      for (int i = 0; i < tgtProbs.length; ++i)
+      probTgtExists = 0.5;
+      pseudoTimestamp = 0;
+      tgtBeliefs.clear();
+   }
+
+   public double getProbabilityEmptyCell()
+   {
+      return 1d - probTgtExists;
+   }
+
+   public double getProbabilityNotEmptyCell()
+   {
+      return probTgtExists;
+   }
+
+   public TargetBelief getTargetBelief(int tgtID)
+   {
+      TargetBelief tgtBelief = null;
+      boolean tgtFound = false;
+
+      Iterator<TargetBelief> itr = tgtBeliefs.iterator();
+      while(itr.hasNext() && !tgtFound)
       {
-         tgtProbs[i] = equalProb;// Assume equal probability of all target types
-         tgtHdgs[i] = 0;// If target exists, assume they have 0 heading
-         pseudoTimestamp[i] = 0;
+         tgtBelief = itr.next();
+         if(tgtBelief.getTrueTargetID() == tgtID)
+         {
+            tgtFound = true;
+         }
       }
+
+      if(tgtBelief == null)
+      {
+         tgtBelief = new TargetBelief(numTgtTypes, tgtID);
+         tgtBeliefs.add(tgtBelief);
+      }
+      return tgtBelief;
+   }
+
+   public boolean hasDetectedTarget(int tgtID)
+   {
+      boolean tgtFound = false;
+      Iterator<TargetBelief> itr = tgtBeliefs.iterator();
+
+      while(itr.hasNext() && !tgtFound)
+      {
+         if(itr.next().getTrueTargetID() == tgtID)
+         {
+            tgtFound = true;
+         }
+      }
+      return tgtFound;
+   }
+
+   public void removeTarget(int tgtID)
+   {
+      boolean tgtFound = false;
+      Iterator<TargetBelief> itr = tgtBeliefs.iterator();
+      TargetBelief tgtBelief = null;
+
+      while(itr.hasNext() && !tgtFound)
+      {
+         tgtBelief = itr.next();
+         if(tgtBelief.getTrueTargetID() == tgtID)
+         {
+            itr.remove();
+            tgtFound = true;
+         }
+      }
+   }
+
+   public int getNumTargetBeliefs()
+   {
+      return tgtBeliefs.size();
    }
 
    public void mergeBelief(CellBelief other)
@@ -69,25 +141,19 @@ public class CellBelief
 
    }
 
-   public double getTargetProb(int tgtType)
+   public void updateBayesian(long simTime, boolean detectedTgt)
    {
-      return tgtProbs[tgtType];
-   }
+      pseudoTimestamp = simTime;
 
-   public double getTargetHeading(int tgtType)
-   {
-      return tgtHdgs[tgtType];
-   }
-
-   public long getTargetEstTime(int tgtType)
-   {
-      return pseudoTimestamp[tgtType];
-   }
-
-   public void updateTargetEstimates(int tgtType, double prob, double hdg, long timestamp)
-   {
-      tgtProbs[tgtType] = prob;
-      tgtHdgs[tgtType] = hdg;
-      pseudoTimestamp[tgtType] = timestamp;
+      //The cell is empty or it isn't, 50% chance either way
+      double denominator = (0.5 * probTgtExists) + ((1d - probTgtExists) * 0.5);
+      if(detectedTgt)
+      {
+         probTgtExists = (0.5 * probTgtExists) / denominator;
+      }
+      else
+      {
+         probTgtExists = (0.5 * (1d-probTgtExists)) / denominator;
+      }
    }
 }
