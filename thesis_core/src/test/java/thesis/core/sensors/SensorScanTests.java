@@ -1,5 +1,7 @@
 package thesis.core.sensors;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -13,6 +15,7 @@ import org.junit.Test;
 
 import thesis.core.EntityTypeCfgs;
 import thesis.core.belief.CellBelief;
+import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
@@ -26,7 +29,7 @@ import thesis.core.world.WorldGIS;
 public class SensorScanTests
 {
 
-   private EntityTypeCfgs initEntityCfgs(final int numTgtTypes)
+   private EntityTypeCfgs initEntityCfgs(final int numTgtTypes, boolean allowMisclass)
    {
       final int numSnsrTypes = 1;
 
@@ -40,9 +43,11 @@ public class SensorScanTests
 
       SensorProbs pyldProb = entCfgs.getSnsrProbs();
       pyldProb.reset(numSnsrTypes, numTgtTypes);
-      pyldProb.setSensorDetectProb(0, 0, 0.2f);
-      pyldProb.setSensorDetectProb(0, 1, 0.2f);
-      pyldProb.setSensorDetectProb(0, 2, 0.2f);
+      pyldProb.setSensorDetectTgtProb(0, 0, 0.6f);
+      pyldProb.setSensorDetectTgtProb(0, 1, 0.6f);
+      pyldProb.setSensorDetectTgtProb(0, 2, 0.6f);
+
+      pyldProb.setSensorDetectEmptyProb(0, 0.7f);
 
       pyldProb.setSensorConfirmProb(0, 0, 0.4f);
       pyldProb.setSensorConfirmProb(0, 1, 0.7f);
@@ -52,12 +57,24 @@ public class SensorScanTests
       pyldProb.setSensorHeadingCoeff(0, 1, 0.5f);
       pyldProb.setSensorHeadingCoeff(0, 2, 0.5f);
 
-      pyldProb.setSensorMisclassifyProb(0, 0, 1, 0.2f);
-      pyldProb.setSensorMisclassifyProb(0, 0, 2, 0.2f);
-      pyldProb.setSensorMisclassifyProb(0, 1, 0, 0.2f);
-      pyldProb.setSensorMisclassifyProb(0, 1, 2, 0.2f);
-      pyldProb.setSensorMisclassifyProb(0, 2, 0, 0.2f);
-      pyldProb.setSensorMisclassifyProb(0, 2, 1, 0.2f);
+      if(allowMisclass)
+      {
+         pyldProb.setSensorMisclassifyProb(0, 0, 1, 0.2f);
+         pyldProb.setSensorMisclassifyProb(0, 0, 2, 0.2f);
+         pyldProb.setSensorMisclassifyProb(0, 1, 0, 0.2f);
+         pyldProb.setSensorMisclassifyProb(0, 1, 2, 0.2f);
+         pyldProb.setSensorMisclassifyProb(0, 2, 0, 0.2f);
+         pyldProb.setSensorMisclassifyProb(0, 2, 1, 0.2f);
+      }
+      else
+      {
+         pyldProb.setSensorMisclassifyProb(0, 0, 1, 0f);
+         pyldProb.setSensorMisclassifyProb(0, 0, 2, 0f);
+         pyldProb.setSensorMisclassifyProb(0, 1, 0, 0f);
+         pyldProb.setSensorMisclassifyProb(0, 1, 2, 0f);
+         pyldProb.setSensorMisclassifyProb(0, 2, 0, 0f);
+         pyldProb.setSensorMisclassifyProb(0, 2, 1, 0f);
+      }
 
       return entCfgs;
    }
@@ -82,14 +99,29 @@ public class SensorScanTests
       return startCfgs;
    }
 
+   private void printScanResults(int scanCount, CellBelief cellBelief, TargetBelief tgtBelief, PrintWriter pw, int numTgtTypes)
+   {
+      //scanCount,probEmptyCell,probNotEmptyCell,tgtHdgEst,shannon,probTgtType1,probTgtTyp2,...,probTgtTypeN
+
+      pw.print(Integer.toString(scanCount) + ",");
+      pw.print(String.format("%.2f,%.2f,", cellBelief.getProbabilityEmptyCell(), cellBelief.getProbabilityNotEmptyCell()));
+      pw.print(String.format("%.2f,%.2f", tgtBelief.getHeadingEstimate(), cellBelief.getUncertainty()));
+
+      for (int tgtTypeIdx = 0; tgtTypeIdx < numTgtTypes; ++tgtTypeIdx)
+      {
+         pw.print(String.format(",%.2f", tgtBelief.getTypeProbability(tgtTypeIdx)));
+      }
+      pw.println();
+   }
+
    @Test
-   public void scanTest() throws IOException
+   public void singleTargetSingleCellScanTest() throws IOException
    {
       final int numTgtTypes = 3;
       final int numRows = 1;
       final int numCols = 1;
 
-      EntityTypeCfgs entCfgs = initEntityCfgs(numTgtTypes);
+      EntityTypeCfgs entCfgs = initEntityCfgs(numTgtTypes, true);
 
       final Random randGen = new Random();
       randGen.setSeed(424242);
@@ -115,32 +147,17 @@ public class SensorScanTests
       File testDataFile = new File("../utils/sensorScanTest.csv");
       PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(testDataFile)));
 
-      for (int i = 0; i < numSimulations; ++i)
+      testMe.simulateScan(0, 115, wb, allCells, 0);
+      CellBelief cellBelief = wb.getCellBelief(0, 0);
+      TargetBelief tgtBelief = cellBelief.getTargetBelief(0);
+
+      for (int i = 1; i < numSimulations; ++i)
       {
-         //System.out.println(String.format("--------Simulation Frame %d---------", i));
-         testMe.simulateScan(0, 115, wb, allCells);
-
-         for (int cellIdx = 0; cellIdx < numCols; ++cellIdx)
-         {
-            CellBelief cell = wb.getCellBelief(0, cellIdx);
-            //System.out.print(Integer.toString(i) + ",");
-            pw.print(Integer.toString(i) + ",");
-            for (int tgtTypeIdx = 0; tgtTypeIdx < numTgtTypes; ++tgtTypeIdx)
-            {
-               // System.out.println(String.format("Cell %d Tgt %d - Prob:%.2f,
-               // Hdg:%.2f", cellIdx, tgtTypeIdx,
-               // cell.getTargetProb(tgtTypeIdx),
-               // cell.getTargetHeading(tgtTypeIdx)));
-               //System.out.print(
-               pw.print(
-                     String.format("%.2f,%.2f,", cell.getTargetProb(tgtTypeIdx), cell.getTargetHeading(tgtTypeIdx)));
-            }
-            //System.out.println("");
-            pw.println("");
-         }
-
-
+         testMe.simulateScan(0, 115, wb, allCells, i);
+         printScanResults(i, cellBelief, tgtBelief, pw, numTgtTypes);
       }
       pw.close();
+
+      assertEquals("Detected an incorrect number of targets in cell.", 1, cellBelief.getNumTargetBeliefs());
    }
 }
