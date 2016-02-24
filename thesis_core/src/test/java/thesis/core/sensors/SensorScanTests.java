@@ -101,11 +101,11 @@ public class SensorScanTests
 
    private void printScanResults(int scanCount, CellBelief cellBelief, TargetBelief tgtBelief, PrintWriter pw, int numTgtTypes)
    {
-      //scanCount,probEmptyCell,probNotEmptyCell,tgtHdgEst,probTgtType1,probTgtTyp2,...,probTgtTypeN
+      //scanCount,probEmptyCell,probNotEmptyCell,tgtHdgEst,shannon,probTgtType1,probTgtTyp2,...,probTgtTypeN
 
       pw.print(Integer.toString(scanCount) + ",");
       pw.print(String.format("%.2f,%.2f,", cellBelief.getProbabilityEmptyCell(), cellBelief.getProbabilityNotEmptyCell()));
-      pw.print(String.format("%.2f", tgtBelief.getHeadingEstimate()));
+      pw.print(String.format("%.2f,%.2f", tgtBelief.getHeadingEstimate(), cellBelief.getUncertainty()));
 
       for (int tgtTypeIdx = 0; tgtTypeIdx < numTgtTypes; ++tgtTypeIdx)
       {

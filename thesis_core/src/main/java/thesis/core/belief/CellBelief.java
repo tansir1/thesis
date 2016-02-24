@@ -12,6 +12,12 @@ public class CellBelief
     */
    public static double NEWER_TGT_ALPHA = 0.5;// Default to 0.5
 
+   /**
+    * If the probability of the cell being empty is less than this value then
+    * the Shannon uncertainty will be assumed to be zero.  Prevents NaNs.
+    */
+   private static final double SHANNON_ZERO_THRESHOLD = 0.000001;
+
    private List<TargetBelief> tgtBeliefs;
 
    /**
@@ -109,6 +115,19 @@ public class CellBelief
    public int getNumTargetBeliefs()
    {
       return tgtBeliefs.size();
+   }
+
+   /**
+    * @return The Shannon uncertainty value of the existance of a target.
+    */
+   public double getUncertainty()
+   {
+      double shannonUncert = 0;
+      if(probCellEmpty > SHANNON_ZERO_THRESHOLD)
+      {
+         shannonUncert = (-probCellEmpty * Math.log10(probCellEmpty)) - ((1-probCellEmpty)*Math.log10(1-probCellEmpty));
+      }
+      return shannonUncert;
    }
 
    public void mergeBelief(CellBelief other)
