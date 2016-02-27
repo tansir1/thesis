@@ -64,8 +64,7 @@ public class SensorScanLogic
                probOfScanTgt = probOfMisclassify(snsrType, trueTgtType, detectedTgtType, snsrHdg, estTgtHdg);
             }
 
-            double bayesianUpdate = computeTargetBayesianUpdate(snsrType, cellBelief, snsrHdg, probOfScanTgt,
-                  trueTgtBelief.getTypeProbability(detectedTgtType), detectedTgtType, estTgtHdg);
+            double bayesianUpdate = computeTargetBayesianUpdate(snsrType, cellBelief, snsrHdg, probOfScanTgt, detectedTgtType, trueTgtBelief);
             double hdgUpdate = computeHeadingUpdate(snsrType, snsrHdg, cell, estTgtHdg, detectedTgtType);
 
             trueTgtBelief.setHeadingEstimate(hdgUpdate);
@@ -140,7 +139,7 @@ public class SensorScanLogic
    }
 
    private double computeTargetBayesianUpdate(int snsrType, CellBelief cellBelief, double snsrHdg,
-         double probOfSensorResult, double prevProbOfSensorResult, int detectedTgtType, double tgtHdgEst)
+         double probOfSensorResult, int detectedTgtType, TargetBelief tgtBelief)
    {
       // ---Update bayesian belief model for the target type in the scanned
       // cell---
@@ -151,13 +150,13 @@ public class SensorScanLogic
       //                           sum(prob(detect tgt type X as Y) * prob(previous belief off type X)) for all tgt type X
       //@formatter:on
 
-      double bayesianNumerator = probOfSensorResult * prevProbOfSensorResult;
+      double bayesianNumerator = probOfSensorResult * tgtBelief.getTypeProbability(detectedTgtType);
 
       // Bayesian update denominator. Acts as a normalizing factor.
       // double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg,
       // cellBelief, tgtType, probOfScanTgt);
       double sumAllTgtProbs = getSumProbsAllTargets(snsrType, snsrHdg, cellBelief, detectedTgtType, probOfSensorResult,
-            prevProbOfSensorResult, tgtHdgEst);
+            tgtBelief);
 
       // New probability that the detected target type actually exists at the
       // cell location
@@ -308,7 +307,7 @@ public class SensorScanLogic
    }
 
    private double getSumProbsAllTargets(int snsrType, double snsrHdg, CellBelief cellBelief, int detectedTgtType,
-         double probDetectTgtType, double prevProbOfSensorResult, double tgtHdgEst)
+         double probDetectTgtType, TargetBelief tgtBelief)
    {
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
       double accumulator = 0;
@@ -319,14 +318,14 @@ public class SensorScanLogic
          {
             // Probability that the true target is an 'i' and it was
             // misclassified as detectedTgtType
-            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg, tgtHdgEst);
+            double probMisClass = probOfMisclassify(snsrType, i, detectedTgtType, snsrHdg, tgtBelief.getHeadingEstimate());
 
-            accumulator += probMisClass * prevProbOfSensorResult;
+            accumulator += probMisClass * tgtBelief.getTypeProbability(i);
          }
          else
          {
-            double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg, tgtHdgEst);
-            accumulator += probDetect * prevProbOfSensorResult;
+            double probDetect = probOfDetect(snsrType, detectedTgtType, snsrHdg, tgtBelief.getHeadingEstimate());
+            accumulator += probDetect * tgtBelief.getTypeProbability(i);
          }
 
       }
