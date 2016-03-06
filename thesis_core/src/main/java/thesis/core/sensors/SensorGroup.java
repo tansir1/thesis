@@ -35,6 +35,7 @@ public class SensorGroup
    {
       for(Sensor s : sensors)
       {
+         s.stepSimulation(hostUAVLocation);
          Rectangle fov = s.getViewFootPrint();
          scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
       }
