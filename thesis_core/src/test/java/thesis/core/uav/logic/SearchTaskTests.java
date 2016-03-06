@@ -2,10 +2,16 @@ package thesis.core.uav.logic;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Random;
+
 import org.junit.Test;
 
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
+import thesis.core.sensors.SensorGroup;
+import thesis.core.sensors.SensorProbs;
+import thesis.core.sensors.SensorScanLogic;
+import thesis.core.targets.TargetMgr;
 import thesis.core.uav.Pathing;
 import thesis.core.uav.UAVTypeConfigs;
 import thesis.core.world.WorldGIS;
@@ -32,14 +38,19 @@ public class SearchTaskTests
       worldBlf.getCellBelief(1, 0).updateEmptyBelief(0, 0.5);
       CellCoordinate expectedDestCoord = new CellCoordinate(1,0);
 
+      TargetMgr tgtMgr = new TargetMgr();
+      SensorProbs pyldProbs = new SensorProbs();
+      SensorScanLogic snsrScanLogic = new SensorScanLogic(pyldProbs, tgtMgr, new Random());
+      SensorGroup snsrGrp = new SensorGroup(snsrScanLogic, gis);
+
       SearchTask testMe = new SearchTask(0, gis);
-      testMe.stepSimulation(worldBlf, pathing);
+      testMe.stepSimulation(worldBlf, pathing, snsrGrp);
 
       CellCoordinate actualDestCoord = gis.convertWorldToCell(pathing.getFlightPath().getEndPose().getCoordinate());
       assertEquals("Search selected incorrect destination to start", expectedDestCoord, actualDestCoord);
 
       //Change nothing, assert that the destination did not change
-      testMe.stepSimulation(worldBlf, pathing);
+      testMe.stepSimulation(worldBlf, pathing, snsrGrp);
       assertEquals("Search changed destination when it should not have.", expectedDestCoord, actualDestCoord);
 
       //Zero out the uncertainty of current destination cell and raise it elsewhere.
@@ -48,7 +59,7 @@ public class SearchTaskTests
       worldBlf.getCellBelief(expectedDestCoord).updateEmptyBelief(1, 0.5);
 
       //Test that search task switches to new uncertain cell
-      testMe.stepSimulation(worldBlf, pathing);
+      testMe.stepSimulation(worldBlf, pathing, snsrGrp);
       actualDestCoord = gis.convertWorldToCell(pathing.getFlightPath().getEndPose().getCoordinate());
       assertEquals("Search did not switch upon uncertainty threshold reached.", expectedDestCoord, actualDestCoord);
    }
