@@ -178,9 +178,9 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
     */
    private void connectSimModel(SimModel simModel)
    {
-      simPanel.connectSimModel(simModel, actions);
       uavViewPan.connectSimModel(simModel, simPanel);
       simTimer.connectSimRunner(simRunner);
+      simPanel.connectSimModel(simModel, actions);
    }
 
    protected SimStatusPanel getSimStatusPanel()

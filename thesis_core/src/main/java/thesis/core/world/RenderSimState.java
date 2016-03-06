@@ -210,6 +210,11 @@ public class RenderSimState
 
       synchronized (simModel)
       {
+         if (renderOpts.isOptionEnabled(RenderOption.Belief))
+         {
+            drawSelecteUAVBelief(gfx);
+         }
+
          if (renderOpts.isOptionEnabled(RenderOption.Graticule))
          {
             drawGridLines(gfx);
@@ -243,11 +248,6 @@ public class RenderSimState
          if (renderOpts.isOptionEnabled(RenderOption.SensorFOV))
          {
             drawSensorFOVs(gfx);
-         }
-
-         if (renderOpts.isOptionEnabled(RenderOption.Belief))
-         {
-            drawSelecteUAVBelief(gfx);
          }
       }
    }
@@ -755,13 +755,13 @@ public class RenderSimState
 
       for (int i = 0; i < numRows; ++i)
       {
-         for (int j = 0; i < numCols; ++i)
+         for (int j = 0; j < numCols; ++j)
          {
             CellBelief cb = selUAV.getBelief().getCellBelief(i, j);
             double prob = cb.getUncertainty();
 
             gfx.setColor(probabilityToColor(prob));
-            gfx.fillRect(i * gridCellH, j * gridCellW, gridCellW, gridCellH);
+            gfx.fillRect(j * gridCellW, i * gridCellH, gridCellW, gridCellH);
          }
       }
    }
@@ -770,7 +770,7 @@ public class RenderSimState
    {
       int red = (int)(255 * prob);
       int blue = (int)(255 * (1d-prob));
-      return new Color(red, 0, blue);
+      return new Color(red, 0, blue, 127);
    }
 
    /**
