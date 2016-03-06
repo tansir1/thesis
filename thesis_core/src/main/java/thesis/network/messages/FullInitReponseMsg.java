@@ -14,6 +14,7 @@ import thesis.core.statedump.UAVDump;
 import thesis.core.world.Havens;
 import thesis.core.world.World;
 
+@Deprecated
 public class FullInitReponseMsg extends InfrastructureMsg
 {
    private SimStateDump simState;

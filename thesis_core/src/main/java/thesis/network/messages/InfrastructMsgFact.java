@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
 
+@Deprecated
 public class InfrastructMsgFact
 {
    // TODO This should be a memory pool to avoid allocating new memory at

@@ -2,6 +2,7 @@ package thesis.network.messages;
 
 import java.nio.ByteBuffer;
 
+@Deprecated
 public class InfrastructMsgHdr
 {
    public static final int HEADER_SIZE = 3;// 1 byte for msgType, 2 for message

@@ -8,6 +8,7 @@ import thesis.network.messages.InfrastructMsgFact;
 import thesis.network.messages.InfrastructMsgHdr;
 import thesis.network.messages.InfrastructureMsg;
 
+@Deprecated
 public class PartialMsgBuf
 {
    private final int BUFFER_SZ;

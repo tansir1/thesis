@@ -1,13 +1,9 @@
 package thesis.gui.mainwindow;
 
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.utilities.LoggerIDs;
-import thesis.network.messages.InfrastructureMsg;
-import thesis.network.messages.SetSimStepRateMsg;
 
 public class SimTimer
 {
@@ -16,34 +12,34 @@ public class SimTimer
    private static final int PLAY = -3;
 
    private Logger logger;
-   private LinkedBlockingQueue<InfrastructureMsg> sendQ;
+   private SimRunner simRunner;
 
    public SimTimer()
    {
       logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
    }
 
-   public void connectQueue(LinkedBlockingQueue<InfrastructureMsg> sendQ)
+   public void connectSimRunner(SimRunner simRunner)
    {
-      this.sendQ = sendQ;
+      this.simRunner = simRunner;
    }
 
    public void step()
    {
       logger.info("Stepping simulation");
-      sendRate(STEP);
+      run(STEP);
    }
 
    public void pause()
    {
       logger.info("Pausing simulation");
-      sendRate(PAUSE);
+      run(PAUSE);
    }
 
    public void play()
    {
       logger.info("Resuming simulation.");
-      sendRate(PLAY);
+      run(PLAY);
    }
 
    public void run(int interFrameDelayMS)
@@ -58,25 +54,6 @@ public class SimTimer
          logger.info("Free running simulation at CPU speed");
       }
 
-      sendRate(interFrameDelayMS);
+      simRunner.setInterframeDelay(interFrameDelayMS);
    }
-
-   private void sendRate(int interFrameDelayMS)
-   {
-      SetSimStepRateMsg msg = new SetSimStepRateMsg();
-      msg.setInterFrameDelay(interFrameDelayMS);
-
-      if(sendQ != null)
-      {
-         try
-         {
-            sendQ.put(msg);
-         }
-         catch (InterruptedException e)
-         {
-            logger.error("Failed to enqueue SetSimRateMsg. Details: {}", e.getMessage());
-         }
-      }
-   }
-
 }

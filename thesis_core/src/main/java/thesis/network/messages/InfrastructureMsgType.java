@@ -1,5 +1,6 @@
 package thesis.network.messages;
 
+@Deprecated
 public enum InfrastructureMsgType
 {
 
