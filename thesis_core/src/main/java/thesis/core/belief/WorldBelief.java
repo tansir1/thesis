@@ -12,7 +12,7 @@ public class WorldBelief
     * When this amount of simulation time elapses the UAV will broadcast its
     * current belief state.
     */
-   private static double BELIEF_BROADCAST_RATE_MS = 1000;//Broadcast at 1hz
+   private static double BELIEF_BROADCAST_RATE_MS = 1000;// Broadcast at 1hz
 
    private double lastBeliefBroadcastTimeAccumulator;
 
@@ -21,11 +21,11 @@ public class WorldBelief
    public WorldBelief(int numRows, int numCols, int numTgtTypes)
    {
       cells = new CellBelief[numRows][numCols];
-      for(int i=0; i<numRows; ++i)
+      for (int i = 0; i < numRows; ++i)
       {
-         for(int j=0; j<numCols; ++j)
+         for (int j = 0; j < numCols; ++j)
          {
-            cells[i][j] = new CellBelief(numTgtTypes);
+            cells[i][j] = new CellBelief(i, j, numTgtTypes);
          }
       }
    }
@@ -46,9 +46,9 @@ public class WorldBelief
       final int numRows = cells.length;
       final int numCols = cells[0].length;
 
-      for(int i=0; i<numRows; ++i)
+      for (int i = 0; i < numRows; ++i)
       {
-         for(int j=0; j<numCols; ++j)
+         for (int j = 0; j < numCols; ++j)
          {
             cells[i][j].mergeBelief(other.cells[i][j]);
          }
@@ -63,6 +63,16 @@ public class WorldBelief
    public CellBelief getCellBelief(int row, int col)
    {
       return cells[row][col];
+   }
+
+   public int getNumRows()
+   {
+      return cells.length;
+   }
+
+   public int getNumCols()
+   {
+      return cells[0].length;
    }
 
 }

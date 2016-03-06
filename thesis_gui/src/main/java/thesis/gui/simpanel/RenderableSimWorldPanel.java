@@ -71,7 +71,7 @@ public class RenderableSimWorldPanel extends JPanel
 		   action.connectToModel(renderWorld.getRenderOptions());
 		}
 
-		repaint();
+		//repaint();
 	}
 
 	@Override

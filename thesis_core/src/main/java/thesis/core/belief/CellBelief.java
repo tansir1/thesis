@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import thesis.core.common.CellCoordinate;
+
 public class CellBelief
 {
    /**
@@ -32,10 +34,14 @@ public class CellBelief
 
    private double probCellEmpty;
 
-   public CellBelief(int numTgtTypes)
+   private CellCoordinate coord;
+
+   public CellBelief(int row, int col, int numTgtTypes)
    {
       this.numTgtTypes = numTgtTypes;
       tgtBeliefs = new ArrayList<TargetBelief>();
+
+      coord = new CellCoordinate(row, col);
 
       reset();
    }
@@ -45,6 +51,11 @@ public class CellBelief
       probCellEmpty = 0.5;
       pseudoTimestamp = 0;
       tgtBeliefs.clear();
+   }
+
+   public CellCoordinate getCoordinate()
+   {
+      return coord;
    }
 
    public double getProbabilityEmptyCell()
