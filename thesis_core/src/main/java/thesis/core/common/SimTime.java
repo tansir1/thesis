@@ -20,12 +20,17 @@ public class SimTime
 
    private static long wallTime = 0;
 
+   private static long frameCnt = 0;
+
+   private static SimTimeState timeState = new SimTimeState();
+
    /**
     * Increment the simulation time.
     */
    public static void stepSimulation()
    {
       CURRENT_SIM_TIME_MS += SIM_STEP_RATE_MS;
+      frameCnt++;
    }
 
    public static void incrementWallTime(long elapsed)
@@ -39,5 +44,11 @@ public class SimTime
    public static long getWallTime()
    {
       return wallTime;
+   }
+
+   public static SimTimeState getTimeState()
+   {
+      timeState.update(CURRENT_SIM_TIME_MS, wallTime, frameCnt);
+      return timeState;
    }
 }

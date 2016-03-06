@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
+import thesis.core.common.SimTimeState;
 import thesis.core.common.WorldPose;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.targets.TargetMgr;
@@ -161,5 +162,10 @@ public class SimModel
    public EntityTypeCfgs getEntityTypeCfgs()
    {
       return entTypes;
+   }
+
+   public SimTimeState getSimTimeState()
+   {
+      return SimTime.getTimeState();
    }
 }

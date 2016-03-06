@@ -13,14 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import thesis.core.SimModel;
 import thesis.core.common.WorldPose;
-import thesis.core.statedump.SimStateDump;
-import thesis.core.statedump.UAVDump;
+import thesis.core.uav.UAV;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
 {
-   private SimStateDump simModel;
+   private SimModel simModel;
    private JComboBox<Integer> uavSelCB;
    private JPanel renderable;
 
@@ -83,14 +83,14 @@ public class UAVViewPanel
       gbc.gridy++;
    }
 
-   public void connectSimModel(final SimStateDump simModel, RenderableSimWorldPanel renderSim)
+   public void connectSimModel(final SimModel simModel, RenderableSimWorldPanel renderSim)
    {
       this.simModel = simModel;
       this.renderSim = renderSim;
 
       synchronized (simModel)
       {
-         for (UAVDump uav : simModel.getUAVs())
+         for (UAV uav : simModel.getUAVManager().getAllUAVs())
          {
             uavSelCB.addItem(uav.getID());
          }
@@ -115,7 +115,7 @@ public class UAVViewPanel
 
       synchronized (simModel)
       {
-         for (UAVDump dump : simModel.getUAVs())
+         for (UAV dump : simModel.getUAVManager().getAllUAVs())
          {
             if (dump.getID() == selUAVID)
             {
@@ -134,7 +134,7 @@ public class UAVViewPanel
       }
    }
 
-   private void updateSelectedUAVData(final UAVDump dump)
+   private void updateSelectedUAVData(final UAV dump)
    {
       // This function runs on the EDT due to SwingUtilitiesInvokeLater() in
       // update()
@@ -143,7 +143,7 @@ public class UAVViewPanel
 
       synchronized (simModel)
       {
-         WorldPose pose = dump.getPose();
+         WorldPose pose = dump.getPathing().getPose();
          northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
          eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));
          hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));

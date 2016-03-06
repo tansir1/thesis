@@ -10,6 +10,7 @@ import thesis.core.uav.UAV;
 import thesis.core.world.World;
 import thesis.core.world.WorldGIS;
 
+@Deprecated
 public class SimStateDump
 {
    private World world;
