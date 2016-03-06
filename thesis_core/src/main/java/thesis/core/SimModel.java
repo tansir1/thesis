@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.SimTimeState;
-import thesis.core.common.WorldPose;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.targets.TargetMgr;
-import thesis.core.uav.UAV;
 import thesis.core.uav.UAVMgr;
 import thesis.core.uav.comms.CommsConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -92,7 +90,7 @@ public class SimModel
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
-      for (UAV uav : uavMgr.getAllUAVs())
+      /*for (UAV uav : uavMgr.getAllUAVs())
       {
          WorldPose pose = new WorldPose();
 
@@ -105,7 +103,7 @@ public class SimModel
 
          // Temporary sensor stare point
          uav.getSensors().stareAtAll(pose.getCoordinate());
-      }
+      }*/
    }
 
    public World getWorld()

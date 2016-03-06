@@ -226,4 +226,11 @@ public class Pathing
          logger.error("UAV {} could not generate a path.", uavID);
       }
    }
+
+   public void computePathTo(final WorldCoordinate flyTo)
+   {
+      double bearingTo = pose.getCoordinate().bearingTo(flyTo);
+      WorldPose destPose = new WorldPose(flyTo, bearingTo);
+      computePathTo(destPose);
+   }
 }

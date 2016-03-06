@@ -14,8 +14,8 @@ public class CellBeliefTests
       final double PROB_TOLERANCE = 0.0001;
 
       CellBelief.NEWER_TGT_ALPHA = 0.7;
-      CellBelief cb1 = new CellBelief(2);
-      CellBelief cb2 = new CellBelief(2);
+      CellBelief cb1 = new CellBelief(0, 0, 2);
+      CellBelief cb2 = new CellBelief(0, 0, 2);
 
       TargetBelief cb1tgt = cb1.getTargetBelief(0);
       TargetBelief cb2tgt = cb2.getTargetBelief(0);
