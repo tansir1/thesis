@@ -3,6 +3,7 @@ package thesis.core.statedump;
 import thesis.core.common.WorldPose;
 import thesis.core.targets.Target;
 
+@Deprecated
 public class TargetDump
 {
    private int type;

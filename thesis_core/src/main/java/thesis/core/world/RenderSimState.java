@@ -14,13 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
-import thesis.core.statedump.SensorDump;
-import thesis.core.statedump.SimStateDump;
-import thesis.core.statedump.TargetDump;
-import thesis.core.statedump.UAVDump;
+import thesis.core.sensors.Sensor;
+import thesis.core.targets.Target;
+import thesis.core.uav.UAV;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -71,7 +71,6 @@ public class RenderSimState
     */
    private BasicStroke sensorFOVStroke;
 
-   private SimStateDump simStateDump;
    private WorldGIS gis;
 
    private Rectangle bounds;
@@ -103,6 +102,8 @@ public class RenderSimState
    private final int MAX_NUM_TRAIL_PTS = 100;
    private Map<Integer, List<Point>> uavTrails;
 
+   private SimModel simModel;
+
    /**
     * Initialize a renderer with a bounds size of zero.
     *
@@ -112,14 +113,14 @@ public class RenderSimState
     * @param model
     *           The model to render.
     */
-   public RenderSimState(SimStateDump simStateDump)
+   public RenderSimState(SimModel simModel)
    {
-      if (simStateDump == null)
+      if (simModel == null)
       {
-         throw new NullPointerException("SimStateDump to render cannot be null.");
+         throw new NullPointerException("SimModel to render cannot be null.");
       }
 
-      this.simStateDump = simStateDump;
+      this.simModel = simModel;
       renderOpts = new RenderOptions();
       bounds = new Rectangle();
       roadStroke = new BasicStroke(1f);
@@ -133,7 +134,7 @@ public class RenderSimState
 
       uavTrails = new HashMap<Integer, List<Point>>();
       selectedUAV = -1;
-      gis = simStateDump.getWorldGIS();
+      gis = simModel.getWorldGIS();
    }
 
    /**
@@ -206,7 +207,7 @@ public class RenderSimState
       Font newFont = currentFont.deriveFont(currentFont.getSize() * 1.4f);
       gfx.setFont(newFont);
 
-      synchronized (simStateDump)
+      synchronized (simModel)
       {
          if (renderOpts.isOptionEnabled(RenderOption.Graticule))
          {
@@ -408,7 +409,7 @@ public class RenderSimState
       final int halfRdSz = roadInterSectionSz / 2;
       Point pixels = new Point(0, 0);
 
-      Havens havens = simStateDump.getWorld().getHavens();
+      Havens havens = simModel.getWorld().getHavens();
       final int NUM_HAVENS = havens.getNumHavens();
 
       for (int i = 0; i < NUM_HAVENS; ++i)
@@ -430,7 +431,7 @@ public class RenderSimState
 
       final int numCols = gis.getColumnCount();
       final int numRows = gis.getRowCount();
-      final RoadNetwork roads = simStateDump.getWorld().getRoadNetwork();
+      final RoadNetwork roads = simModel.getWorld().getRoadNetwork();
 
       for (int i = 0; i < numRows; ++i)
       {
@@ -531,12 +532,12 @@ public class RenderSimState
       final AffineTransform trans = new AffineTransform();
       final Point pixels = new Point(0, 0);
 
-      final List<TargetDump> targets = simStateDump.getTargets();
-      final int NUM_TARGETS = simStateDump.getTargets().size();
-      TargetDump tgt = null;
+      Target targets[] = simModel.getTargetManager().getAllTargets();
+      final int NUM_TARGETS = targets.length;
+      Target tgt = null;
       for (int i = 0; i < NUM_TARGETS; ++i)
       {
-         tgt = targets.get(i);
+         tgt = targets[i];
          trans.setToIdentity();
 
          wc.setCoordinate(tgt.getPose().getCoordinate());
@@ -588,22 +589,22 @@ public class RenderSimState
 
       final AffineTransform trans = new AffineTransform();
 
-      List<UAVDump> uavs = simStateDump.getUAVs();
-      int numUAVs = uavs.size();
-      UAVDump uav = null;
+      UAV uavs[] = simModel.getUAVManager().getAllUAVs();
+      final int numUAVs = uavs.length;
+      UAV uav = null;
       for (int i = 0; i < numUAVs; ++i)
       {
-         uav = uavs.get(i);
+         uav = uavs[i];
 
          trans.setToIdentity();
 
-         wc.setCoordinate(uav.getPose().getCoordinate());
+         wc.setCoordinate(uav.getPathing().getPose().getCoordinate());
 
          worldCoordinateToPixels(wc, pixels);
 
          trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
          // trans.rotate(-uav.getHeading().asRadians());
-         double deg = uav.getPose().getHeading() - 90;
+         double deg = uav.getPathing().getPose().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
          if (uav.getID() != selectedUAV)
@@ -628,13 +629,13 @@ public class RenderSimState
       g2d.setColor(Color.blue);
       g2d.setStroke(historyStroke);
 
-      List<UAVDump> uavs = simStateDump.getUAVs();
-      int numUAVs = uavs.size();
-      UAVDump uav = null;
+      UAV uavs[] = simModel.getUAVManager().getAllUAVs();
+      final int numUAVs = uavs.length;
+      UAV uav = null;
       for (int i = 0; i < numUAVs; ++i)
       {
          final Point curPixels = new Point(0, 0);
-         uav = uavs.get(i);
+         uav = uavs[i];
 
          List<Point> trail = uavTrails.get(uav.getID());
          if(trail == null)
@@ -643,7 +644,7 @@ public class RenderSimState
             uavTrails.put(uav.getID(), trail);
          }
 
-         worldCoordinateToPixels(uav.getPose().getCoordinate(), curPixels);
+         worldCoordinateToPixels(uav.getPathing().getPose().getCoordinate(), curPixels);
          if(!trail.isEmpty())
          {
             Point lastPt = trail.get(trail.size()-1);
@@ -685,17 +686,17 @@ public class RenderSimState
       final int frustrumX[] = new int[5];
       final int frustrumY[] = new int[5];
 
-      final List<UAVDump> uavs = simStateDump.getUAVs();
-      final int NUM_UAVS = uavs.size();
-      UAVDump uav = null;
-      List<SensorDump> sensors = null;
-      SensorDump sensor = null;
+      UAV uavs[] = simModel.getUAVManager().getAllUAVs();
+      final int NUM_UAVS = uavs.length;
+      UAV uav = null;
+      List<Sensor> sensors = null;
+      Sensor sensor = null;
       for (int i = 0; i < NUM_UAVS; ++i)
       {
-         uav = uavs.get(i);
-         worldCoordinateToPixels(uav.getPose().getCoordinate(), uavPix);
+         uav = uavs[i];
+         worldCoordinateToPixels(uav.getPathing().getPose().getCoordinate(), uavPix);
 
-         sensors = uav.getSensors();
+         sensors = uav.getSensors().getSensors();
          final int NUM_SENSORS = sensors.size();
 
          for (int j = 0; j < NUM_SENSORS; ++j)
@@ -760,7 +761,7 @@ public class RenderSimState
     *           Custom rendering options to apply to the rendered image.
     * @return The world rendered into the image.
     */
-   public static BufferedImage renderToImage(SimStateDump dump, int imgW, int imgH, RenderOptions opts)
+   public static BufferedImage renderToImage(SimModel dump, int imgW, int imgH, RenderOptions opts)
    {
       if (dump == null)
       {
@@ -793,7 +794,7 @@ public class RenderSimState
     *           The height of the final image in pixels.
     * @return The world rendered into the image.
     */
-   public static BufferedImage renderToImage(SimStateDump dump, int imgW, int imgH)
+   public static BufferedImage renderToImage(SimModel dump, int imgW, int imgH)
    {
       return renderToImage(dump, imgW, imgH, null);
    }

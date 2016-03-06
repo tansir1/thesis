@@ -11,7 +11,6 @@ import thesis.core.SimModel;
 import thesis.core.common.WorldPose;
 import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.serialization.world.WorldConfig;
-import thesis.core.statedump.SimStateDump;
 import thesis.core.uav.UAV;
 import thesis.core.world.RenderOptions;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -66,10 +65,7 @@ public class UAVKinematicsTest
          RenderOptions opts = new RenderOptions();
          opts.setOption(RenderOption.UavHistoryTrail);
 
-         SimStateDump dump = new SimStateDump();
-         dump.init(sim);
-         dump.update(sim);
-         BufferedImage buf = RenderSimState.renderToImage(dump, 1280, 720, opts);
+         BufferedImage buf = RenderSimState.renderToImage(sim, 1280, 720, opts);
          ImageIO.write(buf, "png", new File("UAVKinematicsTest.png"));
       }
       catch (IOException e)

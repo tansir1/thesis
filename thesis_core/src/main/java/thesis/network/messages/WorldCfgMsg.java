@@ -6,6 +6,7 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.world.Havens;
 import thesis.core.world.World;
 
+@Deprecated
 public class WorldCfgMsg extends InfrastructureMsg
 {
    private World world;

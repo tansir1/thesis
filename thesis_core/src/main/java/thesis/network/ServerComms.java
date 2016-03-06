@@ -15,6 +15,7 @@ import thesis.core.utilities.LoggerIDs;
 import thesis.network.messages.InfrastructMsgHdr;
 import thesis.network.messages.InfrastructureMsg;
 
+@Deprecated
 public class ServerComms
 {
    private final Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN_NET);

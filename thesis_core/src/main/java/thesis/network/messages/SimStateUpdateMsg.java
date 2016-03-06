@@ -9,6 +9,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.statedump.SensorDump;
 import thesis.core.statedump.SimStateUpdateDump;
 
+@Deprecated
 public class SimStateUpdateMsg extends InfrastructureMsg
 {
    private SimStateUpdateDump updateDump;

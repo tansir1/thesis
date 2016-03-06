@@ -2,6 +2,7 @@ package thesis.network.messages;
 
 import java.nio.ByteBuffer;
 
+@Deprecated
 public class TestMsg extends InfrastructureMsg
 {
    private int data[];

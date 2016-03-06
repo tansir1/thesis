@@ -7,6 +7,7 @@ import java.util.List;
 import thesis.core.common.WorldPose;
 import thesis.core.statedump.TargetDump;
 
+@Deprecated
 public class TargetsInitMsg extends InfrastructureMsg
 {
    private List<TargetDump> tgts;
