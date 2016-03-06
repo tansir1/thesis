@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 
 import thesis.gui.mainwindow.SimTimer;
 import thesis.gui.mainwindow.actions.renderopts.BeliefOptAction;
+import thesis.gui.mainwindow.actions.renderopts.CommsRangeOptAction;
 import thesis.gui.mainwindow.actions.renderopts.GraticuleOptAction;
 import thesis.gui.mainwindow.actions.renderopts.HavensOptAction;
 import thesis.gui.mainwindow.actions.renderopts.RenderOptAction;
@@ -65,6 +66,7 @@ public class Actions
       renderOptActions.add(new TargetsOptAction());
       renderOptActions.add(new UAVsOptAction());
       renderOptActions.add(new BeliefOptAction());
+      renderOptActions.add(new CommsRangeOptAction());
    }
 
    public ScreenShotAction getScreenShotAction()
