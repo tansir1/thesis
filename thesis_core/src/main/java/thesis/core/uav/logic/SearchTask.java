@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import thesis.core.belief.CellBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.CellCoordinate;
+import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.Pathing;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.WorldGIS;
@@ -29,15 +30,15 @@ public class SearchTask
       this.gis = gis;
    }
 
-   public void stepSimulation(WorldBelief curBelief, Pathing pathing)
+   public void stepSimulation(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
    {
       if (searchDest == null || curBelief.getCellBelief(searchDest).getUncertainty() < UNCERTAINTY_THRESHOLD)
       {
-         selectNewSearchDestination(curBelief, pathing);
+         selectNewSearchDestination(curBelief, pathing, snsrGrp);
       }
    }
 
-   private void selectNewSearchDestination(WorldBelief curBelief, Pathing pathing)
+   private void selectNewSearchDestination(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
    {
       final int numRows = curBelief.getNumRows();
       final int numCols = curBelief.getNumCols();
@@ -70,5 +71,6 @@ public class SearchTask
       logger.trace("UAV {} changed search destination from {} to {}.", hostUavId, oldDest, searchDest);
 
       pathing.computePathTo(gis.convertCellToWorld(searchDest));
+      snsrGrp.stareAtAll(gis.convertCellToWorld(searchDest));
    }
 }

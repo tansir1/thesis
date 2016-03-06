@@ -68,7 +68,7 @@ public class UAVLogicMgr
       switch(curTask)
       {
       case Search:
-         searchTask.stepSimulation(curBelief, hostUAV.getPathing());
+         searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
          break;
       }
    }
