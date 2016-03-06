@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import thesis.core.SimModel;
+import thesis.core.belief.CellBelief;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
@@ -80,7 +81,7 @@ public class RenderSimState
     */
    private int roadInterSectionSz;
 
-   private int selectedUAV;
+   private int selectedUavId;
 
    private BufferedImage rawHavenImg;
    private BufferedImage scaledHavenImg;
@@ -133,7 +134,7 @@ public class RenderSimState
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
       uavTrails = new HashMap<Integer, List<Point>>();
-      selectedUAV = -1;
+      selectedUavId = -1;
       gis = simModel.getWorldGIS();
    }
 
@@ -162,7 +163,7 @@ public class RenderSimState
 
    public void setSelectedUAV(int id)
    {
-      this.selectedUAV = id;
+      this.selectedUavId = id;
    }
 
    /**
@@ -242,6 +243,11 @@ public class RenderSimState
          if (renderOpts.isOptionEnabled(RenderOption.SensorFOV))
          {
             drawSensorFOVs(gfx);
+         }
+
+         if (renderOpts.isOptionEnabled(RenderOption.Belief))
+         {
+            drawSelecteUAVBelief(gfx);
          }
       }
    }
@@ -607,7 +613,7 @@ public class RenderSimState
          double deg = uav.getPathing().getPose().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
-         if (uav.getID() != selectedUAV)
+         if (uav.getID() != selectedUavId)
          {
             g2d.drawImage(scaledBlueMobileImg, trans, null);
          }
@@ -733,6 +739,38 @@ public class RenderSimState
             gfx.drawPolyline(frustrumX, frustrumY, 5);
          }
       }
+   }
+
+   private void drawSelecteUAVBelief(Graphics2D gfx)
+   {
+      UAV selUAV = simModel.getUAVManager().getUAV(selectedUavId);
+
+      if (selUAV == null || selUAV.getBelief() == null)
+      {
+         return;
+      }
+
+      final int numCols = gis.getColumnCount();
+      final int numRows = gis.getRowCount();
+
+      for (int i = 0; i < numRows; ++i)
+      {
+         for (int j = 0; i < numCols; ++i)
+         {
+            CellBelief cb = selUAV.getBelief().getCellBelief(i, j);
+            double prob = cb.getUncertainty();
+
+            gfx.setColor(probabilityToColor(prob));
+            gfx.fillRect(i * gridCellH, j * gridCellW, gridCellW, gridCellH);
+         }
+      }
+   }
+
+   private Color probabilityToColor(double prob)
+   {
+      int red = (int)(255 * prob);
+      int blue = (int)(255 * (1d-prob));
+      return new Color(red, 0, blue);
    }
 
    /**
