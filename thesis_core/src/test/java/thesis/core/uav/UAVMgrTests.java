@@ -1,4 +1,4 @@
-package thesis.core.entities.uav;
+package thesis.core.uav;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
