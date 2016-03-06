@@ -222,7 +222,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
             @Override
             public void run()
             {
-               logger.info("Render state update");
+               //logger.info("Render state update");
                simPanel.repaint();
                uavViewPan.update();
                simStatPan.update(simModel.getSimTimeState());

@@ -644,20 +644,20 @@ public class RenderSimState
          uav = uavs[i];
 
          List<Point> trail = uavTrails.get(uav.getID());
-         if(trail == null)
+         if (trail == null)
          {
             trail = new ArrayList<Point>(MAX_NUM_TRAIL_PTS);
             uavTrails.put(uav.getID(), trail);
          }
 
          worldCoordinateToPixels(uav.getPathing().getPose().getCoordinate(), curPixels);
-         if(!trail.isEmpty())
+         if (!trail.isEmpty())
          {
-            Point lastPt = trail.get(trail.size()-1);
-            if(!lastPt.equals(curPixels))
+            Point lastPt = trail.get(trail.size() - 1);
+            if (!lastPt.equals(curPixels))
             {
                trail.add(curPixels);
-               if(trail.size() > MAX_NUM_TRAIL_PTS)
+               if (trail.size() > MAX_NUM_TRAIL_PTS)
                {
                   trail.remove(0);
                }
@@ -758,19 +758,65 @@ public class RenderSimState
          for (int j = 0; j < numCols; ++j)
          {
             CellBelief cb = selUAV.getBelief().getCellBelief(i, j);
-            double prob = cb.getUncertainty();
+            double prob = cb.getProbabilityEmptyCell();
 
             gfx.setColor(probabilityToColor(prob));
-            gfx.fillRect(j * gridCellW, i * gridCellH, gridCellW, gridCellH);
+            int gridX = j * gridCellW;
+            int gridY = ((numRows-1) - i) * gridCellH; //Invert the y axis for rendering
+            gfx.fillRect(gridX, gridY , gridCellW, gridCellH);
+
+            gfx.setColor(Color.green);
+            int textVal = (int)(prob * 100d);
+            gridX += gridCellW / 10;
+            gridY += gridCellH / 3;
+            gfx.drawString(Integer.toString(textVal), gridX, gridY);
+
+            textVal = (int)(cb.getUncertainty() * 100d);
+            gridX += gridCellW / 2;
+            gfx.drawString(Integer.toString(textVal), gridX, gridY);
          }
       }
    }
 
    private Color probabilityToColor(double prob)
    {
-      int red = (int)(255 * prob);
-      int blue = (int)(255 * (1d-prob));
+      int red = (int)(255d * prob);
+      int blue = (int)(255d * (1d-prob));
+
+      if(prob < 0.25)
+      {
+         blue = 0;
+      }
+      else if(prob > 0.75)
+      {
+         red = 0;
+      }
+
       return new Color(red, 0, blue, 127);
+
+      /*
+      if(prob == Double.NaN || prob == Double.NEGATIVE_INFINITY)
+      {
+         int x=0;
+         x++;
+      }
+
+      int value = (int) (512 * prob);
+      int red = 0;
+      int blue = 0;
+
+      if (value < 256)
+      {
+         blue = value;
+      }
+      else
+      {
+         red = value - 255;
+      }
+
+      System.out.println(String.format("%.2f, %d, %d, %d", prob, value, red, blue));
+
+      return new Color(red, 0, blue, 127);*/
    }
 
    /**
