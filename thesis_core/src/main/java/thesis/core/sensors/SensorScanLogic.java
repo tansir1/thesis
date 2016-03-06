@@ -188,11 +188,20 @@ public class SensorScanLogic
 
       double probDetectEmpty = snsrProbs.getSensorDetectEmptyProb(snsrType);
       double probMisclassAsEmpty = 1d;
-      for (Target trueTgt : trueTgts)
+
+      if(trueTgts.isEmpty())
       {
-         double missedTgt = 1d - snsrProbs.getSensorDetectTgtProb(snsrType, trueTgt.getType());
-         probMisclassAsEmpty *= missedTgt;
+         probMisclassAsEmpty = 0d;
       }
+      else
+      {
+         for (Target trueTgt : trueTgts)
+         {
+            double missedTgt = 1d - snsrProbs.getSensorDetectTgtProb(snsrType, trueTgt.getType());
+            probMisclassAsEmpty *= missedTgt;
+         }
+      }
+
 
       if (emptyCellDetected)
       {
