@@ -169,4 +169,9 @@ public class UAVComms
       }
       return msgs;
    }
+
+   public Circle getCommsCoverage()
+   {
+      return commsCoverage;
+   }
 }

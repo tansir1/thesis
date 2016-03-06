@@ -17,6 +17,7 @@ import java.util.Map;
 import thesis.core.SimModel;
 import thesis.core.belief.CellBelief;
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.Circle;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.sensors.Sensor;
@@ -248,6 +249,11 @@ public class RenderSimState
          if (renderOpts.isOptionEnabled(RenderOption.SensorFOV))
          {
             drawSensorFOVs(gfx);
+         }
+
+         if (renderOpts.isOptionEnabled(RenderOption.CommsRange))
+         {
+            drawCommsRange(gfx);
          }
       }
    }
@@ -783,40 +789,42 @@ public class RenderSimState
       int red = (int)(255d * prob);
       int blue = (int)(255d * (1d-prob));
 
-      if(prob < 0.25)
-      {
-         blue = 0;
-      }
-      else if(prob > 0.75)
-      {
-         red = 0;
-      }
+//      if(prob < 0.25)
+//      {
+//         blue = 0;
+//      }
+//      else if(prob > 0.75)
+//      {
+//         red = 0;
+//      }
 
       return new Color(red, 0, blue, 127);
+   }
 
-      /*
-      if(prob == Double.NaN || prob == Double.NEGATIVE_INFINITY)
+   private void drawCommsRange(Graphics2D gfx)
+   {
+      gfx.setColor(Color.PINK);
+
+      final Point pixels = new Point(0, 0);
+
+      UAV uavs[] = simModel.getUAVManager().getAllUAVs();
+      final int numUAVs = uavs.length;
+      UAV uav = null;
+      for (int i = 0; i < numUAVs; ++i)
       {
-         int x=0;
-         x++;
+         uav = uavs[i];
+         Circle commsCirc = uav.getComms().getCommsCoverage();
+
+         final int rangePixW = (int)(pixelsPerMeterW * commsCirc.getRadius());
+         final int rangePixH = (int)(pixelsPerMeterH * commsCirc.getRadius());
+
+         //Convert UAV location to top left of coverage range bounding box
+         worldCoordinateToPixels(commsCirc.getCenter(), pixels);
+         final int topLeftX = pixels.x - rangePixW;
+         final int topLeftY = pixels.y - rangePixH;
+
+         gfx.drawOval(topLeftX, topLeftY, rangePixW * 2, rangePixH * 2);
       }
-
-      int value = (int) (512 * prob);
-      int red = 0;
-      int blue = 0;
-
-      if (value < 256)
-      {
-         blue = value;
-      }
-      else
-      {
-         red = value - 255;
-      }
-
-      System.out.println(String.format("%.2f, %d, %d, %d", prob, value, red, blue));
-
-      return new Color(red, 0, blue, 127);*/
    }
 
    /**
