@@ -786,17 +786,8 @@ public class RenderSimState
 
    private Color probabilityToColor(double prob)
    {
-      int red = (int)(255d * prob);
-      int blue = (int)(255d * (1d-prob));
-
-//      if(prob < 0.25)
-//      {
-//         blue = 0;
-//      }
-//      else if(prob > 0.75)
-//      {
-//         red = 0;
-//      }
+      int blue = (int)(255d * prob);
+      int red = (int)(255d * (1d-prob));
 
       return new Color(red, 0, blue, 127);
    }
