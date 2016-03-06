@@ -5,6 +5,7 @@ import java.util.Map;
 
 import thesis.core.common.WorldPose;
 
+@Deprecated
 public class SimStateUpdateDump
 {
    private Map<Integer, WorldPose> tgtUpdates;

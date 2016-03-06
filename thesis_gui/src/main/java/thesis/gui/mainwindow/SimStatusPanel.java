@@ -8,9 +8,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
-import thesis.network.messages.SimTimeMsg;
+import thesis.core.common.SimTimeState;
 
 public class SimStatusPanel
 {
@@ -62,28 +61,22 @@ public class SimStatusPanel
       return renderable;
    }
 
-   public void update(final SimTimeMsg msg)
+   public void update(final SimTimeState timeState)
    {
-      SwingUtilities.invokeLater(new Runnable()
-      {
 
-         @Override
-         public void run()
-         {
-            long totalSimTime = msg.getSimTime();
-            int seconds = (int) (totalSimTime / 1000) % 60;
-            int minutes = (int) ((totalSimTime / (1000 * 60)) % 60);
-            int hours = (int) ((totalSimTime / (1000 * 60 * 60)) % 24);
-            totalSimTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+      long totalSimTime = timeState.getSimTime();
+      int seconds = (int) (totalSimTime / 1000) % 60;
+      int minutes = (int) ((totalSimTime / (1000 * 60)) % 60);
+      int hours = (int) ((totalSimTime / (1000 * 60 * 60)) % 24);
+      totalSimTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-            long totalWallTime = msg.getSimWallTime();
-            seconds = (int) (totalWallTime / 1000) % 60;
-            minutes = (int) ((totalWallTime / (1000 * 60)) % 60);
-            hours = (int) ((totalWallTime / (1000 * 60 * 60)) % 24);
-            totalWallTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+      long totalWallTime = timeState.getWallTime();
+      seconds = (int) (totalWallTime / 1000) % 60;
+      minutes = (int) ((totalWallTime / (1000 * 60)) % 60);
+      hours = (int) ((totalWallTime / (1000 * 60 * 60)) % 24);
+      totalWallTimeLbl.setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-            simFrameCntLbl.setText(Long.toString(msg.getFrameCount()));
-         }
-      });
+      simFrameCntLbl.setText(Long.toString(timeState.getFrameCount()));
+
    }
 }

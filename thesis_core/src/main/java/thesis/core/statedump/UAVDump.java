@@ -7,6 +7,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 import thesis.core.uav.UAV;
 
+@Deprecated
 public class UAVDump
 {
    private int type;

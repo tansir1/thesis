@@ -4,6 +4,7 @@ import thesis.core.common.Rectangle;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.sensors.Sensor;
 
+@Deprecated
 public class SensorDump
 {
    private final int type;//Will be -1 on an update dump
