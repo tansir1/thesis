@@ -12,7 +12,7 @@ public class SimRunner implements Runnable
     * If the time between now and the last GUI rendering is greater than
     * this value (milliseconds) then re-render the GUI
     */
-   private final long GUI_INTERVAL_MS = 25;
+   private final long GUI_INTERVAL_MS = 33;//Roughly 30hz render rate
 
    private Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
 
@@ -22,7 +22,6 @@ public class SimRunner implements Runnable
    private boolean stepOneFrame;
 
    private long lastGUITime;
-   private long frameCnt;
 
    /**
     * User specified delay between frames in milliseconds.
@@ -39,8 +38,6 @@ public class SimRunner implements Runnable
       stepOneFrame = false;
 
       lastGUITime = 0;
-      frameCnt = -1;
-
    }
 
    @Override
@@ -56,7 +53,7 @@ public class SimRunner implements Runnable
          if ((wallTime - lastGUITime) > GUI_INTERVAL_MS)
          {
             lastGUITime = wallTime;
-            renderer.updateGUI();
+            renderer.updateGUI(simModel);
          }
 
          if (!pause || stepOneFrame)
@@ -66,8 +63,6 @@ public class SimRunner implements Runnable
                stepOneFrame = false;
                logger.info("Stepping one frame.");
             }
-
-            frameCnt++;
 
             synchronized(simModel)
             {

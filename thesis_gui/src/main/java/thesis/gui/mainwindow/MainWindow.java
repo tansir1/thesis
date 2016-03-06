@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import javax.swing.BoxLayout;
@@ -21,14 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.SimModel;
-import thesis.core.statedump.SimStateDump;
 import thesis.core.utilities.LoggerIDs;
 import thesis.gui.mainwindow.actions.Actions;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
-import thesis.network.messages.InfrastructureMsg;
 
 /**
  * Contains the GUI application's main window frame.
@@ -37,10 +34,8 @@ import thesis.network.messages.InfrastructureMsg;
 public class MainWindow implements IMapMouseListener, ISimGUIUpdater
 {
    private Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
-   private final int MSG_QUEUE_PROCESS_RATE_MS = 100;
 
    private JFrame frame;
-   private SimStateDump simStateDump;
    private RenderableSimWorldPanel simPanel;
    private UAVViewPanel uavViewPan;
    private SimStatusPanel simStatPan;
@@ -51,7 +46,6 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
 
    private SimTimer simTimer;
 
-   private LinkedBlockingQueue<InfrastructureMsg> sendQ;
    private ScheduledExecutorService execSvc;
 
    private SimRunner simRunner;
@@ -217,7 +211,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
    }
 
    @Override
-   public void updateGUI()
+   public void updateGUI(SimModel simModel)
    {
       try
       {
@@ -231,6 +225,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
                logger.info("Render state update");
                simPanel.repaint();
                uavViewPan.update();
+               simStatPan.update(simModel.getSimTimeState());
             }
          });
       }
