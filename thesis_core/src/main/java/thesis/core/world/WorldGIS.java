@@ -268,17 +268,37 @@ public class WorldGIS
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxRow = Math.max(temp1.getRow(), temp2.getRow());
 
+      if(maxRow >= numRows)
+      {
+         maxRow = numRows - 1;
+      }
+
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getBottomRight(), temp2);
       int minRow = Math.min(temp1.getRow(), temp2.getRow());
+
+      if(minRow < 0)
+      {
+         minRow = 0;
+      }
 
       convertWorldToCell(rect.getBottomRight(), temp1);
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxCol = Math.max(temp1.getColumn(), temp2.getColumn());
 
+      if(maxCol >= numCols)
+      {
+         maxCol = numCols - 1;
+      }
+
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getTopLeft(), temp2);
       int minCol = Math.min(temp1.getColumn(), temp2.getColumn());
+
+      if(minCol < 0)
+      {
+         minCol = 0;
+      }
 
       ranges[0] = minRow;
       ranges[1] = maxRow;
