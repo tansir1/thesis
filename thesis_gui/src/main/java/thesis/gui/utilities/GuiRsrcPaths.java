@@ -14,5 +14,6 @@ public class GuiRsrcPaths
    public static String RUN_4HZ_IMG_PATH = "thesis/gui/run4hz.png";
    public static String RUN_15HZ_IMG_PATH = "thesis/gui/run15hz.png";
    public static String RUN_30HZ_IMG_PATH = "thesis/gui/run30hz.png";
+   public static String RUN_1000HZ_IMG_PATH = "thesis/gui/run1000hz.png";
    public static String RUN_CPU_IMG_PATH = "thesis/gui/runCPU.png";
 }

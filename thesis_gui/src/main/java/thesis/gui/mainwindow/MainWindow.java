@@ -165,6 +165,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       toolbar.add(actions.getPlay4HzAction());
       toolbar.add(actions.getPlay15HzAction());
       toolbar.add(actions.getPlay30HzAction());
+      toolbar.add(actions.getPlay1000HzAction());
       toolbar.add(actions.getPlayCPUAction());
       toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
       return toolbar;
