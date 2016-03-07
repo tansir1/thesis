@@ -118,7 +118,7 @@ public class Rectangle
 
    public boolean isCoordinateInRegion(final WorldCoordinate testPt)
    {
-      //Tolerance factor to deal with floating point comparisons
+      // Tolerance factor to deal with floating point comparisons
       final double AREA_TOLERANCE = 0.001;
 
       boolean inRegion = true;
@@ -156,5 +156,28 @@ public class Rectangle
 
       double halfPerim = (d1 + d2 + d3) / 2.0;
       return Math.sqrt(halfPerim * (halfPerim - d1) * (halfPerim - d2) * (halfPerim - d3));
+   }
+
+   public boolean containsRegion(Rectangle rect)
+   {
+      boolean retVal = false;
+      //@formatter:off
+      if (topLeft.getNorth() >= rect.getTopLeft().getNorth() &&
+          topLeft.getEast() <= rect.getTopLeft().getEast() &&
+
+          topRight.getNorth() >= rect.getTopRight().getNorth() &&
+          topRight.getEast() >= rect.getTopRight().getEast() &&
+
+          bottomLeft.getNorth() <= rect.getBottomLeft().getNorth() &&
+          bottomLeft.getEast() <= rect.getBottomLeft().getEast() &&
+
+          bottomRight.getNorth() <= rect.getTopLeft().getNorth() &&
+          bottomRight.getEast() >= rect.getTopLeft().getEast())
+      //@formatter:on
+      {
+         retVal = true;
+      }
+
+      return retVal;
    }
 }
