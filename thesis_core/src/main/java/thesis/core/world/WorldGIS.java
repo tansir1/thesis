@@ -261,6 +261,34 @@ public class WorldGIS
       return cells;
    }
 
+//   public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
+//   {
+//      int ranges[] = new int[4];
+//      findRowColExtremes(ranges, rect);
+//      final int minRow = ranges[0];
+//      final int maxRow = ranges[1];
+//      final int minCol = ranges[2];
+//      final int maxCol = ranges[3];
+//
+//      rect.convertToCanonicalForm();
+//
+//      Rectangle cellRect = new Rectangle();
+//      CellCoordinate tempCC = new CellCoordinate();
+//      for (int i = minRow; i <= maxRow; ++i)
+//      {
+//         for (int j = minCol; j <= maxCol; ++j)
+//         {
+//            tempCC.setCoordinate(i, j);
+//            convertCellToRectangle(tempCC, cellRect);
+//
+//            if(rect.containsRegion(cellRect))
+//            {
+//               cellsInRect.add(new CellCoordinate(tempCC));
+//            }
+//         }
+//      }
+//   }
+
    public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
    {
       int ranges[] = new int[4];
@@ -270,50 +298,21 @@ public class WorldGIS
       final int minCol = ranges[2];
       final int maxCol = ranges[3];
 
-      rect.convertToCanonicalForm();
-
-      Rectangle cellRect = new Rectangle();
+      WorldCoordinate tempWC = new WorldCoordinate();
       CellCoordinate tempCC = new CellCoordinate();
       for (int i = minRow; i <= maxRow; ++i)
       {
          for (int j = minCol; j <= maxCol; ++j)
          {
             tempCC.setCoordinate(i, j);
-            convertCellToRectangle(tempCC, cellRect);
-
-            if(rect.containsRegion(cellRect))
+            convertCellToWorld(tempCC, tempWC);
+            if (rect.isCoordinateInRegion(tempWC))
             {
                cellsInRect.add(new CellCoordinate(tempCC));
             }
          }
       }
    }
-
-   // public void getCellsInRectangle(Rectangle rect, List<CellCoordinate>
-   // cellsInRect)
-   // {
-   // int ranges[] = new int[4];
-   // findRowColExtremes(ranges, rect);
-   // final int minRow = ranges[0];
-   // final int maxRow = ranges[1];
-   // final int minCol = ranges[2];
-   // final int maxCol = ranges[3];
-   //
-   // WorldCoordinate tempWC = new WorldCoordinate();
-   // CellCoordinate tempCC = new CellCoordinate();
-   // for(int i=minRow; i<=maxRow; ++i)
-   // {
-   // for(int j=minCol; j<=maxCol; ++j)
-   // {
-   // tempCC.setCoordinate(i, j);
-   // convertCellToWorld(tempCC, tempWC);
-   // if(rect.isCoordinateInRegion(tempWC))
-   // {
-   // cellsInRect.add(new CellCoordinate(tempCC));
-   // }
-   // }
-   // }
-   // }
 
    private void findRowColExtremes(int[] ranges, Rectangle rect)
    {

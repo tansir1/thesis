@@ -191,7 +191,7 @@ public class SensorScanLogic
 
       if(trueTgts.isEmpty())
       {
-         probMisclassAsEmpty = 0d;
+         probMisclassAsEmpty = 0.5d;
       }
       else
       {

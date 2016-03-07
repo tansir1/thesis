@@ -33,7 +33,7 @@ public class RoadNetGenerator
       roadNet.reset(NUM_ROWS, NUM_COLS);
 
       // This percentage of grid cells will contain road seed locations
-      final double percentRoadCells = 0.01;
+      final double percentRoadCells = 0.001;
       int numSeeds = (int) (NUM_ROWS * NUM_COLS * percentRoadCells);
       numSeeds = Math.max(numSeeds, 6);
 
