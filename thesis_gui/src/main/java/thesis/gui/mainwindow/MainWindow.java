@@ -208,6 +208,10 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
    public void onMapMouseUpdate(MapMouseData event)
    {
       statusLbl.setText(event.toString());
+      if(event.isClicked())
+      {
+         uavViewPan.onMapClick(event.getWorldCoordinate());
+      }
    }
 
    @Override

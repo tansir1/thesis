@@ -3,10 +3,13 @@ package thesis.gui.mainwindow.uavstatpanel;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -14,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import thesis.core.SimModel;
+import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.uav.UAV;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
@@ -27,6 +31,11 @@ public class UAVViewPanel
    private JLabel northLbl, eastLbl, hdgLbl;
 
    private RenderableSimWorldPanel renderSim;
+
+   private String teleportOnTxt;
+   private String teleportOffTxt;
+   private JButton teleportBtn;
+   private boolean teleportInProgress;
 
    public UAVViewPanel()
    {
@@ -53,6 +62,20 @@ public class UAVViewPanel
          }
       });
 
+      teleportInProgress = false;
+      teleportOnTxt = "Teleport to Click";
+      teleportOffTxt = "Teleport - cancel";
+      teleportBtn = new JButton(teleportOnTxt);
+      teleportBtn.addActionListener(new ActionListener()
+      {
+
+         @Override
+         public void actionPerformed(ActionEvent e)
+         {
+            toggleTeleportStatus();
+         }
+      });
+
       buildGUI();
    }
 
@@ -72,6 +95,10 @@ public class UAVViewPanel
       addGridFormRow(gbc, "North:", northLbl);
       addGridFormRow(gbc, "East:", eastLbl);
       addGridFormRow(gbc, "Heading:", hdgLbl);
+
+      gbc.gridwidth = 2;
+      renderable.add(teleportBtn, gbc);
+      gbc.gridwidth = 1;
    }
 
    private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
@@ -101,7 +128,43 @@ public class UAVViewPanel
          uavSelCB.setSelectedIndex(0);
          update();
       }
+   }
 
+   public void onMapClick(WorldCoordinate wc)
+   {
+      if(teleportInProgress)
+      {
+         toggleTeleportStatus();
+
+         int selUAVID = (Integer) uavSelCB.getSelectedItem();
+
+         synchronized (simModel)
+         {
+            for (UAV uav : simModel.getUAVManager().getAllUAVs())
+            {
+               if (uav.getID() == selUAVID)
+               {
+                  uav.getPathing().teleportTo(wc);
+                  break;
+               }
+            }
+         }
+
+      }
+   }
+
+   private void toggleTeleportStatus()
+   {
+      if(teleportInProgress)
+      {
+         teleportInProgress = false;
+         teleportBtn.setText(teleportOnTxt);
+      }
+      else
+      {
+         teleportInProgress = true;
+         teleportBtn.setText(teleportOffTxt);
+      }
    }
 
    public JComponent getRenderable()
