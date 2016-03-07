@@ -17,6 +17,7 @@ import thesis.gui.mainwindow.actions.renderopts.TargetsOptAction;
 import thesis.gui.mainwindow.actions.renderopts.UAVHistoryOptAction;
 import thesis.gui.mainwindow.actions.renderopts.UAVsOptAction;
 import thesis.gui.mainwindow.actions.runspeed.PauseAction;
+import thesis.gui.mainwindow.actions.runspeed.Play1000HzAction;
 import thesis.gui.mainwindow.actions.runspeed.Play15HzAction;
 import thesis.gui.mainwindow.actions.runspeed.Play2HzAction;
 import thesis.gui.mainwindow.actions.runspeed.Play30HzAction;
@@ -41,6 +42,7 @@ public class Actions
    private Play4HzAction play4HzAction;
    private Play15HzAction play15HzAction;
    private Play30HzAction play30HzAction;
+   private Play1000HzAction play1000HzAction;
    private PlayCPUAction playCPUAction;
 
    private List<RenderOptAction> renderOptActions;
@@ -55,6 +57,7 @@ public class Actions
       play4HzAction = new Play4HzAction(simTimer);
       play15HzAction = new Play15HzAction(simTimer);
       play30HzAction = new Play30HzAction(simTimer);
+      play1000HzAction = new Play1000HzAction(simTimer);
       playCPUAction = new PlayCPUAction(simTimer);
 
       renderOptActions = new ArrayList<RenderOptAction>();
@@ -107,6 +110,11 @@ public class Actions
    public Play30HzAction getPlay30HzAction()
    {
       return play30HzAction;
+   }
+
+   public Play1000HzAction getPlay1000HzAction()
+   {
+      return play1000HzAction;
    }
 
    public PlayCPUAction getPlayCPUAction()
