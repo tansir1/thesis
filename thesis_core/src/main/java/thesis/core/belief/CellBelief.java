@@ -173,6 +173,7 @@ public class CellBelief
    {
       pseudoTimestamp = simTime;
       probCellEmpty = probEmpty;
+      //System.out.println(String.format("%d,%d,%.2f", coord.getRow(), coord.getColumn(), probEmpty));
    }
 
    private void mergeTargetBeliefs(CellBelief other)

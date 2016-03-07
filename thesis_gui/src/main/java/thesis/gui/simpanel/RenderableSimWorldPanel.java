@@ -29,7 +29,7 @@ public class RenderableSimWorldPanel extends JPanel
 
 	private ListenerSupport<IMapMouseListener> listeners;
 
-	private SimModel simModel;
+	//private SimModel simModel;
 
 	public RenderableSimWorldPanel()
 	{
@@ -63,7 +63,7 @@ public class RenderableSimWorldPanel extends JPanel
 
 	public void connectSimModel(final SimModel simModel, final Actions actions)
 	{
-	   this.simModel = simModel;
+	   //this.simModel = simModel;
 
 		renderWorld = new RenderSimState(simModel);
 		this.addMouseListener(mouseState);

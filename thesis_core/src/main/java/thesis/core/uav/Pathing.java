@@ -239,7 +239,6 @@ public class Pathing
 
    public void computePathTo(final WorldCoordinate flyTo)
    {
-      logger.info("Teleporting uav {} to {}.", uavID, flyTo);
       double bearingTo = pose.getCoordinate().bearingTo(flyTo);
       WorldPose destPose = new WorldPose(flyTo, bearingTo);
       computePathTo(destPose);

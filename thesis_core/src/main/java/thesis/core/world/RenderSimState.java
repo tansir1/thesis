@@ -10,9 +10,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import thesis.core.SimModel;
 import thesis.core.belief.CellBelief;
@@ -20,6 +18,7 @@ import thesis.core.common.CellCoordinate;
 import thesis.core.common.Circle;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 import thesis.core.targets.Target;
 import thesis.core.uav.UAV;
@@ -101,9 +100,6 @@ public class RenderSimState
 
    private RenderOptions renderOpts;
 
-   private final int MAX_NUM_TRAIL_PTS = 100;
-   private Map<Integer, List<Point>> uavTrails;
-
    private SimModel simModel;
 
    /**
@@ -134,7 +130,6 @@ public class RenderSimState
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
-      uavTrails = new HashMap<Integer, List<Point>>();
       selectedUavId = -1;
       gis = simModel.getWorldGIS();
    }
@@ -651,45 +646,22 @@ public class RenderSimState
       UAV uavs[] = simModel.getUAVManager().getAllUAVs();
       final int numUAVs = uavs.length;
       UAV uav = null;
+      List<WorldPose> trail = new ArrayList<WorldPose>();
       for (int i = 0; i < numUAVs; ++i)
       {
+         final Point prevPixels = new Point(-1, -1);
          final Point curPixels = new Point(0, 0);
          uav = uavs[i];
 
-         List<Point> trail = uavTrails.get(uav.getID());
-         if (trail == null)
+         uav.getPathing().getFlightHistoryTrail(trail);
+         for(WorldPose pose : trail)
          {
-            trail = new ArrayList<Point>(MAX_NUM_TRAIL_PTS);
-            uavTrails.put(uav.getID(), trail);
-         }
-
-         worldCoordinateToPixels(uav.getPathing().getPose().getCoordinate(), curPixels);
-         if (!trail.isEmpty())
-         {
-            Point lastPt = trail.get(trail.size() - 1);
-            if (!lastPt.equals(curPixels))
+            worldCoordinateToPixels(pose.getCoordinate(), curPixels);
+            if (prevPixels.x != -1 && prevPixels.y != -1)
             {
-               trail.add(curPixels);
-               if (trail.size() > MAX_NUM_TRAIL_PTS)
-               {
-                  trail.remove(0);
-               }
+               g2d.drawLine(prevPixels.x, prevPixels.y, curPixels.x, curPixels.y);
+               prevPixels.setLocation(curPixels);
             }
-         }
-         else
-         {
-            trail.add(curPixels);
-         }
-
-         final Point prevPix = new Point(-1, -1);
-         for (Point curPt : trail)
-         {
-            if (prevPix.x != -1 && prevPix.y != -1)
-            {
-               g2d.drawLine(prevPix.x, prevPix.y, curPt.x, curPt.y);
-            }
-
-            prevPix.setLocation(curPt);
          }
       }
    }
@@ -722,6 +694,7 @@ public class RenderSimState
          {
             sensor = sensors.get(j);
             final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
+            viewRect.convertToCanonicalForm();
 
             // Line from UAV to center of FOV
             worldCoordinateToPixels(sensor.getViewCenter(), frustrumPix);
