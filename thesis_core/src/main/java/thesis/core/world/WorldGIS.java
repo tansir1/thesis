@@ -54,10 +54,14 @@ public class WorldGIS
    }
 
    /**
-    * @param width Width of the world in meters.
-    * @param height Height of the world in meters.
-    * @param numRows Tessellate the world into this many rows.
-    * @param numCols Tessellate the world into this many columns.
+    * @param width
+    *           Width of the world in meters.
+    * @param height
+    *           Height of the world in meters.
+    * @param numRows
+    *           Tessellate the world into this many rows.
+    * @param numCols
+    *           Tessellate the world into this many columns.
     */
    public void reset(double width, double height, int numRows, int numCols)
    {
@@ -109,7 +113,6 @@ public class WorldGIS
    {
       return numCols;
    }
-
 
    /**
     * Converts a physical world location to a discretized cell location.
@@ -215,8 +218,34 @@ public class WorldGIS
       to.setCoordinate(north, east);
    }
 
+   public Rectangle convertCellToRectangle(CellCoordinate cell)
+   {
+      Rectangle rect = new Rectangle();
+      convertCellToRectangle(cell, rect);
+      return rect;
+   }
+
+
+   public Rectangle convertCellToRectangle(CellCoordinate cell, Rectangle rect)
+   {
+      double bottomNorth = cell.getRow() * distPerRow;
+      double topNorth = (cell.getRow()+1) * distPerRow;
+
+      double leftEast = cell.getColumn() * distPerCol;
+      double rightEast = (cell.getColumn()+1) * distPerCol;
+
+      rect.getTopLeft().setCoordinate(topNorth,leftEast);
+      rect.getTopRight().setCoordinate(topNorth,rightEast);
+      rect.getBottomRight().setCoordinate(bottomNorth,rightEast);
+      rect.getBottomLeft().setCoordinate(bottomNorth,leftEast);
+      rect.convertToCanonicalForm();
+
+      return rect;
+   }
+
    /**
-    * @return The maximum distance between the farthest points in the world in meters.
+    * @return The maximum distance between the farthest points in the world in
+    *         meters.
     */
    public double getMaxWorldDistance()
    {
@@ -241,21 +270,50 @@ public class WorldGIS
       final int minCol = ranges[2];
       final int maxCol = ranges[3];
 
-      WorldCoordinate tempWC = new WorldCoordinate();
+      rect.convertToCanonicalForm();
+
+      Rectangle cellRect = new Rectangle();
       CellCoordinate tempCC = new CellCoordinate();
-      for(int i=minRow; i<=maxRow; ++i)
+      for (int i = minRow; i <= maxRow; ++i)
       {
-         for(int j=minCol; j<=maxCol; ++j)
+         for (int j = minCol; j <= maxCol; ++j)
          {
             tempCC.setCoordinate(i, j);
-            convertCellToWorld(tempCC, tempWC);
-            if(rect.isCoordinateInRegion(tempWC))
+            convertCellToRectangle(tempCC, cellRect);
+
+            if(rect.containsRegion(cellRect))
             {
                cellsInRect.add(new CellCoordinate(tempCC));
             }
          }
       }
    }
+
+   // public void getCellsInRectangle(Rectangle rect, List<CellCoordinate>
+   // cellsInRect)
+   // {
+   // int ranges[] = new int[4];
+   // findRowColExtremes(ranges, rect);
+   // final int minRow = ranges[0];
+   // final int maxRow = ranges[1];
+   // final int minCol = ranges[2];
+   // final int maxCol = ranges[3];
+   //
+   // WorldCoordinate tempWC = new WorldCoordinate();
+   // CellCoordinate tempCC = new CellCoordinate();
+   // for(int i=minRow; i<=maxRow; ++i)
+   // {
+   // for(int j=minCol; j<=maxCol; ++j)
+   // {
+   // tempCC.setCoordinate(i, j);
+   // convertCellToWorld(tempCC, tempWC);
+   // if(rect.isCoordinateInRegion(tempWC))
+   // {
+   // cellsInRect.add(new CellCoordinate(tempCC));
+   // }
+   // }
+   // }
+   // }
 
    private void findRowColExtremes(int[] ranges, Rectangle rect)
    {
@@ -268,7 +326,7 @@ public class WorldGIS
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxRow = Math.max(temp1.getRow(), temp2.getRow());
 
-      if(maxRow >= numRows)
+      if (maxRow >= numRows)
       {
          maxRow = numRows - 1;
       }
@@ -277,7 +335,7 @@ public class WorldGIS
       convertWorldToCell(rect.getBottomRight(), temp2);
       int minRow = Math.min(temp1.getRow(), temp2.getRow());
 
-      if(minRow < 0)
+      if (minRow < 0)
       {
          minRow = 0;
       }
@@ -286,7 +344,7 @@ public class WorldGIS
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxCol = Math.max(temp1.getColumn(), temp2.getColumn());
 
-      if(maxCol >= numCols)
+      if (maxCol >= numCols)
       {
          maxCol = numCols - 1;
       }
@@ -295,7 +353,7 @@ public class WorldGIS
       convertWorldToCell(rect.getTopLeft(), temp2);
       int minCol = Math.min(temp1.getColumn(), temp2.getColumn());
 
-      if(minCol < 0)
+      if (minCol < 0)
       {
          minCol = 0;
       }
@@ -309,7 +367,6 @@ public class WorldGIS
    @Override
    public String toString()
    {
-      return "WorldGIS [width=" + width + ", height=" + height + ", numRows=" + numRows + ", numCols=" + numCols
-            + "]";
+      return "WorldGIS [width=" + width + ", height=" + height + ", numRows=" + numRows + ", numCols=" + numCols + "]";
    }
 }

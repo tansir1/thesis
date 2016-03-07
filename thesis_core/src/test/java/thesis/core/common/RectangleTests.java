@@ -89,4 +89,32 @@ public class RectangleTests
       assertEquals("Failed to convert bottom right.", badRect.getBottomRight(), goodRect.getBottomRight());
       assertTrue("Not in canonical form.", badRect.isCanonicalForm());
    }
+
+   @Test
+   public void rectInRectTest()
+   {
+      Rectangle big = new Rectangle();
+      Rectangle small = new Rectangle();
+
+      big.getTopLeft().setCoordinate(100, 0);
+      big.getTopRight().setCoordinate(100, 100);
+      big.getBottomRight().setCoordinate(0, 100);
+      big.getBottomLeft().setCoordinate(0, 0);
+
+      small.getTopLeft().setCoordinate(50, 10);
+      small.getTopRight().setCoordinate(50, 90);
+      small.getBottomRight().setCoordinate(10, 90);
+      small.getBottomLeft().setCoordinate(10, 10);
+
+      assertTrue("Did not detect small rect inside big rect.", big.containsRegion(small));
+
+
+      small.getTopLeft().setCoordinate(50, 10);
+      small.getTopRight().setCoordinate(50, 190);
+      small.getBottomRight().setCoordinate(10, 190);
+      small.getBottomLeft().setCoordinate(10, 10);
+
+      assertFalse("Incorrectly determined that small rect is inside big rect.", big.containsRegion(small));
+
+   }
 }
