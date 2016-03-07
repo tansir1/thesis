@@ -9,13 +9,15 @@ public class MapMouseData
 	private CellCoordinate cell;
 
 	private int x, y;
+	private boolean clicked;
 
-	public MapMouseData(WorldCoordinate world, CellCoordinate cell, int x, int y)
+	public MapMouseData(WorldCoordinate world, CellCoordinate cell, int x, int y, boolean isClicked)
 	{
 		this.world = world;
 		this.cell = cell;
 		this.x = x;
 		this.y = y;
+		this.clicked = isClicked;
 	}
 
 	/**
@@ -50,6 +52,11 @@ public class MapMouseData
 	public int getMouseY()
 	{
 		return y;
+	}
+
+	public boolean isClicked()
+	{
+	   return clicked;
 	}
 
 	@Override
