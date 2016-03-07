@@ -269,6 +269,13 @@ public class RenderSimState
     */
    public WorldCoordinate pixelsToWorldCoordinate(int x, int y)
    {
+      WorldCoordinate temp = new WorldCoordinate();
+      pixelsToWorldCoordinate(x, y, temp);
+      return temp;
+   }
+
+   public void pixelsToWorldCoordinate(int x, int y, WorldCoordinate coord)
+   {
       // Invert the y axis so that "north" is at the top of the screen.
       y = bounds.height - y;
 
@@ -278,7 +285,7 @@ public class RenderSimState
       final double worldH = gis.getHeight() * yPercent;
       final double worldW = gis.getWidth() * xPercent;
 
-      return new WorldCoordinate(worldH, worldW);
+      coord.setCoordinate(worldH, worldW);
    }
 
    /**
@@ -614,7 +621,7 @@ public class RenderSimState
 
          worldCoordinateToPixels(wc, pixels);
 
-         trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
+         trans.translate(pixels.x - halfImgW, pixels.y + halfImgH);
          // trans.rotate(-uav.getHeading().asRadians());
          double deg = uav.getPathing().getPose().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
