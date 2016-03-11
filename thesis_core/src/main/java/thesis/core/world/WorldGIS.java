@@ -330,6 +330,11 @@ public class WorldGIS
          maxRow = numRows - 1;
       }
 
+      if (maxRow < 0)
+      {
+         maxRow = 0;
+      }
+
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getBottomRight(), temp2);
       int minRow = Math.min(temp1.getRow(), temp2.getRow());
@@ -346,6 +351,11 @@ public class WorldGIS
       if (maxCol >= numCols)
       {
          maxCol = numCols - 1;
+      }
+
+      if (maxCol < 0)
+      {
+         maxCol = 0;
       }
 
       convertWorldToCell(rect.getBottomLeft(), temp1);
