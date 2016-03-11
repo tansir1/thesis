@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 
 public class WorldGISTests
@@ -60,7 +60,7 @@ public class WorldGISTests
       final int minCol = 1;
       final int maxCol = 3;
 
-      Rectangle rect = new Rectangle();
+      Trapezoid rect = new Trapezoid();
       testMe.convertCellToWorld(maxRow, minCol, rect.getTopLeft());
       testMe.convertCellToWorld(maxRow, maxCol, rect.getTopRight());
       testMe.convertCellToWorld(minRow, minCol, rect.getBottomLeft());

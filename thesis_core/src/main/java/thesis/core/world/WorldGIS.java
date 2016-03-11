@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 
 /**
@@ -218,15 +218,15 @@ public class WorldGIS
       to.setCoordinate(north, east);
    }
 
-   public Rectangle convertCellToRectangle(CellCoordinate cell)
+   public Trapezoid convertCellToRectangle(CellCoordinate cell)
    {
-      Rectangle rect = new Rectangle();
+      Trapezoid rect = new Trapezoid();
       convertCellToRectangle(cell, rect);
       return rect;
    }
 
 
-   public Rectangle convertCellToRectangle(CellCoordinate cell, Rectangle rect)
+   public Trapezoid convertCellToRectangle(CellCoordinate cell, Trapezoid rect)
    {
       double south = cell.getRow() * distPerRow;
       double north = (cell.getRow()+1) * distPerRow;
@@ -254,7 +254,7 @@ public class WorldGIS
       return origin.distanceTo(maxWidthHeight);
    }
 
-   public List<CellCoordinate> getCellsInRectangle(Rectangle rect)
+   public List<CellCoordinate> getCellsInRectangle(Trapezoid rect)
    {
       List<CellCoordinate> cells = new ArrayList<CellCoordinate>();
       getCellsInRectangle(rect, cells);
@@ -289,7 +289,7 @@ public class WorldGIS
 //      }
 //   }
 
-   public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
+   public void getCellsInRectangle(Trapezoid rect, List<CellCoordinate> cellsInRect)
    {
       int ranges[] = new int[4];
       findRowColExtremes(ranges, rect);
@@ -314,7 +314,7 @@ public class WorldGIS
       }
    }
 
-   private void findRowColExtremes(int[] ranges, Rectangle rect)
+   private void findRowColExtremes(int[] ranges, Trapezoid rect)
    {
       //rect.convertToCanonicalForm();
 

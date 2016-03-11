@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RectangleTests
+public class TrapezoidTests
 {
 
    @Test
    public void axisAlignedPointInOutTest()
    {
-      Rectangle testMe = new Rectangle();
+      Trapezoid testMe = new Trapezoid();
 
       /* @formatter:off
        * 10,0-----------10,30
@@ -38,7 +38,7 @@ public class RectangleTests
    @Test
    public void rotatedPointInOutTest()
    {
-      Rectangle testMe = new Rectangle();
+      Trapezoid testMe = new Trapezoid();
 
       testMe.getBottomLeft().setCoordinate(1, 2);
       testMe.getTopLeft().setCoordinate(2, 1);
@@ -68,14 +68,14 @@ public class RectangleTests
        * @formatter:on
        */
 
-      Rectangle goodRect = new Rectangle();
+      Trapezoid goodRect = new Trapezoid();
       goodRect.getBottomLeft().setCoordinate(0, 0);
       goodRect.getTopLeft().setCoordinate(10, 0);
       goodRect.getTopRight().setCoordinate(10, 30);
       goodRect.getBottomRight().setCoordinate(0, 30);
 
       //Completely inverted rectange
-      Rectangle badRect = new Rectangle();
+      Trapezoid badRect = new Trapezoid();
       badRect.getTopLeft().setCoordinate(0, 30);
       badRect.getTopRight().setCoordinate(0, 0);
       badRect.getBottomLeft().setCoordinate(10, 30);
@@ -93,8 +93,8 @@ public class RectangleTests
    @Test
    public void rectInRectTest()
    {
-      Rectangle big = new Rectangle();
-      Rectangle small = new Rectangle();
+      Trapezoid big = new Trapezoid();
+      Trapezoid small = new Trapezoid();
 
       big.getTopLeft().setCoordinate(100, 0);
       big.getTopRight().setCoordinate(100, 100);

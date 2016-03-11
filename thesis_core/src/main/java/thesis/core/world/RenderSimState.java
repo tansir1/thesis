@@ -695,7 +695,7 @@ public class RenderSimState
          for (int j = 0; j < NUM_SENSORS; ++j)
          {
             sensor = sensors.get(j);
-            final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
+            final thesis.core.common.Trapezoid viewRect = sensor.getViewFootPrint();
             //viewRect.convertToCanonicalForm();
 
             // Line from UAV to center of FOV

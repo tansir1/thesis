@@ -1,6 +1,6 @@
 package thesis.core.statedump;
 
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.sensors.Sensor;
 
@@ -12,7 +12,7 @@ public class SensorDump
    private double heading;
    private final WorldCoordinate lookAtGoal;
    private final WorldCoordinate lookAtCur;
-   private final Rectangle viewRegion;
+   private final Trapezoid viewRegion;
 
 
    public SensorDump(Sensor snsr)
@@ -23,7 +23,7 @@ public class SensorDump
       heading = 0;
       lookAtGoal = new WorldCoordinate();
       lookAtCur = new WorldCoordinate();
-      viewRegion = new Rectangle();
+      viewRegion = new Trapezoid();
       dumpUpdate(snsr);
    }
 
@@ -35,7 +35,7 @@ public class SensorDump
       heading = 0;
       lookAtGoal = new WorldCoordinate();
       lookAtCur = new WorldCoordinate();
-      viewRegion = new Rectangle();
+      viewRegion = new Trapezoid();
    }
 
    public SensorDump(int id)
@@ -46,7 +46,7 @@ public class SensorDump
       heading = 0;
       lookAtGoal = new WorldCoordinate();
       lookAtCur = new WorldCoordinate();
-      viewRegion = new Rectangle();
+      viewRegion = new Trapezoid();
    }
 
    public void dumpUpdate(Sensor snsr)
@@ -91,7 +91,7 @@ public class SensorDump
       this.heading = az;
    }
 
-   public Rectangle getViewFootPrint()
+   public Trapezoid getViewFootPrint()
    {
       return viewRegion;
    }
