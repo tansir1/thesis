@@ -22,6 +22,7 @@ import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 import thesis.core.targets.Target;
 import thesis.core.uav.UAV;
+import thesis.core.uav.dubins.DubinsPath;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -628,6 +629,19 @@ public class RenderSimState
          else
          {
             g2d.drawImage(scaledGreenMobileImg, trans, null);
+         }
+
+         //Draw a box at the UAV's destination
+         if(uav.getID() == selectedUavId)
+         {
+            DubinsPath path = uav.getPathing().getFlightPath();
+            if(path != null)
+            {
+               WorldCoordinate destWC = path.getEndPose().getCoordinate();
+               Point pixelDest = worldCoordinateToPixels(destWC);
+               g2d.setColor(Color.GREEN);
+               g2d.drawRect(pixelDest.x - 5, pixelDest.y + 5, 10, 10);
+            }
          }
       }
    }
