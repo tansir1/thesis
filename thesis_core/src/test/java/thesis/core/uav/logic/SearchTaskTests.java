@@ -43,7 +43,7 @@ public class SearchTaskTests
       SensorScanLogic snsrScanLogic = new SensorScanLogic(pyldProbs, tgtMgr, new Random());
       SensorGroup snsrGrp = new SensorGroup(snsrScanLogic, gis);
 
-      SearchTask testMe = new SearchTask(0, gis);
+      SearchTask testMe = new SearchTask(0, gis, new Random());
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
 
       CellCoordinate actualDestCoord = gis.convertWorldToCell(pathing.getFlightPath().getEndPose().getCoordinate());
