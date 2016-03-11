@@ -137,7 +137,8 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
 
       if(success)
       {
-         execSvc.submit(simRunner);
+         //execSvc.submit(simRunner);
+         execSvc.submit(new CatchableRunnerException(simRunner));
       }
 
       return success;
@@ -238,6 +239,33 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       {
          logger.error("Failed to render sim GUI. Details: {}", e.getMessage());
       }
+   }
+
+   /**
+    *This is a quick hack to debug exceptions thrown in the executor service.
+    */
+   private static class CatchableRunnerException implements Runnable
+   {
+      private Runnable runMe;
+
+      public CatchableRunnerException(Runnable runMe)
+      {
+         this.runMe = runMe;
+      }
+
+      @Override
+      public void run()
+      {
+         try
+         {
+            runMe.run();
+         }
+         catch(Exception e)
+         {
+            e.printStackTrace();
+         }
+      }
+
    }
 
 }
