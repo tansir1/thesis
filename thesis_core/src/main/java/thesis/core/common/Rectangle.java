@@ -126,19 +126,22 @@ public class Rectangle
       // This algorithm requires substantial computation but can work with any
       // polygon. Given the test coordinate create triangles iteratively through
       // all points of the polygon. If the sum of the area of the triangles is
-      // greater than the area of the rectangle then the point is outside of the
-      // rectangle.
+      // greater than the area of the polygon then the point is outside of the
+      // polygon.
 
-      double widthM = getWidth();
+      //double widthM = getWidth();
       double heightM = getHeight();
-      double rectAreaM2 = widthM * heightM;
+      double nearBaseM = Math.abs(bottomLeft.distanceTo(bottomRight));
+      double farBaseM = Math.abs(topLeft.distanceTo(topRight));
+
+      double polygonAreaM2 = (nearBaseM + farBaseM) * 0.5 * heightM;
 
       double testArea = triangularAreaM2(topLeft, testPt, bottomLeft);
       testArea += triangularAreaM2(bottomLeft, testPt, bottomRight);
       testArea += triangularAreaM2(bottomRight, testPt, topRight);
       testArea += triangularAreaM2(testPt, topRight, topLeft);
 
-      if (testArea > rectAreaM2 && Math.abs(testArea - rectAreaM2) > AREA_TOLERANCE)
+      if (testArea > polygonAreaM2 && Math.abs(testArea - polygonAreaM2) > AREA_TOLERANCE)
       {
          inRegion = false;
       }

@@ -63,13 +63,18 @@ public class CellBelief
 
    public void stepSimulation()
    {
-      if(probCellEmpty < 0.5d)
+      //The If statement prevents screen flickers of probCellEmpty when rendered
+      //due to probCellEmpty oscillating around 0.5
+      if(Math.abs(0.5d - probCellEmpty) > beliefDecayRatePerFrame)
       {
-         probCellEmpty += beliefDecayRatePerFrame;
-      }
-      else
-      {
-         probCellEmpty -= beliefDecayRatePerFrame;
+         if(probCellEmpty < 0.5d)
+         {
+            probCellEmpty += beliefDecayRatePerFrame;
+         }
+         else
+         {
+            probCellEmpty -= beliefDecayRatePerFrame;
+         }
       }
    }
 
