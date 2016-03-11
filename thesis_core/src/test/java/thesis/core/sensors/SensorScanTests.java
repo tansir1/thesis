@@ -132,7 +132,7 @@ public class SensorScanTests
       world.getHavens().reset(1);
 
       // -------------Initialize world sim----------------------
-      WorldBelief wb = new WorldBelief(numRows, numCols, numTgtTypes);
+      WorldBelief wb = new WorldBelief(numRows, numCols, numTgtTypes, 0);
       HavenRouting havenRouting = new HavenRouting(world, randGen);
       TargetMgr tgtMgr = new TargetMgr();
       tgtMgr.reset(entCfgs.getTgtTypeCfgs(), initTargets(world.getWorldGIS()), havenRouting, world.getWorldGIS());

@@ -59,6 +59,7 @@ public class SimModelConfigLoader
          int commsRngPercent = props.getInt("sim.commsRngPercent");
          cfg.setCommsRngPercent(commsRngPercent / 100.0);
          cfg.setCommsRelayProbability(props.getDouble("sim.commsRelayProb"));
+         cfg.setBeliefDecayRate(props.getDouble("sim.belief.decayRate"));
       }
       catch (Exception e)
       {

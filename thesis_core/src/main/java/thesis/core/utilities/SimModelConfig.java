@@ -10,6 +10,13 @@ public class SimModelConfig
    private int randomSeed;
    private File worldDir;
    private File entityTypesDir;
+
+
+   /**
+    * Speed in % / second in which cell belief certainty decays.
+    */
+   private double beliefDecayRate;
+
    /**
     * Maximum range of UAV communication systems expressed as a percentage of
     * the maximum distance across the world.
@@ -27,6 +34,7 @@ public class SimModelConfig
       worldDir = null;
       entityTypesDir = null;
       commsRngPercent = 0;
+      beliefDecayRate = 0;
    }
 
    public int getRandomSeed()
@@ -87,6 +95,17 @@ public class SimModelConfig
       return probMsgFwd;
    }
 
+   public void setBeliefDecayRate(double rate)
+   {
+      this.beliefDecayRate = rate;
+   }
+
+   public double getBeliefDecayRate()
+   {
+      return beliefDecayRate;
+   }
+
+
    @Override
    public String toString()
    {
@@ -101,6 +120,8 @@ public class SimModelConfig
       sb.append(entityTypesDir.getAbsolutePath());
       sb.append("\nCommsRng: ");
       sb.append(String.format("%.2f", commsRngPercent));
+      sb.append("\nBeliefDecayRate: ");
+      sb.append(String.format("%.2f", beliefDecayRate));
 
       return sb.toString();
    }
