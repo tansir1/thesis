@@ -1,6 +1,7 @@
 package thesis.core.uav.logic;
 
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,12 @@ public class UAVLogicMgr
 
    private SearchTask searchTask;
 
-   public UAVLogicMgr(int hostUavId, WorldGIS gis)
+   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
    {
       this.hostUavId = hostUavId;
       curTask = TaskType.Search;
 
-      searchTask = new SearchTask(hostUavId, gis);
+      searchTask = new SearchTask(hostUavId, gis, randGen);
    }
 
    public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV)

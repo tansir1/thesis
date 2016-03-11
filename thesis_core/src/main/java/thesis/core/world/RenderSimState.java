@@ -231,6 +231,11 @@ public class RenderSimState
             drawTargets(gfx);
          }
 
+         if (renderOpts.isOptionEnabled(RenderOption.CommsRange))
+         {
+            drawCommsRange(gfx);
+         }
+
          if (renderOpts.isOptionEnabled(RenderOption.UavHistoryTrail))
          {
             drawUAVHistoryTrails(gfx);
@@ -244,11 +249,6 @@ public class RenderSimState
          if (renderOpts.isOptionEnabled(RenderOption.SensorFOV))
          {
             drawSensorFOVs(gfx);
-         }
-
-         if (renderOpts.isOptionEnabled(RenderOption.CommsRange))
-         {
-            drawCommsRange(gfx);
          }
       }
    }
@@ -649,6 +649,8 @@ public class RenderSimState
       List<WorldPose> trail = new ArrayList<WorldPose>();
       for (int i = 0; i < numUAVs; ++i)
       {
+         trail.clear();
+
          final Point prevPixels = new Point(-1, -1);
          final Point curPixels = new Point(0, 0);
          uav = uavs[i];
@@ -660,8 +662,8 @@ public class RenderSimState
             if (prevPixels.x != -1 && prevPixels.y != -1)
             {
                g2d.drawLine(prevPixels.x, prevPixels.y, curPixels.x, curPixels.y);
-               prevPixels.setLocation(curPixels);
             }
+            prevPixels.setLocation(curPixels);
          }
       }
    }
