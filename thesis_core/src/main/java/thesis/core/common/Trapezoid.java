@@ -1,13 +1,13 @@
 package thesis.core.common;
 
-public class Rectangle
+public class Trapezoid
 {
    private WorldCoordinate topLeft;
    private WorldCoordinate topRight;
    private WorldCoordinate bottomLeft;
    private WorldCoordinate bottomRight;
 
-   public Rectangle()
+   public Trapezoid()
    {
       topLeft = new WorldCoordinate();
       topRight = new WorldCoordinate();
@@ -15,7 +15,7 @@ public class Rectangle
       bottomRight = new WorldCoordinate();
    }
 
-   public void copy(Rectangle copy)
+   public void copy(Trapezoid copy)
    {
       topLeft.setCoordinate(copy.topLeft);
       topRight.setCoordinate(copy.topRight);
@@ -161,7 +161,7 @@ public class Rectangle
       return Math.sqrt(halfPerim * (halfPerim - d1) * (halfPerim - d2) * (halfPerim - d3));
    }
 
-   public boolean containsRegion(Rectangle rect)
+   public boolean containsRegion(Trapezoid rect)
    {
       boolean retVal = false;
       //@formatter:off

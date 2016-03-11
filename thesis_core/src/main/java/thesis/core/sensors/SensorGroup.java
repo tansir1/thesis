@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.belief.WorldBelief;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.world.WorldGIS;
 
@@ -36,7 +36,7 @@ public class SensorGroup
       for(Sensor s : sensors)
       {
          s.stepSimulation(hostUAVLocation);
-         Rectangle fov = s.getViewFootPrint();
+         Trapezoid fov = s.getViewFootPrint();
          scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
       }
    }

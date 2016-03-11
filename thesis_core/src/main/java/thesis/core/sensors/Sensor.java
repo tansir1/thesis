@@ -1,7 +1,7 @@
 package thesis.core.sensors;
 
 import thesis.core.common.Angle;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.targets.TargetMgr;
@@ -32,7 +32,7 @@ public class Sensor
    private final WorldPose pose;
    private final WorldCoordinate lookAtGoal;
    private final WorldCoordinate lookAtCur;
-   private final Rectangle viewRegion;
+   private final Trapezoid viewRegion;
 
    private int id;
 
@@ -55,7 +55,7 @@ public class Sensor
       pose = new WorldPose();
       lookAtGoal = new WorldCoordinate();
       lookAtCur = new WorldCoordinate();
-      viewRegion = new Rectangle();
+      viewRegion = new Trapezoid();
 
       MIN_RNG = cfgs.getMinRange(type);
       MAX_RNG = cfgs.getMaxRange(type);
@@ -100,7 +100,7 @@ public class Sensor
       this.lookAtGoal.setCoordinate(lookAt);
    }
 
-   public Rectangle getViewFootPrint()
+   public Trapezoid getViewFootPrint()
    {
       return viewRegion;
    }
