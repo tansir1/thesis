@@ -70,7 +70,7 @@ public class WorldGISTests
 //      rect.getTopRight().setCoordinate(maxRow*10+1, maxCol*10+1);
 //      rect.getBottomLeft().setCoordinate(minRow*10+1, minCol*10+1);
 //      rect.getBottomRight().setCoordinate(minRow*10+1, maxCol*10+1);
-      rect.convertToCanonicalForm();
+      //rect.convertToCanonicalForm();
 
       List<CellCoordinate> trueCellsInRect = new ArrayList<CellCoordinate>();
       for (int row = minRow; row <= maxRow; ++row)

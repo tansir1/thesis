@@ -228,17 +228,17 @@ public class WorldGIS
 
    public Rectangle convertCellToRectangle(CellCoordinate cell, Rectangle rect)
    {
-      double bottomNorth = cell.getRow() * distPerRow;
-      double topNorth = (cell.getRow()+1) * distPerRow;
+      double south = cell.getRow() * distPerRow;
+      double north = (cell.getRow()+1) * distPerRow;
 
-      double leftEast = cell.getColumn() * distPerCol;
-      double rightEast = (cell.getColumn()+1) * distPerCol;
+      double west = cell.getColumn() * distPerCol;
+      double east = (cell.getColumn()+1) * distPerCol;
 
-      rect.getTopLeft().setCoordinate(topNorth,leftEast);
-      rect.getTopRight().setCoordinate(topNorth,rightEast);
-      rect.getBottomRight().setCoordinate(bottomNorth,rightEast);
-      rect.getBottomLeft().setCoordinate(bottomNorth,leftEast);
-      rect.convertToCanonicalForm();
+      rect.getTopLeft().setCoordinate(north,west);
+      rect.getTopRight().setCoordinate(north,east);
+      rect.getBottomRight().setCoordinate(south,east);
+      rect.getBottomLeft().setCoordinate(south,west);
+      //rect.convertToCanonicalForm();
 
       return rect;
    }
@@ -316,7 +316,7 @@ public class WorldGIS
 
    private void findRowColExtremes(int[] ranges, Rectangle rect)
    {
-      rect.convertToCanonicalForm();
+      //rect.convertToCanonicalForm();
 
       CellCoordinate temp1 = new CellCoordinate();
       CellCoordinate temp2 = new CellCoordinate();
@@ -355,6 +355,20 @@ public class WorldGIS
       if (minCol < 0)
       {
          minCol = 0;
+      }
+
+      if(maxRow < minRow)
+      {
+         int temp = minRow;
+         minRow = maxRow;
+         maxRow = temp;
+      }
+
+      if(maxCol < minCol)
+      {
+         int temp = minCol;
+         minCol = maxCol;
+         maxCol = temp;
       }
 
       ranges[0] = minRow;

@@ -696,7 +696,7 @@ public class RenderSimState
          {
             sensor = sensors.get(j);
             final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
-            viewRect.convertToCanonicalForm();
+            //viewRect.convertToCanonicalForm();
 
             // Line from UAV to center of FOV
             worldCoordinateToPixels(sensor.getViewCenter(), frustrumPix);

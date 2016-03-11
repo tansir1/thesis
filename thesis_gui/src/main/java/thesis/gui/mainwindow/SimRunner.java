@@ -116,7 +116,7 @@ public class SimRunner implements Runnable
       if (interFrameDelayMS == -3)
       {
          pause = false;
-         logger.info("Simulation unpaused.  Running with {}ms inter-frame delay.", interFrameDelayMS);
+         logger.info("Simulation unpaused.  Running with {}ms inter-frame delay.", this.interFrameDelayMS);
       }
 
       if (interFrameDelayMS >= 0 && interFrameDelayMS != this.interFrameDelayMS)
