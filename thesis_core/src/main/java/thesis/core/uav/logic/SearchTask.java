@@ -93,7 +93,7 @@ public class SearchTask
          }
       }
 
-      Collections.sort(allBeliefs, new CellBeliefComparator());
+      Collections.sort(allBeliefs, new CellBeliefComparator(rand));
 
       int randIndx = -1;
       if(numCells > 2)
@@ -142,10 +142,24 @@ public class SearchTask
 
    private static class CellBeliefComparator implements Comparator<CellBelief>
    {
+      private Random rand;
+
+      public CellBeliefComparator(Random rand)
+      {
+         this.rand = rand;
+      }
 
       @Override
       public int compare(CellBelief o1, CellBelief o2)
       {
+         //If they're extremely close then randomly select one as higher than the other.
+         //This helps diversify the search area, particularly on application startup
+         if(Math.abs(o1.getUncertainty() - o2.getUncertainty()) < 0.01)
+         {
+            return rand.nextBoolean() ? -1 : 1;
+         }
+
+
          if(o1.getUncertainty() < o2.getUncertainty())
          {
             return -1;
