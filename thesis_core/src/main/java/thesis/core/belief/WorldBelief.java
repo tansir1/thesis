@@ -18,20 +18,31 @@ public class WorldBelief
 
    private CellBelief cells[][];
 
-   public WorldBelief(int numRows, int numCols, int numTgtTypes)
+   public WorldBelief(int numRows, int numCols, int numTgtTypes, double beliefDecayRate)
    {
       cells = new CellBelief[numRows][numCols];
       for (int i = 0; i < numRows; ++i)
       {
          for (int j = 0; j < numCols; ++j)
          {
-            cells[i][j] = new CellBelief(i, j, numTgtTypes);
+            cells[i][j] = new CellBelief(i, j, numTgtTypes, beliefDecayRate);
          }
       }
    }
 
    public void stepSimulation(UAVComms comms)
    {
+      final int numRows = cells.length;
+      final int numCols = cells[0].length;
+
+      for (int i = 0; i < numRows; ++i)
+      {
+         for (int j = 0; j < numCols; ++j)
+         {
+            cells[i][j].stepSimulation();
+         }
+      }
+
       lastBeliefBroadcastTimeAccumulator += SimTime.SIM_STEP_RATE_MS;
       if (lastBeliefBroadcastTimeAccumulator > BELIEF_BROADCAST_RATE_MS)
       {

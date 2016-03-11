@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.SimTime;
 
 public class CellBelief
 {
@@ -36,9 +37,16 @@ public class CellBelief
 
    private CellCoordinate coord;
 
-   public CellBelief(int row, int col, int numTgtTypes)
+   /**
+    * Rate in % / second in which certainty decays.
+    */
+   private double beliefDecayRatePerFrame;
+
+   public CellBelief(int row, int col, int numTgtTypes, double beliefDecayRateS)
    {
       this.numTgtTypes = numTgtTypes;
+      this.beliefDecayRatePerFrame = (beliefDecayRateS / 1000) * SimTime.SIM_STEP_RATE_MS;
+
       tgtBeliefs = new ArrayList<TargetBelief>();
 
       coord = new CellCoordinate(row, col);
@@ -51,6 +59,18 @@ public class CellBelief
       probCellEmpty = 0.5;
       pseudoTimestamp = 0;
       tgtBeliefs.clear();
+   }
+
+   public void stepSimulation()
+   {
+      if(probCellEmpty < 0.5d)
+      {
+         probCellEmpty += beliefDecayRatePerFrame;
+      }
+      else
+      {
+         probCellEmpty -= beliefDecayRatePerFrame;
+      }
    }
 
    public CellCoordinate getCoordinate()
