@@ -17,6 +17,8 @@
 		</encoder>
 	</appender>
 
+   <!-- <logger name="sim.uav.logic" level="TRACE"/>-->
+
 	<!-- Control logging settings of individual loggers -->
 	<!-- 
 	<logger name="main" level="INFO"/>

@@ -23,12 +23,12 @@ public class SearchTask
 
    public enum Strategy
    {
-      MostUncertain,
-      RandomTopThird
+      MostUncertain, RandomTopThird
    }
 
    /**
-    * Global flag to configure the strategy used for selecting new search destinations.
+    * Global flag to configure the strategy used for selecting new search
+    * destinations.
     */
    public static Strategy strategy = Strategy.RandomTopThird;
 
@@ -61,7 +61,7 @@ public class SearchTask
    {
       CellCoordinate oldDest = searchDest;
 
-      switch(strategy)
+      switch (strategy)
       {
       case MostUncertain:
          selectMostUncertain(curBelief, pathing, snsrGrp);
@@ -93,12 +93,22 @@ public class SearchTask
          }
       }
 
-      Collections.sort(allBeliefs, new CellBeliefComparator(rand));
+      Collections.sort(allBeliefs, new CellBeliefComparator());
 
       int randIndx = -1;
-      if(numCells > 2)
+      if (numCells > 2)
       {
-         randIndx = rand.nextInt(numCells / 3);
+         int oneThirdIndx = numCells / 3;
+         if (Math.abs(allBeliefs.get(0).getUncertainty() - allBeliefs.get(oneThirdIndx).getUncertainty()) < 0.001)
+         {
+            // If the entire world is equally uncertain (like at simulation
+            // startup) select a random cell in the world to go search.
+            randIndx = rand.nextInt(numCells);
+         }
+         else
+         {
+            randIndx = rand.nextInt(numCells / 3);
+         }
       }
       else
       {
@@ -118,7 +128,7 @@ public class SearchTask
       // This just finds the most uncertain cell. It would be better by
       // finding clusters of highly uncertain cells instead of the most
       // uncertain cell or searching the local area and jumping off to a new
-      //area as in Levy Flights or Levy Walks.
+      // area as in Levy Flights or Levy Walks.
 
       for (int i = 0; i < numRows; ++i)
       {
@@ -142,29 +152,19 @@ public class SearchTask
 
    private static class CellBeliefComparator implements Comparator<CellBelief>
    {
-      private Random rand;
-
-      public CellBeliefComparator(Random rand)
+      public CellBeliefComparator()
       {
-         this.rand = rand;
+
       }
 
       @Override
       public int compare(CellBelief o1, CellBelief o2)
       {
-         //If they're extremely close then randomly select one as higher than the other.
-         //This helps diversify the search area, particularly on application startup
-         if(Math.abs(o1.getUncertainty() - o2.getUncertainty()) < 0.01)
-         {
-            return rand.nextBoolean() ? -1 : 1;
-         }
-
-
-         if(o1.getUncertainty() < o2.getUncertainty())
+         if (o1.getUncertainty() < o2.getUncertainty())
          {
             return -1;
          }
-         else if(o1.getUncertainty() > o2.getUncertainty())
+         else if (o1.getUncertainty() > o2.getUncertainty())
          {
             return 1;
          }
