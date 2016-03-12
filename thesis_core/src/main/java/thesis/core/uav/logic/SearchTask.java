@@ -45,6 +45,7 @@ public class SearchTask
 
    public SearchTask(int hostUavId, WorldGIS gis, Random randGen)
    {
+      this.hostUavId = hostUavId;
       this.gis = gis;
       this.rand = randGen;
    }
