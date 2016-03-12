@@ -74,6 +74,8 @@ public class SensorScanLogic
             trueTgtBelief.setHeadingEstimate(hdgUpdate);
             trueTgtBelief.setTimestamp(simTime);
             trueTgtBelief.setTypeProbability(detectedTgtType, bayesianUpdate);
+            //TODO Assumes sensor can perfectly identify target location
+            trueTgtBelief.setCoordinate(trueTgt.getCoordinate());
 
             computeCellEmptyBayesian(false, snsrType, cellBelief, simTime, trueTgts, probOfScanTgt);
          }

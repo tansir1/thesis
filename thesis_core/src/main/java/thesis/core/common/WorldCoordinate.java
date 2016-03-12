@@ -164,7 +164,8 @@ public class WorldCoordinate
     *
     * @param wc
     *           Find the bearing to this coordinate.
-    * @return The bearing angle from this coordinate to the given coordinate in degrees.
+    * @return The bearing angle from this coordinate to the given coordinate in
+    *         degrees.
     */
    public double bearingTo(final WorldCoordinate wc)
    {
@@ -198,6 +199,22 @@ public class WorldCoordinate
       final double delEast = wc.east - east;
 
       return Math.sqrt(delNorth * delNorth + delEast * delEast);
+   }
+
+   /**
+    * Translate this coordinate towards the specified coordinate.
+    *
+    * @param moveTowards
+    *           Translate towards this coordinate.
+    * @param percentage
+    *           The percentage of the distance towards the coordinate to
+    *           translate.
+    */
+   public void interpolateTowards(final WorldCoordinate moveTowards, double percentage)
+   {
+      final double delNorth = moveTowards.north - north;
+      final double delEast = moveTowards.east - east;
+      translateCart(delNorth * percentage, delEast * percentage);
    }
 
    @Override
