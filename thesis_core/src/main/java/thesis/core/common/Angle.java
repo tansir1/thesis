@@ -68,29 +68,19 @@ public class Angle
    }
 
    /**
-    * Get the cosine of the angle after adjusting the 0 value as being straight
-    * up to north.
+    * Converts a cartesian angle to a standard map angle. 0 cart -> 90 east. 90
+    * cart -> 0 north. 180 cart -> 270 west. 270 cart -> 180 south.
     *
     * @param angle
-    *           The angle to compute in degrees.
-    * @return The cosine of the current angle value.
+    *           The cartesian angle to convert.
+    * @return The map angle.
     */
-   public static double cosNorthUp(double angle)
+   public static double cartesianAngleToNorthUp(double angle)
    {
-      return Math.cos(Math.toRadians(angle + 90));
-   }
-
-   /**
-    * Get the sine of the angle after adjusting the 0 value as being straight up
-    * to north.
-    *
-    * @param angle
-    *           The angle to compute in degrees.
-    * @return The sine of the current angle value.
-    */
-   public static double sinNorthUp(double angle)
-   {
-      return Math.sin(Math.toRadians(angle + 90));
+      angle = normalize360(angle);
+      angle = 90 - angle;
+      angle = normalize360(angle);
+      return angle;
    }
 
    /**
