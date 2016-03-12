@@ -45,14 +45,14 @@ public class SensorScanLogic
    private void scanCell(int snsrType, CellCoordinate cell, double snsrHdg, long simTime, WorldBelief worldBelief)
    {
       CellBelief cellBelief = worldBelief.getCellBelief(cell);
-      List<Target> trueTgts = detectTargets(snsrType, cell, snsrHdg, cellBelief);
+      List<Target> trueTgts = detectTargets(snsrType, cell, snsrHdg, cellBelief, worldBelief);
 
       if (!trueTgts.isEmpty())
       {
          for (Target trueTgt : trueTgts)
          {
             int trueTgtType = trueTgt.getType();
-            TargetBelief trueTgtBelief = cellBelief.getTargetBelief(trueTgt.getID());
+            TargetBelief trueTgtBelief = worldBelief.getTargetBelief(trueTgt.getID());
             double estTgtHdg = trueTgtBelief.getHeadingEstimate();
 
             // Simulate the sensor scan of the environment
@@ -85,7 +85,7 @@ public class SensorScanLogic
       }
    }
 
-   private List<Target> detectTargets(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief)
+   private List<Target> detectTargets(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief, WorldBelief worldBelief)
    {
       List<Target> tgtsTruth = tgtMgr.getTargetsInRegion(cell);
       if (tgtsTruth.size() > 0)
@@ -95,10 +95,10 @@ public class SensorScanLogic
 
          // Determine if the target was detected or not
          double estTgtHdg = 0;
-         if (cellBelief.hasDetectedTarget(tgt.getID()))
+         if (worldBelief.hasDetectedTarget(tgt.getID()))
          {
             // Target was seen in the past, get the last estimated heading
-            estTgtHdg = cellBelief.getTargetBelief(tgt.getID()).getHeadingEstimate();
+            estTgtHdg = worldBelief.getTargetBelief(tgt.getID()).getHeadingEstimate();
          }
 
          double probDetect = probOfDetect(snsrType, tgt.getType(), snsrHdg, estTgtHdg);

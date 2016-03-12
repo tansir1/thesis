@@ -10,6 +10,8 @@ import thesis.core.common.WorldPose;
 
 public class Target
 {
+   public static final int INVALID_TGT_ID = -1;
+
    private final int id;
    private final int type;
    private final WorldPose pose;

@@ -22,6 +22,7 @@ public class UAVLogicMgr
    private TaskType curTask;
 
    private SearchTask searchTask;
+   private ConfirmTask confirmTask;
 
    public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
    {
@@ -29,6 +30,7 @@ public class UAVLogicMgr
       curTask = TaskType.Search;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
+      confirmTask = new ConfirmTask(hostUavId, gis, randGen);
    }
 
    public TaskType getCurrentTaskType()
@@ -76,6 +78,8 @@ public class UAVLogicMgr
       case Search:
          searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
          break;
+      case Confirm:
+         confirmTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
       }
    }
 }
