@@ -56,6 +56,8 @@ public class Pathing
    private int numFramesToWypt;
    private int uavID;
 
+   private boolean orbiting;
+
    public Pathing(int id, int type, UAVTypeConfigs uavTypeCfgs)
    {
       this.uavID = id;
@@ -68,6 +70,7 @@ public class Pathing
       pathTrail = new ArrayList<WorldPose>();
       lastTrailSampleTimeAccumulator = 0;
       numFramesToWypt = 0;
+      orbiting = false;
    }
 
    public WorldCoordinate getCoordinate()
@@ -95,6 +98,11 @@ public class Pathing
    public WorldPose getPose()
    {
       return pose;
+   }
+
+   public boolean isOrbiting()
+   {
+      return orbiting;
    }
 
    /**
@@ -222,6 +230,8 @@ public class Pathing
 
    public void computePathTo(final WorldPose flyTo)
    {
+      orbiting = false;
+
       path = DubinsPathGenerator.generate(minTurnRadius, pose, flyTo);
       if (path.getPathType() != PathType.NO_PATH)
       {
@@ -242,5 +252,15 @@ public class Pathing
       double bearingTo = pose.getCoordinate().bearingTo(flyTo);
       WorldPose destPose = new WorldPose(flyTo, bearingTo);
       computePathTo(destPose);
+   }
+
+   public boolean computeOrbit(final WorldCoordinate loiterPt, final double loiterRadius)
+   {
+      if(Math.abs(pose.getCoordinate().distanceTo(loiterPt)) > loiterRadius)
+      {
+         return false;
+      }
+
+      //orbiting = true;
    }
 }
