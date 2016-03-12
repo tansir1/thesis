@@ -108,6 +108,11 @@ public class UAV
       return belief;
    }
 
+   public UAVLogicMgr getLogic()
+   {
+      return logicMgr;
+   }
+
    /**
     * This is a temporary method for development testing purposes. It will be
     * deleted once aircraft have a means of selecting their own destinations.

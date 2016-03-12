@@ -31,6 +31,11 @@ public class UAVLogicMgr
       searchTask = new SearchTask(hostUavId, gis, randGen);
    }
 
+   public TaskType getCurrentTaskType()
+   {
+      return curTask;
+   }
+
    public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV)
    {
       for(Message msg : incomingMsgs)
