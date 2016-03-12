@@ -36,6 +36,7 @@ public class UAVViewPanel
    private String teleportOffTxt;
    private JButton teleportBtn;
    private boolean teleportInProgress;
+   private JLabel logicStateLbl;
 
    public UAVViewPanel()
    {
@@ -84,6 +85,7 @@ public class UAVViewPanel
       northLbl = new JLabel();
       eastLbl = new JLabel();
       hdgLbl = new JLabel();
+      logicStateLbl = new JLabel();
 
       renderable.setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
@@ -95,6 +97,7 @@ public class UAVViewPanel
       addGridFormRow(gbc, "North:", northLbl);
       addGridFormRow(gbc, "East:", eastLbl);
       addGridFormRow(gbc, "Heading:", hdgLbl);
+      addGridFormRow(gbc, "Logic State:", logicStateLbl);
 
       gbc.gridwidth = 2;
       renderable.add(teleportBtn, gbc);
@@ -197,20 +200,22 @@ public class UAVViewPanel
       }
    }
 
-   private void updateSelectedUAVData(final UAV dump)
+   private void updateSelectedUAVData(final UAV selectedUAV)
    {
       // This function runs on the EDT due to SwingUtilitiesInvokeLater() in
       // update()
 
-      renderSim.getWorldRenderer().setSelectedUAV(dump.getID());
+      renderSim.getWorldRenderer().setSelectedUAV(selectedUAV.getID());
 
       synchronized (simModel)
       {
-         WorldPose pose = dump.getPathing().getPose();
+         WorldPose pose = selectedUAV.getPathing().getPose();
          northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
          eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));
          hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
          // \u00B0 is unicode for degree symbol
+
+         logicStateLbl.setText(selectedUAV.getLogic().getCurrentTaskType().toString());
 
       }
    }
