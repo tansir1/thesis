@@ -13,17 +13,20 @@ public class SensorGroup
    private List<Sensor> sensors;
    private SensorScanLogic scanner;
    private WorldGIS gis;
+   private double maxSensingDistance;
 
    public SensorGroup(SensorScanLogic scanner, WorldGIS gis)
    {
       this.scanner = scanner;
       this.gis = gis;
       sensors = new ArrayList<Sensor>();
+      maxSensingDistance = -1;
    }
 
    public void addSensor(Sensor sensor)
    {
       sensors.add(sensor);
+      maxSensingDistance = Math.max(maxSensingDistance, sensor.getMaxRange());
    }
 
    public List<Sensor> getSensors()
@@ -33,7 +36,7 @@ public class SensorGroup
 
    public void stepSimulation(WorldCoordinate hostUAVLocation, WorldBelief belief, long simTime)
    {
-      for(Sensor s : sensors)
+      for (Sensor s : sensors)
       {
          s.stepSimulation(hostUAVLocation);
          Trapezoid fov = s.getViewFootPrint();
@@ -43,9 +46,19 @@ public class SensorGroup
 
    public void stareAtAll(WorldCoordinate starePoint)
    {
-      for(Sensor s : sensors)
+      for (Sensor s : sensors)
       {
          s.slewToLookAt(starePoint);
       }
+   }
+
+   /**
+    * Get the maximum sensing distance.
+    *
+    * @return Max sensing distance in meters.
+    */
+   public double getMaxSensorRange()
+   {
+      return maxSensingDistance;
    }
 }

@@ -74,6 +74,15 @@ public class Sensor
    }
 
    /**
+    * Get the maximum range of the sensor in meters.
+    * @return Max range in meters.
+    */
+   public double getMaxRange()
+   {
+      return MAX_RNG;
+   }
+
+   /**
     * Get the current azimuth of the sensor in relation to the world's zero
     * degree mark. This angle is in absolute world coordinates.
     *
