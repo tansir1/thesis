@@ -1,4 +1,4 @@
-package thesis.core.entities.uav;
+package thesis.core.uav;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,13 +11,12 @@ import java.util.Random;
 import org.junit.Test;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.TestUtils;
 import thesis.core.common.Circle;
 import thesis.core.serialization.world.UAVStartCfg;
 import thesis.core.targets.TargetMgr;
-import thesis.core.uav.UAV;
-import thesis.core.uav.UAVMgr;
 import thesis.core.uav.comms.CommsConfig;
-import thesis.core.world.WorldGIS;
+import thesis.core.world.World;
 
 public class UAVMgrTests
 {
@@ -46,15 +45,15 @@ public class UAVMgrTests
    @Test
    public void regionQueryTests()
    {
-      final EntityTypeCfgs entTypes = new EntityTypeCfgs();
-      entTypes.getUAVTypeCfgs().reset(3);
-
+      World world = new World();
       // 100km x 100km world, 10x10 grid, each cell should be 10km x 10km
-      final WorldGIS worldGIS = new WorldGIS();
-      worldGIS.reset(100000, 100000, 10, 10);
+      world.getWorldGIS().reset(100000, 100000, 10, 10);
+
+      final EntityTypeCfgs entTypes = TestUtils.genericEntityCfgs(1, 1, 3);
+      final TargetMgr tgtMngr = TestUtils.genericTgtMgr(world, entTypes, 1);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, initUAVs(), new TargetMgr(), new Random(), new CommsConfig(), worldGIS);
+      testMe.reset(entTypes, initUAVs(), tgtMngr, new Random(), new CommsConfig(), world.getWorldGIS(), 0);
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();

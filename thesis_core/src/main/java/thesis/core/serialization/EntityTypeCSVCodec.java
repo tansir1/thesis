@@ -3,6 +3,7 @@ package thesis.core.serialization;
 import java.io.File;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.serialization.entities.SensorEmptyProbsDAO;
 import thesis.core.serialization.entities.SensorMisclassifyProbsDAO;
 import thesis.core.serialization.entities.SensorProbsDAO;
 import thesis.core.serialization.entities.SensorTypeConfigsDAO;
@@ -21,6 +22,7 @@ public class EntityTypeCSVCodec
    private final String uavTypeCSV = "uavTypes.csv";
 
    private final String snsrTargetProbCSV = "sensorTargetProb.csv";
+   private final String snsrEmptyProbCSV = "sensorEmptyProb.csv";
    private final String wpnTargetProbCSV = "weaponTargetProb.csv";
    private final String uavSnsrCSV = "uavSensorMap.csv";
    private final String uavWpnsCSV = "uavWeaponMap.csv";
@@ -40,6 +42,7 @@ public class EntityTypeCSVCodec
       File wpnTypeFile = new File(cfgDir, wpnTypeCSV);
       File uavTypeFile = new File(cfgDir, uavTypeCSV);
       File snsrTgtProbFile = new File(cfgDir, snsrTargetProbCSV);
+      File snsrEmptyProbFile = new File(cfgDir, snsrEmptyProbCSV);
       File wpnTgtProbFile = new File(cfgDir, wpnTargetProbCSV);
       File uavSnsrFile = new File(cfgDir, uavSnsrCSV);
       File uavWpnsFile = new File(cfgDir, uavWpnsCSV);
@@ -50,6 +53,7 @@ public class EntityTypeCSVCodec
       WeaponTypeConfigsDAO wpnTypesCfgsDAO = new WeaponTypeConfigsDAO(dbConns.getConfigDBConnection());
       UAVTypeConfigsDAO uavTypeCfgsDAO = new UAVTypeConfigsDAO(dbConns.getConfigDBConnection());
       SensorProbsDAO sensorProbsDAO = new SensorProbsDAO(dbConns.getConfigDBConnection());
+      SensorEmptyProbsDAO sensorEmptyProbsDAO = new SensorEmptyProbsDAO(dbConns.getConfigDBConnection());
       WeaponProbsDAO wpnProbsDAO = new WeaponProbsDAO(dbConns.getConfigDBConnection());
       UAVSensorCfgsDAO uavSnsrCfgsDAO = new UAVSensorCfgsDAO(dbConns.getConfigDBConnection());
       UAVWeaponCfgsDAO uavWpnsCfgsDAO = new UAVWeaponCfgsDAO(dbConns.getConfigDBConnection());
@@ -60,6 +64,7 @@ public class EntityTypeCSVCodec
       wpnTypesCfgsDAO.createTable();
       uavTypeCfgsDAO.createTable();
       sensorProbsDAO.createTable();
+      sensorEmptyProbsDAO.createTable();
       wpnProbsDAO.createTable();
       uavSnsrCfgsDAO.createTable();
       uavWpnsCfgsDAO.createTable();
@@ -104,6 +109,15 @@ public class EntityTypeCSVCodec
          if (success)
          {
             success = sensorProbsDAO.writeCSV(snsrTgtProbFile);
+         }
+      }
+
+      if (success)
+      {
+         success = sensorEmptyProbsDAO.saveData(entCfgs.getSnsrProbs());
+         if (success)
+         {
+            success = sensorEmptyProbsDAO.writeCSV(snsrEmptyProbFile);
          }
       }
 
@@ -155,6 +169,7 @@ public class EntityTypeCSVCodec
       File wpnTypeFile = new File(cfgDir, wpnTypeCSV);
       File uavTypeFile = new File(cfgDir, uavTypeCSV);
       File snsrTgtProbFile = new File(cfgDir, snsrTargetProbCSV);
+      File snsrEmptyProbFile = new File(cfgDir, snsrEmptyProbCSV);
       File wpnTgtProbFile = new File(cfgDir, wpnTargetProbCSV);
       File uavSnsrFile = new File(cfgDir, uavSnsrCSV);
       File uavWpnsFile = new File(cfgDir, uavWpnsCSV);
@@ -165,6 +180,7 @@ public class EntityTypeCSVCodec
       WeaponTypeConfigsDAO wpnTypesCfgsDAO = new WeaponTypeConfigsDAO(dbConns.getConfigDBConnection());
       UAVTypeConfigsDAO uavTypeCfgsDAO = new UAVTypeConfigsDAO(dbConns.getConfigDBConnection());
       SensorProbsDAO sensorProbsDAO = new SensorProbsDAO(dbConns.getConfigDBConnection());
+      SensorEmptyProbsDAO sensorEmptyProbsDAO = new SensorEmptyProbsDAO(dbConns.getConfigDBConnection());
       WeaponProbsDAO wpnProbsDAO = new WeaponProbsDAO(dbConns.getConfigDBConnection());
       UAVSensorCfgsDAO uavSnsrCfgsDAO = new UAVSensorCfgsDAO(dbConns.getConfigDBConnection());
       UAVWeaponCfgsDAO uavWpnsCfgsDAO = new UAVWeaponCfgsDAO(dbConns.getConfigDBConnection());
@@ -212,6 +228,16 @@ public class EntityTypeCSVCodec
          if (success)
          {
             success = sensorProbsDAO.loadData(entCfgs.getSnsrProbs());
+         }
+      }
+
+      if (success)
+      {
+         success = sensorEmptyProbsDAO.loadCSV(snsrEmptyProbFile);
+
+         if (success)
+         {
+            success = sensorEmptyProbsDAO.loadData(entCfgs.getSnsrProbs());
          }
       }
 

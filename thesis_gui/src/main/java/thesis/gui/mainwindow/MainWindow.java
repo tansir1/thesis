@@ -137,7 +137,8 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
 
       if(success)
       {
-         execSvc.submit(simRunner);
+         //execSvc.submit(simRunner);
+         execSvc.submit(new CatchableRunnerException(simRunner));
       }
 
       return success;
@@ -165,6 +166,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       toolbar.add(actions.getPlay4HzAction());
       toolbar.add(actions.getPlay15HzAction());
       toolbar.add(actions.getPlay30HzAction());
+      toolbar.add(actions.getPlay1000HzAction());
       toolbar.add(actions.getPlayCPUAction());
       toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
       return toolbar;
@@ -178,9 +180,9 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
     */
    private void connectSimModel(SimModel simModel)
    {
-      simPanel.connectSimModel(simModel, actions);
       uavViewPan.connectSimModel(simModel, simPanel);
       simTimer.connectSimRunner(simRunner);
+      simPanel.connectSimModel(simModel, actions);
    }
 
    protected SimStatusPanel getSimStatusPanel()
@@ -208,6 +210,10 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
    public void onMapMouseUpdate(MapMouseData event)
    {
       statusLbl.setText(event.toString());
+      if(event.isClicked())
+      {
+         uavViewPan.onMapClick(event.getWorldCoordinate());
+      }
    }
 
    @Override
@@ -222,7 +228,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
             @Override
             public void run()
             {
-               logger.info("Render state update");
+               //logger.info("Render state update");
                simPanel.repaint();
                uavViewPan.update();
                simStatPan.update(simModel.getSimTimeState());
@@ -233,6 +239,33 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       {
          logger.error("Failed to render sim GUI. Details: {}", e.getMessage());
       }
+   }
+
+   /**
+    *This is a quick hack to debug exceptions thrown in the executor service.
+    */
+   private static class CatchableRunnerException implements Runnable
+   {
+      private Runnable runMe;
+
+      public CatchableRunnerException(Runnable runMe)
+      {
+         this.runMe = runMe;
+      }
+
+      @Override
+      public void run()
+      {
+         try
+         {
+            runMe.run();
+         }
+         catch(Exception e)
+         {
+            e.printStackTrace();
+         }
+      }
+
    }
 
 }

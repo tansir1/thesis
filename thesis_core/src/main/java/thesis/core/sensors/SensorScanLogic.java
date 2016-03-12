@@ -13,8 +13,12 @@ import thesis.core.targets.TargetMgr;
 
 public class SensorScanLogic
 {
-   static final double detectAngleDegradationSlope = -0.005555556f;
-   static final double minDetectValue = 0.001;
+   private static final double detectAngleDegradationSlope = -0.005555556f;
+   private static final double minDetectValue = 0.001;
+
+   //These prevent NaN and positive/negative infinity issues
+   private static final double MIN_BAYES_LIMIT = 0.000000000001;
+   private static final double MAX_BAYES_LIMIT = 0.999999999999;
 
    private SensorProbs snsrProbs;
    private TargetMgr tgtMgr;
@@ -184,17 +188,29 @@ public class SensorScanLogic
 
       double probDetectEmpty = snsrProbs.getSensorDetectEmptyProb(snsrType);
       double probMisclassAsEmpty = 1d;
-      for (Target trueTgt : trueTgts)
+
+      if(trueTgts.isEmpty())
       {
-         double missedTgt = 1d - snsrProbs.getSensorDetectTgtProb(snsrType, trueTgt.getType());
-         probMisclassAsEmpty *= missedTgt;
+         probMisclassAsEmpty = 0.5d;
       }
+      else
+      {
+         for (Target trueTgt : trueTgts)
+         {
+            double missedTgt = 1d - snsrProbs.getSensorDetectTgtProb(snsrType, trueTgt.getType());
+            probMisclassAsEmpty *= missedTgt;
+         }
+      }
+
 
       if (emptyCellDetected)
       {
          double numerator = probDetectEmpty * prevEmptyProb;
          double denominator = (probDetectEmpty * prevEmptyProb) + (probMisclassAsEmpty * prevNotEmptyProb);
-         cellBelief.updateEmptyBelief(simTime, numerator / denominator);
+         double bayes = numerator / denominator;
+         bayes = Math.min(bayes, MAX_BAYES_LIMIT);
+         bayes = Math.max(bayes, MIN_BAYES_LIMIT);
+         cellBelief.updateEmptyBelief(simTime, bayes);
       }
       else
       {
@@ -204,6 +220,8 @@ public class SensorScanLogic
          double denominator = (probScanTgt * prevNotEmptyProb);
 
          double bayes = numerator / denominator;
+         bayes = Math.min(bayes, MAX_BAYES_LIMIT);
+         bayes = Math.max(bayes, MIN_BAYES_LIMIT);
          cellBelief.updateEmptyBelief(simTime, 1d - bayes);
       }
    }

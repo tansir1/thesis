@@ -21,7 +21,9 @@ public class RenderOptions
       Targets(3),
       UAVs(4),
       UavHistoryTrail(5),
-      SensorFOV(6);
+      SensorFOV(6),
+      Belief(7),
+      CommsRange(8);
 
       private int index;
       private RenderOption(int index)

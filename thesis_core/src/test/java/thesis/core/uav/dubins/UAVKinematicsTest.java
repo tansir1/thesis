@@ -1,4 +1,4 @@
-package thesis.core.entities.uav.dubins;
+package thesis.core.uav.dubins;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -34,7 +34,7 @@ public class UAVKinematicsTest
 
 
       SimModel sim = new SimModel();
-      sim.reset(42, worldCfg, entTypeCfgs, 0.0f, 0.0f);
+      sim.reset(42, worldCfg, entTypeCfgs, 0.0f, 0.0f, 0d);
 
       UAV uav = sim.getUAVManager().getUAV(0);
 

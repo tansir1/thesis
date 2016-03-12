@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class RectangleTests
+public class TrapezoidTests
 {
 
    @Test
    public void axisAlignedPointInOutTest()
    {
-      Rectangle testMe = new Rectangle();
+      Trapezoid testMe = new Trapezoid();
 
       /* @formatter:off
        * 10,0-----------10,30
@@ -38,7 +38,7 @@ public class RectangleTests
    @Test
    public void rotatedPointInOutTest()
    {
-      Rectangle testMe = new Rectangle();
+      Trapezoid testMe = new Trapezoid();
 
       testMe.getBottomLeft().setCoordinate(1, 2);
       testMe.getTopLeft().setCoordinate(2, 1);
@@ -68,14 +68,14 @@ public class RectangleTests
        * @formatter:on
        */
 
-      Rectangle goodRect = new Rectangle();
+      Trapezoid goodRect = new Trapezoid();
       goodRect.getBottomLeft().setCoordinate(0, 0);
       goodRect.getTopLeft().setCoordinate(10, 0);
       goodRect.getTopRight().setCoordinate(10, 30);
       goodRect.getBottomRight().setCoordinate(0, 30);
 
       //Completely inverted rectange
-      Rectangle badRect = new Rectangle();
+      Trapezoid badRect = new Trapezoid();
       badRect.getTopLeft().setCoordinate(0, 30);
       badRect.getTopRight().setCoordinate(0, 0);
       badRect.getBottomLeft().setCoordinate(10, 30);
@@ -88,5 +88,33 @@ public class RectangleTests
       assertEquals("Failed to convert bottom left.", badRect.getBottomLeft(), goodRect.getBottomLeft());
       assertEquals("Failed to convert bottom right.", badRect.getBottomRight(), goodRect.getBottomRight());
       assertTrue("Not in canonical form.", badRect.isCanonicalForm());
+   }
+
+   @Test
+   public void rectInRectTest()
+   {
+      Trapezoid big = new Trapezoid();
+      Trapezoid small = new Trapezoid();
+
+      big.getTopLeft().setCoordinate(100, 0);
+      big.getTopRight().setCoordinate(100, 100);
+      big.getBottomRight().setCoordinate(0, 100);
+      big.getBottomLeft().setCoordinate(0, 0);
+
+      small.getTopLeft().setCoordinate(50, 10);
+      small.getTopRight().setCoordinate(50, 90);
+      small.getBottomRight().setCoordinate(10, 90);
+      small.getBottomLeft().setCoordinate(10, 10);
+
+      assertTrue("Did not detect small rect inside big rect.", big.containsRegion(small));
+
+
+      small.getTopLeft().setCoordinate(50, 10);
+      small.getTopRight().setCoordinate(50, 190);
+      small.getBottomRight().setCoordinate(10, 190);
+      small.getBottomLeft().setCoordinate(10, 10);
+
+      assertFalse("Incorrectly determined that small rect is inside big rect.", big.containsRegion(small));
+
    }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
 
 /**
@@ -54,10 +54,14 @@ public class WorldGIS
    }
 
    /**
-    * @param width Width of the world in meters.
-    * @param height Height of the world in meters.
-    * @param numRows Tessellate the world into this many rows.
-    * @param numCols Tessellate the world into this many columns.
+    * @param width
+    *           Width of the world in meters.
+    * @param height
+    *           Height of the world in meters.
+    * @param numRows
+    *           Tessellate the world into this many rows.
+    * @param numCols
+    *           Tessellate the world into this many columns.
     */
    public void reset(double width, double height, int numRows, int numCols)
    {
@@ -109,7 +113,6 @@ public class WorldGIS
    {
       return numCols;
    }
-
 
    /**
     * Converts a physical world location to a discretized cell location.
@@ -215,8 +218,34 @@ public class WorldGIS
       to.setCoordinate(north, east);
    }
 
+   public Trapezoid convertCellToRectangle(CellCoordinate cell)
+   {
+      Trapezoid rect = new Trapezoid();
+      convertCellToRectangle(cell, rect);
+      return rect;
+   }
+
+
+   public Trapezoid convertCellToRectangle(CellCoordinate cell, Trapezoid rect)
+   {
+      double south = cell.getRow() * distPerRow;
+      double north = (cell.getRow()+1) * distPerRow;
+
+      double west = cell.getColumn() * distPerCol;
+      double east = (cell.getColumn()+1) * distPerCol;
+
+      rect.getTopLeft().setCoordinate(north,west);
+      rect.getTopRight().setCoordinate(north,east);
+      rect.getBottomRight().setCoordinate(south,east);
+      rect.getBottomLeft().setCoordinate(south,west);
+      //rect.convertToCanonicalForm();
+
+      return rect;
+   }
+
    /**
-    * @return The maximum distance between the farthest points in the world in meters.
+    * @return The maximum distance between the farthest points in the world in
+    *         meters.
     */
    public double getMaxWorldDistance()
    {
@@ -225,14 +254,42 @@ public class WorldGIS
       return origin.distanceTo(maxWidthHeight);
    }
 
-   public List<CellCoordinate> getCellsInRectangle(Rectangle rect)
+   public List<CellCoordinate> getCellsInRectangle(Trapezoid rect)
    {
       List<CellCoordinate> cells = new ArrayList<CellCoordinate>();
       getCellsInRectangle(rect, cells);
       return cells;
    }
 
-   public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
+//   public void getCellsInRectangle(Rectangle rect, List<CellCoordinate> cellsInRect)
+//   {
+//      int ranges[] = new int[4];
+//      findRowColExtremes(ranges, rect);
+//      final int minRow = ranges[0];
+//      final int maxRow = ranges[1];
+//      final int minCol = ranges[2];
+//      final int maxCol = ranges[3];
+//
+//      rect.convertToCanonicalForm();
+//
+//      Rectangle cellRect = new Rectangle();
+//      CellCoordinate tempCC = new CellCoordinate();
+//      for (int i = minRow; i <= maxRow; ++i)
+//      {
+//         for (int j = minCol; j <= maxCol; ++j)
+//         {
+//            tempCC.setCoordinate(i, j);
+//            convertCellToRectangle(tempCC, cellRect);
+//
+//            if(rect.containsRegion(cellRect))
+//            {
+//               cellsInRect.add(new CellCoordinate(tempCC));
+//            }
+//         }
+//      }
+//   }
+
+   public void getCellsInRectangle(Trapezoid rect, List<CellCoordinate> cellsInRect)
    {
       int ranges[] = new int[4];
       findRowColExtremes(ranges, rect);
@@ -243,13 +300,13 @@ public class WorldGIS
 
       WorldCoordinate tempWC = new WorldCoordinate();
       CellCoordinate tempCC = new CellCoordinate();
-      for(int i=minRow; i<=maxRow; ++i)
+      for (int i = minRow; i <= maxRow; ++i)
       {
-         for(int j=minCol; j<=maxCol; ++j)
+         for (int j = minCol; j <= maxCol; ++j)
          {
             tempCC.setCoordinate(i, j);
             convertCellToWorld(tempCC, tempWC);
-            if(rect.isCoordinateInRegion(tempWC))
+            if (rect.isCoordinateInRegion(tempWC))
             {
                cellsInRect.add(new CellCoordinate(tempCC));
             }
@@ -257,9 +314,9 @@ public class WorldGIS
       }
    }
 
-   private void findRowColExtremes(int[] ranges, Rectangle rect)
+   private void findRowColExtremes(int[] ranges, Trapezoid rect)
    {
-      rect.convertToCanonicalForm();
+      //rect.convertToCanonicalForm();
 
       CellCoordinate temp1 = new CellCoordinate();
       CellCoordinate temp2 = new CellCoordinate();
@@ -268,17 +325,61 @@ public class WorldGIS
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxRow = Math.max(temp1.getRow(), temp2.getRow());
 
+      if (maxRow >= numRows)
+      {
+         maxRow = numRows - 1;
+      }
+
+      if (maxRow < 0)
+      {
+         maxRow = 0;
+      }
+
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getBottomRight(), temp2);
       int minRow = Math.min(temp1.getRow(), temp2.getRow());
+
+      if (minRow < 0)
+      {
+         minRow = 0;
+      }
 
       convertWorldToCell(rect.getBottomRight(), temp1);
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxCol = Math.max(temp1.getColumn(), temp2.getColumn());
 
+      if (maxCol >= numCols)
+      {
+         maxCol = numCols - 1;
+      }
+
+      if (maxCol < 0)
+      {
+         maxCol = 0;
+      }
+
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getTopLeft(), temp2);
       int minCol = Math.min(temp1.getColumn(), temp2.getColumn());
+
+      if (minCol < 0)
+      {
+         minCol = 0;
+      }
+
+      if(maxRow < minRow)
+      {
+         int temp = minRow;
+         minRow = maxRow;
+         maxRow = temp;
+      }
+
+      if(maxCol < minCol)
+      {
+         int temp = minCol;
+         minCol = maxCol;
+         maxCol = temp;
+      }
 
       ranges[0] = minRow;
       ranges[1] = maxRow;
@@ -289,7 +390,6 @@ public class WorldGIS
    @Override
    public String toString()
    {
-      return "WorldGIS [width=" + width + ", height=" + height + ", numRows=" + numRows + ", numCols=" + numCols
-            + "]";
+      return "WorldGIS [width=" + width + ", height=" + height + ", numRows=" + numRows + ", numCols=" + numCols + "]";
    }
 }

@@ -84,7 +84,7 @@ public class UAV
 
       comms.stepSimulation(pathing.getCoordinate());
       sensors.stepSimulation(pathing.getCoordinate(), belief, SimTime.CURRENT_SIM_TIME_MS);
-      logicMgr.stepSimulation(belief, msgs);
+      logicMgr.stepSimulation(belief, msgs, this);
       belief.stepSimulation(comms);
    }
 
@@ -106,6 +106,11 @@ public class UAV
    public WorldBelief getBelief()
    {
       return belief;
+   }
+
+   public UAVLogicMgr getLogic()
+   {
+      return logicMgr;
    }
 
    /**

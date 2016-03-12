@@ -10,17 +10,19 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import thesis.core.SimModel;
+import thesis.core.belief.CellBelief;
 import thesis.core.common.CellCoordinate;
+import thesis.core.common.Circle;
 import thesis.core.common.RoadNetwork;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 import thesis.core.sensors.Sensor;
 import thesis.core.targets.Target;
 import thesis.core.uav.UAV;
+import thesis.core.uav.dubins.DubinsPath;
 import thesis.core.utilities.CoreRsrcPaths;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.world.RenderOptions.RenderOption;
@@ -80,7 +82,7 @@ public class RenderSimState
     */
    private int roadInterSectionSz;
 
-   private int selectedUAV;
+   private int selectedUavId;
 
    private BufferedImage rawHavenImg;
    private BufferedImage scaledHavenImg;
@@ -98,9 +100,6 @@ public class RenderSimState
    private BufferedImage scaledBlueMobileImg;
 
    private RenderOptions renderOpts;
-
-   private final int MAX_NUM_TRAIL_PTS = 100;
-   private Map<Integer, List<Point>> uavTrails;
 
    private SimModel simModel;
 
@@ -132,8 +131,7 @@ public class RenderSimState
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
-      uavTrails = new HashMap<Integer, List<Point>>();
-      selectedUAV = -1;
+      selectedUavId = -1;
       gis = simModel.getWorldGIS();
    }
 
@@ -162,7 +160,7 @@ public class RenderSimState
 
    public void setSelectedUAV(int id)
    {
-      this.selectedUAV = id;
+      this.selectedUavId = id;
    }
 
    /**
@@ -209,6 +207,11 @@ public class RenderSimState
 
       synchronized (simModel)
       {
+         if (renderOpts.isOptionEnabled(RenderOption.Belief))
+         {
+            drawSelecteUAVBelief(gfx);
+         }
+
          if (renderOpts.isOptionEnabled(RenderOption.Graticule))
          {
             drawGridLines(gfx);
@@ -227,6 +230,11 @@ public class RenderSimState
          if (renderOpts.isOptionEnabled(RenderOption.Targets))
          {
             drawTargets(gfx);
+         }
+
+         if (renderOpts.isOptionEnabled(RenderOption.CommsRange))
+         {
+            drawCommsRange(gfx);
          }
 
          if (renderOpts.isOptionEnabled(RenderOption.UavHistoryTrail))
@@ -257,6 +265,13 @@ public class RenderSimState
     */
    public WorldCoordinate pixelsToWorldCoordinate(int x, int y)
    {
+      WorldCoordinate temp = new WorldCoordinate();
+      pixelsToWorldCoordinate(x, y, temp);
+      return temp;
+   }
+
+   public void pixelsToWorldCoordinate(int x, int y, WorldCoordinate coord)
+   {
       // Invert the y axis so that "north" is at the top of the screen.
       y = bounds.height - y;
 
@@ -266,7 +281,7 @@ public class RenderSimState
       final double worldH = gis.getHeight() * yPercent;
       final double worldW = gis.getWidth() * xPercent;
 
-      return new WorldCoordinate(worldH, worldW);
+      coord.setCoordinate(worldH, worldW);
    }
 
    /**
@@ -602,18 +617,31 @@ public class RenderSimState
 
          worldCoordinateToPixels(wc, pixels);
 
-         trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
+         trans.translate(pixels.x - halfImgW, pixels.y + halfImgH);
          // trans.rotate(-uav.getHeading().asRadians());
          double deg = uav.getPathing().getPose().getHeading() - 90;
          trans.rotate(-Math.toRadians(deg));
 
-         if (uav.getID() != selectedUAV)
+         if (uav.getID() != selectedUavId)
          {
             g2d.drawImage(scaledBlueMobileImg, trans, null);
          }
          else
          {
             g2d.drawImage(scaledGreenMobileImg, trans, null);
+         }
+
+         //Draw a box at the UAV's destination
+         if(uav.getID() == selectedUavId)
+         {
+            DubinsPath path = uav.getPathing().getFlightPath();
+            if(path != null)
+            {
+               WorldCoordinate destWC = path.getEndPose().getCoordinate();
+               Point pixelDest = worldCoordinateToPixels(destWC);
+               g2d.setColor(Color.GREEN);
+               g2d.drawRect(pixelDest.x - 5, pixelDest.y + 5, 10, 10);
+            }
          }
       }
    }
@@ -632,45 +660,24 @@ public class RenderSimState
       UAV uavs[] = simModel.getUAVManager().getAllUAVs();
       final int numUAVs = uavs.length;
       UAV uav = null;
+      List<WorldPose> trail = new ArrayList<WorldPose>();
       for (int i = 0; i < numUAVs; ++i)
       {
+         trail.clear();
+
+         final Point prevPixels = new Point(-1, -1);
          final Point curPixels = new Point(0, 0);
          uav = uavs[i];
 
-         List<Point> trail = uavTrails.get(uav.getID());
-         if(trail == null)
+         uav.getPathing().getFlightHistoryTrail(trail);
+         for(WorldPose pose : trail)
          {
-            trail = new ArrayList<Point>(MAX_NUM_TRAIL_PTS);
-            uavTrails.put(uav.getID(), trail);
-         }
-
-         worldCoordinateToPixels(uav.getPathing().getPose().getCoordinate(), curPixels);
-         if(!trail.isEmpty())
-         {
-            Point lastPt = trail.get(trail.size()-1);
-            if(!lastPt.equals(curPixels))
+            worldCoordinateToPixels(pose.getCoordinate(), curPixels);
+            if (prevPixels.x != -1 && prevPixels.y != -1)
             {
-               trail.add(curPixels);
-               if(trail.size() > MAX_NUM_TRAIL_PTS)
-               {
-                  trail.remove(0);
-               }
+               g2d.drawLine(prevPixels.x, prevPixels.y, curPixels.x, curPixels.y);
             }
-         }
-         else
-         {
-            trail.add(curPixels);
-         }
-
-         final Point prevPix = new Point(-1, -1);
-         for (Point curPt : trail)
-         {
-            if (prevPix.x != -1 && prevPix.y != -1)
-            {
-               g2d.drawLine(prevPix.x, prevPix.y, curPt.x, curPt.y);
-            }
-
-            prevPix.setLocation(curPt);
+            prevPixels.setLocation(curPixels);
          }
       }
    }
@@ -702,7 +709,8 @@ public class RenderSimState
          for (int j = 0; j < NUM_SENSORS; ++j)
          {
             sensor = sensors.get(j);
-            final thesis.core.common.Rectangle viewRect = sensor.getViewFootPrint();
+            final thesis.core.common.Trapezoid viewRect = sensor.getViewFootPrint();
+            //viewRect.convertToCanonicalForm();
 
             // Line from UAV to center of FOV
             worldCoordinateToPixels(sensor.getViewCenter(), frustrumPix);
@@ -732,6 +740,77 @@ public class RenderSimState
 
             gfx.drawPolyline(frustrumX, frustrumY, 5);
          }
+      }
+   }
+
+   private void drawSelecteUAVBelief(Graphics2D gfx)
+   {
+      UAV selUAV = simModel.getUAVManager().getUAV(selectedUavId);
+
+      if (selUAV == null || selUAV.getBelief() == null)
+      {
+         return;
+      }
+
+      final int numCols = gis.getColumnCount();
+      final int numRows = gis.getRowCount();
+
+      for (int i = 0; i < numRows; ++i)
+      {
+         for (int j = 0; j < numCols; ++j)
+         {
+            CellBelief cb = selUAV.getBelief().getCellBelief(i, j);
+            double prob = cb.getProbabilityEmptyCell();
+
+            gfx.setColor(probabilityToColor(prob));
+            int gridX = j * gridCellW;
+            int gridY = ((numRows-1) - i) * gridCellH; //Invert the y axis for rendering
+            gfx.fillRect(gridX, gridY , gridCellW, gridCellH);
+
+            gfx.setColor(Color.green);
+            int textVal = (int)(prob * 100d);
+            gridX += gridCellW / 10;
+            gridY += gridCellH / 3;
+            gfx.drawString(Integer.toString(textVal), gridX, gridY);
+
+            textVal = (int)(cb.getUncertainty() * 100d);
+            gridX += gridCellW / 2;
+            gfx.drawString(Integer.toString(textVal), gridX, gridY);
+         }
+      }
+   }
+
+   private Color probabilityToColor(double prob)
+   {
+      int blue = (int)(255d * prob);
+      int red = (int)(255d * (1d-prob));
+
+      return new Color(red, 0, blue, 127);
+   }
+
+   private void drawCommsRange(Graphics2D gfx)
+   {
+      gfx.setColor(Color.PINK);
+
+      final Point pixels = new Point(0, 0);
+
+      UAV uavs[] = simModel.getUAVManager().getAllUAVs();
+      final int numUAVs = uavs.length;
+      UAV uav = null;
+      for (int i = 0; i < numUAVs; ++i)
+      {
+         uav = uavs[i];
+         Circle commsCirc = uav.getComms().getCommsCoverage();
+
+         final int rangePixW = (int)(pixelsPerMeterW * commsCirc.getRadius());
+         final int rangePixH = (int)(pixelsPerMeterH * commsCirc.getRadius());
+
+         //Convert UAV location to top left of coverage range bounding box
+         worldCoordinateToPixels(commsCirc.getCenter(), pixels);
+         final int topLeftX = pixels.x - rangePixW;
+         final int topLeftY = pixels.y - rangePixH;
+
+         gfx.drawOval(topLeftX, topLeftY, rangePixW * 2, rangePixH * 2);
       }
    }
 

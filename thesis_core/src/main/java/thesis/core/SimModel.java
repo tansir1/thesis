@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.SimTimeState;
-import thesis.core.common.WorldPose;
 import thesis.core.serialization.world.WorldConfig;
 import thesis.core.targets.TargetMgr;
-import thesis.core.uav.UAV;
 import thesis.core.uav.UAVMgr;
 import thesis.core.uav.comms.CommsConfig;
 import thesis.core.utilities.LoggerIDs;
@@ -61,7 +59,7 @@ public class SimModel
     *           The types of entities within the world.
     */
    public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, double commsRngPercent,
-         double commsRelayProb)
+         double commsRelayProb, double beliefDecayRate)
    {
       randGen = new Random(randomSeed);
 
@@ -75,10 +73,10 @@ public class SimModel
       HavenRouting havenRouting = new HavenRouting(world, randGen);
       tgtMgr.reset(entTypes.getTgtTypeCfgs(), worldCfg.getTargetCfgs(), havenRouting, world.getWorldGIS());
 
-      resetUAVs(worldCfg, commsRngPercent, commsRelayProb);
+      resetUAVs(worldCfg, commsRngPercent, commsRelayProb, beliefDecayRate);
    }
 
-   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb)
+   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb, double beliefDecayRate)
    {
       final double maxComsRng = world.getWorldGIS().getMaxWorldDistance() * commsRngPercent;
 
@@ -88,11 +86,11 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS());
+      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS(), beliefDecayRate);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.
-      for (UAV uav : uavMgr.getAllUAVs())
+      /*for (UAV uav : uavMgr.getAllUAVs())
       {
          WorldPose pose = new WorldPose();
 
@@ -105,7 +103,7 @@ public class SimModel
 
          // Temporary sensor stare point
          uav.getSensors().stareAtAll(pose.getCoordinate());
-      }
+      }*/
    }
 
    public World getWorld()

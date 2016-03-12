@@ -144,6 +144,16 @@ public class Pathing
       retVal.addAll(pathTrail);
    }
 
+   public void teleportTo(WorldCoordinate wc)
+   {
+      logger.info("Teleporting uav {} to {}", uavID, wc);
+      pose.getCoordinate().setCoordinate(wc);
+      if(path != null)
+      {
+         computePathTo(path.getEndPose());
+      }
+   }
+
    private void stepPhysics()
    {
       // We're one frame closer to the next waypoint so decrement the counter
@@ -225,5 +235,12 @@ public class Pathing
       {
          logger.error("UAV {} could not generate a path.", uavID);
       }
+   }
+
+   public void computePathTo(final WorldCoordinate flyTo)
+   {
+      double bearingTo = pose.getCoordinate().bearingTo(flyTo);
+      WorldPose destPose = new WorldPose(flyTo, bearingTo);
+      computePathTo(destPose);
    }
 }

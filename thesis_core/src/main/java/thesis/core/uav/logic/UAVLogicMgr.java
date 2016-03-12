@@ -1,14 +1,17 @@
 package thesis.core.uav.logic;
 
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.belief.WorldBelief;
+import thesis.core.uav.UAV;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.comms.WorldBeliefMsg;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.world.WorldGIS;
 
 public class UAVLogicMgr
 {
@@ -16,12 +19,24 @@ public class UAVLogicMgr
 
    private final int hostUavId;
 
-   public UAVLogicMgr(int hostUavId)
+   private TaskType curTask;
+
+   private SearchTask searchTask;
+
+   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
    {
       this.hostUavId = hostUavId;
+      curTask = TaskType.Search;
+
+      searchTask = new SearchTask(hostUavId, gis, randGen);
    }
 
-   public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs)
+   public TaskType getCurrentTaskType()
+   {
+      return curTask;
+   }
+
+   public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV)
    {
       for(Message msg : incomingMsgs)
       {
@@ -43,6 +58,8 @@ public class UAVLogicMgr
             break;
          }
       }
+
+      performTask(curBelief, hostUAV);
    }
 
    private void processBeliefStateMsg(WorldBelief curBelief, Message rawMsg)
@@ -50,5 +67,15 @@ public class UAVLogicMgr
       WorldBeliefMsg msg = (WorldBeliefMsg)rawMsg;
       curBelief.mergeBelief(msg.getBelief());
       logger.trace("Merged belief from {} into {}", rawMsg.getOriginatingUAV(), hostUavId);
+   }
+
+   private void performTask(WorldBelief curBelief, UAV hostUAV)
+   {
+      switch(curTask)
+      {
+      case Search:
+         searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
+         break;
+      }
    }
 }

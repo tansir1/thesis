@@ -1,13 +1,13 @@
 package thesis.core.common;
 
-public class Rectangle
+public class Trapezoid
 {
    private WorldCoordinate topLeft;
    private WorldCoordinate topRight;
    private WorldCoordinate bottomLeft;
    private WorldCoordinate bottomRight;
 
-   public Rectangle()
+   public Trapezoid()
    {
       topLeft = new WorldCoordinate();
       topRight = new WorldCoordinate();
@@ -15,7 +15,7 @@ public class Rectangle
       bottomRight = new WorldCoordinate();
    }
 
-   public void copy(Rectangle copy)
+   public void copy(Trapezoid copy)
    {
       topLeft.setCoordinate(copy.topLeft);
       topRight.setCoordinate(copy.topRight);
@@ -118,7 +118,7 @@ public class Rectangle
 
    public boolean isCoordinateInRegion(final WorldCoordinate testPt)
    {
-      //Tolerance factor to deal with floating point comparisons
+      // Tolerance factor to deal with floating point comparisons
       final double AREA_TOLERANCE = 0.001;
 
       boolean inRegion = true;
@@ -126,19 +126,22 @@ public class Rectangle
       // This algorithm requires substantial computation but can work with any
       // polygon. Given the test coordinate create triangles iteratively through
       // all points of the polygon. If the sum of the area of the triangles is
-      // greater than the area of the rectangle then the point is outside of the
-      // rectangle.
+      // greater than the area of the polygon then the point is outside of the
+      // polygon.
 
-      double widthM = getWidth();
+      //double widthM = getWidth();
       double heightM = getHeight();
-      double rectAreaM2 = widthM * heightM;
+      double nearBaseM = Math.abs(bottomLeft.distanceTo(bottomRight));
+      double farBaseM = Math.abs(topLeft.distanceTo(topRight));
+
+      double polygonAreaM2 = (nearBaseM + farBaseM) * 0.5 * heightM;
 
       double testArea = triangularAreaM2(topLeft, testPt, bottomLeft);
       testArea += triangularAreaM2(bottomLeft, testPt, bottomRight);
       testArea += triangularAreaM2(bottomRight, testPt, topRight);
       testArea += triangularAreaM2(testPt, topRight, topLeft);
 
-      if (testArea > rectAreaM2 && Math.abs(testArea - rectAreaM2) > AREA_TOLERANCE)
+      if (testArea > polygonAreaM2 && Math.abs(testArea - polygonAreaM2) > AREA_TOLERANCE)
       {
          inRegion = false;
       }
@@ -156,5 +159,28 @@ public class Rectangle
 
       double halfPerim = (d1 + d2 + d3) / 2.0;
       return Math.sqrt(halfPerim * (halfPerim - d1) * (halfPerim - d2) * (halfPerim - d3));
+   }
+
+   public boolean containsRegion(Trapezoid rect)
+   {
+      boolean retVal = false;
+      //@formatter:off
+      if (topLeft.getNorth() >= rect.getTopLeft().getNorth() &&
+          topLeft.getEast() <= rect.getTopLeft().getEast() &&
+
+          topRight.getNorth() >= rect.getTopRight().getNorth() &&
+          topRight.getEast() >= rect.getTopRight().getEast() &&
+
+          bottomLeft.getNorth() <= rect.getBottomLeft().getNorth() &&
+          bottomLeft.getEast() <= rect.getBottomLeft().getEast() &&
+
+          bottomRight.getNorth() <= rect.getTopLeft().getNorth() &&
+          bottomRight.getEast() >= rect.getTopLeft().getEast())
+      //@formatter:on
+      {
+         retVal = true;
+      }
+
+      return retVal;
    }
 }

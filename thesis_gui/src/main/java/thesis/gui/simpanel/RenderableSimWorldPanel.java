@@ -29,6 +29,8 @@ public class RenderableSimWorldPanel extends JPanel
 
 	private ListenerSupport<IMapMouseListener> listeners;
 
+	//private SimModel simModel;
+
 	public RenderableSimWorldPanel()
 	{
 		Dimension minSz = new Dimension(640, 480);
@@ -61,6 +63,8 @@ public class RenderableSimWorldPanel extends JPanel
 
 	public void connectSimModel(final SimModel simModel, final Actions actions)
 	{
+	   //this.simModel = simModel;
+
 		renderWorld = new RenderSimState(simModel);
 		this.addMouseListener(mouseState);
 		this.addMouseMotionListener(mouseState);
@@ -71,7 +75,7 @@ public class RenderableSimWorldPanel extends JPanel
 		   action.connectToModel(renderWorld.getRenderOptions());
 		}
 
-		repaint();
+		//repaint();
 	}
 
 	@Override
@@ -120,11 +124,14 @@ public class RenderableSimWorldPanel extends JPanel
 		private int curY;
 		private boolean mouseOver;
 
+		private boolean clicked;
+
 		public MouseMoveListenerProxy()
 		{
 			curX = -1;
 			curY = -1;
 			mouseOver = false;
+			clicked = false;
 		}
 
 		public MapMouseData getData()
@@ -132,7 +139,7 @@ public class RenderableSimWorldPanel extends JPanel
 			WorldCoordinate wc = renderWorld.pixelsToWorldCoordinate(curX, curY);
 			CellCoordinate cc = renderWorld.pixelsToCellCoordinate(curX, curY);
 
-			MapMouseData data = new MapMouseData(wc, cc, curX, curY);
+			MapMouseData data = new MapMouseData(wc, cc, curX, curY, clicked);
 			return data;
 		}
 
@@ -162,14 +169,35 @@ public class RenderableSimWorldPanel extends JPanel
 		{
 			curX = evt.getX();
 			curY = evt.getY();
-			// RenderableSimWorldPanel.this.repaint();
+			clicked = false;
+
 			updateMapMouseListeners();
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent evt)
 		{
-			// Do nothing for now
+	       curX = evt.getX();
+	       curY = evt.getY();
+	       clicked = true;
+
+//	       Circle region = new Circle();
+//	       renderWorld.pixelsToWorldCoordinate(curX, curY, region.getCenter());
+//
+//
+//	       synchronized(simModel)
+//	       {
+//	          double radius = simModel.getWorldGIS().getMaxWorldDistance() * 0.01;
+//	          region.setRadius(radius);
+//	          List<UAV> uavs = simModel.getUAVManager().getAllUAVsInRegion(region);
+//
+//	          for(UAV uav : uavs)
+//	          {
+//	             System.out.println(Integer.toString(uav.getID()));
+//	          }
+//	       }
+
+	       updateMapMouseListeners();
 		}
 
 		@Override

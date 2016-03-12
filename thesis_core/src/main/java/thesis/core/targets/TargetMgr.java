@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import thesis.core.SimModel;
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.HavenRouting;
-import thesis.core.common.Rectangle;
+import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldPose;
 import thesis.core.serialization.world.TargetStartCfg;
 import thesis.core.utilities.LoggerIDs;
@@ -106,7 +106,7 @@ public class TargetMgr
     * @return A list of targets in the region or an empty list if no targets are
     *         within the region.
     */
-   public List<Target> getTargetsInRegion(Rectangle region)
+   public List<Target> getTargetsInRegion(Trapezoid region)
    {
       List<Target> inRegion = new ArrayList<Target>();
       for (Target tar : targets)
