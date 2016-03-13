@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.common.Angle;
+import thesis.core.common.Circle;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
@@ -28,11 +30,11 @@ public class Pathing
    private static double TRAIL_SAMPLE_INTERVAL_MS = 250;
 
    /**
-    * Only store this much time worth of trail data.  Drop anything older.
+    * Only store this much time worth of trail data. Drop anything older.
     */
    private static double TRAIL_TIME_LIMIT_MS = 75000;
 
-   private static int MAX_TRAIL_ENTRIES = (int)(TRAIL_TIME_LIMIT_MS / TRAIL_SAMPLE_INTERVAL_MS);
+   private static int MAX_TRAIL_ENTRIES = (int) (TRAIL_TIME_LIMIT_MS / TRAIL_SAMPLE_INTERVAL_MS);
 
    /**
     * The radius required for the UAV to turn 180 degrees.
@@ -44,7 +46,6 @@ public class Pathing
     */
    private final double frameSpd;
 
-
    private WorldPose pose;
 
    private DubinsPath path;
@@ -55,8 +56,6 @@ public class Pathing
 
    private int numFramesToWypt;
    private int uavID;
-
-   private boolean orbiting;
 
    public Pathing(int id, int type, UAVTypeConfigs uavTypeCfgs)
    {
@@ -70,7 +69,6 @@ public class Pathing
       pathTrail = new ArrayList<WorldPose>();
       lastTrailSampleTimeAccumulator = 0;
       numFramesToWypt = 0;
-      orbiting = false;
    }
 
    public WorldCoordinate getCoordinate()
@@ -100,11 +98,6 @@ public class Pathing
       return pose;
    }
 
-   public boolean isOrbiting()
-   {
-      return orbiting;
-   }
-
    /**
     * Step the simulation forward by one frame.
     */
@@ -125,7 +118,7 @@ public class Pathing
             WorldPose curPose = new WorldPose(pose);
             pathTrail.add(curPose);
 
-            if(pathTrail.size() > MAX_TRAIL_ENTRIES)
+            if (pathTrail.size() > MAX_TRAIL_ENTRIES)
             {
                pathTrail.remove(0);
             }
@@ -156,7 +149,7 @@ public class Pathing
    {
       logger.info("Teleporting uav {} to {}", uavID, wc);
       pose.getCoordinate().setCoordinate(wc);
-      if(path != null)
+      if (path != null)
       {
          computePathTo(path.getEndPose());
       }
@@ -230,8 +223,6 @@ public class Pathing
 
    public void computePathTo(final WorldPose flyTo)
    {
-      orbiting = false;
-
       path = DubinsPathGenerator.generate(minTurnRadius, pose, flyTo);
       if (path.getPathType() != PathType.NO_PATH)
       {
@@ -254,13 +245,63 @@ public class Pathing
       computePathTo(destPose);
    }
 
-   public boolean computeOrbit(final WorldCoordinate loiterPt, final double loiterRadius)
+   public List<WorldCoordinate> computeOrbit(final Circle orbit, final int numCircleEdges)
    {
-      if(Math.abs(pose.getCoordinate().distanceTo(loiterPt)) > loiterRadius)
+      List<WorldCoordinate> route = new ArrayList<WorldCoordinate>(numCircleEdges);
+      generateOrbit(orbit, numCircleEdges, route);
+      return route;
+   }
+
+   private boolean rotateClockWise(final Circle orbit, WorldPose orbitStart)
+   {
+      // Compute the cross product of orbit-center-to-start and a unit vector
+      // pointing along the start vector.  This will tell us if the uav
+      // should follow the orbit clockwise or counter clockwise
+
+      double centerToStartAngle = Math.toRadians(orbit.getCenter().bearingTo(orbitStart.getCoordinate()));
+      double centerToStartDist = orbit.getCenter().distanceTo(orbitStart.getCoordinate());
+
+      double centerToStartN = Math.sin(centerToStartAngle) * centerToStartDist;
+      double centerToStartE = Math.cos(centerToStartAngle) * centerToStartDist;
+
+      double startHdg = Math.toRadians(orbitStart.getHeading());
+      // Assume unit vector lengths
+      double startN = Math.sin(startHdg);
+      double startE = Math.cos(startHdg);
+
+      //Assumes flat Z plane
+      double crossProductScalar = (centerToStartE * startN) - (centerToStartN * startE);
+      //double crossProductScalar = (startE * centerToStartN) - (startN * centerToStartE);
+      return crossProductScalar < 0;
+   }
+
+   public void generateOrbit(final Circle orbit, final int numCircleEdges, List<WorldCoordinate> waypoints)
+   {
+      if (numCircleEdges < 3)
       {
-         return false;
+         throw new IllegalArgumentException("numCircleEdges must be >= 3");
       }
 
-      //orbiting = true;
+      WorldPose orbitStartPose = orbit.minTravelToTangent(pose);
+
+      double startAngle = orbit.getCenter().bearingTo(orbitStartPose.getCoordinate());
+      double anglePerSegment = 360 / (double) numCircleEdges;
+
+      if (rotateClockWise(orbit, orbitStartPose))
+      {
+         anglePerSegment = -anglePerSegment;
+      }
+
+      waypoints.add(new WorldCoordinate(orbitStartPose.getCoordinate()));
+      for (int i = 1; i < numCircleEdges; ++i)
+      {
+         double degs = startAngle + (i * anglePerSegment);
+         degs = Angle.normalize360(degs);
+         double rads = Math.toRadians(startAngle + (i * anglePerSegment));
+         double north = Math.sin(rads) * orbit.getRadius() + orbit.getCenter().getNorth();
+         double east = Math.cos(rads) * orbit.getRadius() + orbit.getCenter().getEast();
+
+         waypoints.add(new WorldCoordinate(north, east));
+      }
    }
 }
