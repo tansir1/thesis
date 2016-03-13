@@ -28,7 +28,7 @@ public class TargetBelief
    {
       pseudoTimestamp = copy.pseudoTimestamp;
       trueTgtID = copy.trueTgtID;
-      pose.copy(copy.pose);
+      pose = new WorldPose(copy.pose);
       typeProbs = new double[copy.typeProbs.length];
       System.arraycopy(copy.typeProbs, 0, typeProbs, 0, typeProbs.length);
    }

@@ -149,7 +149,7 @@ public class Sensor
       pose.getCoordinate().setCoordinate(sensorLocation);
 
       slew();
-      if(focusedScanning)
+      if(!focusedScanning)
       {
          updateViewRegionFullScan();
       }
