@@ -30,7 +30,7 @@ public class UAVLogicMgr
       curTask = TaskType.Search;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
-      confirmTask = new ConfirmTask(hostUavId, gis, randGen);
+      confirmTask = new ConfirmTask(hostUavId);
    }
 
    public TaskType getCurrentTaskType()

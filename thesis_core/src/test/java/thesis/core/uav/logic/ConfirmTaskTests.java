@@ -1,5 +1,6 @@
 package thesis.core.uav.logic;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -12,14 +13,17 @@ import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.sensors.Sensor;
 import thesis.core.sensors.SensorGroup;
 import thesis.core.sensors.SensorProbs;
 import thesis.core.sensors.SensorScanLogic;
+import thesis.core.sensors.SensorTypeConfigs;
 import thesis.core.serialization.world.TargetStartCfg;
 import thesis.core.targets.TargetMgr;
 import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.uav.Pathing;
 import thesis.core.uav.UAVTypeConfigs;
+import thesis.core.uav.logic.ConfirmTask.State;
 import thesis.core.world.World;
 import thesis.core.world.WorldGIS;
 
@@ -48,6 +52,17 @@ public class ConfirmTaskTests
       tb.getCoordinate().setCoordinate(targetCoord);
    }
 
+   private void initSensor(SensorGroup snsrGrp, TargetMgr tgtMgr)
+   {
+      SensorTypeConfigs typeCfgs = new SensorTypeConfigs();
+      typeCfgs.reset(1);
+
+      typeCfgs.setSensorData(0, 45, 100, 300, 5);
+
+      Sensor snsr = new Sensor(0, 0, typeCfgs, tgtMgr);
+      snsrGrp.addSensor(snsr);
+   }
+
    @Test
    public void test()
    {
@@ -70,23 +85,37 @@ public class ConfirmTaskTests
 
       initTarget(worldBlf, tgtMgr, gis, targetCoord);
 
+
       SensorProbs pyldProbs = new SensorProbs();
       SensorScanLogic snsrScanLogic = new SensorScanLogic(pyldProbs, tgtMgr, new Random());
       SensorGroup snsrGrp = new SensorGroup(snsrScanLogic, gis);
 
+      initSensor(snsrGrp, tgtMgr);
 
       //-----Run test steps-----
       WorldCoordinate sensorLocation = new WorldCoordinate();
-      ConfirmTask testMe = new ConfirmTask(0, gis, new Random());
+      pathing.setHeading(sensorLocation.bearingTo(targetCoord));
+      ConfirmTask testMe = new ConfirmTask(0);
       testMe.reset(0);
+      assertEquals("Should be in the initialization state.", State.Init, testMe.getState());
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
 
       assertTrue("Confirm location and flight path don't match.",
             pathing.getFlightPath().getEndPose().getCoordinate().distanceTo(targetCoord) < DISTANCE_TOLERANCE);
 
+
       //Move 50% of the way to the target
       sensorLocation.setCoordinate(targetCoord.getNorth() / 2, targetCoord.getEast() / 2);
       pathing.teleportTo(sensorLocation);
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
+      assertEquals("Should be en-route", State.EnRoute, testMe.getState());
+
+      //Move to minimum orbit range plus 5%
+      double percentInsideOrbitRng = ConfirmTask.SENSOR_DISTANCE_ORBIT_PERCENT + 0.05;
+      sensorLocation.setCoordinate(targetCoord.getNorth() * percentInsideOrbitRng,
+            targetCoord.getEast() * percentInsideOrbitRng);
+      pathing.teleportTo(sensorLocation);
+      testMe.stepSimulation(worldBlf, pathing, snsrGrp);
+      assertEquals("Should be orbiting", State.Orbiting, testMe.getState());
    }
 }
