@@ -134,6 +134,9 @@ public class ConfirmTask
 
       snsrGrp.stareAtAll(confirmCoord);
 
+      //Clear out any left over focused scan logic from previous sensor state
+      snsrGrp.setFocusedScanning(false);
+
       state = State.EnRoute;
    }
 
@@ -174,10 +177,8 @@ public class ConfirmTask
          orbitWyptIdx = 0;
          pathing.computePathTo(orbitRoute.get(0));
          confirmStareStartTime = SimTime.CURRENT_SIM_TIME_MS;
-         // TODO Inform host uav to not scan cells but only the target's
-         // location
-         // Stop all sensor scan logic, draw circle around target location
-         // instead of frustrum???
+
+         snsrGrp.setFocusedScanning(true);
       }
    }
 
@@ -208,12 +209,14 @@ public class ConfirmTask
 
       if ((SimTime.CURRENT_SIM_TIME_MS - confirmStareStartTime) >= MILLISECONDS_TO_CONFIRM)
       {
+         snsrGrp.setFocusedScanning(false);
          state = State.Complete;
          logger.debug("UAV {} finished confirming target {}", hostUavId, trueTgtID);
          // Reset pathing to something?
          // FIXME Trigger the next auction
          return;
       }
+
 
       checkForReOrbit(curBelief, pathing, snsrGrp);
 

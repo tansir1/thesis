@@ -40,7 +40,11 @@ public class SensorGroup
       {
          s.stepSimulation(hostUAVLocation);
          Trapezoid fov = s.getViewFootPrint();
-         scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
+         if(!s.isFocusedScanning())
+         {
+            scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
+            //TODO Implement focused scan detection logic...if any
+         }
       }
    }
 
@@ -49,6 +53,28 @@ public class SensorGroup
       for (Sensor s : sensors)
       {
          s.slewToLookAt(starePoint);
+      }
+   }
+
+   public boolean isFocusedScanning()
+   {
+      boolean focused = false;
+      for(Sensor s: sensors)
+      {
+         if(s.isFocusedScanning())
+         {
+            focused = true;
+            break;
+         }
+      }
+      return focused;
+   }
+
+   public void setFocusedScanning(boolean focused)
+   {
+      for (Sensor s : sensors)
+      {
+         s.setFocusedScanning(focused);
       }
    }
 

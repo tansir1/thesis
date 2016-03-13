@@ -26,6 +26,12 @@ public class Sensor
     */
    private final double MAX_SLEW_FRAME_RATE;
 
+   /**
+    * The sensor viewing frustrum will be this percentage of full size when
+    * performing a focused scan.
+    */
+   private static final double FOCUSED_SCAN_SIZE_PERCENT = 0.25;
+
    private final TargetMgr tgtMgr;
 
    private final int type;
@@ -35,6 +41,8 @@ public class Sensor
    private final Trapezoid viewRegion;
 
    private int id;
+
+   private boolean focusedScanning;
 
    public Sensor(int type, int id, SensorTypeConfigs cfgs, TargetMgr tgtMgr)
    {
@@ -61,6 +69,8 @@ public class Sensor
       MAX_RNG = cfgs.getMaxRange(type);
       FOV = cfgs.getFOV(type);
       MAX_SLEW_FRAME_RATE = cfgs.getMaxSlewFrameRate(type);
+
+      focusedScanning = false;
    }
 
    public int getType()
@@ -124,12 +134,29 @@ public class Sensor
       return lookAtGoal;
    }
 
+   public boolean isFocusedScanning()
+   {
+      return focusedScanning;
+   }
+
+   public void setFocusedScanning(boolean focused)
+   {
+      this.focusedScanning = focused;
+   }
+
    public SensorDetections stepSimulation(WorldCoordinate sensorLocation)
    {
       pose.getCoordinate().setCoordinate(sensorLocation);
 
       slew();
-      updateViewRegion();
+      if(focusedScanning)
+      {
+         updateViewRegionFullScan();
+      }
+      else
+      {
+         updateViewRegionFocusedScan();
+      }
 
       return new SensorDetections(type, tgtMgr.getTargetsInRegion(viewRegion));
    }
@@ -168,7 +195,40 @@ public class Sensor
       }
    }
 
-   private void updateViewRegion()
+   private void updateViewRegionFocusedScan()
+   {
+      final double hdg = pose.getHeading();
+      final double halfFOVdeg = FOV * FOCUSED_SCAN_SIZE_PERCENT;
+      final double leftAngleDeg = hdg + halfFOVdeg;
+      final double rightAngleDeg = hdg - halfFOVdeg;
+
+      final double frustrumHeight = (MAX_RNG - MIN_RNG) * FOCUSED_SCAN_SIZE_PERCENT;
+
+      final double distToStarePt = pose.getCoordinate().distanceTo(lookAtGoal);
+
+      final double fovFar = distToStarePt + (frustrumHeight / 2);
+      final double fovNear = distToStarePt - (frustrumHeight / 2);
+      final double midRngDist = (frustrumHeight / 2.0) + fovNear;
+
+      //Update viewpoint center position
+      lookAtCur.setCoordinate(pose.getCoordinate());
+      lookAtCur.translatePolar(hdg, midRngDist);
+
+      //Reset all view region locations to the sensor
+      viewRegion.getTopLeft().setCoordinate(pose.getCoordinate());
+      viewRegion.getTopRight().setCoordinate(pose.getCoordinate());
+      viewRegion.getBottomLeft().setCoordinate(pose.getCoordinate());
+      viewRegion.getBottomRight().setCoordinate(pose.getCoordinate());
+
+      //Project out from the sensor position along the view heading
+      viewRegion.getTopLeft().translatePolar(leftAngleDeg, fovFar);
+      viewRegion.getTopRight().translatePolar(rightAngleDeg, fovFar);
+      viewRegion.getBottomLeft().translatePolar(leftAngleDeg, fovNear);
+      viewRegion.getBottomRight().translatePolar(rightAngleDeg, fovNear);
+   }
+
+
+   private void updateViewRegionFullScan()
    {
       final double hdg = pose.getHeading();
       final double halfFOVdeg = FOV / 2;

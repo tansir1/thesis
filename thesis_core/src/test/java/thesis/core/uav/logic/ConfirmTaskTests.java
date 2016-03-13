@@ -1,6 +1,7 @@
 package thesis.core.uav.logic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -109,6 +110,7 @@ public class ConfirmTaskTests
       pathing.teleportTo(sensorLocation);
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
       assertEquals("Should be en-route", State.EnRoute, testMe.getState());
+      assertFalse("Sensor should be doing generic scan, not focused.", snsrGrp.isFocusedScanning());
 
       //Move to minimum orbit range plus 5%
       double percentInsideOrbitRng = ConfirmTask.SENSOR_DISTANCE_ORBIT_PERCENT + 0.05;
@@ -117,5 +119,6 @@ public class ConfirmTaskTests
       pathing.teleportTo(sensorLocation);
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
       assertEquals("Should be orbiting", State.Orbiting, testMe.getState());
+      assertTrue("Sensor should be doing focused scans, not generic.", snsrGrp.isFocusedScanning());
    }
 }
