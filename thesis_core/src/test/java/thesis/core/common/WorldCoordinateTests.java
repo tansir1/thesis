@@ -60,4 +60,16 @@ public class WorldCoordinateTests
       double distanceResult = 11.180339;
       assertEquals("Distance to incorrect", distanceResult, testMe.distanceTo(distanceToMe), WC_COMPARISON_THRESHOLD);
    }
+
+   @Test
+   public void interpolateTest()
+   {
+      final double TOLERANCE = 0.00000001;
+      WorldCoordinate testMe = new WorldCoordinate();
+      WorldCoordinate target = new WorldCoordinate(10, 20);
+
+      testMe.interpolateTowards(target, 0.5);
+      assertEquals("Failed to interpolate vertically.", 5, testMe.getNorth(), TOLERANCE);
+      assertEquals("Failed to interpolate horizontally.", 10, testMe.getEast(), TOLERANCE);
+   }
 }

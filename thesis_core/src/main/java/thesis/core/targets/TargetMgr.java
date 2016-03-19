@@ -76,6 +76,21 @@ public class TargetMgr
       }
    }
 
+   public Target getTargetByID(int tgtID)
+   {
+      Target tgt = null;
+      final int numTgts = targets.length;
+      for (int i = 0; i < numTgts; ++i)
+      {
+         if(targets[i].getID() == tgtID)
+         {
+            tgt = targets[i];
+            break;
+         }
+      }
+      return tgt;
+   }
+
    public Target[] getAllTargets()
    {
       return targets;

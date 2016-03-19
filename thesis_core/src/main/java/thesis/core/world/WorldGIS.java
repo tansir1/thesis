@@ -314,6 +314,13 @@ public class WorldGIS
       }
    }
 
+   private int clamp(int val, int min, int max)
+   {
+      val = Math.min(val, max);
+      val = Math.max(val, min);
+      return val;
+   }
+
    private void findRowColExtremes(int[] ranges, Trapezoid rect)
    {
       //rect.convertToCanonicalForm();
@@ -324,48 +331,22 @@ public class WorldGIS
       convertWorldToCell(rect.getTopLeft(), temp1);
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxRow = Math.max(temp1.getRow(), temp2.getRow());
-
-      if (maxRow >= numRows)
-      {
-         maxRow = numRows - 1;
-      }
-
-      if (maxRow < 0)
-      {
-         maxRow = 0;
-      }
+      maxRow = clamp(maxRow, 0, numRows - 1);
 
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getBottomRight(), temp2);
       int minRow = Math.min(temp1.getRow(), temp2.getRow());
-
-      if (minRow < 0)
-      {
-         minRow = 0;
-      }
+      minRow = clamp(minRow, 0, numRows - 1);
 
       convertWorldToCell(rect.getBottomRight(), temp1);
       convertWorldToCell(rect.getTopRight(), temp2);
       int maxCol = Math.max(temp1.getColumn(), temp2.getColumn());
-
-      if (maxCol >= numCols)
-      {
-         maxCol = numCols - 1;
-      }
-
-      if (maxCol < 0)
-      {
-         maxCol = 0;
-      }
+      maxCol = clamp(maxCol, 0, numRows - 1);
 
       convertWorldToCell(rect.getBottomLeft(), temp1);
       convertWorldToCell(rect.getTopLeft(), temp2);
       int minCol = Math.min(temp1.getColumn(), temp2.getColumn());
-
-      if (minCol < 0)
-      {
-         minCol = 0;
-      }
+      minCol = clamp(minCol, 0, numRows - 1);
 
       if(maxRow < minRow)
       {

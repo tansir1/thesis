@@ -43,6 +43,7 @@ public class SearchTaskTests
       SensorScanLogic snsrScanLogic = new SensorScanLogic(pyldProbs, tgtMgr, new Random());
       SensorGroup snsrGrp = new SensorGroup(snsrScanLogic, gis);
 
+      SearchTask.strategy = SearchTask.Strategy.MostUncertain;
       SearchTask testMe = new SearchTask(0, gis, new Random());
       testMe.stepSimulation(worldBlf, pathing, snsrGrp);
 

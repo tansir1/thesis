@@ -149,7 +149,7 @@ public class SensorScanTests
 
       testMe.simulateScan(0, 115, wb, allCells, 0);
       CellBelief cellBelief = wb.getCellBelief(0, 0);
-      TargetBelief tgtBelief = cellBelief.getTargetBelief(0);
+      TargetBelief tgtBelief = wb.getTargetBelief(0);
 
       for (int i = 1; i < numSimulations; ++i)
       {
@@ -158,6 +158,6 @@ public class SensorScanTests
       }
       pw.close();
 
-      assertEquals("Detected an incorrect number of targets in cell.", 1, cellBelief.getNumTargetBeliefs());
+      assertEquals("Detected an incorrect number of targets in cell.", 1, wb.getNumTargetBeliefs());
    }
 }
