@@ -21,4 +21,14 @@ public class AuctionAnnounceMessage extends Message
       return new AuctionAnnounceMessage(taskType, trueTgtID);
    }
 
+   public TaskType getTaskType()
+   {
+      return taskType;
+   }
+
+   public int getTargetID()
+   {
+      return trueTgtID;
+   }
+
 }
