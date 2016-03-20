@@ -12,7 +12,7 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.uav.UAV;
 import thesis.core.uav.UAVMgr;
 
-public class UAVComms
+public class UAVComms implements IMsgTransmitter
 {
    private Queue<Message> incomingQ;
    private Queue<Message> outgoingQ;
@@ -77,6 +77,7 @@ public class UAVComms
     *           Who should receive the message. Can be
     *           {@link Message#BROADCAST_ID} to send to all UAVs in range.
     */
+   @Override
    public void transmit(final Message msg, int destinationID)
    {
       msg.setNumHops(maxRelayHops);

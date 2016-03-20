@@ -7,9 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.belief.WorldBelief;
+import thesis.core.belief.WorldBeliefMsg;
 import thesis.core.uav.UAV;
+import thesis.core.uav.auction.AuctionMgr;
+import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
-import thesis.core.uav.comms.WorldBeliefMsg;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.WorldGIS;
 
@@ -24,6 +26,8 @@ public class UAVLogicMgr
    private SearchTask searchTask;
    private ConfirmTask confirmTask;
 
+   private AuctionMgr auctioneer;
+
    public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
    {
       this.hostUavId = hostUavId;
@@ -31,6 +35,8 @@ public class UAVLogicMgr
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
       confirmTask = new ConfirmTask(hostUavId);
+
+      auctioneer = new AuctionMgr();
    }
 
    public TaskType getCurrentTaskType()
@@ -38,11 +44,12 @@ public class UAVLogicMgr
       return curTask;
    }
 
-   public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV)
+   public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV,
+         IMsgTransmitter msgTransmitter)
    {
-      for(Message msg : incomingMsgs)
+      for (Message msg : incomingMsgs)
       {
-         switch(msg.getType())
+         switch (msg.getType())
          {
          case AuctionAnnounce:
             break;
@@ -56,7 +63,8 @@ public class UAVLogicMgr
             processBeliefStateMsg(curBelief, msg);
             break;
          default:
-            //TODO Log error, this shouldn't be possible unless a new enum type is added
+            // TODO Log error, this shouldn't be possible unless a new enum type
+            // is added
             break;
          }
       }
@@ -66,14 +74,14 @@ public class UAVLogicMgr
 
    private void processBeliefStateMsg(WorldBelief curBelief, Message rawMsg)
    {
-      WorldBeliefMsg msg = (WorldBeliefMsg)rawMsg;
+      WorldBeliefMsg msg = (WorldBeliefMsg) rawMsg;
       curBelief.mergeBelief(msg.getBelief());
       logger.trace("Merged belief from {} into {}", rawMsg.getOriginatingUAV(), hostUavId);
    }
 
    private void performTask(WorldBelief curBelief, UAV hostUAV)
    {
-      switch(curTask)
+      switch (curTask)
       {
       case Search:
          searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
