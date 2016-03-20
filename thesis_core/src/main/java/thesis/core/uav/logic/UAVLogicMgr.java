@@ -36,7 +36,7 @@ public class UAVLogicMgr
       searchTask = new SearchTask(hostUavId, gis, randGen);
       confirmTask = new ConfirmTask(hostUavId);
 
-      auctioneer = new AuctionMgr();
+      auctioneer = new AuctionMgr(hostUavId);
    }
 
    public TaskType getCurrentTaskType()

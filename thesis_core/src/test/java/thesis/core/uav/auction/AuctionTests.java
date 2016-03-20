@@ -1,6 +1,8 @@
 package thesis.core.uav.auction;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -17,8 +19,9 @@ public class AuctionTests
    {
       TestTransmitter testTx = new TestTransmitter();
       final int targetID = 1;
-      AuctionMgr testMe = new AuctionMgr();
-      testMe.startAuction(TaskType.Confirm, targetID);
+      AuctionMgr testMe = new AuctionMgr(42);
+      assertTrue("Failed to start confirm task auction.", testMe.startAuction(TaskType.Confirm, targetID));
+      assertFalse("Invalid auction restart of confirm task.", testMe.startAuction(TaskType.Confirm, targetID));
       testMe.stepSimulation(testTx);
 
       assertEquals("Did not send announcement message.", MsgType.AuctionAnnounce, testTx.message.getType());
