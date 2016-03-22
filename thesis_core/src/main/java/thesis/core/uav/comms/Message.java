@@ -85,7 +85,7 @@ public abstract class Message
     */
    public void resetTime()
    {
-      simTime = SimTime.CURRENT_SIM_TIME_MS;
+      simTime = SimTime.getCurrentSimTimeMS();
    }
 
    /**

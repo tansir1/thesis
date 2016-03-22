@@ -176,7 +176,7 @@ public class ConfirmTask
          state = State.Orbiting;
          orbitWyptIdx = 0;
          pathing.computePathTo(orbitRoute.get(0));
-         confirmStareStartTime = SimTime.CURRENT_SIM_TIME_MS;
+         confirmStareStartTime = SimTime.getCurrentSimTimeMS();
 
          snsrGrp.setFocusedScanning(true);
       }
@@ -207,7 +207,7 @@ public class ConfirmTask
    private void stepOrbit(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
    {
 
-      if ((SimTime.CURRENT_SIM_TIME_MS - confirmStareStartTime) >= MILLISECONDS_TO_CONFIRM)
+      if ((SimTime.getCurrentSimTimeMS() - confirmStareStartTime) >= MILLISECONDS_TO_CONFIRM)
       {
          snsrGrp.setFocusedScanning(false);
          state = State.Complete;

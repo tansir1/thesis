@@ -110,9 +110,9 @@ public class UAVComms implements IMsgTransmitter
     * Scan through the incoming queue and process everything not destined for
     * this UAV.
     *
-    * NOTE: Broadcast messages are deleted from the queue by this method! Be sure
-    * to invoke {@link #getAllIncoming()} otherwise the UAV will miss broadcast
-    * messages.
+    * NOTE: Broadcast messages are deleted from the queue by this method! Be
+    * sure to invoke {@link #getAllIncoming()} otherwise the UAV will miss
+    * broadcast messages.
     *
     * Processing messages entails relaying (based on a probability) or dropping
     * the message.
@@ -154,7 +154,8 @@ public class UAVComms implements IMsgTransmitter
       while (itr.hasNext())
       {
          Message msg = itr.next();
-         if (msg.getReceiverUAV() == hostUavId || msg.getReceiverUAV() == Message.BROADCAST_ID)
+         if (msg.getReceiverUAV() == hostUavId
+               || (msg.getReceiverUAV() == Message.BROADCAST_ID && msg.getOriginatingUAV() != hostUavId))
          {
             msgs.add(msg);
 
