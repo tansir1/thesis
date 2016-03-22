@@ -52,6 +52,7 @@ public class UAVLogicMgr
          switch (msg.getType())
          {
          case AuctionAnnounce:
+            auctioneer.onAuctionAnnouncementReceived(msg);
             break;
          case AuctionBid:
             break;

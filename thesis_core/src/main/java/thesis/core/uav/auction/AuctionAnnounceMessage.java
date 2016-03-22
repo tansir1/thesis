@@ -1,24 +1,25 @@
 package thesis.core.uav.auction;
 
+import thesis.core.belief.TargetBelief;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.logic.TaskType;
 
 public class AuctionAnnounceMessage extends Message
 {
    private TaskType taskType;
-   private int trueTgtID;
+   private TargetBelief tgtBelief;
 
-   public AuctionAnnounceMessage(TaskType taskType, int trueTgtID)
+   public AuctionAnnounceMessage(TaskType taskType, TargetBelief tgtBelief)
    {
       super(MsgType.AuctionAnnounce);
       this.taskType = taskType;
-      this.trueTgtID = trueTgtID;
+      this.tgtBelief = new TargetBelief(tgtBelief);
    }
 
    @Override
    protected Message cloneMsgSpecificData()
    {
-      return new AuctionAnnounceMessage(taskType, trueTgtID);
+      return new AuctionAnnounceMessage(taskType, tgtBelief);
    }
 
    public TaskType getTaskType()
@@ -28,7 +29,11 @@ public class AuctionAnnounceMessage extends Message
 
    public int getTargetID()
    {
-      return trueTgtID;
+      return tgtBelief.getTrueTargetID();
    }
 
+   public TargetBelief getBelief()
+   {
+      return tgtBelief;
+   }
 }
