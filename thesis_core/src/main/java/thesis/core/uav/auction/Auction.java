@@ -3,24 +3,24 @@ package thesis.core.uav.auction;
 import java.util.HashMap;
 import java.util.Map;
 
-import thesis.core.common.SimTime;
 import thesis.core.uav.logic.TaskType;
 
+@Deprecated
 public class Auction
 {
-   /**
+   /*
     * After this amount of time (milliseconds) the auction will close as long as
     * a single bid is present.
     */
-   private static final long BIDDING_WINDOW = 5000;
+   //private static final long BIDDING_WINDOW = 5000;
    private AuctionKey auctionKey;
-   private final long auctionStartTime;
+   //private final long auctionStartTime;
    private Map<Integer, Double> bids;
 
    public Auction(AuctionKey auctionKey)
    {
       this.auctionKey = auctionKey;
-      auctionStartTime = SimTime.getCurrentSimTimeMS();
+      //auctionStartTime = SimTime.getCurrentSimTimeMS();
 
       bids = new HashMap<Integer, Double>();
    }

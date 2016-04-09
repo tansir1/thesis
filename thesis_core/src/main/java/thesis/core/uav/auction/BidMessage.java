@@ -3,6 +3,7 @@ package thesis.core.uav.auction;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.logic.TaskType;
 
+@Deprecated
 public class BidMessage extends Message
 {
    private TaskType taskType;

@@ -4,6 +4,7 @@ import thesis.core.belief.TargetBelief;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.logic.TaskType;
 
+@Deprecated
 public class AuctionAnnounceMessage extends Message
 {
    private TaskType taskType;

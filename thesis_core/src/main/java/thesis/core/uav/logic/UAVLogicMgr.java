@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import thesis.core.belief.WorldBelief;
 import thesis.core.belief.WorldBeliefMsg;
 import thesis.core.uav.UAV;
-import thesis.core.uav.auction.AuctionMgr;
 import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
 import thesis.core.utilities.LoggerIDs;
@@ -26,8 +25,6 @@ public class UAVLogicMgr
    private SearchTask searchTask;
    private ConfirmTask confirmTask;
 
-   private AuctionMgr auctioneer;
-
    public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
    {
       this.hostUavId = hostUavId;
@@ -36,7 +33,6 @@ public class UAVLogicMgr
       searchTask = new SearchTask(hostUavId, gis, randGen);
       confirmTask = new ConfirmTask(hostUavId);
 
-      auctioneer = new AuctionMgr(hostUavId);
    }
 
    public TaskType getCurrentTaskType()
@@ -51,15 +47,6 @@ public class UAVLogicMgr
       {
          switch (msg.getType())
          {
-         case AuctionAnnounce:
-            auctioneer.onAuctionAnnouncementReceived(msg);
-            break;
-         case AuctionBid:
-            break;
-         case AuctionLose:
-            break;
-         case AuctionWin:
-            break;
          case WorldBelief:
             processBeliefStateMsg(curBelief, msg);
             break;
@@ -87,8 +74,12 @@ public class UAVLogicMgr
       case Search:
          searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
          break;
-      case Confirm:
-         confirmTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
+//      case Confirm:
+//         confirmTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
+      case Monitor:
+         break;
+      case Attack:
+         break;
       }
    }
 }

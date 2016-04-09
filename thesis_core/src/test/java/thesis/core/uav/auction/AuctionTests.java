@@ -1,21 +1,8 @@
 package thesis.core.uav.auction;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
-import thesis.core.belief.TargetBelief;
-import thesis.core.common.WorldCoordinate;
-import thesis.core.uav.comms.IMsgTransmitter;
-import thesis.core.uav.comms.Message;
-import thesis.core.uav.comms.Message.MsgType;
-import thesis.core.uav.logic.TaskType;
-
 public class AuctionTests
 {
-
+/*
    @Test
    public void hostAuctionTest()
    {
@@ -71,4 +58,5 @@ public class AuctionTests
       }
 
    }
+   */
 }

@@ -2,6 +2,7 @@ package thesis.core.uav.auction;
 
 import thesis.core.uav.logic.TaskType;
 
+@Deprecated
 public class AuctionKey
 {
    private TaskType task;

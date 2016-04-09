@@ -14,6 +14,7 @@ import thesis.core.uav.comms.Message;
 import thesis.core.uav.logic.TaskType;
 import thesis.core.utilities.LoggerIDs;
 
+@Deprecated
 public class AuctionMgr
 {
    private Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV_AUCTION);

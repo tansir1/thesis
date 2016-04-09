@@ -14,6 +14,8 @@ public class UAV
 {
    // private static Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV);
 
+   public static int NULL_UAV_ID = -1;
+
    private int type;
 
    private int id;

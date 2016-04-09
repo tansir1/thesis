@@ -17,7 +17,14 @@ public abstract class Message
    {
       WorldBelief,
 
-      AuctionAnnounce, AuctionBid, AuctionWin, AuctionLose,
+      @Deprecated
+      AuctionAnnounce,
+      @Deprecated
+      AuctionBid,
+      @Deprecated
+      AuctionWin,
+      @Deprecated
+      AuctionLose,
    }
 
    /**
