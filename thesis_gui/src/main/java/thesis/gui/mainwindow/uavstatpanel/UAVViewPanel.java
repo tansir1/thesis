@@ -20,6 +20,7 @@ import thesis.core.SimModel;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.uav.UAV;
+import thesis.core.uav.logic.TaskType;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
@@ -215,7 +216,12 @@ public class UAVViewPanel
          hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
          // \u00B0 is unicode for degree symbol
 
-         logicStateLbl.setText(selectedUAV.getLogic().getCurrentTaskType().toString());
+         TaskType taskType = selectedUAV.getLogic().getCurrentTaskType();
+         if(taskType != null)
+         {
+            logicStateLbl.setText(taskType.toString());
+         }
+
 
       }
    }

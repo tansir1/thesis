@@ -40,10 +40,10 @@ public class SensorGroup
       {
          s.stepSimulation(hostUAVLocation);
          Trapezoid fov = s.getViewFootPrint();
-         if(!s.isFocusedScanning())
+         if (!s.isFocusedScanning())
          {
             scanner.simulateScan(s.getType(), s.getAzimuth(), belief, gis.getCellsInRectangle(fov), simTime);
-            //TODO Implement focused scan detection logic...if any
+            // TODO Implement focused scan detection logic...if any
          }
       }
    }
@@ -59,9 +59,9 @@ public class SensorGroup
    public boolean isFocusedScanning()
    {
       boolean focused = false;
-      for(Sensor s: sensors)
+      for (Sensor s : sensors)
       {
-         if(s.isFocusedScanning())
+         if (s.isFocusedScanning())
          {
             focused = true;
             break;
@@ -86,5 +86,16 @@ public class SensorGroup
    public double getMaxSensorRange()
    {
       return maxSensingDistance;
+   }
+
+   public double getBestScanProb(int tgtType)
+   {
+      double bestProb = -1;
+      SensorProbs sp = scanner.getSensorProbabilities();
+      for (Sensor s : sensors)
+      {
+         bestProb = Math.max(bestProb, sp.getSensorConfirmProb(s.getType(), tgtType));
+      }
+      return bestProb;
    }
 }

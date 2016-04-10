@@ -1,6 +1,7 @@
 package thesis.core.belief;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -128,6 +129,11 @@ public class WorldBelief
          tgtBeliefs.add(tgtBelief);
       }
       return tgtBelief;
+   }
+
+   public List<TargetBelief> getTargetBeliefs()
+   {
+      return Collections.unmodifiableList(tgtBeliefs);
    }
 
    public boolean hasDetectedTarget(int tgtID)

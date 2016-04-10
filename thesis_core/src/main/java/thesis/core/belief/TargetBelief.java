@@ -15,12 +15,14 @@ public class TargetBelief
    private long pseudoTimestamp;
    private int trueTgtID;
    private WorldPose pose;
+   private TargetTaskStatus taskStatus;
 
    public TargetBelief(int numTgtTypes, int trueTgtID)
    {
       this.trueTgtID = trueTgtID;
       typeProbs = new double[numTgtTypes];
       pose = new WorldPose();
+      taskStatus = new TargetTaskStatus();
       reset();
    }
 
@@ -31,10 +33,13 @@ public class TargetBelief
       pose = new WorldPose(copy.pose);
       typeProbs = new double[copy.typeProbs.length];
       System.arraycopy(copy.typeProbs, 0, typeProbs, 0, typeProbs.length);
+      taskStatus.copyFrom(copy.taskStatus);
    }
 
    public void reset()
    {
+      taskStatus.reset();
+
       pseudoTimestamp = 0;
       pose.setHeading(0);
       pose.getCoordinate().setCoordinate(0, 0);
@@ -51,7 +56,7 @@ public class TargetBelief
    {
       if (other.pseudoTimestamp < pseudoTimestamp)
       {
-         return;//My data is newer, ignore the other belief
+         return;// My data is newer, ignore the other belief
       }
 
       // Fake cross-track correlation between belief models from different
@@ -83,6 +88,8 @@ public class TargetBelief
       // of merging.
       double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
       pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
+
+      taskStatus.merge(other.taskStatus);
    }
 
    public int getTrueTargetID()
@@ -157,4 +164,49 @@ public class TargetBelief
    {
       pose.getCoordinate().setCoordinate(coord);
    }
+
+   public TargetTaskStatus getTaskStatus()
+   {
+      return taskStatus;
+   }
+
+   public int getHighestProbabilityTargetType()
+   {
+      int maxType = -1;
+      double maxProb = -1;
+      for (int i = 0; i < typeProbs.length; ++i)
+      {
+         if (typeProbs[i] > maxProb)
+         {
+            maxType = i;
+            maxProb = typeProbs[i];
+         }
+      }
+      return maxType;
+   }
+
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + trueTgtID;
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      TargetBelief other = (TargetBelief) obj;
+      if (trueTgtID != other.trueTgtID)
+         return false;
+      return true;
+   }
+
 }

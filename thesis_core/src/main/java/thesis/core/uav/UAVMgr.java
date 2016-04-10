@@ -53,6 +53,8 @@ public class UAVMgr
 
       SensorScanLogic snsrScanner = new SensorScanLogic(entTypes.getSnsrProbs(), tgtMgr, randGen);
 
+      final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
+
       final int NUM_UAVS = uavStartCfgs.size();
       uavs = new UAV[NUM_UAVS];
 
@@ -86,10 +88,10 @@ public class UAVMgr
          pathing.getCoordinate().setCoordinate(uavStartCfg.getLocation());
          pathing.setHeading(uavStartCfg.getOrientation());
 
-         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen);
+         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen, NUM_TGT_TYPES);
 
          WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(),
-               tgtMgr.getTypeConfigs().getNumTypes(), beliefDecayRate);
+               NUM_TGT_TYPES, beliefDecayRate);
          uavs[i] = new UAV(type, i, sensors, comms, pathing, logicMgr, wb);
       }
    }

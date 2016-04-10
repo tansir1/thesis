@@ -6,6 +6,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.belief.WorldBeliefMsg;
 import thesis.core.uav.UAV;
@@ -24,15 +25,22 @@ public class UAVLogicMgr
 
    private SearchTask searchTask;
    private ConfirmTask confirmTask;
+   private int numTgtTypes;
 
-   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen)
+   private TargetBelief curTgt;
+
+   private TaskAllocator taskAllocator;
+
+   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen, int numTgtTypes)
    {
       this.hostUavId = hostUavId;
-      curTask = TaskType.Search;
+      this.numTgtTypes = numTgtTypes;
+      curTask = null;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
       confirmTask = new ConfirmTask(hostUavId);
 
+      taskAllocator = new TaskAllocator(hostUavId);
    }
 
    public TaskType getCurrentTaskType()
@@ -57,7 +65,75 @@ public class UAVLogicMgr
          }
       }
 
+      taskAllocator.stepSimulation(curBelief, hostUAV);
+
+      if(hasTaskChanged() || hasTargetChanged())
+      {
+         switch(curTask)
+         {
+         case Attack:
+            //TODO Reset attack task params
+            break;
+         case Monitor:
+          //TODO Reset monitor task params
+            break;
+         case Search:
+            searchTask.reset(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
+            break;
+         }
+      }
+
       performTask(curBelief, hostUAV);
+   }
+
+   /**
+    * Check if the task allocator has assigned a new target for this UAV.
+    *
+    * @return True if a new target has been allocated.
+    */
+   private boolean hasTargetChanged()
+   {
+      boolean changed = false;
+
+      if (taskAllocator.getTarget() == null && curTgt != null)
+      {
+         changed = true;
+         curTgt = null;
+      }
+      else if (taskAllocator.getTarget() != null && curTgt == null)
+      {
+         changed = true;
+         curTgt = taskAllocator.getTarget();
+      }
+      else if(taskAllocator.getTarget() == null && curTgt == null)
+      {
+         //Do nothing, we're still searching
+      }
+      else if (taskAllocator.getTarget().getTrueTargetID() != curTgt.getTrueTargetID())
+      {
+         changed = true;
+         curTgt = taskAllocator.getTarget();
+      }
+
+      return changed;
+   }
+
+   /**
+    * Check if the allocated task type has changed.
+    *
+    * @return True if task type has changed.
+    */
+   private boolean hasTaskChanged()
+   {
+      boolean changed = false;
+
+      if(curTask == null || curTask != taskAllocator.getTaskType())
+      {
+         curTask = taskAllocator.getTaskType();
+         changed = true;
+      }
+
+      return changed;
    }
 
    private void processBeliefStateMsg(WorldBelief curBelief, Message rawMsg)
@@ -74,12 +150,14 @@ public class UAVLogicMgr
       case Search:
          searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
          break;
-//      case Confirm:
-//         confirmTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
+      // case Confirm:
+      // confirmTask.stepSimulation(curBelief, hostUAV.getPathing(),
+      // hostUAV.getSensors());
       case Monitor:
          break;
       case Attack:
          break;
       }
    }
+
 }

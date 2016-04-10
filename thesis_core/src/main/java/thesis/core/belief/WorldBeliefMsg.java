@@ -1,7 +1,6 @@
 package thesis.core.belief;
 
 import thesis.core.uav.comms.Message;
-import thesis.core.uav.comms.Message.MsgType;
 
 public class WorldBeliefMsg extends Message
 {
