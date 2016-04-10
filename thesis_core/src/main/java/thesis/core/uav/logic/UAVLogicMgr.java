@@ -52,6 +52,11 @@ public class UAVLogicMgr
       return curTask;
    }
 
+   public TargetBelief getCurrentTarget()
+   {
+      return curTgt;
+   }
+
    public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV,
          IMsgTransmitter msgTransmitter)
    {
