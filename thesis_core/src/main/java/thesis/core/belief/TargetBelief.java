@@ -33,6 +33,7 @@ public class TargetBelief
       pose = new WorldPose(copy.pose);
       typeProbs = new double[copy.typeProbs.length];
       System.arraycopy(copy.typeProbs, 0, typeProbs, 0, typeProbs.length);
+      taskStatus = new TargetTaskStatus();
       taskStatus.copyFrom(copy.taskStatus);
    }
 

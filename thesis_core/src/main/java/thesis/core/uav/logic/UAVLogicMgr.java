@@ -12,6 +12,7 @@ import thesis.core.belief.WorldBeliefMsg;
 import thesis.core.uav.UAV;
 import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
+import thesis.core.uav.logic.MonitorTask.TaskLogicState;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.world.WorldGIS;
 
@@ -24,7 +25,9 @@ public class UAVLogicMgr
    private TaskType curTask;
 
    private SearchTask searchTask;
-   private ConfirmTask confirmTask;
+   //private ConfirmTask confirmTask;
+   private MonitorTask monitorTask;
+
    private int numTgtTypes;
 
    private TargetBelief curTgt;
@@ -38,7 +41,8 @@ public class UAVLogicMgr
       curTask = null;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
-      confirmTask = new ConfirmTask(hostUavId);
+      //confirmTask = new ConfirmTask(hostUavId);
+      monitorTask = new MonitorTask(hostUavId);
 
       taskAllocator = new TaskAllocator(hostUavId);
    }
@@ -67,7 +71,18 @@ public class UAVLogicMgr
 
       taskAllocator.stepSimulation(curBelief, hostUAV);
 
-      if(hasTaskChanged() || hasTargetChanged())
+      boolean reset = false;
+      if(hasTargetChanged())
+      {
+         reset = true;
+      }
+
+      if(hasTaskChanged())
+      {
+         reset = true;
+      }
+
+      if(reset)
       {
          switch(curTask)
          {
@@ -75,7 +90,8 @@ public class UAVLogicMgr
             //TODO Reset attack task params
             break;
          case Monitor:
-          //TODO Reset monitor task params
+            //TODO Should we start at confirm or something else?
+            monitorTask.reset(curTgt, TaskLogicState.Confirm, hostUAV.getSensors());
             break;
          case Search:
             searchTask.reset(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
@@ -150,10 +166,8 @@ public class UAVLogicMgr
       case Search:
          searchTask.stepSimulation(curBelief, hostUAV.getPathing(), hostUAV.getSensors());
          break;
-      // case Confirm:
-      // confirmTask.stepSimulation(curBelief, hostUAV.getPathing(),
-      // hostUAV.getSensors());
       case Monitor:
+         monitorTask.stepSimulation(curTgt, hostUAV.getPathing(), hostUAV.getSensors());
          break;
       case Attack:
          break;

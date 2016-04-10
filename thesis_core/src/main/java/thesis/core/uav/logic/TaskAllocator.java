@@ -158,12 +158,16 @@ public class TaskAllocator
       {
          TargetBelief tb = itr.next();
 
-         if (tb.getTaskStatus().getAttackState() == TaskState.NO_TASK
-               || tb.getTaskStatus().getAttackState() == TaskState.Complete
-               || tb.getTaskStatus().getAttackState() == TaskState.Performing)
+         if (tb.getTaskStatus().getMonitorState() == TaskState.Complete
+               || tb.getTaskStatus().getMonitorState() == TaskState.Performing)
          {
             // Target cannot be monitored
             continue;
+         }
+
+         if(tb.getTaskStatus().getMonitorState() == TaskState.NO_TASK)
+         {
+            tb.getTaskStatus().setMonitorState(TaskState.Open);
          }
 
          // Task is Open, EnRoute
