@@ -21,6 +21,8 @@ public class TargetTaskStatus
 
    private long updateTimestamp;
 
+   private boolean destroyed;
+
    public TargetTaskStatus()
    {
       reset();
@@ -28,6 +30,8 @@ public class TargetTaskStatus
 
    public void reset()
    {
+      destroyed = false;
+
       monitorUAV = UAV.NULL_UAV_ID;
       monitorUAVScore = -1;
       interestedMonitorUAV = UAV.NULL_UAV_ID;
@@ -58,6 +62,18 @@ public class TargetTaskStatus
       interestedAttackUAVScore = copyMe.interestedAttackUAVScore;
 
       updateTimestamp = copyMe.updateTimestamp;
+
+      destroyed = copyMe.destroyed;
+   }
+
+   public boolean isDestroyed()
+   {
+      return destroyed;
+   }
+
+   public void setDestroyed(boolean destroyed)
+   {
+      this.destroyed = destroyed;
    }
 
    public int getMonitorUAV()
@@ -173,6 +189,12 @@ public class TargetTaskStatus
    public void merge(TargetTaskStatus other)
    {
       long curTime = SimTime.getCurrentSimTimeMS();
+
+      if(other.updateTimestamp > updateTimestamp)
+      {
+         destroyed = other.destroyed;
+         updateTimestamp = curTime;
+      }
 
       if (other.monitorUAVScore > monitorUAVScore)
       {

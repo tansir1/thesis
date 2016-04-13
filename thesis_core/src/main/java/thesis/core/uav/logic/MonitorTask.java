@@ -8,6 +8,7 @@ import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.Pathing;
+import thesis.core.uav.UAV;
 import thesis.core.uav.logic.MonitorPathingHelper.PathingState;
 import thesis.core.utilities.LoggerIDs;
 
@@ -35,8 +36,6 @@ public class MonitorTask
 
    private int hostUavId;
 
-   private TargetBelief tgtBelief;
-
    private WorldCoordinate starePoint;
 
    /**
@@ -53,7 +52,6 @@ public class MonitorTask
       this.hostUavId = hostUavId;
 
       resyncDestCoord = false;
-      tgtBelief = null;
       pathingHelper = new MonitorPathingHelper();
 
       logicState = TaskLogicState.NO_TASK;
@@ -71,20 +69,23 @@ public class MonitorTask
       this.logicState = logicState;
       resyncDestCoord = true;
 
-      //Clear out any left over focused scan logic from previous sensor state
+      // Clear out any left over focused scan logic from previous sensor state
       snsrGrp.setFocusedScanning(false);
       stareStartTime = 0;
 
       starePoint.setCoordinate(tgtBelief.getCoordinate());
       snsrGrp.stareAtAll(starePoint);
 
-      switch(logicState)
+      switch (logicState)
       {
       case BDA:
+      {
+         logger.debug("UAV {} reseting to BDA of target {}.", hostUavId, tgtBelief.getTrueTargetID());
+      }
          break;
       case Confirm:
       {
-         logger.trace("UAV {} reseting to confirm target {}.", hostUavId, tgtBelief.getTrueTargetID());
+         logger.debug("UAV {} reseting to confirm target {}.", hostUavId, tgtBelief.getTrueTargetID());
       }
          break;
       case NO_TASK:
@@ -106,29 +107,30 @@ public class MonitorTask
    {
       pathingHelper.stepSimulation(tgtBelief, pathing, snsrGrp, resyncDestCoord);
 
-      if(resyncDestCoord)
+      if (resyncDestCoord)
       {
          resyncDestCoord = false;
       }
 
-      switch(logicState)
+      switch (logicState)
       {
       case BDA:
-         stepBDA(tgtBelief, pathing, snsrGrp);
+         stepBDA(tgtBelief, snsrGrp);
          break;
       case Confirm:
-         stepConfirm(tgtBelief, pathing, snsrGrp);
+         stepConfirm(tgtBelief, snsrGrp);
          break;
       case NO_TASK:
          break;
       case PendingAttack:
+         stepPendingAttack(tgtBelief, snsrGrp);
          break;
       }
    }
 
-   private void stepBDA(TargetBelief tgtBelief, Pathing pathing, SensorGroup snsrGrp)
+   private void stepBDA(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      if(stareStartTime == 0 && pathingHelper.isInSensorRange())
+      if (stareStartTime == 0 && pathingHelper.isInSensorRange())
       {
          logger.debug("UAV {} began BDA focused scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
          stareStartTime = SimTime.getCurrentSimTimeMS();
@@ -137,17 +139,27 @@ public class MonitorTask
 
       if ((SimTime.getCurrentSimTimeMS() - stareStartTime) >= MILLISECONDS_TO_BDA)
       {
-         snsrGrp.setFocusedScanning(false);
-         logger.debug("UAV {} finished BDA scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
-         //reset(tgtBelief, TaskLogicState.PendingAttack, snsrGrp);
-
-         //TODO IF destroyed go to NO_TASK else request another attack
+         if(tgtBelief.getTaskStatus().isDestroyed())
+         {
+            logger.debug("UAV {} finished BDA scanning target {}.  It is destroyed.", hostUavId, tgtBelief.getTrueTargetID());
+            tgtBelief.getTaskStatus().setMonitorUAV(UAV.NULL_UAV_ID);
+            tgtBelief.getTaskStatus().setMonitorUAVScore(-1);
+            tgtBelief.getTaskStatus().setMonitorState(TaskState.Complete);
+            tgtBelief.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+            reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
+         }
+         else
+         {
+            logger.debug("UAV {} finished BDA scanning target {}.  It is NOT destroyed.", hostUavId, tgtBelief.getTrueTargetID());
+            requestAttack(tgtBelief);
+            reset(tgtBelief, TaskLogicState.PendingAttack, snsrGrp);
+         }
       }
    }
 
-   private void stepConfirm(TargetBelief tgtBelief, Pathing pathing, SensorGroup snsrGrp)
+   private void stepConfirm(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      if(stareStartTime == 0 && pathingHelper.isInSensorRange())
+      if (stareStartTime == 0 && pathingHelper.isInSensorRange())
       {
          logger.debug("UAV {} began confirmation focused scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
          stareStartTime = SimTime.getCurrentSimTimeMS();
@@ -156,14 +168,26 @@ public class MonitorTask
 
       if ((SimTime.getCurrentSimTimeMS() - stareStartTime) >= MILLISECONDS_TO_CONFIRM)
       {
-         snsrGrp.setFocusedScanning(false);
          logger.debug("UAV {} finished confirming target {}", hostUavId, tgtBelief.getTrueTargetID());
+         requestAttack(tgtBelief);
          reset(tgtBelief, TaskLogicState.PendingAttack, snsrGrp);
       }
    }
 
-   private void stepPendingAttack(TargetBelief tgtBelief, Pathing pathing, SensorGroup snsrGrp)
+   private void stepPendingAttack(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      //TODO Has target been attack? If so, start BDA
+      if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete)
+      {
+         logger.debug("UAV {} notes that pending attack has been completed.");
+         reset(tgtBelief, TaskLogicState.BDA, snsrGrp);
+      }
+   }
+
+   private void requestAttack(TargetBelief tgtBelief)
+   {
+      tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
+      tgtBelief.getTaskStatus().setAttackUAVScore(0);
+      tgtBelief.getTaskStatus().setAttackState(TaskState.Open);
+      tgtBelief.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
    }
 }
