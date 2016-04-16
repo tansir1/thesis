@@ -7,11 +7,11 @@ public class WeaponGroup
 {
    private List<Weapon> weapons;
    private double maxLaunchDistance;
-   private WeaponProbs wpnProbs;
+   private WeaponAttackLogic atkLogic;
 
-   public WeaponGroup(WeaponProbs wpnProps)
+   public WeaponGroup(WeaponAttackLogic wpnAtkLogic)
    {
-      this.wpnProbs = wpnProps;
+      this.atkLogic = wpnAtkLogic;
       weapons = new ArrayList<Weapon>();
       maxLaunchDistance = -1;
    }
@@ -51,7 +51,7 @@ public class WeaponGroup
       {
          if (w.getQuantity() > 0)
          {
-            bestProb = Math.max(bestProb, wpnProbs.getWeaponDestroyProb(w.getType(), tgtType));
+            bestProb = Math.max(bestProb, atkLogic.getWeaponProbs().getWeaponDestroyProb(w.getType(), tgtType));
          }
       }
       return bestProb;
@@ -66,10 +66,15 @@ public class WeaponGroup
       {
          if (w.getQuantity() > 0)
          {
-            bestProb = Math.max(bestProb, wpnProbs.getWeaponDestroyProb(w.getType(), tgtType));
+            bestProb = Math.max(bestProb, atkLogic.getWeaponProbs().getWeaponDestroyProb(w.getType(), tgtType));
             bestWpn = w;
          }
       }
       return bestWpn;
+   }
+
+   public WeaponAttackLogic getAttackLogic()
+   {
+      return atkLogic;
    }
 }

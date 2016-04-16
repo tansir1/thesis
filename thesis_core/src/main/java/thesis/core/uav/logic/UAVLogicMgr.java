@@ -25,8 +25,8 @@ public class UAVLogicMgr
    private TaskType curTask;
 
    private SearchTask searchTask;
-   //private ConfirmTask confirmTask;
    private MonitorTask monitorTask;
+   private AttackTask attackTask;
 
    private int numTgtTypes;
 
@@ -41,8 +41,8 @@ public class UAVLogicMgr
       curTask = null;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
-      //confirmTask = new ConfirmTask(hostUavId);
       monitorTask = new MonitorTask(hostUavId);
+      attackTask = new AttackTask(hostUavId);
 
       taskAllocator = new TaskAllocator(hostUavId);
    }
@@ -92,7 +92,7 @@ public class UAVLogicMgr
          switch(curTask)
          {
          case Attack:
-            //TODO Reset attack task params
+            attackTask.Reset(curTgt.getPose(), hostUAV.getPathing(), hostUAV.getSensors());
             break;
          case Monitor:
             //TODO Should we start at confirm or something else?
@@ -175,6 +175,7 @@ public class UAVLogicMgr
          monitorTask.stepSimulation(curTgt, hostUAV.getPathing(), hostUAV.getSensors());
          break;
       case Attack:
+         attackTask.stepSimulation(curTgt, hostUAV.getPathing(), hostUAV.getWeapons(), hostUAV.getSensors());
          break;
       }
    }

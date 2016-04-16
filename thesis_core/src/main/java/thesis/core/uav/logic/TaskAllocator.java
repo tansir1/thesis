@@ -13,6 +13,7 @@ import thesis.core.belief.WorldBelief;
 import thesis.core.common.SimTime;
 import thesis.core.uav.UAV;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.weapons.Weapon;
 
 public class TaskAllocator
 {
@@ -240,10 +241,18 @@ public class TaskAllocator
 
    private int computeAttackBid(TargetBelief tgt, UAV hostUAV)
    {
-      double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
-      // int mostLikelyType = tgt.getHighestProbabilityTargetType();
+      int bid = 0;
 
-      // FIXME For now just use distance as the cost function
-      return (int) distance;
+      Weapon wpn = hostUAV.getWeapons().getBestWeapon(tgt.getHighestProbabilityTargetType());
+      if(wpn != null)
+      {
+         double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
+         // int mostLikelyType = tgt.getHighestProbabilityTargetType();
+
+         // FIXME For now just use distance as the cost function
+         bid = (int) distance;
+      }
+
+      return bid;
    }
 }

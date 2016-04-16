@@ -1,6 +1,5 @@
 package thesis.core.weapons;
 
-import thesis.core.common.Angle;
 import thesis.core.common.WorldPose;
 import thesis.core.targets.TargetMgr;
 
@@ -74,6 +73,16 @@ public class Weapon
    }
 
    /**
+    * Get the minimum range of the weapon in meters.
+    *
+    * @return Min range in meters.
+    */
+   public double getMinRange()
+   {
+      return MIN_RNG;
+   }
+
+   /**
     * Get the maximum off boresight launch angle for the weapon.
     *
     * @return Degrees
@@ -118,45 +127,6 @@ public class Weapon
    public int getQuantity()
    {
       return quantity;
-   }
-
-   /**
-    * Determine if the target is within the launch acceptability region of the
-    * weapon.
-    *
-    * @param tgtPose
-    *           Pose of the target.
-    * @param maxRangePercent
-    *           Restrict the LAR to this percentage of the max range.
-    * @return True if the target is within the LAR.
-    */
-   public boolean isInLaunchAcceptabilityRegion(WorldPose tgtPose, double maxRangePercent)
-   {
-      boolean inLAR = false;
-
-      double distToTar = pose.getCoordinate().distanceTo(tgtPose.getCoordinate());
-
-      // Check the distance first since it's a cheap operation
-      if (Math.abs(distToTar) < (MAX_RNG * maxRangePercent) && Math.abs(distToTar) > MIN_RNG)
-      {
-         double angToTar = pose.getCoordinate().bearingTo(tgtPose.getCoordinate());
-
-         double leftBnd = Angle.normalizeNegPiToPi(pose.getHeading());
-         double rightBnd = Angle.normalizeNegPiToPi(pose.getHeading());
-
-         leftBnd -= LAUNCH_ANGLE / 2;
-         rightBnd += LAUNCH_ANGLE / 2;
-
-         if (Angle.isBetween(angToTar, leftBnd, rightBnd))
-         {
-            inLAR = true;
-         }
-
-         // FIXME Account for target's best attack angle
-      }
-
-      return inLAR;
-
    }
 
    @Override

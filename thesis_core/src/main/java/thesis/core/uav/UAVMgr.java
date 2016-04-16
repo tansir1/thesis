@@ -21,6 +21,7 @@ import thesis.core.uav.comms.UAVComms;
 import thesis.core.uav.logic.UAVLogicMgr;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.weapons.Weapon;
+import thesis.core.weapons.WeaponAttackLogic;
 import thesis.core.weapons.WeaponGroup;
 import thesis.core.world.WorldGIS;
 
@@ -54,6 +55,7 @@ public class UAVMgr
       logger.debug("Resetting UAV Manager.");
 
       SensorScanLogic snsrScanner = new SensorScanLogic(entTypes.getSnsrProbs(), tgtMgr, randGen);
+      WeaponAttackLogic wpnAtkLogic = new WeaponAttackLogic(entTypes.getWpnProbs(), tgtMgr, randGen);
 
       final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
 
@@ -88,7 +90,7 @@ public class UAVMgr
             }
          }
 
-         final WeaponGroup weapons = new WeaponGroup(entTypes.getWpnProbs());
+         final WeaponGroup weapons = new WeaponGroup(wpnAtkLogic);
          for (int j = 0; j < NUM_WPN_TYPES; ++j)
          {
             if(uavWeaponCfgs.uavHasWeapon(type,  j))
