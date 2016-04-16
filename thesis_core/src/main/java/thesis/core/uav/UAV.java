@@ -9,6 +9,7 @@ import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.comms.Message;
 import thesis.core.uav.comms.UAVComms;
 import thesis.core.uav.logic.UAVLogicMgr;
+import thesis.core.weapons.WeaponGroup;
 
 public class UAV
 {
@@ -23,15 +24,21 @@ public class UAV
    private UAVComms comms;
 
    private SensorGroup sensors;
+   private WeaponGroup weapons;
    private WorldBelief belief;
    private Pathing pathing;
    private UAVLogicMgr logicMgr;
 
-   public UAV(int type, int id, SensorGroup sensors, UAVComms comms, Pathing pathing, UAVLogicMgr logicMgr, WorldBelief wb)
+   public UAV(int type, int id, SensorGroup sensors, WeaponGroup weapons, UAVComms comms, Pathing pathing, UAVLogicMgr logicMgr, WorldBelief wb)
    {
       if (sensors == null)
       {
          throw new NullPointerException("Sensors cannot be null.");
+      }
+
+      if (weapons == null)
+      {
+         throw new NullPointerException("Weapons cannot be null.");
       }
 
       if (comms == null)
@@ -57,6 +64,7 @@ public class UAV
       this.id = id;
       this.type = type;
       this.sensors = sensors;
+      this.weapons = weapons;
       this.comms = comms;
       this.pathing = pathing;
       this.logicMgr = logicMgr;
@@ -103,6 +111,11 @@ public class UAV
    public SensorGroup getSensors()
    {
       return sensors;
+   }
+
+   public WeaponGroup getWeapons()
+   {
+      return weapons;
    }
 
    public WorldBelief getBelief()

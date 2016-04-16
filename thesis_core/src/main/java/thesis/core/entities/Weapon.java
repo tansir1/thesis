@@ -3,6 +3,7 @@ package thesis.core.entities;
 import thesis.core.common.Angle;
 import thesis.core.common.WorldCoordinate;
 
+@Deprecated
 public class Weapon
 {
    /**

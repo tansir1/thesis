@@ -2,6 +2,7 @@ package thesis.core.uav;
 
 public class UAVWeaponCfgs
 {
+   private int wpnOnUAV[][];
 
    public UAVWeaponCfgs()
    {
@@ -10,39 +11,40 @@ public class UAVWeaponCfgs
 
    public int getNumUAVTypes()
    {
-      // TODO Implement me
-      return 0;
+      return wpnOnUAV.length;
    }
 
    public int getNumWeaponTypes()
    {
-      // TODO Implement me
-      return 0;
+      return wpnOnUAV[0].length;
    }
 
    public void reset(int numUAVTypes, int numWpnTypes)
    {
-      // TODO Implement me
+      wpnOnUAV = new int[numUAVTypes][];
+      for (int i = 0; i < numUAVTypes; ++i)
+      {
+         wpnOnUAV[i] = new int[numWpnTypes];
+
+         for (int j = 0; j < numWpnTypes; ++j)
+         {
+            wpnOnUAV[i][j] = 0;
+         }
+      }
    }
 
    public void addWeaponToUAV(int uavType, int wpnType, int initialQty)
    {
-      // TODO Implement me
+      wpnOnUAV[uavType][wpnType] = initialQty;
    }
 
    public boolean uavHasWeapon(int uavType, int wpnType)
    {
-      // TODO Implement me
-      return false;
+      return wpnOnUAV[uavType][wpnType] > 0;
    }
 
    public int getInitialQuantity(int uavType, int wpnType)
    {
-      // TODO Implement me
-      return 0;
+      return wpnOnUAV[uavType][wpnType];
    }
-   /*
-    *
-    * private static class WpnQty { public int wpnType; public int initQty; }
-    */
 }

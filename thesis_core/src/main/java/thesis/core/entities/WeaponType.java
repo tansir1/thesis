@@ -3,6 +3,7 @@ package thesis.core.entities;
 /**
  * Performance specification data for a specific type of weapon.
  */
+@Deprecated
 public class WeaponType
 {
    private int typeID;
