@@ -107,7 +107,7 @@ public class UAVMgr
          pathing.getCoordinate().setCoordinate(uavStartCfg.getLocation());
          pathing.setHeading(uavStartCfg.getOrientation());
 
-         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen, NUM_TGT_TYPES);
+         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen, NUM_TGT_TYPES, tgtMgr);
 
          WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(), NUM_TGT_TYPES, beliefDecayRate);
          uavs[i] = new UAV(type, i, sensors, weapons, comms, pathing, logicMgr, wb);

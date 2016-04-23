@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.belief.WorldBeliefMsg;
+import thesis.core.targets.ITrueTargetStatusProvider;
 import thesis.core.uav.UAV;
 import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
@@ -34,14 +35,14 @@ public class UAVLogicMgr
 
    private TaskAllocator taskAllocator;
 
-   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen, int numTgtTypes)
+   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen, int numTgtTypes, ITrueTargetStatusProvider trueTgtStatusSvc)
    {
       this.hostUavId = hostUavId;
       this.numTgtTypes = numTgtTypes;
       curTask = null;
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
-      monitorTask = new MonitorTask(hostUavId);
+      monitorTask = new MonitorTask(hostUavId, trueTgtStatusSvc);
       attackTask = new AttackTask(hostUavId);
 
       taskAllocator = new TaskAllocator(hostUavId);

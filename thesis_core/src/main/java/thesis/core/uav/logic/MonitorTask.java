@@ -7,6 +7,7 @@ import thesis.core.belief.TargetBelief;
 import thesis.core.common.SimTime;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.sensors.SensorGroup;
+import thesis.core.targets.ITrueTargetStatusProvider;
 import thesis.core.uav.Pathing;
 import thesis.core.uav.UAV;
 import thesis.core.uav.logic.MonitorPathingHelper.PathingState;
@@ -46,10 +47,12 @@ public class MonitorTask
    private MonitorPathingHelper pathingHelper;
 
    private boolean resyncDestCoord;
+   private ITrueTargetStatusProvider trueTgtStatSvc;
 
-   public MonitorTask(int hostUavId)
+   public MonitorTask(int hostUavId, ITrueTargetStatusProvider trueTgtStatSvc)
    {
       this.hostUavId = hostUavId;
+      this.trueTgtStatSvc = trueTgtStatSvc;
 
       resyncDestCoord = false;
       pathingHelper = new MonitorPathingHelper();
@@ -139,13 +142,14 @@ public class MonitorTask
 
       if ((SimTime.getCurrentSimTimeMS() - stareStartTime) >= MILLISECONDS_TO_BDA)
       {
-         if(tgtBelief.getTaskStatus().isDestroyed())
+         if(!trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
          {
             logger.debug("UAV {} finished BDA scanning target {}.  It is destroyed.", hostUavId, tgtBelief.getTrueTargetID());
             tgtBelief.getTaskStatus().setMonitorUAV(UAV.NULL_UAV_ID);
             tgtBelief.getTaskStatus().setMonitorUAVScore(-1);
             tgtBelief.getTaskStatus().setMonitorState(TaskState.Complete);
             tgtBelief.getTaskStatus().setMonitorUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+            tgtBelief.getTaskStatus().setDestroyed(true);
             reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
          }
          else

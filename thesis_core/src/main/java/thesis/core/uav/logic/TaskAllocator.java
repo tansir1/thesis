@@ -87,7 +87,7 @@ public class TaskAllocator
       }
       else// Someone else has a better attack score and is within range
       {
-         logger.trace("UAV {} forced from task Attack to Search.", hostUAV);
+         logger.debug("UAV {} forced from task Attack to Search.", hostUAV);
          curTgt = null;
          curTask = TaskType.Search;
       }
@@ -103,7 +103,7 @@ public class TaskAllocator
       }
       else// Someone else has a better monitor score and is within range
       {
-         logger.trace("UAV {} forced from task Monitor to Search.", hostUAV);
+         logger.debug("UAV {} forced from task Monitor to Search.", hostUAV);
          curTgt = null;
          curTask = TaskType.Search;
       }

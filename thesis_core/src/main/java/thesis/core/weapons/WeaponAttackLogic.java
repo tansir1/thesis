@@ -87,7 +87,9 @@ public class WeaponAttackLogic
 
       Target trueTgt = tgtMgr.getTargetByID(tgtBelief.getTrueTargetID());
       double wpnDestroyProp = wpnProbs.getWeaponDestroyProb(wpn.getType(), trueTgt.getType());
-      if(randGen.nextDouble() < wpnDestroyProp)
+      double DEBUG = randGen.nextDouble();
+      //if(randGen.nextDouble() < wpnDestroyProp)
+      if(DEBUG < wpnDestroyProp)
       {
          logger.debug("UAV {} destroyed target {}", uavID, tgtBelief.getTrueTargetID());
       // FIXME Account for target's best attack angle
