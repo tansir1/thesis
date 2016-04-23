@@ -1,6 +1,5 @@
 package thesis.core.belief;
 
-import thesis.core.common.SimTime;
 import thesis.core.uav.UAV;
 import thesis.core.uav.logic.TaskState;
 
@@ -19,7 +18,8 @@ public class TargetTaskStatus
    private int interestedAttackUAV;
    private int interestedAttackUAVScore;
 
-   private long updateTimestamp;
+   private long monitorUpdateTimestamp;
+   private long attackUpdateTimestamp;
 
    private boolean destroyed;
 
@@ -44,7 +44,8 @@ public class TargetTaskStatus
       interestedAttackUAV = UAV.NULL_UAV_ID;
       interestedAttackUAVScore = -1;
 
-      updateTimestamp = 0;
+      monitorUpdateTimestamp = 0;
+      attackUpdateTimestamp = 0;
    }
 
    public void copyFrom(TargetTaskStatus copyMe)
@@ -61,7 +62,8 @@ public class TargetTaskStatus
       interestedAttackUAV = copyMe.interestedAttackUAV;
       interestedAttackUAVScore = copyMe.interestedAttackUAVScore;
 
-      updateTimestamp = copyMe.updateTimestamp;
+      monitorUpdateTimestamp = copyMe.monitorUpdateTimestamp;
+      attackUpdateTimestamp = copyMe.attackUpdateTimestamp;
 
       destroyed = copyMe.destroyed;
    }
@@ -156,14 +158,24 @@ public class TargetTaskStatus
       this.interestedAttackUAVScore = interestedAttackUAVScore;
    }
 
-   public long getUpdateTimestamp()
+   public long getMonitorUpdateTimestamp()
    {
-      return updateTimestamp;
+      return monitorUpdateTimestamp;
    }
 
-   public void setUpdateTimestamp(long updateTimestamp)
+   public long getAttackUpdateTimestamp()
    {
-      this.updateTimestamp = updateTimestamp;
+      return attackUpdateTimestamp;
+   }
+
+   public void setAttackUpdateTimestamp(long updateTimestamp)
+   {
+      this.attackUpdateTimestamp = updateTimestamp;
+   }
+
+   public void setMonitorUpdateTimestamp(long updateTimestamp)
+   {
+      this.monitorUpdateTimestamp = updateTimestamp;
    }
 
    public TaskState getMonitorState()
@@ -186,44 +198,106 @@ public class TargetTaskStatus
       this.attackState = attackState;
    }
 
+   // public void merge(TargetTaskStatus other)
+   // {
+   // long curTime = SimTime.getCurrentSimTimeMS();
+   //
+   // if(other.attackUpdateTimestamp > attackUpdateTimestamp)
+   // {
+   // destroyed = other.destroyed;
+   // //updateTimestamp = curTime;
+   // attackUpdateTimestamp = other.attackUpdateTimestamp;
+   // }
+   //
+   // if (other.monitorUAVScore > monitorUAVScore)
+   // {
+   // monitorUAV = other.monitorUAV;
+   // monitorUAVScore = other.monitorUAVScore;
+   // monitorState = other.monitorState;
+   // monitorUpdateTimestamp = curTime;
+   // //updateTimestamp = curTime;
+   // }
+   //
+   // if (other.interestedMonitorUAVScore > interestedMonitorUAVScore)
+   // {
+   // interestedMonitorUAV = other.interestedMonitorUAV;
+   // interestedMonitorUAVScore = other.interestedMonitorUAVScore;
+   // updateTimestamp = curTime;
+   // }
+   //
+   // if (other.attackUAVScore > attackUAVScore)
+   // {
+   // attackUAV = other.attackUAV;
+   // attackUAVScore = other.attackUAVScore;
+   // attackState = other.attackState;
+   // updateTimestamp = curTime;
+   // }
+   //
+   // if (other.interestedAttackUAVScore > interestedAttackUAVScore)
+   // {
+   // interestedAttackUAV = other.interestedAttackUAV;
+   // interestedAttackUAVScore = other.interestedAttackUAVScore;
+   // updateTimestamp = curTime;
+   // }
+   // }
+
    public void merge(TargetTaskStatus other)
    {
-      long curTime = SimTime.getCurrentSimTimeMS();
-
-      if(other.updateTimestamp > updateTimestamp)
+      boolean copyOtherData = false;
+      if (other.monitorState == TaskState.Complete && monitorState != other.monitorState)
       {
-         destroyed = other.destroyed;
-         updateTimestamp = curTime;
+         // Someone external completed the task
+         copyOtherData = true;
+      }
+      else if (other.monitorUAVScore > monitorUAVScore && other.monitorState != TaskState.Complete
+            && monitorState != TaskState.Complete)
+      {
+         // Everyone is bidding on the task still
+         copyOtherData = true;
       }
 
-      if (other.monitorUAVScore > monitorUAVScore)
+      if (copyOtherData)
       {
          monitorUAV = other.monitorUAV;
          monitorUAVScore = other.monitorUAVScore;
          monitorState = other.monitorState;
-         updateTimestamp = curTime;
+         monitorUpdateTimestamp = other.monitorUpdateTimestamp;
       }
+      copyOtherData = false;
 
-      if (other.interestedMonitorUAVScore > interestedMonitorUAVScore)
+      // if (other.interestedMonitorUAVScore > interestedMonitorUAVScore)
+      // {
+      // interestedMonitorUAV = other.interestedMonitorUAV;
+      // interestedMonitorUAVScore = other.interestedMonitorUAVScore;
+      // updateTimestamp = curTime;
+      // }
+
+      if (other.attackState == TaskState.Complete && attackState != other.attackState)
       {
-         interestedMonitorUAV = other.interestedMonitorUAV;
-         interestedMonitorUAVScore = other.interestedMonitorUAVScore;
-         updateTimestamp = curTime;
+         // Someone external completed the task
+         copyOtherData = true;
+      }
+      else if (other.attackUAVScore > attackUAVScore && other.attackState != TaskState.Complete
+            && attackState != TaskState.Complete)
+      {
+         // Everyone is bidding on the task still
+         copyOtherData = true;
       }
 
-      if (other.attackUAVScore > attackUAVScore)
+      if (copyOtherData)
       {
          attackUAV = other.attackUAV;
          attackUAVScore = other.attackUAVScore;
          attackState = other.attackState;
-         updateTimestamp = curTime;
+         attackUpdateTimestamp = other.attackUpdateTimestamp;
+         destroyed = other.destroyed;
       }
 
-      if (other.interestedAttackUAVScore > interestedAttackUAVScore)
-      {
-         interestedAttackUAV = other.interestedAttackUAV;
-         interestedAttackUAVScore = other.interestedAttackUAVScore;
-         updateTimestamp = curTime;
-      }
+      // if (other.interestedAttackUAVScore > interestedAttackUAVScore)
+      // {
+      // interestedAttackUAV = other.interestedAttackUAV;
+      // interestedAttackUAVScore = other.interestedAttackUAVScore;
+      // updateTimestamp = curTime;
+      // }
    }
 }

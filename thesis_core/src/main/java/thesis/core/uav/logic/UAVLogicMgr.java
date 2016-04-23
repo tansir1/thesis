@@ -77,25 +77,25 @@ public class UAVLogicMgr
       taskAllocator.stepSimulation(curBelief, hostUAV);
 
       boolean reset = false;
-      if(hasTargetChanged())
+      if (hasTargetChanged())
       {
          reset = true;
       }
 
-      if(hasTaskChanged())
+      if (hasTaskChanged())
       {
          reset = true;
       }
 
-      if(reset)
+      if (reset)
       {
-         switch(curTask)
+         switch (curTask)
          {
          case Attack:
-            attackTask.Reset(curTgt.getPose(), hostUAV.getPathing(), hostUAV.getSensors());
+            attackTask.Reset(curTgt.getPose(), hostUAV.getPathing(), hostUAV.getSensors(), curTgt.getTrueTargetID());
             break;
          case Monitor:
-            //TODO Should we start at confirm or something else?
+            // TODO Should we start at confirm or something else?
             monitorTask.reset(curTgt, TaskLogicState.Confirm, hostUAV.getSensors());
             break;
          case Search:
@@ -126,9 +126,9 @@ public class UAVLogicMgr
          changed = true;
          curTgt = taskAllocator.getTarget();
       }
-      else if(taskAllocator.getTarget() == null && curTgt == null)
+      else if (taskAllocator.getTarget() == null && curTgt == null)
       {
-         //Do nothing, we're still searching
+         // Do nothing, we're still searching
       }
       else if (taskAllocator.getTarget().getTrueTargetID() != curTgt.getTrueTargetID())
       {
@@ -148,7 +148,7 @@ public class UAVLogicMgr
    {
       boolean changed = false;
 
-      if(curTask == null || curTask != taskAllocator.getTaskType())
+      if (curTask == null || curTask != taskAllocator.getTaskType())
       {
          curTask = taskAllocator.getTaskType();
          changed = true;

@@ -1,6 +1,5 @@
 package thesis.core.weapons;
 
-import thesis.core.common.WorldPose;
 import thesis.core.targets.TargetMgr;
 
 public class Weapon
@@ -23,7 +22,7 @@ public class Weapon
    private final int type;
    private final int id;
 
-   private final WorldPose pose;
+   //private final WorldPose pose;
    private final TargetMgr tgtMgr;
 
    private int quantity;
@@ -44,7 +43,7 @@ public class Weapon
       this.id = id;
       this.tgtMgr = tgtMgr;
 
-      pose = new WorldPose();
+      //pose = new WorldPose();
 
       MIN_RNG = cfgs.getMinRange(type);
       MAX_RNG = cfgs.getMaxRange(type);
@@ -92,13 +91,13 @@ public class Weapon
       return LAUNCH_ANGLE;
    }
 
-   /**
+   /*
     * Get the current azimuth of the weapon in relation to the world's zero
     * degree mark. This angle is in absolute world coordinates.
     *
     * @return The azimuth of the weapon in absolute world coordinates (degrees).
     */
-   public double getAzimuth()
+/*   public double getAzimuth()
    {
       return pose.getHeading();
    }
@@ -106,7 +105,7 @@ public class Weapon
    public WorldPose getPose()
    {
       return pose;
-   }
+   }*/
 
    /**
     * Set the number of munitions available for this weapon on the host UAV.

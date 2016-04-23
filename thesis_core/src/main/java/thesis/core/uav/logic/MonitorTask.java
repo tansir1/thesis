@@ -145,7 +145,7 @@ public class MonitorTask
             tgtBelief.getTaskStatus().setMonitorUAV(UAV.NULL_UAV_ID);
             tgtBelief.getTaskStatus().setMonitorUAVScore(-1);
             tgtBelief.getTaskStatus().setMonitorState(TaskState.Complete);
-            tgtBelief.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+            tgtBelief.getTaskStatus().setMonitorUpdateTimestamp(SimTime.getCurrentSimTimeMS());
             reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
          }
          else
@@ -162,6 +162,7 @@ public class MonitorTask
       if (stareStartTime == 0 && pathingHelper.isInSensorRange())
       {
          logger.debug("UAV {} began confirmation focused scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
+         tgtBelief.getTaskStatus().setMonitorState(TaskState.Performing);
          stareStartTime = SimTime.getCurrentSimTimeMS();
          snsrGrp.setFocusedScanning(true);
       }
@@ -178,7 +179,7 @@ public class MonitorTask
    {
       if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete)
       {
-         logger.debug("UAV {} notes that pending attack has been completed.");
+         logger.debug("UAV {} notes that pending attack has been completed.", hostUavId);
          reset(tgtBelief, TaskLogicState.BDA, snsrGrp);
       }
    }
@@ -188,6 +189,6 @@ public class MonitorTask
       tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
       tgtBelief.getTaskStatus().setAttackUAVScore(0);
       tgtBelief.getTaskStatus().setAttackState(TaskState.Open);
-      tgtBelief.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+      tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
    }
 }

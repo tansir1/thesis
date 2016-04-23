@@ -43,7 +43,7 @@ public class TaskAllocator
 
    public void stepSimulation(WorldBelief curBelief, UAV hostUAV)
    {
-      //See if this UAV still owns the current assigned task, update scores
+      // See if this UAV still owns the current assigned task, update scores
       switch (curTask)
       {
       case Attack:
@@ -56,7 +56,7 @@ public class TaskAllocator
          break;
       }
 
-      if(curTask == TaskType.Search)
+      if (curTask == TaskType.Search)
       {
          bidOnTasks(curBelief, hostUAV);
       }
@@ -76,6 +76,14 @@ public class TaskAllocator
          // //in range.
          // }
          // I'm still the best attacker
+      }
+      else if (curTgt.getTaskStatus().getAttackUAV() == UAV.NULL_UAV_ID)
+      {
+         // Target was attacked. Go do something else.
+         logger.trace("UAV {} sees attack task of {} as complete.  Changing to Search.", hostUAV,
+               curTgt.getTrueTargetID());
+         curTgt = null;
+         curTask = TaskType.Search;
       }
       else// Someone else has a better attack score and is within range
       {
@@ -122,31 +130,31 @@ public class TaskAllocator
       TargetBelief bestAttackTgt = findBestAvailableAttack(attackBids);
       TargetBelief bestMonitorTgt = findBestAvailableMonitor(monitorBids);
 
-      if(bestAttackTgt != null)
+      if (bestAttackTgt != null)
       {
          int bid = attackBids.get(bestAttackTgt);
 
          bestAttackTgt.getTaskStatus().setAttackState(TaskState.Enroute);
          bestAttackTgt.getTaskStatus().setAttackUAV(hostUavId);
          bestAttackTgt.getTaskStatus().setAttackUAVScore(bid);
-         bestAttackTgt.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+         bestAttackTgt.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
 
          curTgt = bestAttackTgt;
          curTask = TaskType.Attack;
       }
-      else if(bestMonitorTgt != null)
+      else if (bestMonitorTgt != null)
       {
          int bid = monitorBids.get(bestMonitorTgt);
 
          bestMonitorTgt.getTaskStatus().setMonitorState(TaskState.Enroute);
          bestMonitorTgt.getTaskStatus().setMonitorUAV(hostUavId);
          bestMonitorTgt.getTaskStatus().setMonitorUAVScore(bid);
-         bestMonitorTgt.getTaskStatus().setUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+         bestMonitorTgt.getTaskStatus().setMonitorUpdateTimestamp(SimTime.getCurrentSimTimeMS());
 
          curTgt = bestMonitorTgt;
          curTask = TaskType.Monitor;
       }
-      //else keep searching
+      // else keep searching
    }
 
    private TargetBelief findBestAvailableMonitor(Map<TargetBelief, Integer> bids)
@@ -166,7 +174,7 @@ public class TaskAllocator
             continue;
          }
 
-         if(tb.getTaskStatus().getMonitorState() == TaskState.NO_TASK)
+         if (tb.getTaskStatus().getMonitorState() == TaskState.NO_TASK)
          {
             tb.getTaskStatus().setMonitorState(TaskState.Open);
          }
@@ -228,7 +236,6 @@ public class TaskAllocator
       return bestTgt;
    }
 
-
    private int computeMonitorBid(TargetBelief tgt, UAV hostUAV)
    {
       double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
@@ -241,10 +248,10 @@ public class TaskAllocator
 
    private int computeAttackBid(TargetBelief tgt, UAV hostUAV)
    {
-      int bid = 0;
+      int bid = -1;
 
       Weapon wpn = hostUAV.getWeapons().getBestWeapon(tgt.getHighestProbabilityTargetType());
-      if(wpn != null)
+      if (wpn != null)
       {
          double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
          // int mostLikelyType = tgt.getHighestProbabilityTargetType();

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.belief.TargetBelief;
+import thesis.core.common.SimTime;
 import thesis.core.common.WorldPose;
 import thesis.core.sensors.SensorGroup;
 import thesis.core.uav.Pathing;
@@ -38,8 +39,9 @@ public class AttackTask
       tgtPose = new WorldPose();
    }
 
-   public void Reset(WorldPose tgtPose, Pathing pathing, SensorGroup snsrGrp)
+   public void Reset(WorldPose tgtPose, Pathing pathing, SensorGroup snsrGrp, int tgtID)
    {
+      logger.debug("UAV {} resetting to Attack target {}", hostUavId, tgtID);
       this.tgtPose.copy(tgtPose);
       pathing.computePathTo(tgtPose);
 
@@ -55,20 +57,29 @@ public class AttackTask
          return;
       }
 
-      // Recompute a path if the target has moved significantly
-      if (tgtPose.getCoordinate().distanceTo(tgtBelief.getCoordinate()) > TGT_MOVE_DIST_TO_RECOMPUTE_PATH)
+      final double distToTar = tgtPose.getCoordinate().distanceTo(tgtBelief.getCoordinate());
+
+      if(tgtBelief.getTaskStatus().getAttackState() != TaskState.Performing && distToTar < wpn.getMaxRange())
       {
-         Reset(tgtBelief.getPose(), pathing, snsrGrp);
+         logger.debug("UAV {} in range of Attack target {}.  Changing state from EnRoute to Performing.", hostUavId, tgtBelief.getTrueTargetID());
+         tgtBelief.getTaskStatus().setAttackState(TaskState.Performing);
+      }
+
+      // Recompute a path if the target has moved significantly
+      if (distToTar > TGT_MOVE_DIST_TO_RECOMPUTE_PATH)
+      {
+         Reset(tgtBelief.getPose(), pathing, snsrGrp, tgtBelief.getTrueTargetID());
       }
 
       // If the target is in the LAR then fire
-      if (wpnGrp.getAttackLogic().isInLaunchAcceptabilityRegion(tgtBelief.getPose(), MAX_FIRE_RANGE_PERCENT, wpn))
+      if (wpnGrp.getAttackLogic().isInLaunchAcceptabilityRegion(tgtBelief.getPose(), MAX_FIRE_RANGE_PERCENT, wpn, pathing.getPose()))
       {
          logger.debug("UAV {} fired at target {}", hostUavId, tgtBelief.getTrueTargetID());
-         wpnGrp.getAttackLogic().fireAtTarget(tgtBelief, wpn);
+         wpnGrp.getAttackLogic().fireAtTarget(tgtBelief, wpn, hostUavId);
          tgtBelief.getTaskStatus().setAttackState(TaskState.Complete);
          tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
          tgtBelief.getTaskStatus().setAttackUAVScore(-1);
+         tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
       }
 
    }
