@@ -20,6 +20,7 @@ import thesis.core.SimModel;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.uav.UAV;
+import thesis.core.uav.logic.TaskType;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
@@ -37,6 +38,7 @@ public class UAVViewPanel
    private JButton teleportBtn;
    private boolean teleportInProgress;
    private JLabel logicStateLbl;
+   private JLabel tgtIDLbl;
 
    public UAVViewPanel()
    {
@@ -86,6 +88,7 @@ public class UAVViewPanel
       eastLbl = new JLabel();
       hdgLbl = new JLabel();
       logicStateLbl = new JLabel();
+      tgtIDLbl = new JLabel();
 
       renderable.setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
@@ -98,6 +101,7 @@ public class UAVViewPanel
       addGridFormRow(gbc, "East:", eastLbl);
       addGridFormRow(gbc, "Heading:", hdgLbl);
       addGridFormRow(gbc, "Logic State:", logicStateLbl);
+      addGridFormRow(gbc, "Target ID:", tgtIDLbl);
 
       gbc.gridwidth = 2;
       renderable.add(teleportBtn, gbc);
@@ -215,8 +219,24 @@ public class UAVViewPanel
          hdgLbl.setText(String.format("%.2f\u00B0", pose.getHeading()));
          // \u00B0 is unicode for degree symbol
 
-         logicStateLbl.setText(selectedUAV.getLogic().getCurrentTaskType().toString());
+         TaskType taskType = selectedUAV.getLogic().getCurrentTaskType();
+         if(taskType != null)
+         {
+            logicStateLbl.setText(taskType.toString());
+         }
+         else
+         {
+            logicStateLbl.setText("----");
+         }
 
+         if(selectedUAV.getLogic().getCurrentTarget() != null)
+         {
+            tgtIDLbl.setText(Integer.toString(selectedUAV.getLogic().getCurrentTarget().getTrueTargetID()));
+         }
+         else
+         {
+            tgtIDLbl.setText("---");
+         }
       }
    }
 }

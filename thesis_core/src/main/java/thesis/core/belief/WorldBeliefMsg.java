@@ -1,6 +1,6 @@
-package thesis.core.uav.comms;
+package thesis.core.belief;
 
-import thesis.core.belief.WorldBelief;
+import thesis.core.uav.comms.Message;
 
 public class WorldBeliefMsg extends Message
 {

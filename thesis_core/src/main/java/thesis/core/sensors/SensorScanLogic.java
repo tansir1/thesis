@@ -31,6 +31,11 @@ public class SensorScanLogic
       this.randGen = randGen;
    }
 
+   public SensorProbs getSensorProbabilities()
+   {
+      return snsrProbs;
+   }
+
    public void simulateScan(int snsrType, double snsrHdg, WorldBelief belief, List<CellCoordinate> snsrFOV,
          long simTime)
    {

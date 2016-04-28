@@ -19,6 +19,7 @@ public class Target
    private WorldCoordinate destination;
    private HavenRouting havenRouting;
    private List<WorldCoordinate> havenPath;
+   private boolean alive;
 
    /**
     * Meters/second
@@ -34,7 +35,7 @@ public class Target
 
       pose = new WorldPose();
       destination = new WorldCoordinate();
-
+      alive = true;
    }
 
    public int getID()
@@ -137,5 +138,15 @@ public class Target
       {
          havenRouting.selectNewHavenDestination(pose.getCoordinate(), destination, havenPath);
       }
+   }
+
+   public boolean isAlive()
+   {
+      return alive;
+   }
+
+   public void attacked()
+   {
+      alive = false;
    }
 }

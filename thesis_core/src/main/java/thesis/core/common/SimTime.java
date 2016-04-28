@@ -16,7 +16,7 @@ public class SimTime
    /**
     * The amount of simulated time that has elapsed in milliseconds.
     */
-   public static long CURRENT_SIM_TIME_MS = 0;
+   private static long currentSimTimeMS = 0;
 
    private static long wallTime = 0;
 
@@ -29,7 +29,7 @@ public class SimTime
     */
    public static void stepSimulation()
    {
-      CURRENT_SIM_TIME_MS += SIM_STEP_RATE_MS;
+      currentSimTimeMS += SIM_STEP_RATE_MS;
       frameCnt++;
    }
 
@@ -48,7 +48,12 @@ public class SimTime
 
    public static SimTimeState getTimeState()
    {
-      timeState.update(CURRENT_SIM_TIME_MS, wallTime, frameCnt);
+      timeState.update(currentSimTimeMS, wallTime, frameCnt);
       return timeState;
+   }
+
+   public static long getCurrentSimTimeMS()
+   {
+      return currentSimTimeMS;
    }
 }

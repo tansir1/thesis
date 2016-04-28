@@ -50,6 +50,11 @@ public class SearchTask
       this.rand = randGen;
    }
 
+   public void reset(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
+   {
+      selectNewSearchDestination(curBelief, pathing, snsrGrp);
+   }
+
    public void stepSimulation(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
    {
       if (searchDest == null || curBelief.getCellBelief(searchDest).getUncertainty() < UNCERTAINTY_THRESHOLD)

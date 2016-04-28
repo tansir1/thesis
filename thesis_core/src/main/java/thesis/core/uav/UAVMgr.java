@@ -20,6 +20,9 @@ import thesis.core.uav.comms.CommsConfig;
 import thesis.core.uav.comms.UAVComms;
 import thesis.core.uav.logic.UAVLogicMgr;
 import thesis.core.utilities.LoggerIDs;
+import thesis.core.weapons.Weapon;
+import thesis.core.weapons.WeaponAttackLogic;
+import thesis.core.weapons.WeaponGroup;
 import thesis.core.world.WorldGIS;
 
 /**
@@ -52,12 +55,18 @@ public class UAVMgr
       logger.debug("Resetting UAV Manager.");
 
       SensorScanLogic snsrScanner = new SensorScanLogic(entTypes.getSnsrProbs(), tgtMgr, randGen);
+      WeaponAttackLogic wpnAtkLogic = new WeaponAttackLogic(entTypes.getWpnProbs(), tgtMgr, randGen);
+
+      final int NUM_TGT_TYPES = tgtMgr.getTypeConfigs().getNumTypes();
 
       final int NUM_UAVS = uavStartCfgs.size();
       uavs = new UAV[NUM_UAVS];
 
       UAVSensorCfgs uavSensorCfgs = entTypes.getUAVSensorCfgs();
       final int NUM_SNSR_TYPES = uavSensorCfgs.getNumSensorTypes();
+
+      UAVWeaponCfgs uavWeaponCfgs = entTypes.getUAVWeaponCfgs();
+      final int NUM_WPN_TYPES = uavWeaponCfgs.getNumWeaponTypes();
 
       UAVStartCfg uavStartCfg = null;
 
@@ -67,6 +76,7 @@ public class UAVMgr
          uavStartCfg = uavStartCfgs.get(i);
          int type = uavStartCfg.getUAVType();
          int snsrIDCnt = 0;
+         int wpnIDCnt = 0;
 
          for (int j = 0; j < NUM_SNSR_TYPES; ++j)
          {
@@ -80,17 +90,27 @@ public class UAVMgr
             }
          }
 
+         final WeaponGroup weapons = new WeaponGroup(wpnAtkLogic);
+         for (int j = 0; j < NUM_WPN_TYPES; ++j)
+         {
+            if(uavWeaponCfgs.uavHasWeapon(type,  j))
+            {
+               int initQty = entTypes.getUAVWeaponCfgs().getInitialQuantity(type, j);
+               Weapon wpn = new Weapon(j, wpnIDCnt, entTypes.getWpnTypeCfgs(), tgtMgr, initQty);
+               wpnIDCnt++;
+               weapons.addWeapon(wpn);
+            }
+         }
          final UAVComms comms = new UAVComms(i, this, randGen, commsCfg);
 
          final Pathing pathing = new Pathing(i, type, entTypes.getUAVTypeCfgs());
          pathing.getCoordinate().setCoordinate(uavStartCfg.getLocation());
          pathing.setHeading(uavStartCfg.getOrientation());
 
-         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen);
+         final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen, NUM_TGT_TYPES, tgtMgr);
 
-         WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(),
-               tgtMgr.getTypeConfigs().getNumTypes(), beliefDecayRate);
-         uavs[i] = new UAV(type, i, sensors, comms, pathing, logicMgr, wb);
+         WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(), NUM_TGT_TYPES, beliefDecayRate);
+         uavs[i] = new UAV(type, i, sensors, weapons, comms, pathing, logicMgr, wb);
       }
    }
 

@@ -1,14 +1,14 @@
 package thesis.core.belief;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 import thesis.core.common.CellCoordinate;
 import thesis.core.common.SimTime;
+import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
-import thesis.core.uav.comms.UAVComms;
-import thesis.core.uav.comms.WorldBeliefMsg;
 
 public class WorldBelief
 {
@@ -49,7 +49,7 @@ public class WorldBelief
       }
    }
 
-   public void stepSimulation(UAVComms comms)
+   public void stepSimulation(IMsgTransmitter comms)
    {
       final int numRows = cells.length;
       final int numCols = cells[0].length;
@@ -129,6 +129,11 @@ public class WorldBelief
          tgtBeliefs.add(tgtBelief);
       }
       return tgtBelief;
+   }
+
+   public List<TargetBelief> getTargetBeliefs()
+   {
+      return Collections.unmodifiableList(tgtBeliefs);
    }
 
    public boolean hasDetectedTarget(int tgtID)

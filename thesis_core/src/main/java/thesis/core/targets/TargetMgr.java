@@ -18,7 +18,7 @@ import thesis.core.world.WorldGIS;
 /**
  * High level manager that maintains all targets in the simulation.
  */
-public class TargetMgr
+public class TargetMgr implements ITrueTargetStatusProvider
 {
    private Logger logger;
    private Target[] targets;
@@ -210,5 +210,22 @@ public class TargetMgr
       }
 
       return searchResult;
+   }
+
+   @Override
+   public boolean isAlive(int trueTgtID)
+   {
+      boolean alive = false;
+
+      for (Target tar : targets)
+      {
+         if (tar.getID() == trueTgtID)
+         {
+            alive = tar.isAlive();
+            break;
+         }
+      }
+
+      return alive;
    }
 }
