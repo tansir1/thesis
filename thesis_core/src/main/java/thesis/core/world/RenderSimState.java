@@ -90,11 +90,17 @@ public class RenderSimState
    private BufferedImage rawRedMobileImg;
    private BufferedImage scaledRedMobileImg;
 
+   private BufferedImage rawWhiteMobileImg;
+   private BufferedImage scaledWhiteMobileImg;
+
    private BufferedImage rawGreenMobileImg;
    private BufferedImage scaledGreenMobileImg;
 
    private BufferedImage rawRedStaticImg;
    private BufferedImage scaledRedStaticImg;
+
+   private BufferedImage rawWhiteStaticImg;
+   private BufferedImage scaledWhiteStaticImg;
 
    private BufferedImage rawBlueMobileImg;
    private BufferedImage scaledBlueMobileImg;
@@ -127,8 +133,10 @@ public class RenderSimState
       sensorFOVStroke = new BasicStroke(1f);
       rawHavenImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.HAVEN_IMG_PATH);
       rawRedMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_MOBILE_IMG_PATH);
+      rawWhiteMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.WHITE_MOBILE_IMG_PATH);
       rawGreenMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.GREEN_MOBILE_IMG_PATH);
       rawRedStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.RED_STATIC_IMG_PATH);
+      rawWhiteStaticImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.WHITE_STATIC_IMG_PATH);
       rawBlueMobileImg = CoreUtils.getResourceAsImage(CoreRsrcPaths.BLUE_MOBILE_IMG_PATH);
 
       selectedUavId = -1;
@@ -380,6 +388,11 @@ public class RenderSimState
          // g.dispose();
       }
 
+      if(rawWhiteMobileImg != null)
+      {
+         scaledWhiteMobileImg = rawWhiteMobileImg;
+      }
+
       if (rawRedStaticImg != null)
       {
          scaledRedStaticImg = rawRedStaticImg;
@@ -390,6 +403,11 @@ public class RenderSimState
          // g.drawImage(rawRedStaticImg, 0, 0, rawRedStaticImg.getWidth()*2,
          // rawRedStaticImg.getHeight()*2, null);
          // g.dispose();
+      }
+
+      if(rawWhiteStaticImg != null)
+      {
+         scaledWhiteStaticImg = rawWhiteStaticImg;
       }
 
       if (rawBlueMobileImg != null)
@@ -561,30 +579,42 @@ public class RenderSimState
 
          if (tgt.isMobile())
          {
-            if (scaledRedMobileImg != null)
+            BufferedImage drawImg = scaledRedMobileImg;
+            if(!tgt.isAlive())
             {
-               halfImgW = scaledRedMobileImg.getWidth() / 2;
-               halfImgH = scaledRedMobileImg.getHeight() / 2;
+               drawImg = scaledWhiteMobileImg;
+            }
+
+            if (drawImg != null)
+            {
+               halfImgW = drawImg.getWidth() / 2;
+               halfImgH = drawImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                // trans.rotate(-tgt.getHeading().asRadians());
                double deg = tgt.getPose().getHeading() - 90;
                trans.rotate(-Math.toRadians(deg));
 
-               g2d.drawImage(scaledRedMobileImg, trans, null);
+               g2d.drawImage(drawImg, trans, null);
             }
          }
          else
          {
-            if (scaledRedStaticImg != null)
+            BufferedImage drawImg = scaledRedStaticImg;
+            if(!tgt.isAlive())
             {
-               halfImgW = scaledRedStaticImg.getWidth() / 2;
-               halfImgH = scaledRedStaticImg.getHeight() / 2;
+               drawImg = scaledWhiteStaticImg;
+            }
+
+            if (drawImg != null)
+            {
+               halfImgW = drawImg.getWidth() / 2;
+               halfImgH = drawImg.getHeight() / 2;
 
                trans.translate(pixels.x - halfImgW, pixels.y - halfImgH);
                trans.rotate(Math.toRadians(-tgt.getPose().getHeading()));
 
-               g2d.drawImage(scaledRedStaticImg, trans, null);
+               g2d.drawImage(drawImg, trans, null);
             }
          }
       }
