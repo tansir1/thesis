@@ -89,39 +89,53 @@ public class SearchTask
 
    private void forage(WorldBelief curBelief)
    {
-      //The size of the kernel square in cells
-      final int kernelDivisor = 5;//kernel is a 5x5 grid of cells
-
+      final double PURE_RANDOM_WEIGHT = 0.33;
       final int numRows = curBelief.getNumRows();
       final int numCols = curBelief.getNumCols();
 
-      int rowsPerKernel = numRows / kernelDivisor;
-      int colsPerKernel = numCols / kernelDivisor;
+      int destCol = -1;
+      int destRow = -1;
 
-      int maxKernRow = 0;
-      int maxKernCol = 0;
-      double maxUncert = 0;
-
-      //Iterate across all kernels in the world
-      for (int worldRow = 0; worldRow < numRows; worldRow += rowsPerKernel)
+      if(rand.nextDouble() < PURE_RANDOM_WEIGHT)
       {
-         for (int worldCol = 0; worldCol < numCols; worldCol += colsPerKernel)
-         {
-            double avgUncert = computeForageKernelUncert(curBelief, worldCol, worldRow, colsPerKernel,
-                  rowsPerKernel);
+         //Pure random
+         destCol = rand.nextInt(numCols);
+         destRow = rand.nextInt(numRows);
+      }
+      else
+      {
+         //The size of the kernel square in cells
+         final int kernelDivisor = 5;//kernel is a 5x5 grid of cells
 
-            if(avgUncert > maxUncert)
+         int rowsPerKernel = numRows / kernelDivisor;
+         int colsPerKernel = numCols / kernelDivisor;
+
+         int maxKernRow = 0;
+         int maxKernCol = 0;
+         double maxUncert = 0;
+
+         //Iterate across all kernels in the world
+         for (int worldRow = 0; worldRow < numRows; worldRow += rowsPerKernel)
+         {
+            for (int worldCol = 0; worldCol < numCols; worldCol += colsPerKernel)
             {
-               maxUncert = avgUncert;
-               maxKernCol = worldCol;
-               maxKernRow = worldRow;
+               double avgUncert = computeForageKernelUncert(curBelief, worldCol, worldRow, colsPerKernel,
+                     rowsPerKernel);
+
+               //Store the most uncertain kernel
+               if(avgUncert > maxUncert)
+               {
+                  maxUncert = avgUncert;
+                  maxKernCol = worldCol;
+                  maxKernRow = worldRow;
+               }
             }
          }
-      }
 
-      //Pick a random cell within the kernel
-      int destCol = rand.nextInt(colsPerKernel) + maxKernCol;
-      int destRow = rand.nextInt(rowsPerKernel) + maxKernRow;
+         //Pick a random cell within the kernel
+         destCol = rand.nextInt(colsPerKernel) + maxKernCol;
+         destRow = rand.nextInt(rowsPerKernel) + maxKernRow;
+      }
 
       searchDest = curBelief.getCellBelief(destRow, destCol).getCoordinate();
    }
