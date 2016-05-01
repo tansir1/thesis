@@ -132,13 +132,14 @@ public class TaskAllocator
          attackBids.put(tb, computeAttackBid(tb, hostUAV));
       }
 
-      findBestAvailableAttack(attackBids);
       findBestAvailableMonitor(monitorBids);
+      findBestAvailableAttack(attackBids);
 
       if (bestAttackTgt != null)
       {
          int bid = attackBids.get(bestAttackTgt);
-
+         // My attack bid is better than the stored data (guaranteed by
+         // findBestAvailableAttack())
          bestAttackTgt.getTaskStatus().setAttackState(TaskState.Enroute);
          bestAttackTgt.getTaskStatus().setAttackUAV(hostUavId);
          bestAttackTgt.getTaskStatus().setAttackUAVScore(bid);
@@ -150,7 +151,8 @@ public class TaskAllocator
       else if (bestMonitorTgt != null)
       {
          int bid = monitorBids.get(bestMonitorTgt);
-
+         // My monitor bid is better than the stored data (guaranteed by
+         // findBestAvailableMonitor())
          bestMonitorTgt.getTaskStatus().setMonitorState(TaskState.Enroute);
          bestMonitorTgt.getTaskStatus().setMonitorUAV(hostUavId);
          bestMonitorTgt.getTaskStatus().setMonitorUAVScore(bid);
@@ -200,8 +202,8 @@ public class TaskAllocator
          }
       }
 
-      bestAttackTargetBid = bestBid;
-      bestAttackTgt = bestTgt;
+      bestMonitorTgtBid = bestBid;
+      bestMonitorTgt = bestTgt;
    }
 
    private void findBestAvailableAttack(Map<TargetBelief, Integer> atkBids)
@@ -239,8 +241,8 @@ public class TaskAllocator
          }
       }
 
-      bestMonitorTgtBid = bestBid;
-      bestMonitorTgt = bestTgt;
+      bestAttackTargetBid = bestBid;
+      bestAttackTgt = bestTgt;
    }
 
    private int computeMonitorBid(TargetBelief tgt, UAV hostUAV)
