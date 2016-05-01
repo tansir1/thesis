@@ -3,6 +3,7 @@ apply plugin: 'application'
 
 dependencies {
 	compile project(':thesis_core')
+	compile 'com.miglayout:miglayout-swing:4.2'
 }
 
 

@@ -19,6 +19,7 @@ import javax.swing.border.BevelBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.miginfocom.swing.MigLayout;
 import thesis.core.SimModel;
 import thesis.core.utilities.LoggerIDs;
 import thesis.gui.mainwindow.actions.Actions;
@@ -91,9 +92,15 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       frame.add(simPanel, BorderLayout.CENTER);
 
       JPanel westPan = new JPanel();
-      westPan.setLayout(new BoxLayout(westPan, BoxLayout.Y_AXIS));
-      westPan.add(uavViewPan.getRenderable());
+      westPan.setLayout(new MigLayout());
+      //westPan.add(uavViewPan.getRenderable(), "spanx 3, wrap");
+      westPan.add(uavViewPan.getRenderable(), "growy, wrap");
       westPan.add(simStatPan.getRenderable());
+
+//      JPanel westPan = new JPanel();
+//      westPan.setLayout(new BoxLayout(westPan, BoxLayout.Y_AXIS));
+//      westPan.add(uavViewPan.getRenderable());
+//      westPan.add(simStatPan.getRenderable());
 
       frame.add(buildToolbar(), BorderLayout.NORTH);
       frame.add(westPan, BorderLayout.WEST);

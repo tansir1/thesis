@@ -58,6 +58,11 @@ public class UAVLogicMgr
       return curTgt;
    }
 
+   public TaskAllocator getTaskAllocator()
+   {
+      return taskAllocator;
+   }
+
    public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV,
          IMsgTransmitter msgTransmitter)
    {
