@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,14 +24,14 @@ public class SearchTask
 
    public enum Strategy
    {
-      MostUncertain, RandomTopThird
+      MostUncertain, RandomTopThird, Forage
    }
 
    /**
     * Global flag to configure the strategy used for selecting new search
     * destinations.
     */
-   public static Strategy strategy = Strategy.RandomTopThird;
+   public static Strategy strategy = Strategy.Forage;
 
    /**
     * When the uncertainty of the searched cell falls below this value select a
@@ -75,12 +76,87 @@ public class SearchTask
       case RandomTopThird:
          selectRandomTopThird(curBelief, pathing, snsrGrp);
          break;
+      case Forage:
+         forage(curBelief);
+         break;
       }
 
       logger.trace("UAV {} changed search destination from {} to {}.", hostUavId, oldDest, searchDest);
 
       pathing.computePathTo(gis.convertCellToWorld(searchDest));
       snsrGrp.stareAtAll(gis.convertCellToWorld(searchDest));
+   }
+
+   private void forage(WorldBelief curBelief)
+   {
+      final double PURE_RANDOM_WEIGHT = 0.33;
+      final int numRows = curBelief.getNumRows();
+      final int numCols = curBelief.getNumCols();
+
+      int destCol = -1;
+      int destRow = -1;
+
+      if(rand.nextDouble() < PURE_RANDOM_WEIGHT)
+      {
+         //Pure random
+         destCol = rand.nextInt(numCols);
+         destRow = rand.nextInt(numRows);
+      }
+      else
+      {
+         //The size of the kernel square in cells
+         final int kernelDivisor = 5;//kernel is a 5x5 grid of cells
+
+         int rowsPerKernel = numRows / kernelDivisor;
+         int colsPerKernel = numCols / kernelDivisor;
+
+         int maxKernRow = 0;
+         int maxKernCol = 0;
+         double maxUncert = 0;
+
+         //Iterate across all kernels in the world
+         for (int worldRow = 0; worldRow < numRows; worldRow += rowsPerKernel)
+         {
+            for (int worldCol = 0; worldCol < numCols; worldCol += colsPerKernel)
+            {
+               double avgUncert = computeForageKernelUncert(curBelief, worldCol, worldRow, colsPerKernel,
+                     rowsPerKernel);
+
+               //Store the most uncertain kernel
+               if(avgUncert > maxUncert)
+               {
+                  maxUncert = avgUncert;
+                  maxKernCol = worldCol;
+                  maxKernRow = worldRow;
+               }
+            }
+         }
+
+         //Pick a random cell within the kernel
+         destCol = rand.nextInt(colsPerKernel) + maxKernCol;
+         destRow = rand.nextInt(rowsPerKernel) + maxKernRow;
+      }
+
+      searchDest = curBelief.getCellBelief(destRow, destCol).getCoordinate();
+   }
+
+   private double computeForageKernelUncert(WorldBelief curBelief, int worldColStart, int worldRowStart,
+         int kernWidth, int kernHeight)
+   {
+      final int worldWidth = curBelief.getNumCols();
+      final int worldHeight = curBelief.getNumRows();
+
+      SummaryStatistics stats = new SummaryStatistics();
+
+      for (int row = 0; row < kernHeight && (row + worldRowStart) < worldWidth; ++row)
+      {
+         for (int col = 0; col < kernWidth && (col + worldColStart) < worldHeight; ++col)
+         {
+            stats.addValue(curBelief.getCellBelief(row + worldRowStart, col + worldColStart).getUncertainty());
+         }
+      }
+
+      return stats.getMean();
    }
 
    private void selectRandomTopThird(WorldBelief curBelief, Pathing pathing, SensorGroup snsrGrp)
