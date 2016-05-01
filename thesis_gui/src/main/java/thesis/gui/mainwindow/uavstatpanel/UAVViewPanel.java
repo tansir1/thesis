@@ -9,11 +9,14 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import thesis.core.SimModel;
@@ -21,6 +24,7 @@ import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.uav.UAV;
 import thesis.core.uav.logic.TaskType;
+import thesis.core.weapons.Weapon;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
@@ -39,6 +43,9 @@ public class UAVViewPanel
    private boolean teleportInProgress;
    private JLabel logicStateLbl;
    private JLabel tgtIDLbl;
+
+   private JList<String> wpnsList;
+   private DefaultListModel<String> wpnsListModel;
 
    public UAVViewPanel()
    {
@@ -79,6 +86,8 @@ public class UAVViewPanel
          }
       });
 
+      wpnsListModel = new DefaultListModel<String>();
+
       buildGUI();
    }
 
@@ -89,6 +98,7 @@ public class UAVViewPanel
       hdgLbl = new JLabel();
       logicStateLbl = new JLabel();
       tgtIDLbl = new JLabel();
+      wpnsList = new JList<String>(wpnsListModel);
 
       renderable.setLayout(new GridBagLayout());
       GridBagConstraints gbc = new GridBagConstraints();
@@ -104,7 +114,13 @@ public class UAVViewPanel
       addGridFormRow(gbc, "Target ID:", tgtIDLbl);
 
       gbc.gridwidth = 2;
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+
+      JScrollPane wpnScroll = new JScrollPane(wpnsList);
+      renderable.add(wpnScroll, gbc);
+      gbc.gridy++;
       renderable.add(teleportBtn, gbc);
+
       gbc.gridwidth = 1;
    }
 
@@ -139,7 +155,7 @@ public class UAVViewPanel
 
    public void onMapClick(WorldCoordinate wc)
    {
-      if(teleportInProgress)
+      if (teleportInProgress)
       {
          toggleTeleportStatus();
 
@@ -162,7 +178,7 @@ public class UAVViewPanel
 
    private void toggleTeleportStatus()
    {
-      if(teleportInProgress)
+      if (teleportInProgress)
       {
          teleportInProgress = false;
          teleportBtn.setText(teleportOnTxt);
@@ -213,6 +229,13 @@ public class UAVViewPanel
 
       synchronized (simModel)
       {
+         wpnsListModel.clear();
+         wpnsListModel.addElement("WPN_TYPE, QTY");
+         for(Weapon wpn : selectedUAV.getWeapons().getWeapons())
+         {
+            wpnsListModel.addElement(wpn.toString());
+         }
+
          WorldPose pose = selectedUAV.getPathing().getPose();
          northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
          eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));
