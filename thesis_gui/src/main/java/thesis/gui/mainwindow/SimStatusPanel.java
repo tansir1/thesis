@@ -1,14 +1,11 @@
 package thesis.gui.mainwindow;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.miginfocom.swing.MigLayout;
 import thesis.core.common.SimTimeState;
 
 public class SimStatusPanel
@@ -27,33 +24,21 @@ public class SimStatusPanel
 
       renderable.setBorder(BorderFactory.createTitledBorder("Sim Status"));
 
-      Dimension size = new Dimension(200, 100);
-      renderable.setMinimumSize(size);
-      renderable.setPreferredSize(size);
-
       buildGUI();
    }
 
    private void buildGUI()
    {
-      renderable.setLayout(new GridBagLayout());
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 0;
-      gbc.anchor = GridBagConstraints.LINE_START;
-
-      addGridFormRow(gbc, "Sim Time:", totalSimTimeLbl);
-      addGridFormRow(gbc, "Wall Time:", totalWallTimeLbl);
-      addGridFormRow(gbc, "Sim Frame Count:", simFrameCntLbl);
+      renderable.setLayout(new MigLayout());
+      addGridFormRow("Sim Time:", totalSimTimeLbl);
+      addGridFormRow("Wall Time:", totalWallTimeLbl);
+      addGridFormRow("Sim Frame Count:", simFrameCntLbl);
    }
 
-   private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
+   private void addGridFormRow(String lblText, JComponent view)
    {
-      renderable.add(new JLabel(lblText), gbc);
-      gbc.gridx++;
-      renderable.add(view, gbc);
-      gbc.gridx = 0;
-      gbc.gridy++;
+      renderable.add(new JLabel(lblText));
+      renderable.add(view, "wrap");
    }
 
    public JComponent getRenderable()

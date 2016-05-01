@@ -1,26 +1,30 @@
 package thesis.gui.mainwindow.uavstatpanel;
 
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import net.miginfocom.layout.LC;
+import net.miginfocom.swing.MigLayout;
 import thesis.core.SimModel;
 import thesis.core.common.WorldCoordinate;
 import thesis.core.common.WorldPose;
 import thesis.core.uav.UAV;
+import thesis.core.uav.logic.TaskAllocator;
 import thesis.core.uav.logic.TaskType;
+import thesis.core.weapons.Weapon;
 import thesis.gui.simpanel.RenderableSimWorldPanel;
 
 public class UAVViewPanel
@@ -40,6 +44,12 @@ public class UAVViewPanel
    private JLabel logicStateLbl;
    private JLabel tgtIDLbl;
 
+   private JList<String> wpnsList;
+   private DefaultListModel<String> wpnsListModel;
+
+   private JLabel bestAttackTgtLbl, bestMonitorTgtLbl;
+   private JLabel bestAttackTgtBidLbl, bestMonitorTgtBidLbl;
+
    public UAVViewPanel()
    {
       uavSelCB = new JComboBox<Integer>();
@@ -47,9 +57,10 @@ public class UAVViewPanel
       renderable = new JPanel();
       renderable.setBorder(BorderFactory.createTitledBorder("UAVs"));
 
+      /*
       Dimension size = new Dimension(200, 100);
       renderable.setMinimumSize(size);
-      renderable.setPreferredSize(size);
+      renderable.setPreferredSize(size);*/
 
       uavSelCB.addItemListener(new ItemListener()
       {
@@ -79,6 +90,8 @@ public class UAVViewPanel
          }
       });
 
+      wpnsListModel = new DefaultListModel<String>();
+
       buildGUI();
    }
 
@@ -89,32 +102,36 @@ public class UAVViewPanel
       hdgLbl = new JLabel();
       logicStateLbl = new JLabel();
       tgtIDLbl = new JLabel();
+      wpnsList = new JList<String>(wpnsListModel);
 
-      renderable.setLayout(new GridBagLayout());
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.gridx = 0;
-      gbc.gridy = 0;
-      gbc.anchor = GridBagConstraints.LINE_START;
+      bestAttackTgtLbl = new JLabel();
+      bestMonitorTgtLbl = new JLabel();
+      bestAttackTgtBidLbl = new JLabel();
+      bestMonitorTgtBidLbl = new JLabel();
 
-      addGridFormRow(gbc, "Selected UAV:", uavSelCB);
-      addGridFormRow(gbc, "North:", northLbl);
-      addGridFormRow(gbc, "East:", eastLbl);
-      addGridFormRow(gbc, "Heading:", hdgLbl);
-      addGridFormRow(gbc, "Logic State:", logicStateLbl);
-      addGridFormRow(gbc, "Target ID:", tgtIDLbl);
+      renderable.setLayout(new MigLayout(new LC().fill()));
 
-      gbc.gridwidth = 2;
-      renderable.add(teleportBtn, gbc);
-      gbc.gridwidth = 1;
+      addGridFormRow("Selected UAV:", uavSelCB);
+      addGridFormRow("North:", northLbl);
+      addGridFormRow("East:", eastLbl);
+      addGridFormRow("Heading:", hdgLbl);
+      addGridFormRow("Logic State:", logicStateLbl);
+      addGridFormRow("Target ID:", tgtIDLbl);
+      addGridFormRow("Best Attack Tgt:", bestAttackTgtLbl);
+      addGridFormRow("Best Attack Bid:", bestAttackTgtBidLbl);
+      addGridFormRow("Best Monitor Tgt:", bestMonitorTgtLbl);
+      addGridFormRow("Best Monitor Bid:", bestMonitorTgtBidLbl);
+
+      renderable.add(teleportBtn, "spanx 2, wrap");
+
+      JScrollPane wpnScroll = new JScrollPane(wpnsList);
+      renderable.add(wpnScroll, "spany 2, wrap");
    }
 
-   private void addGridFormRow(GridBagConstraints gbc, String lblText, JComponent view)
+   private void addGridFormRow(String lblText, JComponent view)
    {
-      renderable.add(new JLabel(lblText), gbc);
-      gbc.gridx++;
-      renderable.add(view, gbc);
-      gbc.gridx = 0;
-      gbc.gridy++;
+      renderable.add(new JLabel(lblText));
+      renderable.add(view, "wrap");
    }
 
    public void connectSimModel(final SimModel simModel, RenderableSimWorldPanel renderSim)
@@ -139,7 +156,7 @@ public class UAVViewPanel
 
    public void onMapClick(WorldCoordinate wc)
    {
-      if(teleportInProgress)
+      if (teleportInProgress)
       {
          toggleTeleportStatus();
 
@@ -162,7 +179,7 @@ public class UAVViewPanel
 
    private void toggleTeleportStatus()
    {
-      if(teleportInProgress)
+      if (teleportInProgress)
       {
          teleportInProgress = false;
          teleportBtn.setText(teleportOnTxt);
@@ -213,6 +230,42 @@ public class UAVViewPanel
 
       synchronized (simModel)
       {
+         wpnsListModel.clear();
+         wpnsListModel.addElement("WPN_TYPE, QTY");
+         for(Weapon wpn : selectedUAV.getWeapons().getWeapons())
+         {
+            wpnsListModel.addElement(wpn.toString());
+         }
+
+         TaskAllocator allocator = selectedUAV.getLogic().getTaskAllocator();
+         if(allocator.getBestAttackTarget() != null)
+         {
+            int id = allocator.getBestAttackTarget().getTrueTargetID();
+            int bid = allocator.getBestAttackTargetBid();
+
+            bestAttackTgtLbl.setText(Integer.toString(id));
+            bestAttackTgtBidLbl.setText(Integer.toString(bid));
+         }
+         else
+         {
+            bestAttackTgtLbl.setText("NULL");
+            bestAttackTgtBidLbl.setText("NULL");
+         }
+
+         if(allocator.getBestMonitorTarget() != null)
+         {
+            int id = allocator.getBestMonitorTarget().getTrueTargetID();
+            int bid = allocator.getBestMonitorTargetBid();
+
+            bestMonitorTgtLbl.setText(Integer.toString(id));
+            bestMonitorTgtBidLbl.setText(Integer.toString(bid));
+         }
+         else
+         {
+            bestMonitorTgtLbl.setText("NULL");
+            bestMonitorTgtBidLbl.setText("NULL");
+         }
+
          WorldPose pose = selectedUAV.getPathing().getPose();
          northLbl.setText(String.format("%5.2fm", pose.getCoordinate().getNorth()));
          eastLbl.setText(String.format("%5.2fm", pose.getCoordinate().getEast()));

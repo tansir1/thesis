@@ -24,11 +24,16 @@ public class TaskAllocator
    private TaskType curTask;
    private TargetBelief curTgt;
 
+   private TargetBelief bestMonitorTgt, bestAttackTgt;
+   private int bestMonitorTgtBid, bestAttackTargetBid;
+
    public TaskAllocator(int hostUavId)
    {
       this.hostUavId = hostUavId;
       curTask = TaskType.Search;
       curTgt = null;
+      bestMonitorTgtBid = -1;
+      bestAttackTargetBid = -1;
    }
 
    public TargetBelief getTarget()
@@ -127,8 +132,8 @@ public class TaskAllocator
          attackBids.put(tb, computeAttackBid(tb, hostUAV));
       }
 
-      TargetBelief bestAttackTgt = findBestAvailableAttack(attackBids);
-      TargetBelief bestMonitorTgt = findBestAvailableMonitor(monitorBids);
+      findBestAvailableAttack(attackBids);
+      findBestAvailableMonitor(monitorBids);
 
       if (bestAttackTgt != null)
       {
@@ -157,7 +162,7 @@ public class TaskAllocator
       // else keep searching
    }
 
-   private TargetBelief findBestAvailableMonitor(Map<TargetBelief, Integer> bids)
+   private void findBestAvailableMonitor(Map<TargetBelief, Integer> bids)
    {
       int bestBid = -1;
       TargetBelief bestTgt = null;
@@ -195,10 +200,11 @@ public class TaskAllocator
          }
       }
 
-      return bestTgt;
+      bestAttackTargetBid = bestBid;
+      bestAttackTgt = bestTgt;
    }
 
-   private TargetBelief findBestAvailableAttack(Map<TargetBelief, Integer> atkBids)
+   private void findBestAvailableAttack(Map<TargetBelief, Integer> atkBids)
    {
       int bestBid = -1;
       TargetBelief bestTgt = null;
@@ -233,7 +239,8 @@ public class TaskAllocator
          }
       }
 
-      return bestTgt;
+      bestMonitorTgtBid = bestBid;
+      bestMonitorTgt = bestTgt;
    }
 
    private int computeMonitorBid(TargetBelief tgt, UAV hostUAV)
@@ -261,5 +268,25 @@ public class TaskAllocator
       }
 
       return bid;
+   }
+
+   public TargetBelief getBestMonitorTarget()
+   {
+      return bestMonitorTgt;
+   }
+
+   public int getBestMonitorTargetBid()
+   {
+      return bestMonitorTgtBid;
+   }
+
+   public TargetBelief getBestAttackTarget()
+   {
+      return bestAttackTgt;
+   }
+
+   public int getBestAttackTargetBid()
+   {
+      return bestAttackTargetBid;
    }
 }
