@@ -10,9 +10,12 @@ sources = ['text/algorithms.md',
 '''
 
 sources = ['text/title.md',
+            'text/abstract.md',
+            'text/toc.md',
             'text/dissertation.md']
 
-markdown_control_flags = ['--from=markdown+fenced_code_blocks', '--toc', '-s']
+#markdown_control_flags = ['--from=markdown+fenced_code_blocks', '--toc', '-s']
+markdown_control_flags = ['--from=markdown+fenced_code_blocks', '-s']
 
 
 def pdf():
@@ -20,7 +23,14 @@ def pdf():
    Converts the Markdown files into pdf format via Pandoc and pdflatex.
    """
    print("Generating pdf output")
-   outputFlags = ['--to=latex', '-o', './bin/thesis.pdf']
+   #--variable classoption=twocolumn
+   outputFlags = ['--to=latex', '-o', './bin/thesis.pdf',
+#                  '--template=foo.blah',
+                  #-H, Include in header
+                  '-H', 'config.tex',
+                  '--highlight-style', 'pygments',
+                  '-V', 'fontsize=12pt']
+#                  '-V', 'documentclass:report']
    runPandocCommand(outputFlags)
 
 
