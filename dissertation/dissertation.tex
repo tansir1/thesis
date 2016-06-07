@@ -1,0 +1,41 @@
+%Take out draft when producing final out
+%openany: Chapters can start on left or right page
+\documentclass[letterpaper, 11pt, twocolumn, draft, openany]{book}
+
+\input{preamble.tex}
+
+%TODO Notes
+%Check UVU format(ing) and outline
+%
+%Acknowledgements?
+%citation engine/bibtex
+
+\begin{document}
+
+
+\frontmatter
+\input{./text/title.tex}
+\input{./text/abstract.tex}
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+\mainmatter
+\pagestyle{fancy}
+\include{./text/intro}
+\include{./text/relatedWork}
+\include{./text/scenModDesc}
+\include{./text/worldModel}
+\include{./text/uavModel}
+\include{./text/targetModel}
+\include{./text/sensorWeaponModel}
+\include{./text/performance}
+\include{./text/results}
+\include{./text/conclusion}
+
+\backmatter
+\include{./text/references}
+\include{./text/appendix}
+
+\end{document}
