@@ -1,6 +1,7 @@
 %Take out draft when producing final out
 %openany: Chapters can start on left or right page
-\documentclass[letterpaper, 11pt, twocolumn, draft, openany]{book}
+\documentclass[letterpaper, 11pt, openany,notitlepage]{report}
+%\documentclass[letterpaper, 11pt, openany, notitlepage, draft]{book}
 
 \input{preamble.tex}
 
@@ -13,16 +14,18 @@
 \begin{document}
 
 
-\frontmatter
+%\frontmatter
 \input{./text/title.tex}
-\input{./text/abstract.tex}
+\input{./text/frontMatter.tex}
 
 \tableofcontents
 \listoftables
 \listoffigures
 
-\mainmatter
+%\mainmatter
 \pagestyle{fancy}
+\twocolumn
+
 \include{./text/intro}
 \include{./text/relatedWork}
 \include{./text/scenModDesc}
@@ -34,7 +37,8 @@
 \include{./text/results}
 \include{./text/conclusion}
 
-\backmatter
+%\backmatter
+\appendix
 \include{./text/references}
 \include{./text/appendix}
 
