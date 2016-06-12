@@ -1,0 +1,19 @@
+@startuml
+
+title UAV confirm activity
+
+start
+
+repeat
+  :Scan target cell;
+  :Update belief state;
+repeat while (task_timer < time_to_confirm?)
+
+if (Target confirmed?) then (yes)
+  :Announce Attack task;
+else (False positive, no target)
+endif
+
+stop
+
+@enduml

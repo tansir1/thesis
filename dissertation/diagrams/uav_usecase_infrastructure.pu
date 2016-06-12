@@ -1,0 +1,27 @@
+@startuml
+
+title Use cases for UAV infrastructure tasks
+
+actor uav
+actor world
+
+note right of world
+   The 'world' is part of all use
+   cases here.  It is used to query
+   all UAVs in range of the UAV
+   performing the use case.
+end note
+
+uav -l-> (Broadcast Belief)
+
+uav -d-> (Announce Task)
+
+uav -d-> (Bid on Task)
+
+'TODO Is this needed?
+uav -r-> (Retrack Bid)
+
+'TODO Is this needed?
+uav -d-> (Declare Task winner)
+
+@enduml

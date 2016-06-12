@@ -1,0 +1,26 @@
+@startuml
+
+title UAV pathing activity
+
+start
+partition Path_Planning {
+:Get next task;
+:Compute Dubin's Path;
+}
+
+partition Path_Following {
+
+while (At last waypoint?) is (false)
+  repeat
+    :Step kinematics;
+  repeat while(At next waypoint?) is (false)
+  :Iterate waypoint;
+endwhile (true)
+:Get next task;
+
+}
+
+stop
+
+
+@enduml

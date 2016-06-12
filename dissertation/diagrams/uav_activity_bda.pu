@@ -1,0 +1,19 @@
+@startuml
+
+title UAV BDA activity
+
+start
+
+repeat
+  :Scan target cell;
+  :Update belief state;
+repeat while (task_timer < time_to_bda?)
+
+if (Target destroyed?) then (yes)
+else (no)
+  :Announce Attack task;
+endif
+
+stop
+
+@enduml

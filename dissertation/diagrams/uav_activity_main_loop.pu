@@ -1,0 +1,24 @@
+@startuml
+
+title Main UAV Simulation Step Frame Activity
+
+start
+:Update kinematics;
+:Update pathing;
+:Relay communications;
+:Merge incoming belief states;
+:Process contracts;
+if (UAV in range for task?) then (yes)
+  :Process current task;
+else (no)
+  :Do search activity;
+endif
+
+if (Task updated belief?) then (yes)
+  :Broadcast belief;
+else (no)
+endif
+
+stop
+
+@enduml

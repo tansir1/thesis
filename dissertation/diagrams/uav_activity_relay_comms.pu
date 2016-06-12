@@ -1,0 +1,18 @@
+@startuml
+
+title UAV Communications Relay
+
+start
+
+while (Is message receive queue empty?) is (Not empty)
+  :Pop message off queue;
+  if (Is message for this UAV?) then (yes)
+    :Process message;
+  else (no)
+    :Probabilistically broadcast message;
+  endif
+endwhile (Is empty)
+
+stop
+
+@enduml

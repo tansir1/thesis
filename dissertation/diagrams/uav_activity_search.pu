@@ -1,0 +1,26 @@
+@startuml
+
+title UAV search activity
+
+start
+
+:Point sensors towards search location;
+note left
+  Sensors are not necessarily
+  in range of search location
+end note
+
+:Query World for cells in FOV;
+while (All cells in FOV scanned?) is (false)
+  :Scan next cell;
+  :Update belief state;
+  if (New target potentially detected?) then (yes)
+    :Announce Confirm task;
+  else (no)
+  endif
+endwhile (true)
+
+stop
+
+
+@enduml

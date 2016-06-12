@@ -1,0 +1,26 @@
+@startuml
+
+'Disable graphic icons for private/public/protected/package private
+'skinparam classAttributeIconSize 0
+
+Class UAVBelief{
+-List<TargetBelief> targets
+'Due to target misclassifications could have multiple beliefs at same location
++List<TargetBelief> getTargetsAt(CellCoordinate cell)
++void addTarget(TargetBelief tb)
+}
+
+Class TargetBelief{
+-WorldPose pose
+-TargetType type
+-float probability
++TargetBelief(TargetType tt)
++WorldPose getPose()
++TargetType getType()
++float getTypeConfidence()
++void setTypeConfidence(float confidence)
+}
+
+UAVBelief "1" *-- "0..*" TargetBelief : contains >
+
+@enduml

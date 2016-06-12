@@ -12,6 +12,15 @@ worlds/*
 sim.log
 *.db
 
+#LaTeX and TexStudio intermediate files
+*.aux
+*.log
+*.pdf
+*.gz
+*.lof
+*.lot
+*.toc
+*.out
 
 # Gradle Files #
 **/.gradle/

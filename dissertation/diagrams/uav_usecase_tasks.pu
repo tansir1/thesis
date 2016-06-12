@@ -1,0 +1,44 @@
+@startuml
+
+title Use cases for assignable UAV tasks
+
+actor uav
+actor world
+actor target
+
+'Search
+uav -u-> (Search)
+world -d-> (Search)
+'(Search) .> (Path Planning) : include
+
+'Confirm
+uav -u-> (Confirm)
+world -d-> (Confirm)
+'(Confirm) .> (Path Planning) : include
+
+'Track
+uav -u-> (Track)
+target -d-> (Track)
+'(Track) .> (Path Planning) : include
+
+'Attack
+uav -u-> (Attack)
+target -d-> (Attack)
+'(Attack) .> (Path Planning) : include
+
+'Bda
+uav -u-> (BDA)
+target -d-> (BDA)
+'(BDA) .> (Path Planning) : include
+
+'Path Planning
+uav -> (Path Planning)
+
+note right of (Path Planning)
+  Path planning is a use case
+  included by all other use cases
+  in this diagram.  It is not
+  connected for ease of reading.
+end note
+
+@enduml

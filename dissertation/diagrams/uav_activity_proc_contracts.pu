@@ -1,0 +1,50 @@
+@startuml
+
+title UAV process contracts activity
+
+start
+
+while (Announcements exist in message queue) is (true)
+  :Compute bid;
+  if (bid >>> current task's cost or currently searching?) then (true)
+    :Send bid;
+    note right
+      If the bid is much much greater
+      than the winning bid of the UAV's
+      current task allow the UAV to
+      re-compete its current task if it
+      wins this new task.
+    end note
+    :Store pending bid;
+  else (false)
+    :Send null bid;
+    note right: The UAV is not interested in this task.
+  endif
+endwhile (false)
+
+while (Bids for this UAV's auctions exist in receive queue?) is (true)
+  :Store bids;
+  if (Bidding closed?) then (yes)
+    :Determine bid winner;
+    :Announce winner;
+  else (no)
+  endif
+endwhile (false)
+
+while (Loss messages for this UAV exist in receive queue?) is (true)
+  :Clear pending bid;
+endwhile(false)
+
+while (Bid win messages for this UAV exist in receive queue?) is (true)
+  :Clear pending bid;
+  if (Current task == searching) then (true)
+    :Recompete current task;
+  else (false)
+  endif
+  :Enqueue winning task;
+endwhile(false)
+
+stop
+
+
+@enduml
