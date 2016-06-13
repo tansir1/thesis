@@ -25,7 +25,14 @@
 %https://www.ctan.org/pkg/todonotes?lang=en
 %\todo[]{todo text}
 %\missingfigure{note text instead of figure}
+%Note: If multiple TODOs are on a single page it's likely to generate a "marginpar on page X moved."
+%This lets the author know that margins have been adjusted to handle the TODOs.
 %Pass 'disable' flag to turn off all todo notes in the document
 %\usepackage[disable]{todonotes}
 \usepackage{todonotes}
 
+
+%-----Citations-----
+%http://ctan.sharelatex.com/tex-archive/macros/latex/contrib/biblatex/doc/biblatex.pdf
+\usepackage[backend=biber]{biblatex}
+%\addbibresource{text/references.bib}

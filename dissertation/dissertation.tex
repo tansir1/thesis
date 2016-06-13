@@ -5,13 +5,16 @@
 
 \input{preamble.tex}
 
+%-----Document references-----
+\addbibresource{text/references.bib}
+
 \begin{document}
 
 %\frontmatter
 \input{./text/title.tex}
 \todo{Check UVU formatting guidelines}
-\todo{Add in bibtex citations}
 \todo{Fix page breaks at chapter endings.}
+\todo{Fix header and footer}
 \input{./text/frontMatter.tex}
 
 \tableofcontents
@@ -34,9 +37,10 @@
 \include{./text/conclusion}
 
 %\backmatter
+\onecolumn
 \appendix
-\include{./text/references}
 \include{./text/appendix}
+\printbibliography
 
 %Notes to the author
 \listoftodos
