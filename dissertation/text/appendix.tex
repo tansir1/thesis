@@ -1,2 +1,29 @@
 \chapter{Appendix}
-foo foo foo
+
+
+\section{Example world configuration file}
+\label{sec:exampleWorldCfg}
+\begin{minted}{properties}
+#Width in meters
+world.width = 10000
+#Height in meters
+world.height = 10000
+world.rows = 10
+world.columns = 10
+
+#The number of worlds to generate
+numWorlds = 10
+
+entityTypesFile =  ./EntityTypes.xml
+
+#Generated world files will be placed here
+outputDir = ./worlds
+
+#Initialize the random seed generator with this value
+randomSeed = 42
+
+targets.numMobile = 3
+targets.numStatic = 4
+
+numUAVs = 5
+\end{minted}
