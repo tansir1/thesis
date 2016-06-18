@@ -8,8 +8,10 @@ The direction of travel for moving targets is constrained to a randomly generate
 
 \missingfigure{TODO: Road network construction}
 
-``Target safe havens'' are locations in world where a target may flee to and be safe from UAV attack.  These mimic the ability of a target to hide or to surround themselves with innocent bystanders.  These havens are randomly located within the world on the road network.  Moving targets will travel from one haven to the next.  Once they arrive at a haven they will stay for a random amount of time up to a user configurable limit.  The order of haven visitation is random.  Moving targets generate a path along the road network from haven to haven using the classic A* algorithm. \todo{cite A* algorithm}.
+``Target safe havens'' are locations in world where a target may flee to and be safe from UAV attack and surveillance.  These havens are randomly located within the world on the road network.  Moving targets will travel from one haven to the next.
 
 When the simulation starts the UAVs begin searching the world for targets.  While scanning the world they update their internal belief model.  This internal model is shared with other members of the swarm when they are within communication's range of each other.  This model contains data regarding each UAV's confidence that a geographic region is clear and a list of known targets.  Section~\ref{sec:uavBelief} describes this model in detail.
 
 When a target is found the UAV assigns an initial task status to the target and announces the discovery of the target.  The original UAV and anyone within range compute a scoring value to determine who is the most appropriate UAV to monitor and/or attack the target.  Soon after the other UAV's in range who heard the initial target announcement will re-broadcast their internal belief model's and therefore propagate the target discovery throughout the swarm.
+
+\todo{Show a screenshot of the sim?}
