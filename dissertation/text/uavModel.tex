@@ -1,14 +1,82 @@
 \chapter{UAV Model}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Each UAV within the simulation is a self contained entity capable of acting and thinking on its own accord.  No UAV requires the presence of any other UAV or the aid of any external actor.  The swarm is made of multiple independent UAVs that share information and in doing so coordinate actions to complete the mission.  The simulation supports an arbitrary number of user defined UAV types (or platforms).
 
-limited comms range
+\todo{Mention each type has user defined payload}
+
+\section{UAV Kinematics}
+Each UAV type has a fixed speed and turning radius.  The fixed speed represents the aircraft's standard cruising speed that it will maintain throughout the simulation.  An example set of UAV type kinematic configuration data is shown in table~\ref{tab:uavKinematic}.
+
+\begin{table}[h]
+	\caption{UAV kinematic definitions}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:uavKinematic}
+	\begin{tabular}{|p{1cm}|p{2cm}|p{1cm}|}
+		\hline
+		UAV Type & Turning Radius (m) & Speed ($\frac{m}{s^{2}}$)\\ \hline
+		0 & 300 & 30 \\
+		1 & 150 & 50 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+UAVs know their current 2D coordinate and heading.  This information is used to compute a path to any destination location and orientation.  In formal mathematics terms the kinematic model of a UAV is defined as \dots
+
+\begin{align}
+\dot{x} &= v \cos(\psi) \label{eq:uavChngX}\\
+\dot{y} &= v \sin(\psi) \label{eq:uavChngY}\\
+\dot{\psi} &= \{-constant, 0, constant\} \label{eq:uavTurnRate}\\
+\dot{v} &= 0 \label{eq:uavAccel}
+\end{align}
+
+\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's velocity, and $\psi$ is the UAV's heading.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for turn rate is computed as $\psi_{constant} = XXX$. \todo{fill in equations from code}
+
+
+
+
+
+
+\section{Task Flows}
 
 \section{UAV Capabilities}
 foo foo foo
-\section{UAV Kinematics}
-foo foo foo
+
 \section{Belief Model}
 \label{sec:uavBelief}
 foo foo foo
 \section{Uncoordinated Tasking}
 foo foo foo
+
+limited comms range
+
+\begin{table}[h]
+	\caption{UAV sensor payload configuration}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:uavSensorMap}
+	\begin{tabular}{|p{1cm}|p{1cm}|p{1cm}|}
+		\hline
+		UAV Type & Sensor Type\\ \hline
+		0 & 1 \\
+		1 & 0 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+
+\todo{Insert sim data for weapon numbers}
+\begin{table}[h]
+	\caption{UAV weapon payload configuration}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:uavWpnMap}
+	\begin{tabular}{|p{1cm}|p{1.5cm}|p{2cm}|}
+		\hline
+		UAV Type & Weapon Type & Initial Quantity\\ \hline
+		0 & 0 & 2 \\
+		0 & 1 & 2 \\
+		1 & 0 & 5 \\
+		1 & 1 & 5 \\
+		\hline
+	\end{tabular}
+\end{table}
