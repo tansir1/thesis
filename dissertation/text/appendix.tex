@@ -34,3 +34,46 @@ numUAVs = 5
 
 \section{Dubin's Path} \label{sec:dubin}
 The movement of UAVs is constrained to a continuous path with constant speed.
+
+\section{Algorithms}
+\label{sec:algorithms}
+
+\begin{algorithm}
+	\caption{UAV Foraging - Selecting a cell to search}
+	\label{alg:forage}
+	\begin{algorithmic}[1]
+		\REQUIRE $ 0\le randomWeighting \le 1$
+		\REQUIRE $ kernelSize \ll min($number world rows, number world columns$)$
+		\REQUIRE $ \frac{number world rows}{kernelSize} \in Z$
+		\REQUIRE $ \frac{number world columns}{kernelSize} \in Z$
+		\ENSURE $ 0 \le x \le $ number world rows
+		\ENSURE $ 0 \le y \le $ number world columns
+		\STATE $rowsPerKernel = $ number world rows $ / kernelSize$
+		\STATE $colsPerKernel = $ number world columns $ / kernelSize$		
+		\STATE $x = -1$
+		\STATE $y = -1$
+		\STATE $maxUncertainty = -1$
+		\STATE $maxUncertRow = -1$
+		\STATE $maxUncertCol = -1$
+		
+		
+		\IF{$random() < randomWeighting$}
+		\STATE $ y = $ random row
+		\STATE $ x = $ random column
+		\ELSE
+		\FORALL{$i=0$, $i < $number world rows, $i = i + rowsPerKernel$}
+		\FORALL{$j=0$, $j <$ number world columns, $j = j + colsPerKernel$}
+		\STATE $kernelUncert = computeKernelUncert(i,j, kernelSize)$
+		\IF{$kernelUncert > maxUncertainty$}
+		\STATE $maxUncertainty = kernelUncert$
+		\STATE $maxUncertRow = i$
+		\STATE $maxUncertCol = j$	
+		\ENDIF
+		\ENDFOR
+		\ENDFOR
+		\STATE $x = randomInteger(rowPerKernel) + maxUncertRow$			
+		\STATE $y = randomInteger(colsPerKernel) + maxUncertCol$
+		\ENDIF
+		\RETURN x, y
+	\end{algorithmic}
+\end{algorithm}

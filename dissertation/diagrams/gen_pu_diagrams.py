@@ -2,7 +2,9 @@ import os
 import argparse
 import subprocess
 
+# python3 gen_pu_diagrams.py -pu /opt/apps/plantuml/plantuml.jar
 
+'''
 puSourceFiles = ['belief_class.pu',
                  'uav_activity_attack.pu',
                  'uav_activity_bda.pu',
@@ -16,8 +18,10 @@ puSourceFiles = ['belief_class.pu',
                  'uav_activity_track.pu',
                  'uav_state_tasks.pu',
                  'uav_usecase_infrastructure.pu',
-                 'uav_usecase_tasks.pu']
-
+                 'uav_usecase_tasks.pu',
+                 'uav_monitor_states.pu']
+'''
+puSourceFiles = ['uav_monitor_states.pu']
 
 def generate_diagrams(pu_jar_path):
 

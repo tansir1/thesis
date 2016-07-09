@@ -37,57 +37,47 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 
 
 
-\section{Task Flows}
+\section{UAV Tasks}
 UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.
 
 \subsection{Search}\todo{Uncertainty first used here but not defined}
-No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  This was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight} but adapted to a discrete world instead of a continuous world. \todo{Cite levy flight papers}  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
+No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  This was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight} but adapted to a discrete world instead of a continuous world. \todo{Cite levy flight papers}  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage} in appendix~\ref{sec:algorithms}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
 
 Once a search cell has been selected the UAV will fly towards it until another task takes precedence or the uncertainty in the cell falls below a user configured threshold.  The uncertainty in the cell changes when the UAV's sensors can reach it and when an update from another UAV in the swarm provides new data about the cell. If the uncertainty in the cell drops below the user configured threshold then the UAV will select a new cell to investigate.  Given that the UAV is within the most uncertain kernel when the selected cell becomes certain it will search another nearby cell.  Typically the UAV will search neighboring cells until the local kernel becomes more certain than other kernels in the world.  An atypical case occurs when the UAV selects a completely random location in the world.  The weighting between searching a kernel area versus random world locations is controlled by the $randomWeighting$ parameter in algorithm~\ref{alg:forage}.
 
 While performing the search task UAV's point their sensor payloads towards the selected search cell even if they are not within range.  While traversing the world the UAV will opportunistically scan all cells encompassed by the sensor's field of view.
 
-\begin{algorithm}
-	\caption{UAV Foraging - Selecting a cell to search}
-	\label{alg:forage}
-	\begin{algorithmic}[1]
-		\REQUIRE $ 0\le randomWeighting \le 1$
-		\REQUIRE $ kernelSize \ll min($number world rows, number world columns$)$
-		\REQUIRE $ \frac{number world rows}{kernelSize} \in Z$
-		\REQUIRE $ \frac{number world columns}{kernelSize} \in Z$
-		\ENSURE $ 0 \le x \le $ number world rows
-		\ENSURE $ 0 \le y \le $ number world columns
-		\STATE $rowsPerKernel = $ number world rows $ / kernelSize$
-		\STATE $colsPerKernel = $ number world columns $ / kernelSize$		
-		\STATE $x = -1$
-		\STATE $y = -1$
-		\STATE $maxUncertainty = -1$
-		\STATE $maxUncertRow = -1$
-		\STATE $maxUncertCol = -1$
-
-
-		\IF{$random() < randomWeighting$}
-			\STATE $ y = $ random row
-			\STATE $ x = $ random column
-		\ELSE
-			\FORALL{$i=0$, $i < $number world rows, $i = i + rowsPerKernel$}
-				\FORALL{$j=0$, $j <$ number world columns, $j = j + colsPerKernel$}
-					\STATE $kernelUncert = computeKernelUncert(i,j, kernelSize)$
-					\IF{$kernelUncert > maxUncertainty$}
-						\STATE $maxUncertainty = kernelUncert$
-						\STATE $maxUncertRow = i$
-						\STATE $maxUncertCol = j$	
-					\ENDIF
-				\ENDFOR
-			\ENDFOR
-			\STATE $x = randomInteger(rowPerKernel) + maxUncertRow$			
-			\STATE $y = randomInteger(colsPerKernel) + maxUncertCol$
-		\ENDIF
-		\RETURN x, y
-	\end{algorithmic}
-\end{algorithm}
 
 \subsection{Monitor}
+The Monitor task requires a UAV to watch a potential target.  The UAV will point its sensing payloads at the target, confirm the target's identity, track the target, and perform a battle damage assessment after the target has been struck.  These steps are broken down into states within the Monitor task.  The monitor task state transitions are illustrated in figure~\ref{fig:monitor}. \todo{Need a page or section here?} 
+\todo{Image formatting}
+
+\begin{figure}[p]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.5]{uav_monitor_states.png}
+%	\includegraphics{uav_monitor_states.png}
+	\caption{Monitor sub-states}
+	\label{fig:monitor}
+\end{figure}
+
+\subsubsection{En Route}
+When a UAV first starts the Monitor task it begins flying towards the target and points its payloads in the target's direction.  As the UAV flies it continues to scan any cell within its payload's field of view until the target is within range.  Once the target is in sensor range the UAV transitions to the Target Confirmation state.  
+
+When the UAV is in sensor range it will begin orbiting the target.  If the target moves more than some user configurable percentage of the sensor's range then the UAV will adjust it's flight path and recenter the orbit over the target's new location.
+
+\subsubsection{Target Confirmation}
+When the target is within sensor range the UAV will focus its sensors on the target.  This causes the sensors to stop performing a wide area scan and to zoom in on the target's suspected world cell location.  At this time the UAV is analyzing the sensor data to determine if the suspected target is a real target or if it's a false positive and no target exists.  No other targets can be detected in during this focused scan.  If the suspected target is fake then the UAV exits the Monitor task.  If the target is confirmed to be real then the UAV transitions to the Track Target state.  For purposes of this experiment the target confirmation analysis process was assumed to take 10 seconds.  No attempt was made to model real world physics of target identification from raw sensor data.
+
+\subsubsection{Track Target}
+In this state the UAV is continuing to point its payloads at the target but the sensors have resumed a wide area scan in hopes of finding other nearby targets.  The UAV stays in this state until the target outruns the UAV's sensors and is lost or the target is struck by a weapon.  When the UAV first enters this state it requests a weapon's strike on the target from the swarm.  The details of the weapon's strike request are presented in section~\ref{sec:uavBelief}.
+
+\subsubsection{Battle Damage Assessment}
+When the monitoring UAV detects a weapon's strike on the target it will transition from wide area scan tracking to narrow focused scans of the target's location.  As in the Target Confirmation state during this focused scan no other targets can be detected and the certainty of other cells do not change.  This state represents the time it takes for the UAV to analyze its sensor data to determine if the target was destroyed or if it is still active.  Again, for purposes of the experiment it was assumed that battle damage assessment (BDA) takes 10 seconds to complete.  No attempt was made to model real world physics of target status from raw sensor data.
+
+If the target is still active after the weapon's strike the UAV will transition back to the Track Target state and request another strike from the swarm.  If the target was destroyed then the UAV will exit the Monitor task.
+
+
 \subsection{Attack}
 
 \section{UAV Capabilities}

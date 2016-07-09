@@ -1,0 +1,25 @@
+@startuml
+
+title Monitor sub-states
+
+
+state Monitor{
+EnRoute -right-> Confirm : Target in range
+EnRoute : Moving towards target.\nScanning all cells in FOV.
+
+Confirm : Focused scans of\ntarget's cell only
+Confirm -down-> Track : Target\nidentity\nconfirmed
+
+Track : Follow target until struck.\nScanning all cells in FOV.
+Track -left-> BDA : Target struck
+
+BDA : Focused scans of\ntarget cell only
+BDA --> Track : Target still active
+}
+
+[*] --> EnRoute
+Track --> [*] : Lost\n target
+Confirm --> [*] : Not a\ntarget
+BDA --> [*] : Target\ndestroyed
+
+@enduml
