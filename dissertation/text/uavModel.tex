@@ -13,7 +13,7 @@ Each UAV type has a fixed speed and turning radius.  The fixed speed represents 
 	\label{tab:uavKinematic}
 	\begin{tabular}{|p{1cm}|p{2cm}|p{1cm}|}
 		\hline
-		UAV Type & Turning Radius (m) & Speed ($\frac{m}{s^{2}}$)\\ \hline
+		UAV Type & Turning Radius (m) & Speed ($\frac{m}{s}$)\\ \hline
 		0 & 300 & 30 \\
 		1 & 150 & 50 \\
 		\hline
@@ -26,10 +26,11 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 \dot{x} &= v \cos(\psi) \label{eq:uavChngX}\\
 \dot{y} &= v \sin(\psi) \label{eq:uavChngY}\\
 \dot{\psi} &= \{-constant, 0, constant\} \label{eq:uavTurnRate}\\
-\dot{v} &= 0 \label{eq:uavAccel}
+\dot{v} &= 0 \label{eq:uavAccel}\\
+\psi_{constant} &= \frac{v*\sin(\pi)}{r} \label{eq:uavTurnRateDeriv}
 \end{align}
 
-\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's velocity, and $\psi$ is the UAV's heading.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for turn rate is computed as $\psi_{constant} = XXX$. \todo{fill in equations from code}
+\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.
 
 
 
@@ -37,13 +38,66 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 
 
 \section{Task Flows}
+UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.
+
+\subsection{Search}\todo{Uncertainty first used here but not defined}
+No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  This was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight} but adapted to a discrete world instead of a continuous world. \todo{Cite levy flight papers}  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
+
+Once a search cell has been selected the UAV will fly towards it until another task takes precedence or the uncertainty in the cell falls below a user configured threshold.  The uncertainty in the cell changes when the UAV's sensors can reach it and when an update from another UAV in the swarm provides new data about the cell. If the uncertainty in the cell drops below the user configured threshold then the UAV will select a new cell to investigate.  Given that the UAV is within the most uncertain kernel when the selected cell becomes certain it will search another nearby cell.  Typically the UAV will search neighboring cells until the local kernel becomes more certain than other kernels in the world.  An atypical case occurs when the UAV selects a completely random location in the world.  The weighting between searching a kernel area versus random world locations is controlled by the $randomWeighting$ parameter in algorithm~\ref{alg:forage}.
+
+While performing the search task UAV's point their sensor payloads towards the selected search cell even if they are not within range.  While traversing the world the UAV will opportunistically scan all cells encompassed by the sensor's field of view.
+
+\begin{algorithm}
+	\caption{UAV Foraging - Selecting a cell to search}
+	\label{alg:forage}
+	\begin{algorithmic}[1]
+		\REQUIRE $ 0\le randomWeighting \le 1$
+		\REQUIRE $ kernelSize \ll min($number world rows, number world columns$)$
+		\REQUIRE $ \frac{number world rows}{kernelSize} \in Z$
+		\REQUIRE $ \frac{number world columns}{kernelSize} \in Z$
+		\ENSURE $ 0 \le x \le $ number world rows
+		\ENSURE $ 0 \le y \le $ number world columns
+		\STATE $rowsPerKernel = $ number world rows $ / kernelSize$
+		\STATE $colsPerKernel = $ number world columns $ / kernelSize$		
+		\STATE $x = -1$
+		\STATE $y = -1$
+		\STATE $maxUncertainty = -1$
+		\STATE $maxUncertRow = -1$
+		\STATE $maxUncertCol = -1$
+
+
+		\IF{$random() < randomWeighting$}
+			\STATE $ y = $ random row
+			\STATE $ x = $ random column
+		\ELSE
+			\FORALL{$i=0$, $i < $number world rows, $i = i + rowsPerKernel$}
+				\FORALL{$j=0$, $j <$ number world columns, $j = j + colsPerKernel$}
+					\STATE $kernelUncert = computeKernelUncert(i,j, kernelSize)$
+					\IF{$kernelUncert > maxUncertainty$}
+						\STATE $maxUncertainty = kernelUncert$
+						\STATE $maxUncertRow = i$
+						\STATE $maxUncertCol = j$	
+					\ENDIF
+				\ENDFOR
+			\ENDFOR
+			\STATE $x = randomInteger(rowPerKernel) + maxUncertRow$			
+			\STATE $y = randomInteger(colsPerKernel) + maxUncertCol$
+		\ENDIF
+		\RETURN x, y
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Monitor}
+\subsection{Attack}
 
 \section{UAV Capabilities}
 foo foo foo
 
 \section{Belief Model}
 \label{sec:uavBelief}
-foo foo foo
+
+
+
 \section{Uncoordinated Tasking}
 foo foo foo
 
