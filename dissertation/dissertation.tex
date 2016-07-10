@@ -8,6 +8,12 @@
 %-----Document references-----
 \addbibresource{text/references.bib}
 
+%To generate a 'track changes' style diff run latexdiff with these options:
+%latexdiff --flatten /path/to/old/dissertation.tex /path/to/new/dissertation.tex > diff.tex
+%pdflatex -synctex=1 -interaction=nonstopmode -shell-escape diff.tex
+%biber diff
+%pdflatex -synctex=1 -interaction=nonstopmode -shell-escape diff.tex
+
 \begin{document}
 
 %\frontmatter
