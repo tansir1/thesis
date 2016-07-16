@@ -88,7 +88,43 @@ The weapon time-of-flight is not modeled.  Weapon strikes are considered instant
 
 \section{Belief Model}
 \label{sec:uavBelief}
+The belief model is the fundamental piece that allows the swarm to function as a cohesive group instead of many individuals in the same local area.  The belief model consists of data about all cells in the world grid and data about all known targets.  Each UAV has its own unique belief about the current state of the world.  Periodically the UAVs broadcast their belief to everyone nearby within communications range.  When a UAV receives another UAV's belief model the receiver merges the incoming data into their own internal belief model.  By this mechanism data is shared and propagated throughout the swarm.  Therefore the communication range of each UAV is a limiting factor in the effectiveness of the swarm.  Like all team based exercises effective communication is critical to success.\todo{Add graphic of comm ranges}  
 
+\subsection{Cell Beliefs}\todo{Image of cell attributes}
+Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
+
+Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty ($P(empty)$).  This value is updated in a Bayesian fashion by sensor scans \todo{Explain this process}during each time step of the simulation.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy) value\todo{Cite shannon paper}.  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 (when $P(empty) = 0.5$).  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
+
+\begin{equation}
+	\label{eq:shannon}
+	\begin{split}
+		U = & -P(empty) * \log_{10}(P(empty)) \\
+            & - ( 1-P(empty) * \log_{10}(1-P(empty)))
+	\end{split}
+\end{equation}
+
+\begin{equation}
+	\label{eq:shannon_max}
+	\begin{split}
+		U_{max} = & -0.5 * \log_{10}(0.5) \\
+		          & - (0.5 * \log_{10}(0.5)) \\
+		          & \approx 0.301
+	\end{split}
+\end{equation}
+
+\begin{figure}[p]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.5]{shannon.png}
+	\caption{Shannon Uncertainty}
+	\label{fig:shannon}
+\end{figure}
+
+The goal of the mission is to destroy all the unknown targets in the search-and-destroy scenario.  Therefore the desired end state of the UAVs' shared belief model is to reduce the Shannon Uncertainty of each world cell to 0\%.  In this case all targets have been found and all locations in the world have been explored.  In practice the world cells are never all driven to 0\% at once.  There is a global certainty decay rate that is applied to the cell beliefs at every time step.  It slowly drives $P(empty)$ back to 50\% over time.  This models the fact that unless a UAV is watching a cell they cannot know with 100\% certainty what is going on within that cell.  There is a chance that a moving target that has somehow evaded detection and could be occupying a previously scanned world cell location.  So instead of requiring the uncertainty of all world cells to be at 0\% to end the mission we only require that all cells be driven below a user defined threshold percentage.
+
+\subsection{Target Beliefs}
+
+\subsection{Merging Beliefs}
 
 
 \section{Uncoordinated Tasking}
