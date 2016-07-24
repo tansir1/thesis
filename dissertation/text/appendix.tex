@@ -28,12 +28,17 @@ targets.numStatic = 4
 numUAVs = 5
 \end{minted}
 
+%------------------------------------------------------------------------------
 
 \section{Complete simulation configuration settings}
 \todo{Copy all config data here}
 
+%------------------------------------------------------------------------------
+
 \section{Dubin's Path} \label{sec:dubin}
 The movement of UAVs is constrained to a continuous path with constant speed.
+
+%------------------------------------------------------------------------------
 
 \section{Algorithms}
 \label{sec:algorithms}
@@ -81,7 +86,9 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 	\end{algorithmic}
 \end{algorithm}
 
-\todo{Sensor type expertise should weigh into this}
+
+
+
 \begin{algorithm}
 	\caption{Cell Belief Merging}
 	\label{alg:mergeCell}
@@ -101,6 +108,33 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
+
+\begin{algorithm}
+	\caption{Target Belief Merging}
+	\label{alg:mergeTarget}
+	\begin{algorithmic}[1]
+		\Function{MergeTargets}{$myTarget, otherTarget$}
+		\State $alpha\gets $ user defined weighting value
+		\If{$otherTarget.lastUpdateTime > myTarget.lastUpdateTime$}
+			\State $myTarget.heading\gets alpha * otherTarget.heading + (1-alpha)*myTarget.heading$
+			\State \Call{InterpolateCoordinate}{$myTarget.location, otherTarget.location, alpha$}
+			\For{$i\gets 0, $ number of target types}
+				\State $myTarget.probTypes[i]\gets alpha * otherTarget.probTypes[i] + (1-alpha)*myTarget.probTypes[i]$
+			\EndFor
+			\State $myTarget.lastUpdateTime\gets otherTarget.lastUpdateTime$
+		\EndIf
+		\EndFunction
+		\\
+		\Function{InterpolateCoordinate}{from, to, percentage}
+			\State $deltaNorth\gets to.north - from.north$
+			\State $deltaEast\gets to.east - from.east$
+			\State $from.north\gets from.north + deltaNorth * percentage$
+			\State $from.east\gets from.east + deltaEast * percentage$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+%------------------------------------------------------------------------------
 
 \section{Data type models}
 TBD
