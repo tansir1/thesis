@@ -93,7 +93,7 @@ The belief model is the fundamental piece that allows the swarm to function as a
 \subsection{Cell Beliefs}\todo{Image of cell attributes}
 Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
 
-Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty ($P(empty)$).  This value is updated in a Bayesian fashion by sensor scans \todo{Explain this process}during each time step of the simulation.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy) value\todo{Cite shannon paper}.  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 (when $P(empty) = 0.5$).  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
+Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty ($P(empty)$) and a timestamp of when this data was last updated.  The probability value is updated in a Bayesian fashion by sensor scans \todo{Explain this process}during each time step of the simulation.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy) value\todo{Cite shannon paper}.  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 (when $P(empty) = 0.5$).  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
 
 \begin{equation}
 	\label{eq:shannon}
@@ -123,11 +123,41 @@ Each cell in the world grid is identified by a row and column index.  Each cell 
 The goal of the mission is to destroy all the unknown targets in the search-and-destroy scenario.  Therefore the desired end state of the UAVs' shared belief model is to reduce the Shannon Uncertainty of each world cell to 0\%.  In this case all targets have been found and all locations in the world have been explored.  In practice the world cells are never all driven to 0\% at once.  There is a global certainty decay rate that is applied to the cell beliefs at every time step.  It slowly drives $P(empty)$ back to 50\% over time.  This models the fact that unless a UAV is watching a cell they cannot know with 100\% certainty what is going on within that cell.  There is a chance that a moving target that has somehow evaded detection and could be occupying a previously scanned world cell location.  So instead of requiring the uncertainty of all world cells to be at 0\% to end the mission we only require that all cells be driven below a user defined threshold percentage.
 
 \subsection{Target Beliefs}
+When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor scans of the target are completed the probabilities per target type will converge to a single type.  This is accomplished with the Bayesian update model described in XXX.\todo{Explain sensor bayesian process}  
+
+In addition to estimated data about the actual target Target Beliefs encapsulate information about the tasks performed on the target.  This data is used for coordinating activities within the swarm and is described in detail in section~\ref{sec:uncoordTasking}.
 
 \subsection{Merging Beliefs}
+Each UAV in the swarm periodically broadcasts its internal Belief Model.  The entire model is encoded and transmitted to all other swarm members within communications range.  When a UAV receives another swarm member's belief model it must be merged with the receiver's internal belief.  No UAV completely trusts any other UAV in the swarm.  All data is merged in a weighted or filtered fashion.  No data is copied 100\% as-is since there are no guarantees that any one UAV is perfectly correct about anything.
 
+Merging Cell Beliefs is a simple process.  The formal algorithm can be found in~\ref{alg:mergeCell}.  In short the receiving UAV compares every single world cell with its counterpart in the sending UAV's data.  If the last update timestamp of the incoming cell data is more recent than the currently stored data then the cell data is merged.  The merge process is a weighted average.  When the merge occurs the receiving UAV's timestamp is set to the timestamp of sending UAV's data.  This prevents future belief broadcasts from the same sending UAV to trigger another re-merging of the exact same cell data.  This also prevents the same data from re-merging if a third party UAV forwards the belief data. 
+
+Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At some time in the simulation UAV 1 believes cell $[2, 6]$ has a 20\% of being empty (or in other words an 80\% chance that something is there). This probability was last updated at time 1234.  UAV 1 has broadcasted this belief data and UAV 2 has received it.  UAV 2 believes there is a 50\% chance that the same cell is empty but this data was last updated a long time ago.  Therefore UAV 2 will merge UAV 1's data for this cell.  Since alpha is set to 0.6 the new $P_{2,6}(empty)$ for UAV 2 is $0.6*(0.2) + (1-0.6)*(0.5)=0.32$.  After the merging is complete UAV 2's $P(empty)$ value is set to $0.32$ and the last update timestamp is set to UAV 1's timestamp.
+
+\begin{table}[h]
+	\caption{Example cell merging with $alpha=0.6$}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:exampleCellMerge}
+	\begin{tabular}{|r|c|c||c|c|}
+		\hline
+		                & \multicolumn{2}{c||}{Before Merge} & \multicolumn{2}{c|}{After Merge} \\
+		\hline
+		UAV             & 1   & 2                            & 1   & 2 \\
+		\hline
+		$P_{2,6}(empty)$& 0.2 & 0.5                          & 0.2 & 0.32 \\
+		\hline
+		Timestamp       & 1234& 22                           & 1234& 1234 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Merging Target Beliefs is more complicated but uses a similar weighted averaging technique as merging Cell Beliefs.  The model in this paper assumes that the UAV's are able to perform target track fusion amongst themselves and assign each track a unique ID.  This process is outside the scope of this paper.
+
+As stated earlier Target Beliefs have an estimated location, orientation, and list of target type probabilities.  Now we assume they also have a unique identifier assigned by the target track fusion process.  This unique identifier is used as a first pass comparison filter when merging Target Belief data.  If the receiving UAV does not have any data for the incoming Target Belief it simply copies it verbatim.
 
 \section{Uncoordinated Tasking}
+\label{sec:uncoordTasking}
 foo foo foo
 
 limited comms range

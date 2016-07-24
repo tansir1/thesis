@@ -116,8 +116,9 @@ public class CellBelief
          // adjusted so that transitively merging this data with a 3rd belief
          // doesn't cause oscillations in the probabilities due to the order
          // of merging.
-         double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
-         pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
+         //double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
+         //pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
+         pseudoTimestamp = other.pseudoTimestamp;
       }
       // else: My data is newer so ignore the other belief's data
    }

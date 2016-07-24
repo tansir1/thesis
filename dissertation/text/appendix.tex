@@ -42,38 +42,66 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 	\caption{UAV Foraging - Selecting a cell to search}
 	\label{alg:forage}
 	\begin{algorithmic}[1]
-		\REQUIRE $ 0\le randomWeighting \le 1$
-		\REQUIRE $ kernelSize \ll min($number world rows, number world columns$)$
-		\REQUIRE $ \frac{number world rows}{kernelSize} \in Z$
-		\REQUIRE $ \frac{number world columns}{kernelSize} \in Z$
-		\ENSURE $ 0 \le x \le $ number world rows
-		\ENSURE $ 0 \le y \le $ number world columns
-		\STATE $rowsPerKernel = $ number world rows $ / kernelSize$
-		\STATE $colsPerKernel = $ number world columns $ / kernelSize$		
-		\STATE $x = -1$
-		\STATE $y = -1$
-		\STATE $maxUncertainty = -1$
-		\STATE $maxUncertRow = -1$
-		\STATE $maxUncertCol = -1$
-		
-		
-		\IF{$random() < randomWeighting$}
-		\STATE $ y = $ random row
-		\STATE $ x = $ random column
-		\ELSE
-		\FORALL{$i=0$, $i < $number world rows, $i = i + rowsPerKernel$}
-		\FORALL{$j=0$, $j <$ number world columns, $j = j + colsPerKernel$}
-		\STATE $kernelUncert = computeKernelUncert(i,j, kernelSize)$
-		\IF{$kernelUncert > maxUncertainty$}
-		\STATE $maxUncertainty = kernelUncert$
-		\STATE $maxUncertRow = i$
-		\STATE $maxUncertCol = j$	
-		\ENDIF
-		\ENDFOR
-		\ENDFOR
-		\STATE $x = randomInteger(rowPerKernel) + maxUncertRow$			
-		\STATE $y = randomInteger(colsPerKernel) + maxUncertCol$
-		\ENDIF
-		\RETURN x, y
+		\Function{GenerateForageLocation}{}
+			\Require $ 0\le randomWeighting \le 1$
+			\Require $ kernelSize \ll min($number world rows, number world columns$)$
+			\Require $ \frac{number world rows}{kernelSize} \in Z$
+			\Require $ \frac{number world columns}{kernelSize} \in Z$
+			\Ensure $ 0 \le x \le $ number world rows
+			\Ensure $ 0 \le y \le $ number world columns
+			\State $rowsPerKernel\gets $ number world rows $ / kernelSize$
+			\State $colsPerKernel\gets $ number world columns $ / kernelSize$		
+			\State $x\gets -1$
+			\State $y\gets -1$
+			\State $maxUncertainty\gets -1$
+			\State $maxUncertRow\gets -1$
+			\State $maxUncertCol\gets -1$
+			
+			
+			\If{$random() < randomWeighting$}
+				\State $ y\gets $ random row
+				\State $ x\gets $ random column
+			\Else
+				\For{$i\gets0$, $i < $number world rows, $i\gets i + rowsPerKernel$}
+					\For{$j\gets0$, $j <$ number world columns, $j\gets j + colsPerKernel$}
+						\State $kernelUncert\gets computeKernelUncert(i,j, kernelSize)$
+						\If{$kernelUncert > maxUncertainty$}
+							\State $maxUncertainty\gets kernelUncert$
+							\State $maxUncertRow\gets i$
+							\State $maxUncertCol\gets j$	
+						\EndIf
+					\EndFor
+				\EndFor
+				\State $x\gets randomInteger(rowPerKernel) + maxUncertRow$			
+				\State $y\gets randomInteger(colsPerKernel) + maxUncertCol$
+			\EndIf \\
+			
+			\Return x, y
+		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
+
+\todo{Sensor type expertise should weigh into this}
+\begin{algorithm}
+	\caption{Cell Belief Merging}
+	\label{alg:mergeCell}
+	\begin{algorithmic}[1]
+		\Function{MergeCells}{$myCells[][], otherCells[][]$}
+		\State $numRows\gets $ number of world rows
+		\State $numCols\gets $ number of world columns
+		\State $alpha\gets $ user defined weighting value in [0,1]
+		\For{$i\gets 0, numRows$}
+			\For{$j\gets 0, numCols$}
+				\If{$otherCells_{ij}.lastUpdateTime > myCells_{ij}.lastUpdateTime$}
+					\State $myCells_{ij}.probCellEmpty\gets alpha * otherCells_{ij}.probCellEmpty + (1-alpha) * myCells_{ij}.probCellEmpty$
+					\State $myCells_{ij}.lastUpdateTime\gets otherCells_{ij}.lastUpdateTime$
+				\EndIf
+			\EndFor
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Data type models}
+TBD
+\todo{Create UML data type/structure models here.}
