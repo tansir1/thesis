@@ -134,6 +134,49 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 	\end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+	\caption{Target Task Status Merging}
+	\label{alg:mergeTaskStatus}
+	\begin{algorithmic}[1]
+		\Function{MergeTargetTaskStatus}{$myTask, otherTask$}
+		\State $copyMonitorData\gets false$
+		\State $copyAttackData\gets false$
+		\\
+		\If{$otherTask.monitorState == Complete and myTask.monitorState != otherTask.monitorState$}
+			\State $copyMonitorData\gets true$
+			\Comment Another UAV completed the task
+		\ElsIf{$otherTask.monitorScore > myTask.monitorScore and otherTask.monitorState != Complete and myTask.monitorState != Complete$}
+			\State $copyMonitorData\gets true$
+			\Comment Everyone is bidding on the task still
+		\EndIf
+		\\
+		\If{$copyMonitorData == true$}
+			\State $myTask.monitorID\gets otherTask.monitorID$
+			\State $myTask.monitorScore\gets otherTask.monitorScore$
+			\State $myTask.monitorState\gets otherTask.monitorState$
+			\State $myTask.monitorTimestamp\gets otherTask.monitorTimestamp$									
+		\EndIf
+		\\
+		\If{$otherTask.attackState == Complete and myTask.attackState != otherTask.attackState$}
+			\State $copyAttackData\gets true$
+			\Comment Another UAV completed the task
+		\ElsIf{$otherTask.attackScore > myTask.attackScore and otherTask.attackState != Complete and myTask.attackState != Complete$}
+			\State $copyAttackData\gets true$
+			\Comment Everyone is bidding on the task still
+		\EndIf
+		\\
+		\If{$copyAttackData == true$}
+			\State $myTask.attackID\gets otherTask.attackID$
+			\State $myTask.attackScore\gets otherTask.attackScore$
+			\State $myTask.attackState\gets otherTask.attackState$
+			\State $myTask.attackTimestamp\gets otherTask.attackTimestamp$
+			\State $myTask.destroyed\gets otherTask.destroyed$					
+		\EndIf
+
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
 %------------------------------------------------------------------------------
 
 \section{Data type models}
