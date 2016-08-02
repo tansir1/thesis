@@ -21,7 +21,9 @@ puSourceFiles = ['belief_class.pu',
                  'uav_usecase_tasks.pu',
                  'uav_monitor_states.pu']
 '''
-puSourceFiles = ['uav_monitor_states.pu']
+puSourceFiles = ['uav_activity_attack.pu',
+                 'uav_activity_confirm.pu',
+                 'uav_monitor_states.pu']
 
 def generate_diagrams(pu_jar_path):
 

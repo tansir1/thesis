@@ -93,7 +93,7 @@ The belief model is the fundamental piece that allows the swarm to function as a
 \subsection{Cell Beliefs}\todo{Image of cell attributes}
 Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
 
-Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty ($P(empty)$) and a timestamp of when this data was last updated.  The probability value is updated in a Bayesian fashion by sensor scans \todo{Explain this process}during each time step of the simulation.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy) value\todo{Cite shannon paper}.  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 (when $P(empty) = 0.5$).  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
+Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty ($P(empty)$) and a timestamp of when this data was last updated.  This is commonly called a Grid Based Occupancy Map. The probability value is updated in a Bayesian fashion by sensor scans \todo{Explain this process}during each time step of the simulation similar to~\cite{waharte}.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy) value\todo{Cite shannon paper}.  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 (when $P(empty) = 0.5$).  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
 
 \begin{equation}
 	\label{eq:shannon}
@@ -175,7 +175,7 @@ Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At 
 	\end{tabular}
 \end{table}
 
-Merging Target Beliefs is more complicated but uses a similar weighted averaging technique as merging Cell Beliefs.  The model in this paper assumes that the UAV's are able to perform target track fusion (also known has cross-track correlation) amongst themselves and assign each track a unique ID.  This process is outside the scope of this paper.
+Merging Target Beliefs is more complicated but uses a similar weighted averaging technique as merging Cell Beliefs.  The model in this paper assumes that the UAV's are able to perform target track fusion (also known has cross-track correlation) amongst themselves and assign each track a unique ID such as in~\cite{stroupe} and~\cite{spillings}.  This process is outside the scope of this paper.
 
 As stated earlier Target Beliefs have an estimated location, orientation, and list of target type probabilities.  Now we assume they also have a unique identifier assigned by the target track fusion process.  This unique identifier is used as a first pass comparison filter when merging Target Belief data.  If the receiving UAV does not have any data for the incoming Target Belief it simply copies it verbatim.  If the receiving UAV already has data for the Target Belief then a more detailed inspection is required.  Target Beliefs only get merged if the received data is newer than the currently stored data.  In this case the estimated target orientation, position, and list of type probabilities are all averaged with a user defined weighting against the incoming data.  The formal algorithm is defined in algorithm~\ref{alg:mergeTarget}.
 
@@ -185,13 +185,21 @@ The Target Task Status within a Target Belief is also merged with incoming data.
 \label{sec:uncoordTasking}
 \todo{Lots of references to contract network and auction papers}
 
-\subsection{Monitoring a Target}
+Task allocation is accomplished using a decentralized process in the swarm.  Previous work in distributed or decentralized task allocation has been done in . Due to the desire for real world applicability of the algorithms presented here complex evaluation or large data packets were shunned. It is inspired
 
-Flow charts
+
+\subsection{Monitoring a Target}
 
 \subsection{Attacking a Target}
 
 Flow charts
+\begin{figure}[h]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.5]{uav_activity_attack.png}
+	\caption{UAV Attack Activity}
+	\label{fig:uavAttackActivity}
+\end{figure}
 
 
 
