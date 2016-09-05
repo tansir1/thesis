@@ -177,6 +177,40 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 	\end{algorithmic}
 \end{algorithm}
 
+
+\begin{algorithm}
+	\caption{Task Allocation}
+	\label{alg:taskAlloc}
+	\begin{algorithmic}[1]
+		\State $attackBids \gets $Null Set
+		\State $monitorBids \gets $Null Set
+		\\
+		\If{attacking or monitoring}
+			\State Update bid of current task
+		\EndIf
+		\\
+		\For{all targets}
+			\State $monitorBids[target] \gets$ compute monitor bid(target)
+			\If{Target is pending an attack}
+				\State $attackBids[target] \gets$ compute attack bid()target)
+			\EndIf
+		\EndFor
+		\\
+		\State $bestMonitorTgt = max(monitorBids)$
+		\State $bestAttackTgt = max(attackBids)$
+		\\
+		\If{$bestAttackTgt$ not null and bid for $bestAttackTgt > $ current belief's task value for target}
+			\State Update belief model with bid meta data
+			\State Set current task to Attack
+		\ElsIf{$bestMonitorTgt$ not null and bid for $bestMonitorTgt > $ current belief's task value for target}
+			\State Update belief model with bid meta data		
+			\State Set current task to Monitor			
+		\Else
+			\State Set current task to Search
+		\EndIf
+		
+	\end{algorithmic}
+\end{algorithm}
 %------------------------------------------------------------------------------
 
 \section{Data type models}
