@@ -21,7 +21,9 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 	\end{tabular}
 \end{table}
 
-Similarly each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself. \todo{Do we care about a UAV being in the blast radius?}  If a target is to far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
+Similarly each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is to far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
+
+% \todo{Do we care about a UAV being in the blast radius?}
 
 \begin{table}[h]
 	\caption{Weapon type definitions}
@@ -49,10 +51,10 @@ This simulation uses realistic sensors in that they cannot perfectly detect targ
 	\begin{tabular}{|p{1cm}|p{1cm}|p{1cm}|p{1cm}|p{1cm}|}
 		\hline
 		Sensor Type & Target Type & Prob(Detect) & Prob(Confirm) & Heading Estimation Coefficient\\ \hline
-		0 & 0 & 0.5 & 0.5 & 0.5 \\
-		0 & 1 & 0.5 & 0.5 & 0.5 \\
-		1 & 0 & 0.5 & 0.5 & 0.5 \\
-		1 & 1 & 0.5 & 0.5 & 0.5 \\
+		0 & 0 & 0.7 & 0.8 & 0.3 \\
+		0 & 1 & 0.6 & 0.6 & 0.7 \\
+		1 & 0 & 0.5 & 0.7 & 0.4 \\
+		1 & 1 & 0.5 & 0.2 & 0.5 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -68,9 +70,9 @@ Weapons have a similar lookup table functionality in regards to the probability 
 	\begin{tabular}{|p{1.5cm}|p{1.5cm}|p{3cm}|}
 		\hline
 		Weapon Type & Target Type & Prob(Destruction)\\ \hline
-		0 & 0 & 0.5 \\
-		0 & 1 & 0.5 \\
-		1 & 0 & 0.5 \\
+		0 & 0 & 0.6 \\
+		0 & 1 & 0.7 \\
+		1 & 0 & 0.8 \\
 		1 & 1 & 0.5 \\
 		\hline
 	\end{tabular}

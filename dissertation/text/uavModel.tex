@@ -1,7 +1,6 @@
 \chapter{UAV Model}
-Each UAV within the simulation is a self contained entity capable of acting and thinking on its own accord.  No UAV requires the presence of any other UAV or the aid of any external actor.  The swarm is made of multiple independent UAVs that share information and in doing so coordinate actions to complete the mission.  The simulation supports an arbitrary number of user defined UAV types (or platforms).
+Each UAV within the simulation is a self contained entity capable of acting and thinking on its own accord.  No UAV requires the presence of any other UAV or the aid of any external actor.  The swarm is made of multiple independent UAVs that share information and in doing so coordinate actions to complete the mission.  The simulation supports an arbitrary number of user defined UAV types (or platforms) with unique payloads.  Example payload load-outs are given in~\ref{sec:pyldConfigs}.
 
-\todo{Mention each type has user defined payload}
 
 \section{UAV Kinematics}
 Each UAV type has a fixed speed and turning radius.  The fixed speed represents the aircraft's standard cruising speed that it will maintain throughout the simulation.  An example set of UAV type kinematic configuration data is shown in table~\ref{tab:uavKinematic}.
@@ -30,7 +29,7 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 \psi_{constant} &= \frac{v*\sin(\pi)}{r} \label{eq:uavTurnRateDeriv}
 \end{align}
 
-\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.
+\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.
 
 
 \section{UAV Communications}
@@ -40,7 +39,7 @@ From a communications perspective the swarm can be thought of as a mobile ad hoc
 
 While simple to implement this flooding approach has many drawbacks.  Many neighboring UAVs will likely have already heard the message themselves from the original source meaning there are redundant broadcasts.  Many neighboring UAVs will hear the message simultaneously and will jam each other when they all attempt to rebroadcast the message.  When the jamming occurs the data transmissions will be garbled if they succeed at all.  This is known as the broadcast storm problem as originally put forth by~\cite{bstorm}.
 
-Finding ways to optimize MANETs and to eliminate the broadcast swarm problem is a whole field of research unto itself.  The research performed in~\cite{epidemicManets} and ~\cite{analysisOptNodeDen} are relevant to UAV swarms in that they find ways to minimize the number of needed transmissions and ways to reduce transmission power levels.  The standard approach is to not always rebroadcast a message when it is first heard and instead only rebroadcast based on chance.  This is known as the Probabilistic Flooding technique.  There are many variants to this technique with some described in~\cite{probFloodVariants}.  For our purposes the version described in~\cite{simpleProbFlood} was used.  In this case the the probability that a UAV will rebroadcast any individual message computed by equation~\ref{eq:probFlood} where $hop$ is the number of times the message has already been rebroadcasted and $num\_uavs$ is the number of UAVs in the swarm.  This equation states that when a message is first generated it is very likely it will be rebroadcasted but each subsequent broadcast becomes less likely to occur.
+Finding ways to optimize MANETs and to eliminate the broadcast swarm problem is a whole field of research unto itself.  The research performed in~\cite{epidemicManets} and ~\cite{analysisOptNodeDen} are relevant to UAV swarms in that they find ways to minimize the number of needed transmissions and ways to reduce transmission power levels.  The standard approach is to not always rebroadcast a message when it is first heard and instead only rebroadcast based on chance.  This is known as the Probabilistic Flooding technique.  There are many variants to this technique with some described in~\cite{probFloodVariants}.  For our purposes the version described in~\cite{simpleProbFlood} was used.  In this case the probability that a UAV will rebroadcast any individual message is computed by equation~\ref{eq:probFlood} where $hop$ is the number of times the message has already been rebroadcasted and $num\_uavs$ is the number of UAVs in the swarm.  This equation states that when a message is first generated it is very likely it will be rebroadcasted but each subsequent broadcast becomes less likely to occur.
 
 \begin{equation}
 \label{eq:probFlood}
@@ -48,30 +47,21 @@ P(rebroadcast) = 1 - \frac{hop}{num\_uavs - 1}
 \end{equation}
 
 \section{UAV Tasks}
-UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.  The Search task is always available for all UAVs to carry out.  The Monitor and Attack tasks are can only be executed in association with a suspected or confirmed target.\todo{Explain assignment states here?}
+UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.  The Search task is always available for all UAVs to carry out.  The Monitor and Attack tasks can only be executed in association with a suspected or confirmed target respectively.\todo{Explain assignment states here?}
 
 \subsection{Search}\todo{Uncertainty first used here but not defined}
-No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  This was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight}(\cite{humphries}) but adapted to a discrete world instead of a continuous world.  A search-and-track survey paper in~\cite{senanayake} highlights many other search algorithms to choose from.  The L\'evy Flight algorithm is a type of biased random walk.  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage} in appendix~\ref{sec:algorithms}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
+No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  A search-and-track survey paper in~\cite{senanayake} highlights many search algorithms to choose from.  Our search was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight}(\cite{humphries}) but adapted to a discrete world instead of a continuous world.  The L\'evy Flight algorithm is a type of biased random walk.  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage} in appendix~\ref{sec:algorithms}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
 
 %https://en.wikipedia.org/wiki/L%C3%A9vy_flight
 
-Once a search cell has been selected the UAV will fly towards it until another task takes precedence or the uncertainty in the cell falls below a user configured threshold.  The uncertainty in the cell changes when the UAV's sensors can reach it and when an update from another UAV in the swarm provides new data about the cell. If the uncertainty in the cell drops below the user configured threshold then the UAV will select a new cell to investigate.  Given that the UAV is within the most uncertain kernel when the selected cell becomes certain it will search another nearby cell.  Typically the UAV will search neighboring cells until the local kernel becomes more certain than other kernels in the world.  An atypical case occurs when the UAV selects a completely random location in the world.  The weighting between searching a kernel area versus random world locations is controlled by the $randomWeighting$ parameter in algorithm~\ref{alg:forage}.
+Once a search cell has been selected the UAV will fly towards it until another task takes precedence or the uncertainty in the cell falls below a user configured threshold.  The uncertainty in the cell changes when the UAV's sensors can reach it or when an update from another UAV in the swarm provides new data about the cell. If the uncertainty in the cell drops below the user configured threshold then the UAV will select a new cell to investigate.  Given that the UAV is within the most uncertain kernel when the selected cell becomes certain it will very likely search another nearby cell.  Typically the UAV will search neighboring cells until the local kernel becomes more certain than other kernels in the world.  An atypical case occurs when the UAV selects a completely random location in the world.  The weighting between searching a kernel area versus random world locations is controlled by the $randomWeighting$ parameter in algorithm~\ref{alg:forage}.
 
 While performing the search task UAV's point their sensor payloads towards the selected search cell even if they are not within range.  While traversing the world the UAV will opportunistically scan all cells encompassed by the sensor's field of view.
 
 
 \subsection{Monitor}
-The Monitor task requires a UAV to watch a potential target.  The UAV will point its sensing payloads at the target, confirm the target's identity, track the target, and perform a battle damage assessment after the target has been struck.  These steps are broken down into states within the Monitor task.  The monitor task state transitions are illustrated in figure~\ref{fig:monitor}. \todo{Need a page or section here?} 
-\todo{Image formatting}
+The Monitor task requires a UAV to watch a potential target.  The UAV will point its sensing payloads at the target, confirm the target's identity, track the target, and perform a battle damage assessment after the target has been struck.  These steps are broken down into states within the Monitor task.  The monitor task state transitions are illustrated in figure~\ref{sec:monitorSubStates}.
 
-\begin{figure}[p]
-	\centering
-	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{uav_monitor_states.png}
-%	\includegraphics{uav_monitor_states.png}
-	\caption{Monitor sub-states}
-	\label{fig:monitor}
-\end{figure}
 
 \subsubsection{En Route}
 When a UAV first starts the Monitor task it begins flying towards the target and points its payloads in the target's direction.  As the UAV flies it continues to scan any cell within its payload's field of view until the target is within range.  Once the target is in sensor range the UAV transitions to the Target Confirmation state.  
@@ -91,59 +81,7 @@ If the target is still active after the weapon's strike the UAV will transition 
 
 
 \subsection{Attack}
-The Attack task mechanics are similar to the Monitor task in that the UAV will fly towards the target and point all of its sensors at the target.  The UAV will plot a course such that its heading is aligned with the best attack angle relative to the heading of the target.  The UAV will re-plot a new course if the target moves a significant distance.  This distance is user configurable.  The UAV will wait until the distance to the target is below some percentage of the weapon's max range before firing.  For purposes of this experiment the percentage was set to 80\%.
+The Attack task mechanics are similar to the Monitor task in that the UAV will fly towards the target and point all of its sensors at the target.  The UAV will plot a course such that its heading is aligned with the best attack angle relative to the heading of the target.  The UAV will re-plot a new course if the target moves a significant distance.  This distance is user configurable.  The UAV will wait until the distance to the target is below some percentage of the weapon's max range before firing.  For purposes of this experiment the percentage was set to 80\%.  An activity diagram describing the process is shown in~\ref{sec:attackActivity}.
 
 The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform it again since it's likely the closest strike platform available.  The details of this process are explained in section~\ref{XXXX}.\todo{Fix reference.} 
 
-
-
-\subsection{Monitoring a Target}
-
-\subsection{Attacking a Target}
-
-Flow charts
-\begin{figure}[h]
-	\centering
-	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{uav_activity_attack.png}
-	\caption{UAV Attack Activity}
-	\label{fig:uavAttackActivity}
-\end{figure}
-
-
-
-Starvation of search task
-
-limited comms range
-
-\begin{table}[h]
-	\caption{UAV sensor payload configuration}
-	\centering
-	\rowcolors{1}{lightgray}{white}
-	\label{tab:uavSensorMap}
-	\begin{tabular}{|p{1cm}|p{1cm}|p{1cm}|}
-		\hline
-		UAV Type & Sensor Type\\ \hline
-		0 & 1 \\
-		1 & 0 \\
-		\hline
-	\end{tabular}
-\end{table}
-
-
-\todo{Insert sim data for weapon numbers}
-\begin{table}[h]
-	\caption{UAV weapon payload configuration}
-	\centering
-	\rowcolors{1}{lightgray}{white}
-	\label{tab:uavWpnMap}
-	\begin{tabular}{|p{1cm}|p{1.5cm}|p{2cm}|}
-		\hline
-		UAV Type & Weapon Type & Initial Quantity\\ \hline
-		0 & 0 & 2 \\
-		0 & 1 & 2 \\
-		1 & 0 & 5 \\
-		1 & 1 & 5 \\
-		\hline
-	\end{tabular}
-\end{table}

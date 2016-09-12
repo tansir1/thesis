@@ -1,42 +1,67 @@
 \chapter{Appendix}
 
-
-\section{Example world configuration file}
-\label{sec:exampleWorldCfg}
-\begin{minted}{properties}
-#Width in meters
-world.width = 10000
-#Height in meters
-world.height = 10000
-world.rows = 10
-world.columns = 10
-
-#The number of worlds to generate
-numWorlds = 10
-
-entityTypesFile =  ./EntityTypes.xml
-
-#Generated world files will be placed here
-outputDir = ./worlds
-
-#Initialize the random seed generator with this value
-randomSeed = 42
-
-targets.numMobile = 3
-targets.numStatic = 4
-
-numUAVs = 5
-\end{minted}
-
-%------------------------------------------------------------------------------
-
-\section{Complete simulation configuration settings}
-\todo{Copy all config data here}
-
 %------------------------------------------------------------------------------
 
 \section{Dubin's Path} \label{sec:dubin}
 The movement of UAVs is constrained to a continuous path with constant speed.
+
+%------------------------------------------------------------------------------
+
+\section{Monitor Sub-states}
+\label{sec:monitorSubStates}
+\begin{figure}[h]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.6]{uav_monitor_states.png}
+	%	\includegraphics{uav_monitor_states.png}
+	\caption{Monitor sub-states}
+	\label{fig:monitor}
+\end{figure}
+
+%------------------------------------------------------------------------------
+\section{Attack Activity Diagram}
+\label{sec:attackActivity}
+\begin{figure}[h]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.6]{uav_activity_attack.png}
+	\caption{UAV Attack Activity}
+	\label{fig:uavAttackActivity}
+\end{figure}
+
+%------------------------------------------------------------------------------
+
+\section{Sample Payload Configurations}
+\label{sec:pyldConfigs}
+\begin{table}[h]
+	\caption{UAV sensor payload configuration}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:uavSensorMap}
+	\begin{tabular}{|p{1cm}|p{1cm}|p{1cm}|}
+		\hline
+		UAV Type & Sensor Type\\ \hline
+		0 & 1 \\
+		1 & 0 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[h]
+	\caption{UAV weapon payload configuration}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:uavWpnMap}
+	\begin{tabular}{|p{1cm}|p{1.5cm}|p{2cm}|}
+		\hline
+		UAV Type & Weapon Type & Initial Quantity\\ \hline
+		0 & 0 & 2 \\
+		0 & 1 & 2 \\
+		1 & 0 & 5 \\
+		1 & 1 & 5 \\
+		\hline
+	\end{tabular}
+\end{table}
 
 %------------------------------------------------------------------------------
 
@@ -85,9 +110,6 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
-
-
-
 
 \begin{algorithm}
 	\caption{Cell Belief Merging}
@@ -192,7 +214,7 @@ The movement of UAVs is constrained to a continuous path with constant speed.
 		\For{all targets}
 			\State $monitorBids[target] \gets$ compute monitor bid(target)
 			\If{Target is pending an attack}
-				\State $attackBids[target] \gets$ compute attack bid()target)
+				\State $attackBids[target] \gets$ compute attack bid(target)
 			\EndIf
 		\EndFor
 		\\
