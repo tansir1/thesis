@@ -33,7 +33,7 @@ public class Target
       this.type = tgtType;
       this.maxSpd = tgtSpd;
       this.havenRouting = havenRouting;
-      
+
       havenPath = new ArrayList<WorldCoordinate>();
       pose = new WorldPose();
       destination = new WorldCoordinate();
@@ -91,25 +91,28 @@ public class Target
    {
       // TODO Add a time delay for mobile targets to sit inside of a haven
 
-      if (isMobile())
+      if (alive)
       {
-         if (isAtDestination())
+
+         if (isMobile())
          {
-            selectNewDestination();
-            double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
-            pose.setHeading(newHdg);
+            if (isAtDestination())
+            {
+               selectNewDestination();
+               double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
+               pose.setHeading(newHdg);
+            }
+
+            double deltaSeconds = SimTime.SIM_STEP_RATE_S;
+
+            // east distance = time * speed * east component
+            double easting = deltaSeconds * maxSpd * Math.cos(Math.toRadians(pose.getHeading()));
+            // north distance = time * speed * north component
+            double northing = deltaSeconds * maxSpd * Math.sin(Math.toRadians(pose.getHeading()));
+
+            pose.getCoordinate().translateCart(northing, easting);
          }
-
-         double deltaSeconds = SimTime.SIM_STEP_RATE_S;
-
-         // east distance = time * speed * east component
-         double easting = deltaSeconds * maxSpd * Math.cos(Math.toRadians(pose.getHeading()));
-         // north distance = time * speed * north component
-         double northing = deltaSeconds * maxSpd * Math.sin(Math.toRadians(pose.getHeading()));
-
-         pose.getCoordinate().translateCart(northing, easting);
       }
-
    }
 
    private boolean isAtDestination()
@@ -135,7 +138,7 @@ public class Target
       {
          havenPath.remove(0);
       }
-      else if((havenPath.size() == 1 || havenPath.isEmpty()) && isAtDestination())
+      else if ((havenPath.size() == 1 || havenPath.isEmpty()) && isAtDestination())
       {
          havenPath.clear();
          havenRouting.selectNewHavenDestination(pose.getCoordinate(), destination, havenPath);
