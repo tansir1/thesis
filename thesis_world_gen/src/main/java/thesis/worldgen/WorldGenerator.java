@@ -24,12 +24,6 @@ import thesis.core.world.WorldGIS;
 
 public class WorldGenerator
 {
-   /**
-    * The minimum allowed distance between two intersections is proportional to
-    * the min(width,height) * this percentage.
-    */
-   private static final double MIN_INTERSECTION_SPACING_PERCENT = 0.15f;
-
    private Random randGen;
 
    private WorldGIS gis;
@@ -95,7 +89,7 @@ public class WorldGenerator
 
       havensInWorld.reset(numHavens);
       Iterator<CellCoordinate> itr = havens.iterator();
-      for(int i=0; i<numHavens; ++i)
+      for (int i = 0; i < numHavens; ++i)
       {
          havensInWorld.setHavenByIndx(i, itr.next());
       }
@@ -179,14 +173,14 @@ public class WorldGenerator
       for (int i = 0; i < numStaticTgts; ++i)
       {
          final int typeIndex = randGen.nextInt(staticTypes.size());
-         generateRandomTarget(world, typeIndex);
+         generateRandomTarget(world, staticTypes.get(typeIndex), false);
       }
 
       // Generate mobile targets
       for (int i = 0; i < numMobileTgts; ++i)
       {
          final int typeIndex = randGen.nextInt(mobileTypes.size());
-         generateRandomTarget(world, typeIndex);
+         generateRandomTarget(world, mobileTypes.get(typeIndex), true);
       }
 
    }
@@ -200,10 +194,25 @@ public class WorldGenerator
     *           location.
     * @return A randomly generated tareget entity configuration.
     */
-   private void generateRandomTarget(WorldConfig world, int type)
+   private void generateRandomTarget(WorldConfig world, int type, boolean isMobile)
    {
-      int row = randGen.nextInt(world.getWorld().getWorldGIS().getRowCount());
-      int col = randGen.nextInt(world.getWorld().getWorldGIS().getColumnCount());
+      int row = -1;
+      int col = -1;
+
+      if (isMobile)
+      {
+         //Restrict mobile targets to road networks
+         RoadNetwork roadNet = world.getWorld().getRoadNetwork();
+         int randIndex = randGen.nextInt(roadNet.getTraversableCells().size());
+         CellCoordinate cellCoord = roadNet.getTraversableCells().get(randIndex);
+         row = cellCoord.getRow();
+         col = cellCoord.getColumn();
+      }
+      else
+      {
+         row = randGen.nextInt(world.getWorld().getWorldGIS().getRowCount());
+         col = randGen.nextInt(world.getWorld().getWorldGIS().getColumnCount());
+      }
 
       TargetStartCfg tgtStartCfg = new TargetStartCfg();
       tgtStartCfg.setOrientation(randGen.nextDouble() * 360d);

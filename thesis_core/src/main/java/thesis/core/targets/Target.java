@@ -1,5 +1,6 @@
 package thesis.core.targets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import thesis.core.SimModel;
@@ -32,7 +33,8 @@ public class Target
       this.type = tgtType;
       this.maxSpd = tgtSpd;
       this.havenRouting = havenRouting;
-
+      
+      havenPath = new ArrayList<WorldCoordinate>();
       pose = new WorldPose();
       destination = new WorldCoordinate();
       alive = true;
@@ -94,7 +96,6 @@ public class Target
          if (isAtDestination())
          {
             selectNewDestination();
-
             double newHdg = pose.getCoordinate().bearingTo(havenPath.get(0));
             pose.setHeading(newHdg);
          }
@@ -130,12 +131,13 @@ public class Target
 
    private void selectNewDestination()
    {
-      if (!havenPath.isEmpty())
+      if (havenPath.size() > 1)
       {
          havenPath.remove(0);
       }
-      else
+      else if((havenPath.size() == 1 || havenPath.isEmpty()) && isAtDestination())
       {
+         havenPath.clear();
          havenRouting.selectNewHavenDestination(pose.getCoordinate(), destination, havenPath);
       }
    }
