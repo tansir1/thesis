@@ -123,7 +123,7 @@ public class WorldBelief
          }
       }
 
-      if (tgtBelief == null)
+      if (!tgtFound)
       {
          tgtBelief = new TargetBelief(numTgtTypes, tgtID);
          tgtBeliefs.add(tgtBelief);

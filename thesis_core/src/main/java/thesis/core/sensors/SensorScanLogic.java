@@ -98,23 +98,26 @@ public class SensorScanLogic
       if (tgtsTruth.size() > 0)
       {
          Iterator<Target> itr = tgtsTruth.iterator();
-         Target tgt = itr.next();
-
-         // Determine if the target was detected or not
-         double estTgtHdg = 0;
-         if (worldBelief.hasDetectedTarget(tgt.getID()))
+         while(itr.hasNext())
          {
-            // Target was seen in the past, get the last estimated heading
-            estTgtHdg = worldBelief.getTargetBelief(tgt.getID()).getHeadingEstimate();
+            Target tgt = itr.next();
+   
+            // Determine if the target was detected or not
+            double estTgtHdg = 0;
+            if (worldBelief.hasDetectedTarget(tgt.getID()))
+            {
+               // Target was seen in the past, get the last estimated heading
+               estTgtHdg = worldBelief.getTargetBelief(tgt.getID()).getHeadingEstimate();
+            }
+   
+            double probDetect = probOfDetect(snsrType, tgt.getType(), snsrHdg, estTgtHdg);
+            if (randGen.nextDouble() > probDetect)
+            {
+               // Target not detected, remove it from the returned results list
+               itr.remove();
+            }
+            // else target was detected
          }
-
-         double probDetect = probOfDetect(snsrType, tgt.getType(), snsrHdg, estTgtHdg);
-         if (randGen.nextDouble() > probDetect)
-         {
-            // Target not detected, remove it from the returned results list
-            itr.remove();
-         }
-         // else target was detected
       }
       return tgtsTruth;
    }

@@ -9,14 +9,14 @@ public class TargetTaskStatus
    private int monitorUAV;
    private int monitorUAVScore;
    private TaskState monitorState;
-   private int interestedMonitorUAV;
-   private int interestedMonitorUAVScore;
+   //private int interestedMonitorUAV;
+   //private int interestedMonitorUAVScore;
 
    private int attackUAV;
    private int attackUAVScore;
    private TaskState attackState;
-   private int interestedAttackUAV;
-   private int interestedAttackUAVScore;
+   //private int interestedAttackUAV;
+   //private int interestedAttackUAVScore;
 
    private long monitorUpdateTimestamp;
    private long attackUpdateTimestamp;
@@ -34,15 +34,15 @@ public class TargetTaskStatus
 
       monitorUAV = UAV.NULL_UAV_ID;
       monitorUAVScore = -1;
-      interestedMonitorUAV = UAV.NULL_UAV_ID;
-      interestedMonitorUAVScore = -1;
+      //interestedMonitorUAV = UAV.NULL_UAV_ID;
+      //interestedMonitorUAVScore = -1;
       monitorState = TaskState.NO_TASK;
 
       attackUAV = UAV.NULL_UAV_ID;
       attackUAVScore = -1;
       attackState = TaskState.NO_TASK;
-      interestedAttackUAV = UAV.NULL_UAV_ID;
-      interestedAttackUAVScore = -1;
+      //interestedAttackUAV = UAV.NULL_UAV_ID;
+      //interestedAttackUAVScore = -1;
 
       monitorUpdateTimestamp = 0;
       attackUpdateTimestamp = 0;
@@ -53,14 +53,14 @@ public class TargetTaskStatus
       monitorUAV = copyMe.monitorUAV;
       monitorUAVScore = copyMe.monitorUAVScore;
       monitorState = copyMe.monitorState;
-      interestedMonitorUAV = copyMe.interestedMonitorUAV;
-      interestedMonitorUAVScore = copyMe.interestedMonitorUAVScore;
+      //interestedMonitorUAV = copyMe.interestedMonitorUAV;
+      //interestedMonitorUAVScore = copyMe.interestedMonitorUAVScore;
 
       attackUAV = copyMe.attackUAV;
       attackUAVScore = copyMe.attackUAVScore;
       attackState = copyMe.attackState;
-      interestedAttackUAV = copyMe.interestedAttackUAV;
-      interestedAttackUAVScore = copyMe.interestedAttackUAVScore;
+      //interestedAttackUAV = copyMe.interestedAttackUAV;
+      //interestedAttackUAVScore = copyMe.interestedAttackUAVScore;
 
       monitorUpdateTimestamp = copyMe.monitorUpdateTimestamp;
       attackUpdateTimestamp = copyMe.attackUpdateTimestamp;
@@ -97,7 +97,7 @@ public class TargetTaskStatus
    {
       this.monitorUAVScore = monitorUAVScore;
    }
-
+/*
    public int getInterestedMonitorUAV()
    {
       return interestedMonitorUAV;
@@ -117,7 +117,7 @@ public class TargetTaskStatus
    {
       this.interestedMonitorUAVScore = interestedMonitorUAVScore;
    }
-
+*/
    public int getAttackUAV()
    {
       return attackUAV;
@@ -137,7 +137,7 @@ public class TargetTaskStatus
    {
       this.attackUAVScore = attackUAVScore;
    }
-
+/*
    public int getInterestedAttackUAV()
    {
       return interestedAttackUAV;
@@ -156,7 +156,7 @@ public class TargetTaskStatus
    public void setInterestedAttackUAVScore(int interestedAttackUAVScore)
    {
       this.interestedAttackUAVScore = interestedAttackUAVScore;
-   }
+   }*/
 
    public long getMonitorUpdateTimestamp()
    {
