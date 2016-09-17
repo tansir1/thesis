@@ -74,7 +74,7 @@ public class MonitorTask
 
       // Clear out any left over focused scan logic from previous sensor state
       snsrGrp.setFocusedScanning(false);
-      stareStartTime = 0;
+      stareStartTime = -1;
 
       starePoint.setCoordinate(tgtBelief.getCoordinate());
       snsrGrp.stareAtAll(starePoint);
@@ -133,14 +133,14 @@ public class MonitorTask
 
    private void stepBDA(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      if (stareStartTime == 0 && pathingHelper.isInSensorRange())
+      long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;
+      if(pathingHelper.isInSensorRange() && stareStartTime < 0)
       {
          logger.debug("UAV {} began BDA focused scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
          stareStartTime = SimTime.getCurrentSimTimeMS();
          snsrGrp.setFocusedScanning(true);
       }
-
-      if ((SimTime.getCurrentSimTimeMS() - stareStartTime) >= MILLISECONDS_TO_BDA)
+      else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_BDA)
       {
          if(!trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
          {
@@ -163,15 +163,15 @@ public class MonitorTask
 
    private void stepConfirm(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      if (stareStartTime == 0 && pathingHelper.isInSensorRange())
+      long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;
+      if (pathingHelper.isInSensorRange() && stareStartTime < 0)
       {
          logger.debug("UAV {} began confirmation focused scanning target {}", hostUavId, tgtBelief.getTrueTargetID());
          tgtBelief.getTaskStatus().setMonitorState(TaskState.Performing);
          stareStartTime = SimTime.getCurrentSimTimeMS();
          snsrGrp.setFocusedScanning(true);
       }
-
-      if ((SimTime.getCurrentSimTimeMS() - stareStartTime) >= MILLISECONDS_TO_CONFIRM)
+      else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_CONFIRM)
       {
          logger.debug("UAV {} finished confirming target {}", hostUavId, tgtBelief.getTrueTargetID());
          requestAttack(tgtBelief);

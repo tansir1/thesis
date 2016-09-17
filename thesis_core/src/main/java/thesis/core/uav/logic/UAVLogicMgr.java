@@ -45,7 +45,7 @@ public class UAVLogicMgr
       monitorTask = new MonitorTask(hostUavId, trueTgtStatusSvc);
       attackTask = new AttackTask(hostUavId);
 
-      taskAllocator = new TaskAllocator(hostUavId);
+      taskAllocator = new TaskAllocator(hostUavId, gis);
    }
 
    public TaskType getCurrentTaskType()

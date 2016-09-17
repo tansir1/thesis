@@ -14,22 +14,25 @@ import thesis.core.common.SimTime;
 import thesis.core.uav.UAV;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.weapons.Weapon;
+import thesis.core.world.WorldGIS;
 
 public class TaskAllocator
 {
    private static Logger logger = LoggerFactory.getLogger(LoggerIDs.UAV_LOGIC);
 
    private final int hostUavId;
-
+   private final WorldGIS gis;
+   
    private TaskType curTask;
    private TargetBelief curTgt;
 
    private TargetBelief bestMonitorTgt, bestAttackTgt;
    private int bestMonitorTgtBid, bestAttackTargetBid;
 
-   public TaskAllocator(int hostUavId)
+   public TaskAllocator(int hostUavId, WorldGIS gis)
    {
       this.hostUavId = hostUavId;
+      this.gis = gis;
       curTask = TaskType.Search;
       curTgt = null;
       bestMonitorTgtBid = -1;
@@ -252,7 +255,8 @@ public class TaskAllocator
       // double bestProb = hostUAV.getSensors().getBestScanProb(mostLikelyType);
 
       // FIXME For now just use distance as the cost function
-      return (int) distance;
+      double bid = gis.getMaxWorldDistance() - distance;
+      return (int) bid;
    }
 
    private int computeAttackBid(TargetBelief tgt, UAV hostUAV)
@@ -266,7 +270,7 @@ public class TaskAllocator
          // int mostLikelyType = tgt.getHighestProbabilityTargetType();
 
          // FIXME For now just use distance as the cost function
-         bid = (int) distance;
+         bid = (int)(gis.getMaxWorldDistance() - distance);
       }
 
       return bid;

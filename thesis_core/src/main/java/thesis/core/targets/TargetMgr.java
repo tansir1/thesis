@@ -188,6 +188,32 @@ public class TargetMgr implements ITrueTargetStatusProvider
 
       return inRegion;
    }
+   
+   /**
+    * Get all living targets within the specified geographic region.
+    *
+    * @param region
+    *           Get all targets within this region.
+    * @return A list of targets in the region or an empty list if no targets are
+    *         within the region.
+    */
+   public List<Target> getLivingTargetsInRegion(CellCoordinate region)
+   {
+      List<Target> inRegion = new ArrayList<Target>();
+      CellCoordinate tgtTemp = new CellCoordinate();
+
+      for (Target tar : targets)
+      {
+         worldGIS.convertWorldToCell(tar.getCoordinate(), tgtTemp);
+
+         if (tgtTemp.equals(region) && tar.isAlive())
+         {
+            inRegion.add(tar);
+         }
+      }
+
+      return inRegion;
+   }
 
    public Target getTargetInRegion(CellCoordinate region, int tgtType)
    {

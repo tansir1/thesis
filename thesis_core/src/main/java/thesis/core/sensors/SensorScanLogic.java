@@ -94,7 +94,7 @@ public class SensorScanLogic
 
    private List<Target> detectTargets(int snsrType, CellCoordinate cell, double snsrHdg, CellBelief cellBelief, WorldBelief worldBelief)
    {
-      List<Target> tgtsTruth = tgtMgr.getTargetsInRegion(cell);
+      List<Target> tgtsTruth = tgtMgr.getLivingTargetsInRegion(cell);
       if (tgtsTruth.size() > 0)
       {
          Iterator<Target> itr = tgtsTruth.iterator();
