@@ -331,10 +331,15 @@ public class RenderSimState
 
    public void cellCoordinateToPixels(final CellCoordinate cc, final Point pixels)
    {
-      int pixelX = gridCellW * cc.getRow() + gridCellW / 2;
+      //int pixelX = gridCellW * cc.getRow() + gridCellW / 2;
       // Invert the y axis so that "north" is at the top of the screen.
-      int pixelY = bounds.height - (gridCellH * cc.getColumn() + gridCellH / 2);
+      //int pixelY = bounds.height - (gridCellH * cc.getColumn() + gridCellH / 2);
 
+      int pixelX = gridCellW * cc.getColumn() + gridCellW / 2;
+      // Invert the y axis so that "north" is at the top of the screen.
+      int pixelY = bounds.height - (gridCellH * cc.getRow() + gridCellH / 2);
+
+      
       pixels.setLocation(pixelX, pixelY);
    }
 
@@ -465,6 +470,40 @@ public class RenderSimState
       final int numCols = gis.getColumnCount();
       final int numRows = gis.getRowCount();
       final RoadNetwork roads = simModel.getWorld().getRoadNetwork();
+      /*
+      for (int i = 0; i < numRows; ++i)
+      {
+         for (int j = 0; j < numCols; ++j)
+         {
+            if (roads.isTraversable(j, i))
+            {
+               if ((j + 1) < numRows && roads.isTraversable(j + 1, i)) // Check
+                                                                       // next
+                                                                       // row
+               {
+                  // Draw road from current cell to cell below
+                  startRow.setCoordinate(j, i);
+                  endRow.setCoordinate(j + 1, i);
+                  cellCoordinateToPixels(startRow, start);
+                  cellCoordinateToPixels(endRow, end);
+                  g2d.drawLine(start.x, start.y, end.x, end.y);
+               }
+
+               if ((i + 1) < numCols && roads.isTraversable(j, i + 1)) // Check
+                                                                       // next
+                                                                       // column
+               {
+                  // Draw road from current cell to cell to the right
+                  startRow.setCoordinate(j, i);
+                  endRow.setCoordinate(j, i + 1);
+                  cellCoordinateToPixels(startRow, start);
+                  cellCoordinateToPixels(endRow, end);
+                  g2d.drawLine(start.x, start.y, end.x, end.y);
+               }
+            }
+         }
+      }   */   
+      
 
       for (int i = 0; i < numRows; ++i)
       {
