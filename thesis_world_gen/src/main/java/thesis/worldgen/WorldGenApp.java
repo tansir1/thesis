@@ -1,8 +1,12 @@
 package thesis.worldgen;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import thesis.core.EntityTypeCfgs;
+import thesis.core.SimModel;
 import thesis.core.serialization.DBConnections;
 import thesis.core.serialization.EntityTypeCSVCodec;
 import thesis.core.serialization.WorldConfigCSVCodec;
@@ -23,6 +28,7 @@ import thesis.core.serialization.world.WorldConfig;
 import thesis.core.utilities.CoreUtils;
 import thesis.core.utilities.LoggerIDs;
 import thesis.core.utilities.VersionID;
+import thesis.core.world.RenderSimState;
 import thesis.core.world.WorldGIS;
 import thesis.worldgen.utilities.GeneratorConfig;
 import thesis.worldgen.utilities.GeneratorConfigLoader;
@@ -149,8 +155,8 @@ public class WorldGenApp
          WorldConfig worldCfg = worldGen.generateWorld(entTypes, genCfg.getNumMobileTargets(),
                genCfg.getNumStaticTargets(), genCfg.getNumUAVs());
 
-         //try
-        // {
+         try
+         {
             WorldConfigCSVCodec worldCfgCodec = new WorldConfigCSVCodec();
             logger.info("Saving world {} into {}.", i, worldDir.getAbsolutePath());
             if (!worldCfgCodec.writeCSV(dbConns, worldDir, worldCfg))
@@ -158,10 +164,10 @@ public class WorldGenApp
                logger.error("Failed to save world {} into {}", i, worldDir.getAbsolutePath());
                System.exit(1);
             }
-/*
+
             logger.debug("Saving world {} screenshot into {}", i, screenShotFile.getAbsolutePath());
             SimModel model = new SimModel();
-            model.reset(0, worldCfg, entTypes, 0.0f, 0.0f);
+            model.reset(0, worldCfg, entTypes, 0.0f, 0.0f, 0);
 
             BufferedImage img = RenderSimState.renderToImage(model, 640, 480);
             ImageIO.write(img, "png", screenShotFile);
@@ -170,7 +176,7 @@ public class WorldGenApp
          {
             logger.error("I/O error while saving world {}.  Details: {}", i, e.getMessage());
             System.exit(1);
-         }*/
+         }
       }
       logger.info("World generation complete.");
    }
