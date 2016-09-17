@@ -68,9 +68,11 @@ public class RoadNetGenerator
       }
 
       computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), roadSeeds.size() % 2 == 0, roadNet);
+      //computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), true, roadNet);
 
       // TODO Add more random connections between random seeds
    }
+   
 
    private void computeRoadIntersection(CellCoordinate start, CellCoordinate end, boolean isVertSplit,
          RoadNetwork roadNet)
@@ -78,66 +80,46 @@ public class RoadNetGenerator
       if (isVertSplit)
       {
          // Iterate rows from start to end
-         if (end.getRow() < start.getRow())
+         int numRowsOffset = Math.abs(end.getRow() - start.getRow());
+         int startRow = Math.min(start.getRow(), end.getRow());
+         for (int i = 0; i < numRowsOffset; ++i)
          {
-            CellCoordinate temp = start;
-            start = end;
-            end = temp;
+            roadNet.setTraversable(startRow + i + 1, start.getColumn(), true);
          }
+         
+         int intermediateRow = startRow + numRowsOffset;
 
-         int offset = end.getRow() - start.getRow();
-         for (int i = 1; i < offset; ++i)
+         //Iterate columns from start to end
+         int numColsOffset = Math.abs(end.getColumn() - start.getColumn());
+         int startCol = Math.min(start.getColumn(), end.getColumn());
+         for (int i = 0; i < numColsOffset; ++i)
          {
-            roadNet.setTraversable(start.getRow() + i, start.getColumn(), true);
-         }
-
-         // Iterate columns from start to end
-         if (end.getColumn() < start.getColumn())
-         {
-            CellCoordinate temp = start;
-            start = end;
-            end = temp;
-         }
-
-         offset = end.getColumn() - start.getColumn();
-         for (int i = 1; i < offset; ++i)
-         {
-            roadNet.setTraversable(end.getRow(), start.getColumn() + i, true);
+            roadNet.setTraversable(intermediateRow, startCol + i + 1, true);
          }
 
       }
       else
       {
          // Iterate columns from start to end
-         if (end.getColumn() < start.getColumn())
+         int numColsOffset = Math.abs(end.getColumn() - start.getColumn());
+         int startCol = Math.min(start.getColumn(), end.getColumn());
+         for (int i = 0; i < numColsOffset; ++i)
          {
-            CellCoordinate temp = start;
-            start = end;
-            end = temp;
-         }
-
-         int offset = end.getColumn() - start.getColumn();
-         for (int i = 1; i < offset; ++i)
-         {
-            roadNet.setTraversable(end.getRow(), start.getColumn() + i, true);
-         }
-
+            roadNet.setTraversable(start.getRow(), startCol + i + 1, true);
+         }         
+         
+         int intermediateCol = startCol + numColsOffset;
+         
          // Iterate rows from start to end
-         if (end.getRow() < start.getRow())
+         int numRowsOffset = Math.abs(end.getRow() - start.getRow());
+         int startRow = Math.min(start.getRow(), end.getRow());
+         for (int i = 0; i < numRowsOffset; ++i)
          {
-            CellCoordinate temp = start;
-            start = end;
-            end = temp;
-         }
-
-         offset = end.getRow() - start.getRow();
-         for (int i = 1; i < offset; ++i)
-         {
-            roadNet.setTraversable(start.getRow() + i, start.getColumn(), true);
+            roadNet.setTraversable(startRow + i + 1, intermediateCol, true);
          }
       }
    }
-
+   
    /**
     * Checks if the new cell location satisfies all the rules for new road seed
     * generation.
