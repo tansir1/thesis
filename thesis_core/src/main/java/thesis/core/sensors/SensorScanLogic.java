@@ -116,6 +116,10 @@ public class SensorScanLogic
                // Target not detected, remove it from the returned results list
                itr.remove();
             }
+            else
+            {
+               tgt.detected();
+            }
             // else target was detected
          }
       }

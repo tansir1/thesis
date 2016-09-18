@@ -27,6 +27,8 @@ public class SimModel
 
    private EntityTypeCfgs entTypes;
 
+   private StatResults results;
+   
    /**
     * A shared random number generator that is initialized with a known seed
     * value for reproducible experiments.
@@ -46,6 +48,8 @@ public class SimModel
       tgtMgr = new TargetMgr();
       uavMgr = new UAVMgr();
       world = new World();
+      
+      results = new StatResults();
    }
 
    /**
@@ -74,6 +78,8 @@ public class SimModel
       tgtMgr.reset(entTypes.getTgtTypeCfgs(), worldCfg.getTargetCfgs(), havenRouting, world.getWorldGIS());
 
       resetUAVs(worldCfg, commsRngPercent, commsRelayProb, beliefDecayRate);
+      
+      results.reset(world, tgtMgr);
    }
 
    private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb, double beliefDecayRate)
@@ -144,7 +150,7 @@ public class SimModel
     *
     * @see #SIM_STEP_RATE_MS
     */
-   public void stepSimulation()
+   public boolean stepSimulation()
    {
       logger.trace("-------------------Simulation stepping.-----------------");
       SimTime.stepSimulation();
@@ -153,8 +159,18 @@ public class SimModel
       tgtMgr.stepSimulation();
       uavMgr.stepSimulation();
 
+      results.stepSimulation();
+      
+      boolean simFinished = results.endStateReached();
+      if(simFinished)
+      {
+         logger.info("Simulation complete.");
+      }
+      
       final long end = System.nanoTime() / 1000000;
       SimTime.incrementWallTime(end - start);
+      
+      return simFinished;
    }
 
    public EntityTypeCfgs getEntityTypeCfgs()
@@ -165,5 +181,10 @@ public class SimModel
    public SimTimeState getSimTimeState()
    {
       return SimTime.getTimeState();
+   }
+   
+   public StatResults getResults()
+   {
+      return results;
    }
 }

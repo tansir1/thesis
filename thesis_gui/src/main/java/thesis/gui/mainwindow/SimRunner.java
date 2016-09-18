@@ -43,9 +43,10 @@ public class SimRunner implements Runnable
    @Override
    public void run()
    {
+      boolean simFinished = false;
       long wallTime = 0;
 
-      while (!terminateApp)
+      while (!terminateApp && !simFinished)
       {
          // logger.trace("---Frame {}---", frameCnt);
          wallTime = System.currentTimeMillis();
@@ -66,7 +67,11 @@ public class SimRunner implements Runnable
 
             synchronized(simModel)
             {
-               simModel.stepSimulation();
+               simFinished = simModel.stepSimulation();
+               if(simFinished)
+               {
+                  simModel.getResults().printResults();
+               }
             }
          }
 

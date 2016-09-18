@@ -21,7 +21,11 @@ public class Target
    private HavenRouting havenRouting;
    private List<WorldCoordinate> havenPath;
    private boolean alive;
-
+   
+   private boolean detectedAtLeastOnce;
+   private long timeFirstDetection;
+   private long timeDestroyed;
+   
    /**
     * Meters/second
     */
@@ -38,6 +42,10 @@ public class Target
       pose = new WorldPose();
       destination = new WorldCoordinate();
       alive = true;
+      detectedAtLeastOnce = false;
+      
+      timeFirstDetection = -1;
+      timeDestroyed = -1;
    }
 
    public int getID()
@@ -63,6 +71,30 @@ public class Target
       return maxSpd > 0;
    }
 
+   public boolean hasBeenDetected()
+   {
+      return detectedAtLeastOnce;
+   }
+   
+   public void detected()
+   {
+      if(!detectedAtLeastOnce)
+      {
+         detectedAtLeastOnce = true;
+         timeFirstDetection = SimTime.getCurrentSimTimeMS();
+      }
+   }
+   
+   public long getTimeFirstDetection()
+   {
+      return timeFirstDetection;
+   }
+   
+   public long getTimeDestroyed()
+   {
+      return timeDestroyed;
+   }
+   
    public WorldCoordinate getCoordinate()
    {
       return pose.getCoordinate();
@@ -153,5 +185,6 @@ public class Target
    public void attacked()
    {
       alive = false;
+      timeDestroyed = SimTime.getCurrentSimTimeMS();
    }
 }
