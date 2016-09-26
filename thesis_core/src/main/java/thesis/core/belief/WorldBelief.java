@@ -19,8 +19,8 @@ public class WorldBelief
    private static double BELIEF_BROADCAST_RATE_MS = 1000;// Broadcast at 1hz
 
    /**
-    * Coefficient to use in the alpha filter for merging target probability
-    * data between two world beliefs.
+    * Coefficient to use in the alpha filter for merging target probability data
+    * between two world beliefs.
     */
    public static double NEWER_TGT_ALPHA = 0.5;// Default to 0.5
 
@@ -30,12 +30,17 @@ public class WorldBelief
 
    private List<TargetBelief> tgtBeliefs;
 
-
    private int numTgtTypes;
 
-   public WorldBelief(int numRows, int numCols, int numTgtTypes, double beliefDecayRate)
+   private double minKnownWorldUncert;
+   private long firstWorldClearTime;
+   private boolean thinksWorldClear;
+
+   public WorldBelief(int numRows, int numCols, int numTgtTypes, double beliefDecayRate,
+         double believeWorldUncertThresh)
    {
       this.numTgtTypes = numTgtTypes;
+      this.minKnownWorldUncert = believeWorldUncertThresh;
 
       tgtBeliefs = new ArrayList<TargetBelief>();
 
@@ -47,6 +52,9 @@ public class WorldBelief
             cells[i][j] = new CellBelief(i, j, numTgtTypes, beliefDecayRate);
          }
       }
+
+      thinksWorldClear = false;
+      firstWorldClearTime = -1;
    }
 
    public void stepSimulation(IMsgTransmitter comms)
@@ -69,6 +77,8 @@ public class WorldBelief
          WorldBeliefMsg msg = new WorldBeliefMsg(this);
          comms.transmit(msg, Message.BROADCAST_ID);
       }
+
+      believesAllWorldKnown();
    }
 
    public void mergeBelief(final WorldBelief other)
@@ -106,7 +116,6 @@ public class WorldBelief
    {
       return cells[0].length;
    }
-
 
    public TargetBelief getTargetBelief(int tgtID)
    {
@@ -178,19 +187,69 @@ public class WorldBelief
       List<TargetBelief> otherBeliefs = new ArrayList<TargetBelief>(other.tgtBeliefs);
       Iterator<TargetBelief> itr = otherBeliefs.iterator();
 
-      while(itr.hasNext())
+      while (itr.hasNext())
       {
          TargetBelief otherBelief = itr.next();
-         if(hasDetectedTarget(otherBelief.getTrueTargetID()))
+         if (hasDetectedTarget(otherBelief.getTrueTargetID()))
          {
             TargetBelief myBelief = getTargetBelief(otherBelief.getTrueTargetID());
             myBelief.merge(otherBelief, NEWER_TGT_ALPHA);
          }
          else
          {
-            //Other belief has information on new targets
+            // Other belief has information on new targets
             tgtBeliefs.add(new TargetBelief(otherBelief));
          }
       }
+   }
+
+   public long getTimeFirstBelievedWorldClear()
+   {
+      return firstWorldClearTime;
+   }
+
+   public boolean believesAllWorldKnown()
+   {
+      if (!thinksWorldClear)
+      {
+         boolean worldKnown = true;
+         final int numRows = cells.length;
+         final int numCols = cells[0].length;
+
+         for (int i = 0; i < numRows; ++i)
+         {
+            for (int j = 0; j < numCols; ++j)
+            {
+               if(cells[i][j].getUncertainty() > minKnownWorldUncert)
+               {
+                  worldKnown = false;
+                  break;
+               }
+            }
+         }
+         
+
+         if (worldKnown)
+         {
+            thinksWorldClear = true;
+            firstWorldClearTime = SimTime.getCurrentSimTimeMS();
+         }         
+      }
+
+      return thinksWorldClear;
+   }
+
+   public boolean believesAllTargetsDestroyed()
+   {
+      boolean allDestroyed = true;
+      for (TargetBelief tgt : tgtBeliefs)
+      {
+         if (!tgt.getTaskStatus().isDestroyed())
+         {
+            allDestroyed = false;
+            break;
+         }
+      }
+      return allDestroyed;
    }
 }

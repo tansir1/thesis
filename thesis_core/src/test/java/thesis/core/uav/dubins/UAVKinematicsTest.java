@@ -34,7 +34,7 @@ public class UAVKinematicsTest
 
 
       SimModel sim = new SimModel();
-      sim.reset(42, worldCfg, entTypeCfgs, 0.0f, 0.0f, 0d);
+      sim.reset(42, worldCfg, entTypeCfgs, 0.0f, 0.0f, 0d, 0);
 
       UAV uav = sim.getUAVManager().getUAV(0);
 

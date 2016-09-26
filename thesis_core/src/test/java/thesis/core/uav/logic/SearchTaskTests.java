@@ -30,7 +30,7 @@ public class SearchTaskTests
       typeCfgs.setUAVData(0, 10, 50);
 
       Pathing pathing = new Pathing(0, 0, typeCfgs);
-      WorldBelief worldBlf = new WorldBelief(2, 2, 1, 0d);
+      WorldBelief worldBlf = new WorldBelief(2, 2, 1, 0d, 0);
       // All cells are known to be empty except one that is 50/50 chance.
       worldBlf.getCellBelief(0, 0).updateEmptyBelief(0, 0);
       worldBlf.getCellBelief(0, 1).updateEmptyBelief(0, 0);

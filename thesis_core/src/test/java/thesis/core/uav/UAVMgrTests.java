@@ -53,7 +53,7 @@ public class UAVMgrTests
       final TargetMgr tgtMngr = TestUtils.genericTgtMgr(world, entTypes, 1);
 
       UAVMgr testMe = new UAVMgr();
-      testMe.reset(entTypes, initUAVs(), tgtMngr, new Random(), new CommsConfig(), world.getWorldGIS(), 0);
+      testMe.reset(entTypes, initUAVs(), tgtMngr, new Random(), new CommsConfig(), world.getWorldGIS(), 0, 0);
 
       // -----Perform test computations-----
       Circle testRegion = new Circle();

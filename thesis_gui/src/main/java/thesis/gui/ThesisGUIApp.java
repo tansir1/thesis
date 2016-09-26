@@ -116,7 +116,7 @@ public class ThesisGUIApp
 
          SimModel simModel = new SimModel();
          simModel.reset(simCfg.getRandomSeed(), worldCfg, entityTypes, simCfg.getCommsRngPercent(),
-               simCfg.getCommsRelayProbability(), simCfg.getBeliefDecayRate());
+               simCfg.getCommsRelayProbability(), simCfg.getBeliefDecayRate(), simCfg.getMinWorldClearUncert());
 
          MainWindow mainWin = new MainWindow();
          abort = !mainWin.init(simModel);

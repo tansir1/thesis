@@ -11,7 +11,6 @@ public class SimModelConfig
    private File worldDir;
    private File entityTypesDir;
 
-
    /**
     * Speed in % / second in which cell belief certainty decays.
     */
@@ -28,6 +27,12 @@ public class SimModelConfig
     */
    private double probMsgFwd;
 
+   /**
+    * The average uncertainty across world belief models must be below this
+    * value for the model to believe the world is "known."
+    */
+   private double minWorldClearUncertThreshold;
+
    public SimModelConfig()
    {
       randomSeed = 0;
@@ -35,6 +40,7 @@ public class SimModelConfig
       entityTypesDir = null;
       commsRngPercent = 0;
       beliefDecayRate = 0;
+      minWorldClearUncertThreshold = 0;
    }
 
    public int getRandomSeed()
@@ -104,7 +110,16 @@ public class SimModelConfig
    {
       return beliefDecayRate;
    }
-
+   
+   public void setMinWorldClearUncert(double min)
+   {
+      minWorldClearUncertThreshold = min;
+   }
+   
+   public double getMinWorldClearUncert()
+   {
+      return minWorldClearUncertThreshold;
+   }
 
    @Override
    public String toString()
@@ -122,6 +137,9 @@ public class SimModelConfig
       sb.append(String.format("%.2f", commsRngPercent));
       sb.append("\nBeliefDecayRate: ");
       sb.append(String.format("%.2f", beliefDecayRate));
+      sb.append("\nMinWorldClearUncert: ");
+      sb.append(String.format("%.2f", minWorldClearUncertThreshold));
+      
 
       return sb.toString();
    }

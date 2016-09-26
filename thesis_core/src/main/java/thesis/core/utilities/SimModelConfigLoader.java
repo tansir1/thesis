@@ -60,6 +60,7 @@ public class SimModelConfigLoader
          cfg.setCommsRngPercent(commsRngPercent / 100.0);
          cfg.setCommsRelayProbability(props.getDouble("sim.commsRelayProb"));
          cfg.setBeliefDecayRate(props.getDouble("sim.belief.decayRate"));
+         cfg.setMinWorldClearUncert(props.getDouble("sim.belief.minClearUncert"));
       }
       catch (Exception e)
       {

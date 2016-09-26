@@ -82,7 +82,7 @@ public class ConfirmTaskTests
       TargetMgr tgtMgr = new TargetMgr();
 
       Pathing pathing = new Pathing(0, 0, typeCfgs);
-      WorldBelief worldBlf = new WorldBelief(1, 1, 1, 0d);
+      WorldBelief worldBlf = new WorldBelief(1, 1, 1, 0d, 0);
 
       initTarget(worldBlf, tgtMgr, gis, targetCoord);
 

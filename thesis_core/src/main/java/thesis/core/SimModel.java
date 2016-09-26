@@ -63,7 +63,7 @@ public class SimModel
     *           The types of entities within the world.
     */
    public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, double commsRngPercent,
-         double commsRelayProb, double beliefDecayRate)
+         double commsRelayProb, double beliefDecayRate, double minWorldUncertClear)
    {
       randGen = new Random(randomSeed);
 
@@ -77,12 +77,12 @@ public class SimModel
       HavenRouting havenRouting = new HavenRouting(world, randGen);
       tgtMgr.reset(entTypes.getTgtTypeCfgs(), worldCfg.getTargetCfgs(), havenRouting, world.getWorldGIS());
 
-      resetUAVs(worldCfg, commsRngPercent, commsRelayProb, beliefDecayRate);
+      resetUAVs(worldCfg, commsRngPercent, commsRelayProb, beliefDecayRate, minWorldUncertClear);
       
-      results.reset(world, tgtMgr);
+      results.reset(world, tgtMgr, uavMgr);
    }
 
-   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb, double beliefDecayRate)
+   private void resetUAVs(WorldConfig worldCfg, double commsRngPercent, double commsRelayProb, double beliefDecayRate, double minWorldUncertClear)
    {
       final double maxComsRng = world.getWorldGIS().getMaxWorldDistance() * commsRngPercent;
 
@@ -92,7 +92,7 @@ public class SimModel
       // FIXME Load/Derive the number of hops?
       commsCfg.setMaxRelayHops(5);
 
-      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS(), beliefDecayRate);
+      uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS(), beliefDecayRate, minWorldUncertClear);
 
       // TEMPORARY! Initializes all UAVs with a pose to fly to for development
       // testing purposes.

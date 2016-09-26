@@ -16,8 +16,8 @@ public class WorldBeliefTests
       final double DISTANCE_TOLERANCE = 0.000000001;
 
       WorldBelief.NEWER_TGT_ALPHA = 0.7;
-      WorldBelief wb1 = new WorldBelief(1, 1, 2, 0);
-      WorldBelief wb2 = new WorldBelief(1, 1, 2, 0);
+      WorldBelief wb1 = new WorldBelief(1, 1, 2, 0, 0.1);
+      WorldBelief wb2 = new WorldBelief(1, 1, 2, 0, 0.1);
 
       TargetBelief wb1tgt = wb1.getTargetBelief(0);
       TargetBelief wb2tgt = wb2.getTargetBelief(0);

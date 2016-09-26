@@ -50,7 +50,7 @@ public class UAVMgr
     *           types will be cross referenced from entTypes.
     */
    public void reset(EntityTypeCfgs entTypes, List<UAVStartCfg> uavStartCfgs, TargetMgr tgtMgr, Random randGen,
-         CommsConfig commsCfg, WorldGIS gis, double beliefDecayRate)
+         CommsConfig commsCfg, WorldGIS gis, double beliefDecayRate, double minUncertBeliefNoTgts)
    {
       logger.debug("Resetting UAV Manager.");
 
@@ -109,7 +109,7 @@ public class UAVMgr
 
          final UAVLogicMgr logicMgr = new UAVLogicMgr(i, gis, randGen, NUM_TGT_TYPES, tgtMgr);
 
-         WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(), NUM_TGT_TYPES, beliefDecayRate);
+         WorldBelief wb = new WorldBelief(gis.getRowCount(), gis.getColumnCount(), NUM_TGT_TYPES, beliefDecayRate, minUncertBeliefNoTgts);
          uavs[i] = new UAV(type, i, sensors, weapons, comms, pathing, logicMgr, wb);
       }
    }
