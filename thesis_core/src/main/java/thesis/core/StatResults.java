@@ -99,13 +99,29 @@ public class StatResults
       if(!allWorldKnown)
       {
          boolean allWorldKnownLocal = true;
-         for(UAV uav : uavMgr.getAllUAVs())
+         
+         UAV uavs[] = uavMgr.getAllUAVs();
+         int numUAVsBelieveWorldKnown = 0;
+         for(int i=0; i<uavs.length; ++i)
          {
-            if(!uav.getBelief().believesAllWorldKnown())
+            if(uavs[i].getBelief().believesAllWorldKnown())
             {
-               allWorldKnownLocal = false;
+               numUAVsBelieveWorldKnown++;
             }
          }
+         
+         if(numUAVsBelieveWorldKnown < (uavs.length * 0.5))
+         {
+            allWorldKnownLocal = false;
+         }
+         
+//         for(UAV uav : uavMgr.getAllUAVs())
+//         {
+//            if(!uav.getBelief().believesAllWorldKnown())
+//            {
+//               allWorldKnownLocal = false;
+//            }
+//         }
          
          if(allWorldKnownLocal)
          {
@@ -128,7 +144,7 @@ public class StatResults
       logger.info("--------SIM RESULTS------------");
       logger.info("Time all tgts detected: {}ms", timeAllTgtsFound);
       logger.info("Time all tgts destroyed: {}ms", timeAllTgtsDestroyed);
-      logger.info("Time all world known: {}ms", timeAllWorldKnown);
+      logger.info("Time most UAVs believe all world known: {}ms", timeAllWorldKnown);
 
       for (Target tgt : tgtMgr.getAllTargets())
       {
