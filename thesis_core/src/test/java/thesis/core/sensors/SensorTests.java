@@ -7,6 +7,7 @@ import org.junit.Test;
 import thesis.core.EntityTypeCfgs;
 import thesis.core.TestUtils;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 import thesis.core.targets.TargetMgr;
 import thesis.core.world.World;
 
@@ -29,10 +30,10 @@ public class SensorTests
       WorldCoordinate lookAt = new WorldCoordinate(-100, -100);
 
       //Default to origin
-      WorldCoordinate sensorPosition = new WorldCoordinate();
+      WorldPose sensorPosition = new WorldPose();
 
       //Compute number of frames needed to slew to look angle
-      double bearingTo = sensorPosition.bearingTo(lookAt);
+      double bearingTo = sensorPosition.getCoordinate().bearingTo(lookAt);
       int numFrames = (int)Math.ceil(bearingTo / snsrTypeCfgs.getMaxSlewFrameRate(0));
       if(numFrames < 0)
       {

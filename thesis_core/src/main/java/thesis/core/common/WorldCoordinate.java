@@ -159,7 +159,7 @@ public class WorldCoordinate
    }
 
    /**
-    * Get the absolute bearing angle from this coordinate to the given
+    * Get the absolute geometric bearing angle from this coordinate to the given
     * coordinate.
     *
     * @param wc

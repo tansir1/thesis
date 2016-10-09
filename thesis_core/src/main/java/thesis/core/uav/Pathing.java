@@ -223,9 +223,68 @@ public class Pathing
 
    public void computePathTo(final WorldPose flyTo)
    {
-      path = DubinsPathGenerator.generate(minTurnRadius, pose, flyTo);
-      if (path.getPathType() != PathType.NO_PATH)
+      resetPath(DubinsPathGenerator.generate(minTurnRadius, pose, flyTo));
+   }
+
+   public void computePathTo(final WorldCoordinate flyTo)
+   {
+      double bearingTo = pose.getCoordinate().bearingTo(flyTo);
+      WorldPose destPose = new WorldPose(flyTo, bearingTo);
+      computePathTo(destPose);
+   }
+   
+   public void computePathByDistance(final WorldPose option1, final WorldPose option2, boolean shortestPath)
+   {
+      DubinsPath path1 = DubinsPathGenerator.generate(minTurnRadius, pose, option1);
+      DubinsPath path2 = DubinsPathGenerator.generate(minTurnRadius, pose, option2);
+      
+      if(path1.getPathType() != PathType.NO_PATH && path2.getPathType() != PathType.NO_PATH)
       {
+         double path1Len = path1.getPathLength();
+         double path2Len = path2.getPathLength();
+         if(shortestPath)
+         {
+            if(path1Len < path2Len)
+            {
+               resetPath(path1);
+            }
+            else
+            {
+               resetPath(path2);
+            }            
+         }
+         else
+         {
+            if(path1Len > path2Len)
+            {
+               resetPath(path1);
+            }
+            else
+            {
+               resetPath(path2);
+            }
+         }
+
+      }
+      else if(path1.getPathType() != PathType.NO_PATH)
+      {
+         resetPath(path1);
+      }
+      else if(path2.getPathType() != PathType.NO_PATH)
+      {
+         resetPath(path2);
+      }
+      else
+      {
+         logger.error("UAV {} could not generate a path given two options.", uavID);
+      }
+   }
+   
+   private void resetPath(DubinsPath newPath)
+   {
+      if (newPath.getPathType() != PathType.NO_PATH)
+      {
+         path = newPath;
          pathPhase = PathPhase.Phase1;
          pathTrail.clear();
          lastTrailSampleTimeAccumulator = 0;
@@ -236,13 +295,6 @@ public class Pathing
       {
          logger.error("UAV {} could not generate a path.", uavID);
       }
-   }
-
-   public void computePathTo(final WorldCoordinate flyTo)
-   {
-      double bearingTo = pose.getCoordinate().bearingTo(flyTo);
-      WorldPose destPose = new WorldPose(flyTo, bearingTo);
-      computePathTo(destPose);
    }
 
    public List<WorldCoordinate> computeOrbit(final Circle orbit, final int numCircleEdges)

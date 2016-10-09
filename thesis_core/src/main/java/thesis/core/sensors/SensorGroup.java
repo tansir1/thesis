@@ -6,6 +6,7 @@ import java.util.List;
 import thesis.core.belief.WorldBelief;
 import thesis.core.common.Trapezoid;
 import thesis.core.common.WorldCoordinate;
+import thesis.core.common.WorldPose;
 import thesis.core.world.WorldGIS;
 
 public class SensorGroup
@@ -34,11 +35,11 @@ public class SensorGroup
       return sensors;
    }
 
-   public void stepSimulation(WorldCoordinate hostUAVLocation, WorldBelief belief, long simTime)
+   public void stepSimulation(WorldPose hostUAVPose, WorldBelief belief, long simTime)
    {
       for (Sensor s : sensors)
       {
-         s.stepSimulation(hostUAVLocation);
+         s.stepSimulation(hostUAVPose);
          Trapezoid fov = s.getViewFootPrint();
          if (!s.isFocusedScanning())
          {

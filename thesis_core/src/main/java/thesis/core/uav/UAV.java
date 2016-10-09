@@ -93,7 +93,7 @@ public class UAV
       List<Message> msgs = comms.getAllIncoming();
 
       comms.stepSimulation(pathing.getCoordinate());
-      sensors.stepSimulation(pathing.getCoordinate(), belief, SimTime.getCurrentSimTimeMS());
+      sensors.stepSimulation(pathing.getPose(), belief, SimTime.getCurrentSimTimeMS());
       logicMgr.stepSimulation(belief, msgs, this, comms);
       belief.stepSimulation(comms);
    }

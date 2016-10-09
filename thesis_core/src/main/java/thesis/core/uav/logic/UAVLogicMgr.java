@@ -10,6 +10,7 @@ import thesis.core.belief.TargetBelief;
 import thesis.core.belief.WorldBelief;
 import thesis.core.belief.WorldBeliefMsg;
 import thesis.core.targets.ITrueTargetStatusProvider;
+import thesis.core.targets.TargetTypeConfigs;
 import thesis.core.uav.UAV;
 import thesis.core.uav.comms.IMsgTransmitter;
 import thesis.core.uav.comms.Message;
@@ -35,7 +36,7 @@ public class UAVLogicMgr
 
    private TaskAllocator taskAllocator;
 
-   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen, int numTgtTypes, ITrueTargetStatusProvider trueTgtStatusSvc)
+   public UAVLogicMgr(int hostUavId, WorldGIS gis, Random randGen, int numTgtTypes, ITrueTargetStatusProvider trueTgtStatusSvc, TargetTypeConfigs tgtTypeCfgs)
    {
       this.hostUavId = hostUavId;
       this.numTgtTypes = numTgtTypes;
@@ -43,7 +44,7 @@ public class UAVLogicMgr
 
       searchTask = new SearchTask(hostUavId, gis, randGen);
       monitorTask = new MonitorTask(hostUavId, trueTgtStatusSvc);
-      attackTask = new AttackTask(hostUavId);
+      attackTask = new AttackTask(hostUavId, tgtTypeCfgs, randGen);
 
       taskAllocator = new TaskAllocator(hostUavId, gis);
    }
@@ -98,7 +99,7 @@ public class UAVLogicMgr
          switch (curTask)
          {
          case Attack:
-            attackTask.Reset(curTgt.getPose(), hostUAV.getPathing(), hostUAV.getSensors(), curTgt.getTrueTargetID());
+            attackTask.Reset(curTgt, hostUAV.getPathing(), hostUAV.getSensors());
             break;
          case Monitor:
             // TODO Should we start at confirm or something else?

@@ -144,11 +144,11 @@ public class Sensor
       this.focusedScanning = focused;
    }
 
-   public SensorDetections stepSimulation(WorldCoordinate sensorLocation)
+   public SensorDetections stepSimulation(WorldPose hostPose)
    {
-      pose.getCoordinate().setCoordinate(sensorLocation);
+      pose.getCoordinate().setCoordinate(hostPose.getCoordinate());
 
-      slew();
+      slew(hostPose);
       if(!focusedScanning)
       {
          updateViewRegionFullScan();
@@ -166,32 +166,39 @@ public class Sensor
       return pose;
    }
 
-   private void slew()
+   private void slew(WorldPose hostPose)
    {
-      double desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
-
-      double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
-
-      //If the lookDelta < one frame's worth of slewing
-      if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
+      if(MAX_SLEW_FRAME_RATE < 0)
       {
-         //Prevent overshooting the look angle
-         pose.setHeading(desiredAngle);
+         pose.setHeading(hostPose.getHeading());
       }
       else
       {
-         double slew = 0;
-         if(((lookDelta+360) % 360) > 180)
+         double desiredAngle = Angle.normalize360(pose.getCoordinate().bearingTo(this.lookAtGoal));
+
+         double lookDelta = Angle.normalize360(pose.getHeading() - desiredAngle);
+
+         //If the lookDelta < one frame's worth of slewing
+         if(Math.abs(lookDelta) < MAX_SLEW_FRAME_RATE)
          {
-            //turn left
-            slew = MAX_SLEW_FRAME_RATE;
+            //Prevent overshooting the look angle
+            pose.setHeading(desiredAngle);
          }
          else
          {
-            //turn right
-            slew = -MAX_SLEW_FRAME_RATE;
+            double slew = 0;
+            if(((lookDelta+360) % 360) > 180)
+            {
+               //turn left
+               slew = MAX_SLEW_FRAME_RATE;
+            }
+            else
+            {
+               //turn right
+               slew = -MAX_SLEW_FRAME_RATE;
+            }
+            pose.setHeading(pose.getHeading() + slew);
          }
-         pose.setHeading(pose.getHeading() + slew);
       }
    }
 
