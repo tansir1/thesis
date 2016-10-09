@@ -34,7 +34,7 @@ public class RenderSimState
     * vertices) is proportional to the percentage of the min(gridCellW,
     * gridCellH).
     */
-   private static final float INTERSECTION_SZ_VS_GRID_PERCENT = 0.2f;
+   private static final float INTERSECTION_SZ_VS_GRID_PERCENT = 0.4f;
 
    /**
     * The pixel width of roads is proportional to the percentage of the
