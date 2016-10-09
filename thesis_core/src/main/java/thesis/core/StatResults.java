@@ -126,13 +126,13 @@ public class StatResults
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.SIM_MODEL);
       logger.info("--------SIM RESULTS------------");
-      logger.info("Time all tgts detected: {}", timeAllTgtsFound);
-      logger.info("Time all tgts destroyed: {}", timeAllTgtsDestroyed);
-      logger.info("Time all world known: {}", timeAllWorldKnown);
+      logger.info("Time all tgts detected: {}ms", timeAllTgtsFound);
+      logger.info("Time all tgts destroyed: {}ms", timeAllTgtsDestroyed);
+      logger.info("Time all world known: {}ms", timeAllWorldKnown);
 
       for (Target tgt : tgtMgr.getAllTargets())
       {
-         logger.info("Tgt {}, found: {}, destroyed: {}, delta: {}", tgt.getID(), tgt.getTimeFirstDetection(),
+         logger.info("Tgt {}, found: {}ms, destroyed: {}ms, delta: {}ms", tgt.getID(), tgt.getTimeFirstDetection(),
                tgt.getTimeDestroyed(), tgt.getTimeDestroyed() - tgt.getTimeFirstDetection());
       }
    }

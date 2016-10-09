@@ -92,6 +92,8 @@ public class CellBelief
       {
          shannonUncert = (-probCellEmpty * Math.log10(probCellEmpty))
                - ((1 - probCellEmpty) * Math.log10(1 - probCellEmpty));
+         //0.301 ~= to max uncertainty when p(empty) = 50%.  Scales return values to [0,1] instead of [0,0.301].
+         shannonUncert /= 0.301;
       }
       return shannonUncert;
    }

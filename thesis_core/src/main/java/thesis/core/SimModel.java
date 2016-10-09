@@ -5,6 +5,8 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import thesis.core.belief.WorldBelief;
+import thesis.core.belief.WorldBelief.WorldKnownStrategy;
 import thesis.core.common.HavenRouting;
 import thesis.core.common.SimTime;
 import thesis.core.common.SimTimeState;
@@ -50,6 +52,8 @@ public class SimModel
       world = new World();
       
       results = new StatResults();
+      
+      WorldBelief.worldKnownStrat = WorldKnownStrategy.Average;
    }
 
    /**

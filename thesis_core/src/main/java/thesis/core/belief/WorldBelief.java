@@ -24,6 +24,13 @@ public class WorldBelief
     */
    public static double NEWER_TGT_ALPHA = 0.5;// Default to 0.5
 
+   public enum WorldKnownStrategy
+   {
+      Absolute, Average
+   };
+   
+   public static WorldKnownStrategy worldKnownStrat = WorldKnownStrategy.Absolute;
+
    private double lastBeliefBroadcastTimeAccumulator;
 
    private CellBelief cells[][];
@@ -216,24 +223,48 @@ public class WorldBelief
          final int numRows = cells.length;
          final int numCols = cells[0].length;
 
-         for (int i = 0; i < numRows; ++i)
+         switch (worldKnownStrat)
          {
-            for (int j = 0; j < numCols; ++j)
+         case Absolute:
+         {
+            for (int i = 0; i < numRows; ++i)
             {
-               if(cells[i][j].getUncertainty() > minKnownWorldUncert)
+               for (int j = 0; j < numCols; ++j)
                {
-                  worldKnown = false;
-                  break;
+                  if (cells[i][j].getUncertainty() > minKnownWorldUncert)
+                  {
+                     worldKnown = false;
+                     break;
+                  }
                }
             }
          }
-         
+            break;
+         case Average:
+         {
+            double sum = 0;
+            for (int i = 0; i < numRows; ++i)
+            {
+               for (int j = 0; j < numCols; ++j)
+               {
+                  sum += cells[i][j].getUncertainty();
+               }
+            }
+            
+            double avg = sum / (numCols * numRows * 1.0);
+            if(avg > minKnownWorldUncert)
+            {
+               worldKnown = false;
+            }
+         }
+            break;
+         }
 
          if (worldKnown)
          {
             thinksWorldClear = true;
             firstWorldClearTime = SimTime.getCurrentSimTimeMS();
-         }         
+         }
       }
 
       return thinksWorldClear;
