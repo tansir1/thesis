@@ -64,10 +64,14 @@ public class RoadNetGenerator
 
       for (int i = 0; i < (roadSeeds.size() - 1); ++i)
       {
-         computeRoadIntersection(roadSeeds.get(i), roadSeeds.get(i + 1), i % 2 == 0, roadNet);
+         //computeRoadIntersection(roadSeeds.get(i), roadSeeds.get(i + 1), i % 2 == 0, roadNet);
+         computeRoadIntersection(roadSeeds.get(i), roadSeeds.get(i + 1), true, roadNet);
+         computeRoadIntersection(roadSeeds.get(i), roadSeeds.get(i + 1), false, roadNet);
       }
 
-      computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), roadSeeds.size() % 2 == 0, roadNet);
+      //computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), roadSeeds.size() % 2 == 0, roadNet);
+      computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), true, roadNet);
+      computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), false, roadNet);
       //computeRoadIntersection(roadSeeds.get(roadSeeds.size()-1), roadSeeds.get(0), true, roadNet);
 
       // TODO Add more random connections between random seeds

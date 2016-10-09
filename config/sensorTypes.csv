@@ -1,3 +1,3 @@
 SensorType,fov,minRng,maxRng,slewRate
-0,60,0,1500,30
-1,45,0,1000,10
+0,60,0,1100,30
+1,45,0,700,10
