@@ -66,6 +66,11 @@ public class AttackTask
    {
       logger.debug("UAV {} resetting to Attack target {}", hostUavId, tgtBlf.getTrueTargetID());
       this.tgtBlf = tgtBlf;
+      recomputeStrikePath(tgtBlf, pathing, snsrGrp);
+   }
+   
+   private void recomputeStrikePath(TargetBelief tgtBlf, Pathing pathing, SensorGroup snsrGrp)
+   {
       strikeCoord.setCoordinate(tgtBlf.getCoordinate());
 
       WorldPose attackPose1 = computeStrikePose(pathing, true);
@@ -131,9 +136,16 @@ public class AttackTask
       // Recompute a path if the target has moved significantly
       if (distToTar > TGT_MOVE_DIST_TO_RECOMPUTE_PATH)
       {
-         Reset(tgtBlf, pathing, snsrGrp);
+         recomputeStrikePath(tgtBlf, pathing, snsrGrp);
       }
 
+      if((SimTime.getCurrentSimTimeMS() - performingStartTime) > MAX_STATIC_TGT_ORBIT_TIME_MS)
+      {
+         logger.debug("UAV {} stuck in a no LAR shortest path/static target orbit.  Reseting to longer route.", hostUavId);
+         performingStartTime = SimTime.getCurrentSimTimeMS();
+         staticLoiterBreakoutOverride(pathing);
+      }
+      
       // If the target is in the LAR then fire
       if (wpnGrp.getAttackLogic().isInLaunchAcceptabilityRegion(tgtBelief.getPose(), MAX_FIRE_RANGE_PERCENT, wpn, pathing.getPose()))
       {
@@ -145,13 +157,5 @@ public class AttackTask
          tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
          performingStartTime = 0;
       }
-      
-      if((SimTime.getCurrentSimTimeMS() - performingStartTime) > MAX_STATIC_TGT_ORBIT_TIME_MS)
-      {
-         logger.debug("UAV {} stuck in a no LAR shortest path/static target orbit.  Reseting to longer route.", hostUavId);
-         performingStartTime = SimTime.getCurrentSimTimeMS();
-         staticLoiterBreakoutOverride(pathing);
-      }
-
    }
 }

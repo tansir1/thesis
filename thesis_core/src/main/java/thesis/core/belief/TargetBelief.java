@@ -55,7 +55,7 @@ public class TargetBelief
 
    public void merge(TargetBelief other, final double NEWER_TGT_ALPHA)
    {
-      if (other.pseudoTimestamp < pseudoTimestamp)
+      if (other.pseudoTimestamp <= pseudoTimestamp)
       {
          return;// My data is newer, ignore the other belief
       }
@@ -66,7 +66,7 @@ public class TargetBelief
       {
          return;// The targets are not the same, do not merge
       }
-
+      
       double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
 
       // If the other belief has newer data then merge it in with an alpha
