@@ -129,6 +129,13 @@ public class MonitorTask
          stepPendingAttack(tgtBelief, snsrGrp);
          break;
       }
+      
+//      if((logicState == TaskLogicState.Confirm || logicState == TaskLogicState.NO_TASK) &&
+//            !trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
+//      {
+//         logger.debug("UAV {} missed attack complete message for target {}, breaking out of monitor.", hostUavId, tgtBelief.getTrueTargetID());
+//         reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
+//      }
    }
 
    private void stepBDA(TargetBelief tgtBelief, SensorGroup snsrGrp)
@@ -181,9 +188,17 @@ public class MonitorTask
 
    private void stepPendingAttack(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete)
+      //TULLOCK changed lines
+      if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete ||
+      //if (tgtBelief.getTaskStatus().getAttackState() == TaskState.AnalyzingAttack ||
+            !trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
       {
-         logger.debug("UAV {} notes that pending attack has been completed.", hostUavId);
+         logger.debug("UAV {} notes that pending attack for target {} has been completed.", hostUavId, tgtBelief.getTrueTargetID());
+         
+         //In case the attacker destroyed the target but was out of comms range
+         //tgtBelief.getTaskStatus().setAttackState(TaskState.Complete);
+         //tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS()+1);
+         
          reset(tgtBelief, TaskLogicState.BDA, snsrGrp);
       }
    }
@@ -193,6 +208,6 @@ public class MonitorTask
       tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
       tgtBelief.getTaskStatus().setAttackUAVScore(0);
       tgtBelief.getTaskStatus().setAttackState(TaskState.Open);
-      tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+      tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS()+1);
    }
 }
