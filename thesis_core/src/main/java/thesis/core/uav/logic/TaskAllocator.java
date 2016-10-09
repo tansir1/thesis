@@ -130,9 +130,11 @@ public class TaskAllocator
       for (int i = 0; i < numTgts; ++i)
       {
          TargetBelief tb = tgts.get(i);
-
-         monitorBids.put(tb, computeMonitorBid(tb, hostUAV));
-         attackBids.put(tb, computeAttackBid(tb, hostUAV));
+         if(!tb.getTaskStatus().isDestroyed())
+         {
+            monitorBids.put(tb, computeMonitorBid(tb, hostUAV));
+            attackBids.put(tb, computeAttackBid(tb, hostUAV));
+         }
       }
 
       findBestAvailableMonitor(monitorBids);
