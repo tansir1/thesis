@@ -1,0 +1,535 @@
+16:30:07,014 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
+16:30:07,014 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+16:30:07,014 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [file:/home/tansir/projects/thesis/thesis_gui/bin/logback.xml]
+16:30:07,015 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs multiple times on the classpath.
+16:30:07,015 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs at [file:/home/tansir/projects/thesis/thesis_core/bin/logback.xml]
+16:30:07,015 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs at [file:/home/tansir/projects/thesis/thesis_gui/bin/logback.xml]
+16:30:07,117 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
+16:30:07,124 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+16:30:07,133 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [stdout]
+16:30:07,165 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:30:07,242 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.FileAppender]
+16:30:07,243 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [fileout]
+16:30:07,246 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:30:07,249 |-INFO in ch.qos.logback.core.FileAppender[fileout] - File property is set to [sim.log]
+16:30:07,250 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
+16:30:07,250 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [stdout] to Logger[ROOT]
+16:30:07,251 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [fileout] to Logger[ROOT]
+16:30:07,251 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+16:30:07,254 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@5f5a92bb - Registering current configuration as safe fallback point
+
+16:30:07.267 [main] INFO  main - Starting simulation GUI version 0.0.3
+16:30:07.288 [main] DEBUG main - Loading simulation configuration from sim.properties.
+16:30:07.604 [main] INFO  utils - Loading 2 sensor types.
+16:30:07.610 [main] INFO  utils - Loading 2 target types.
+16:30:07.617 [main] INFO  utils - Loading 2 weapon types.
+16:30:07.624 [main] INFO  utils - Loading 2 UAV types.
+16:30:07.650 [main] INFO  utils - Loaded sensor probabilities.
+16:30:07.662 [main] INFO  utils - Copying 4 havens from database.
+16:30:07.694 [main] DEBUG main - Sim model initialized with:
+Random seed: 42
+World: /home/tansir/projects/thesis/thesis_gui/../worlds/world03
+Entity Types: /home/tansir/projects/thesis/thesis_gui/../config
+CommsRng: 0.20
+BeliefDecayRate: 0.00
+MinWorldClearUncert: 0.30
+16:30:07.703 [main] DEBUG sim - EntityTypes initialized with:
+thesis.core.EntityTypeCfgs@7a1ebcd8
+16:30:07.703 [main] DEBUG sim - World model intiliazed with:
+thesis.core.serialization.world.WorldConfig@5faeada1
+16:30:07.704 [main] DEBUG sim - Resetting Target Manager.
+16:30:07.707 [main] DEBUG sim - Resetting UAV Manager.
+16:30:09.547 [AWT-EventQueue-0] INFO  main - Resuming simulation.
+16:30:09.548 [AWT-EventQueue-0] INFO  main - Free running simulation at CPU speed
+16:30:09.549 [AWT-EventQueue-0] INFO  main - Simulation unpaused.  Running with 250ms inter-frame delay.
+16:30:09.762 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to confirm target 3.
+16:30:09.764 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began confirmation focused scanning target 3
+16:30:10.020 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to confirm target 0.
+16:30:10.211 [AWT-EventQueue-0] INFO  main - Free running simulation at CPU speed
+16:30:10.212 [AWT-EventQueue-0] INFO  main - Inter-frame delay changed from 250ms to 0ms.
+16:30:10.373 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 began confirmation focused scanning target 0
+16:30:10.666 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished confirming target 3
+16:30:10.667 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to pending attack of target 3
+16:30:10.667 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 resetting to Attack target 3
+16:30:10.668 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:30:10.680 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 3
+16:30:10.680 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:30:10.681 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to confirm target 5.
+16:30:10.688 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N378.07, E731.94, Hdg:307.80] forced from task Attack to Search.
+16:30:10.689 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 5.
+16:30:10.690 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N377.29, E732.56, Hdg:307.99] forced from task Monitor to Search.
+16:30:10.690 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 1.
+16:30:10.803 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 finished confirming target 0
+16:30:10.804 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to pending attack of target 0
+16:30:10.822 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 3
+16:30:10.823 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 3
+16:30:10.824 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 notes that pending attack for target 3 has been completed.
+16:30:10.824 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to BDA of target 3.
+16:30:10.825 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 0
+16:30:10.826 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 0.  Changing state from EnRoute to Performing.
+16:30:11.001 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began BDA focused scanning target 3
+16:30:11.021 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began confirmation focused scanning target 5
+16:30:11.170 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 0
+16:30:11.177 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 0
+16:30:11.178 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 notes that pending attack for target 0 has been completed.
+16:30:11.178 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to BDA of target 0.
+16:30:11.191 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to confirm target 2.
+16:30:11.193 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 began BDA focused scanning target 0
+16:30:11.489 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began confirmation focused scanning target 2
+16:30:11.696 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished BDA scanning target 3.  It is destroyed.
+16:30:11.699 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1: [N1649.26, E1301.50, Hdg:53.15] forced from task Monitor to Search.
+16:30:11.699 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to confirm target 1.
+16:30:11.700 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began confirmation focused scanning target 1
+16:30:11.701 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N729.95, E1248.72, Hdg:97.72] forced from task Monitor to Search.
+16:30:11.702 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 4.
+16:30:11.725 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 finished confirming target 5
+16:30:11.726 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to pending attack of target 5
+16:30:11.861 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 finished BDA scanning target 0.  It is destroyed.
+16:30:11.863 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3: [N1188.42, E1792.55, Hdg:39.32] forced from task Monitor to Search.
+16:30:11.863 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 resetting to Attack target 5
+16:30:11.864 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 5.  Changing state from EnRoute to Performing.
+16:30:12.180 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished confirming target 2
+16:30:12.181 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to pending attack of target 2
+16:30:12.240 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished confirming target 1
+16:30:12.241 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to pending attack of target 1
+16:30:12.268 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 began confirmation focused scanning target 4
+16:30:12.458 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 5
+16:30:12.459 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 notes that pending attack for target 5 has been completed.
+16:30:12.460 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to BDA of target 5.
+16:30:12.463 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 resetting to Attack target 1
+16:30:12.464 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:30:12.465 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began BDA focused scanning target 5
+16:30:12.795 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 finished confirming target 4
+16:30:12.796 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to pending attack of target 4
+16:30:12.910 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:30:12.911 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:30:12.962 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 finished BDA scanning target 5.  It is NOT destroyed.
+16:30:12.962 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to pending attack of target 5
+16:30:12.977 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:30:12.978 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:30:12.978 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 notes that pending attack for target 1 has been completed.
+16:30:12.979 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to BDA of target 1.
+16:30:12.979 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:30:12.979 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:30:12.979 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:30:12.980 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began BDA focused scanning target 1
+16:30:13.573 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished BDA scanning target 1.  It is destroyed.
+16:30:13.574 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1: [N2575.70, E1116.81, Hdg:38.83] forced from task Monitor to Search.
+16:30:13.574 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 resetting to Attack target 5
+16:30:13.575 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 in range of Attack target 5.  Changing state from EnRoute to Performing.
+16:30:14.013 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 fired at target 5
+16:30:14.014 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 destroyed target 5
+16:30:14.015 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 notes that pending attack for target 5 has been completed.
+16:30:14.015 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to BDA of target 5.
+16:30:14.016 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 resetting to Attack target 4
+16:30:14.016 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 in range of Attack target 4.  Changing state from EnRoute to Performing.
+16:30:14.017 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began BDA focused scanning target 5
+16:30:14.382 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 fired at target 4
+16:30:14.383 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 notes that pending attack for target 4 has been completed.
+16:30:14.383 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to BDA of target 4.
+16:30:14.384 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 resetting to Attack target 2
+16:30:14.384 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 in range of Attack target 2.  Changing state from EnRoute to Performing.
+16:30:14.437 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 finished BDA scanning target 5.  It is destroyed.
+16:30:14.447 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4: [N1700.01, E1309.54, Hdg:3.76] forced from task Monitor to Search.
+16:30:14.839 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 fired at target 2
+16:30:14.840 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 in range of Attack target 2.  Changing state from EnRoute to Performing.
+16:30:14.840 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 fired at target 2
+16:30:14.840 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 resetting to Attack target 2
+16:30:14.841 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 in range of Attack target 2.  Changing state from EnRoute to Performing.
+16:30:15.471 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 fired at target 2
+16:30:15.472 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 fired at target 2
+16:30:15.472 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 destroyed target 2
+16:30:15.472 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 notes that pending attack for target 2 has been completed.
+16:30:15.472 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to BDA of target 2.
+16:30:15.473 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began BDA focused scanning target 2
+16:30:15.710 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 fired at target 2
+16:30:15.712 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 fired at target 2
+16:30:15.712 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 destroyed target 2
+16:30:15.714 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.715 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.716 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.725 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.727 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.736 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.744 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.746 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.747 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.760 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.763 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.765 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.767 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.768 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.772 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.786 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.794 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.796 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.798 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.799 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.800 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.801 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.803 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.806 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.807 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.816 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.818 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.821 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.824 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.825 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.826 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.827 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.828 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.829 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.829 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.830 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.831 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.832 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.833 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.833 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.834 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.835 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.836 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.836 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.839 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.840 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.841 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.841 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.843 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.844 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.845 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.846 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.847 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.847 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.848 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.849 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.849 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.850 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.851 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.852 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.852 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.853 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.854 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.854 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.855 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.856 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.857 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.857 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.858 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.858 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.859 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.860 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.861 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.864 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.865 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.867 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.876 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.883 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.885 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.886 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.887 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.888 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.891 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.892 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.893 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.894 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.895 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.895 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.896 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.897 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.899 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.900 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.901 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.902 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.903 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.904 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.905 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.907 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.908 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.909 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.922 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.923 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.924 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.925 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.926 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.927 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.928 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.929 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.930 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.932 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.933 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.934 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.935 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.936 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.938 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.939 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.940 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.941 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.942 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.944 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.949 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.950 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.951 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.952 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.953 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.954 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.955 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.956 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.957 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.957 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.958 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.959 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.959 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.960 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.961 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.961 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.962 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.963 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.964 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.965 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.966 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.966 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.967 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.969 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.970 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.971 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.971 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.972 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.973 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.973 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.974 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.976 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.976 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.985 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.986 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.987 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.989 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.990 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.990 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.991 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.992 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.992 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.993 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.994 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.995 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.996 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.997 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.997 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.998 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.999 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:15.999 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.000 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.001 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.001 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.002 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.002 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.003 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.004 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.005 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.007 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.008 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.009 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.010 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.012 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.013 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.014 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.015 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.017 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.018 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.019 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.020 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.021 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.022 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 began BDA focused scanning target 4
+16:30:16.023 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.023 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.024 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.025 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.025 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.026 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.027 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.027 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.028 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.030 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.031 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.032 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.033 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.034 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.035 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.036 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.037 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.039 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.040 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.041 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.041 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.042 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.042 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.043 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.044 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.044 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.045 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.046 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.046 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.047 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.052 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.053 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.056 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.057 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.058 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.059 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.060 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.062 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.063 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.064 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.065 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.066 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.068 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.069 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.070 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.073 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.074 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.075 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.076 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.078 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.079 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.080 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.081 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.087 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.090 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.090 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.091 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.092 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.093 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.093 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.094 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.095 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.096 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.097 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.098 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.099 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.100 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.101 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.102 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.103 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.104 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.105 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.107 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.108 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.109 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.110 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.111 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.113 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.114 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.115 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.124 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.126 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.127 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.128 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.130 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.131 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.132 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.133 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.135 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.136 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.137 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.138 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.140 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.141 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.142 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.143 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.144 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.145 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.145 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.146 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.146 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.147 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.148 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.149 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.160 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.162 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.163 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.164 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.165 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.166 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.167 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.168 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.170 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.173 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.174 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.175 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.176 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.177 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.178 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.179 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.180 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.181 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.183 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.183 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.184 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.191 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.191 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.192 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.193 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.193 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.194 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.195 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.196 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.197 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.198 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.199 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.200 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.201 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.202 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.203 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.204 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.205 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.206 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.207 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.208 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.213 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.215 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.216 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.218 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.226 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.228 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.229 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.230 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.231 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.232 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.234 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.235 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.236 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.237 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.239 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.240 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.241 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.243 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.244 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.245 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.246 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.247 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.248 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.249 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.251 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.252 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.258 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.260 [pool-1-thread-1] ERROR sim.uav.logic - UAV 4 attempted to attack but it has no weapon.
+16:30:16.260 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished BDA scanning target 2.  It is destroyed.
+16:30:16.262 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0: [N1590.85, E593.23, Hdg:60.27] forced from task Monitor to Search.
+16:30:16.642 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 finished BDA scanning target 4.  It is NOT destroyed.
+16:30:16.643 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to pending attack of target 4
+16:30:16.643 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 4
+16:30:16.643 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 4.  Changing state from EnRoute to Performing.
+16:30:17.429 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 4
+16:30:17.429 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 4
+16:30:17.430 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 notes that pending attack for target 4 has been completed.
+16:30:17.430 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to BDA of target 4.
+16:30:17.430 [pool-1-thread-1] INFO  sim - Simulation complete.
+16:30:17.430 [pool-1-thread-1] INFO  sim - --------SIM RESULTS------------
+16:30:17.430 [pool-1-thread-1] INFO  sim - Time all tgts detected: 21136ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Time all tgts destroyed: 121408ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Time most UAVs believe all world known: 38768ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 0, found: 32ms, destroyed: 17824ms, delta: 17792ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 1, found: 10048ms, destroyed: 48112ms, delta: 38064ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 2, found: 11408ms, destroyed: 97680ms, delta: 86272ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 3, found: 16ms, destroyed: 11952ms, delta: 11936ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 4, found: 21136ms, destroyed: 121408ms, delta: 100272ms
+16:30:17.431 [pool-1-thread-1] INFO  sim - Tgt 5, found: 10032ms, destroyed: 65008ms, delta: 54976ms
+

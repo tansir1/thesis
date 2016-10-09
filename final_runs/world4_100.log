@@ -1,0 +1,192 @@
+16:39:55,770 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.groovy]
+16:39:55,771 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+16:39:55,771 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found resource [logback.xml] at [file:/home/tansir/projects/thesis/thesis_gui/bin/logback.xml]
+16:39:55,772 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs multiple times on the classpath.
+16:39:55,772 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs at [file:/home/tansir/projects/thesis/thesis_core/bin/logback.xml]
+16:39:55,772 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Resource [logback.xml] occurs at [file:/home/tansir/projects/thesis/thesis_gui/bin/logback.xml]
+16:39:55,857 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - debug attribute not set
+16:39:55,864 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.ConsoleAppender]
+16:39:55,872 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [stdout]
+16:39:55,898 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:39:55,969 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - About to instantiate appender of type [ch.qos.logback.core.FileAppender]
+16:39:55,970 |-INFO in ch.qos.logback.core.joran.action.AppenderAction - Naming appender as [fileout]
+16:39:55,972 |-INFO in ch.qos.logback.core.joran.action.NestedComplexPropertyIA - Assuming default type [ch.qos.logback.classic.encoder.PatternLayoutEncoder] for [encoder] property
+16:39:55,973 |-INFO in ch.qos.logback.core.FileAppender[fileout] - File property is set to [sim.log]
+16:39:55,975 |-INFO in ch.qos.logback.classic.joran.action.RootLoggerAction - Setting level of ROOT logger to DEBUG
+16:39:55,975 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [stdout] to Logger[ROOT]
+16:39:55,975 |-INFO in ch.qos.logback.core.joran.action.AppenderRefAction - Attaching appender named [fileout] to Logger[ROOT]
+16:39:55,975 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+16:39:55,977 |-INFO in ch.qos.logback.classic.joran.JoranConfigurator@5f5a92bb - Registering current configuration as safe fallback point
+
+16:39:55.991 [main] INFO  main - Starting simulation GUI version 0.0.3
+16:39:56.010 [main] DEBUG main - Loading simulation configuration from sim.properties.
+16:39:56.366 [main] INFO  utils - Loading 2 sensor types.
+16:39:56.370 [main] INFO  utils - Loading 2 target types.
+16:39:56.376 [main] INFO  utils - Loading 2 weapon types.
+16:39:56.381 [main] INFO  utils - Loading 2 UAV types.
+16:39:56.399 [main] INFO  utils - Loaded sensor probabilities.
+16:39:56.412 [main] INFO  utils - Copying 3 havens from database.
+16:39:56.438 [main] DEBUG main - Sim model initialized with:
+Random seed: 42
+World: /home/tansir/projects/thesis/thesis_gui/../worlds/world04
+Entity Types: /home/tansir/projects/thesis/thesis_gui/../config
+CommsRng: 1.00
+BeliefDecayRate: 0.00
+MinWorldClearUncert: 0.30
+16:39:56.449 [main] DEBUG sim - EntityTypes initialized with:
+thesis.core.EntityTypeCfgs@1a8a8f7c
+16:39:56.449 [main] DEBUG sim - World model intiliazed with:
+thesis.core.serialization.world.WorldConfig@2353b3e6
+16:39:56.450 [main] DEBUG sim - Resetting Target Manager.
+16:39:56.452 [main] DEBUG sim - Resetting UAV Manager.
+16:39:58.212 [AWT-EventQueue-0] INFO  main - Resuming simulation.
+16:39:58.213 [AWT-EventQueue-0] INFO  main - Free running simulation at CPU speed
+16:39:58.213 [AWT-EventQueue-0] INFO  main - Simulation unpaused.  Running with 250ms inter-frame delay.
+16:39:58.948 [AWT-EventQueue-0] INFO  main - Free running simulation at CPU speed
+16:39:58.949 [AWT-EventQueue-0] INFO  main - Inter-frame delay changed from 250ms to 0ms.
+16:39:59.308 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to confirm target 3.
+16:39:59.310 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to confirm target 3.
+16:39:59.310 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began confirmation focused scanning target 3
+16:39:59.312 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3: [N1870.50, E1850.06, Hdg:144.05] forced from task Monitor to Search.
+16:39:59.749 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 4.
+16:39:59.750 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to confirm target 4.
+16:39:59.751 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to confirm target 4.
+16:39:59.752 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began confirmation focused scanning target 4
+16:39:59.753 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to confirm target 4.
+16:39:59.753 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began confirmation focused scanning target 4
+16:39:59.755 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N441.47, E1234.49, Hdg:134.43] forced from task Monitor to Search.
+16:39:59.757 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3: [N1825.18, E1448.77, Hdg:227.89] forced from task Monitor to Search.
+16:39:59.758 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4: [N547.50, E947.33, Hdg:56.95] forced from task Monitor to Search.
+16:39:59.979 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished confirming target 3
+16:39:59.980 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to pending attack of target 3
+16:39:59.982 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 resetting to Attack target 3
+16:39:59.983 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:00.485 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished confirming target 4
+16:40:00.485 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to pending attack of target 4
+16:40:00.486 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 resetting to Attack target 4
+16:40:00.486 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 4.  Changing state from EnRoute to Performing.
+16:40:00.906 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 fired at target 3
+16:40:00.906 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 destroyed target 3
+16:40:00.909 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 notes that pending attack for target 3 has been completed.
+16:40:00.910 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to BDA of target 3.
+16:40:00.911 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:00.911 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 fired at target 3
+16:40:00.912 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 destroyed target 3
+16:40:00.913 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 resetting to Attack target 3
+16:40:00.913 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:00.923 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began BDA focused scanning target 3
+16:40:00.925 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:00.927 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4: [N275.05, E1886.94, Hdg:315.09] forced from task Attack to Search.
+16:40:01.894 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 fired at target 3
+16:40:01.894 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 destroyed target 3
+16:40:01.895 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:01.896 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 fired at target 3
+16:40:01.896 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 destroyed target 3
+16:40:01.897 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 resetting to Attack target 3
+16:40:01.897 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 in range of Attack target 3.  Changing state from EnRoute to Performing.
+16:40:02.406 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished BDA scanning target 3.  It is destroyed.
+16:40:02.409 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0: [N2131.42, E1146.61, Hdg:175.35] forced from task Monitor to Search.
+16:40:04.136 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 1.
+16:40:04.137 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to confirm target 1.
+16:40:04.138 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to confirm target 1.
+16:40:04.140 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4: [N1748.10, E2235.70, Hdg:74.45] forced from task Monitor to Search.
+16:40:04.146 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N1024.40, E2191.70, Hdg:257.93] forced from task Monitor to Search.
+16:40:04.147 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to confirm target 0.
+16:40:04.147 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began confirmation focused scanning target 0
+16:40:04.149 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to confirm target 5.
+16:40:05.150 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 began confirmation focused scanning target 5
+16:40:05.489 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 finished confirming target 0
+16:40:05.490 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to pending attack of target 0
+16:40:05.961 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began confirmation focused scanning target 1
+16:40:06.552 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 finished confirming target 5
+16:40:06.552 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to pending attack of target 5
+16:40:07.374 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished confirming target 1
+16:40:07.375 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to pending attack of target 1
+16:40:08.280 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 4
+16:40:08.282 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 resetting to Attack target 1
+16:40:08.282 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:12.649 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:12.652 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:12.652 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:12.655 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:12.655 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:12.655 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:40:12.656 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 notes that pending attack for target 1 has been completed.
+16:40:12.656 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 reseting to BDA of target 1.
+16:40:12.658 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:12.664 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 began BDA focused scanning target 1
+16:40:13.715 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:13.718 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:13.718 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:13.719 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:40:13.722 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:13.722 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:13.723 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:40:13.727 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 in range of Attack target 1.  Changing state from EnRoute to Performing.
+16:40:13.728 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 fired at target 1
+16:40:13.728 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 destroyed target 1
+16:40:13.736 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to confirm target 2.
+16:40:14.826 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 finished BDA scanning target 1.  It is destroyed.
+16:40:14.829 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0: [N898.43, E-626.59, Hdg:270.84] forced from task Monitor to Search.
+16:40:14.830 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 5
+16:40:14.830 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 5.  Changing state from EnRoute to Performing.
+16:40:17.405 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 began confirmation focused scanning target 2
+16:40:19.634 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 finished confirming target 2
+16:40:19.634 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to pending attack of target 2
+16:40:20.306 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 5
+16:40:20.306 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 5
+16:40:20.308 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 notes that pending attack for target 5 has been completed.
+16:40:20.310 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 reseting to BDA of target 5.
+16:40:20.312 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 0
+16:40:20.313 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 0.  Changing state from EnRoute to Performing.
+16:40:20.315 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 began BDA focused scanning target 5
+16:40:20.399 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 0
+16:40:20.402 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 notes that pending attack for target 0 has been completed.
+16:40:20.402 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to BDA of target 0.
+16:40:20.406 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 2
+16:40:20.408 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 2.  Changing state from EnRoute to Performing.
+16:40:20.412 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 began BDA focused scanning target 0
+16:40:22.261 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2 finished BDA scanning target 5.  It is destroyed.
+16:40:22.264 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 2: [N2557.98, E2122.11, Hdg:41.15] forced from task Monitor to Search.
+16:40:22.343 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 finished BDA scanning target 0.  It is NOT destroyed.
+16:40:22.343 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to pending attack of target 0
+16:40:25.950 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 notes that pending attack for target 4 has been completed.
+16:40:25.950 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to BDA of target 4.
+16:40:25.956 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began BDA focused scanning target 4
+16:40:28.016 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished BDA scanning target 4.  It is NOT destroyed.
+16:40:28.016 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to pending attack of target 4
+16:40:48.265 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 stuck in a no LAR shortest path/static target orbit.  Reseting to longer route.
+16:40:51.419 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 2
+16:40:51.420 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 2
+16:40:51.423 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 notes that pending attack for target 2 has been completed.
+16:40:51.423 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 reseting to BDA of target 2.
+16:40:51.425 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 resetting to Attack target 4
+16:40:51.425 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 in range of Attack target 4.  Changing state from EnRoute to Performing.
+16:40:55.496 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 fired at target 4
+16:40:55.497 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 0 destroyed target 4
+16:40:55.499 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 notes that pending attack for target 4 has been completed.
+16:40:55.499 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 reseting to BDA of target 4.
+16:40:55.503 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 began BDA focused scanning target 4
+16:40:58.052 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 began BDA focused scanning target 2
+16:40:58.785 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 finished BDA scanning target 4.  It is destroyed.
+16:40:58.791 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1: [N1174.38, E729.87, Hdg:161.11] forced from task Monitor to Search.
+16:40:58.792 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 resetting to Attack target 0
+16:40:58.793 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 in range of Attack target 0.  Changing state from EnRoute to Performing.
+16:41:01.338 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3 finished BDA scanning target 2.  It is destroyed.
+16:41:01.345 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 3: [N27.88, E36.65, Hdg:264.34] forced from task Monitor to Search.
+16:41:03.890 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 fired at target 0
+16:41:03.891 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 1 destroyed target 0
+16:41:03.896 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 notes that pending attack for target 0 has been completed.
+16:41:03.896 [pool-1-thread-1] DEBUG sim.uav.logic - UAV 4 reseting to BDA of target 0.
+16:41:03.896 [pool-1-thread-1] INFO  sim - Simulation complete.
+16:41:03.897 [pool-1-thread-1] INFO  sim - --------SIM RESULTS------------
+16:41:03.897 [pool-1-thread-1] INFO  sim - Time all tgts detected: 112064ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Time all tgts destroyed: 315856ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Time most UAVs believe all world known: 16224ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 0, found: 55360ms, destroyed: 315856ms, delta: 260496ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 1, found: 55328ms, destroyed: 115600ms, delta: 60272ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 2, found: 112064ms, destroyed: 278544ms, delta: 166480ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 3, found: 6160ms, destroyed: 33280ms, delta: 27120ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 4, found: 13248ms, destroyed: 290848ms, delta: 277600ms
+16:41:03.897 [pool-1-thread-1] INFO  sim - Tgt 5, found: 55360ms, destroyed: 147712ms, delta: 92352ms
+
