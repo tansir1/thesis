@@ -29,7 +29,7 @@
 	 -->
 
 	<!-- Control global logging settings -->
-	<root level="info">
+	<root level="debug">
 		<appender-ref ref="stdout" />
 		<appender-ref ref="fileout" />
 	</root>

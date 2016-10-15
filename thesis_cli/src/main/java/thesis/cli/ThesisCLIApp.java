@@ -1,6 +1,8 @@
 package thesis.cli;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -81,23 +83,23 @@ public class ThesisCLIApp
    private static List<WorldAndName> loadWorlds(Logger logger, DBConnections dbConns, String worldsRootDir)
    {
       List<WorldAndName> worlds = new ArrayList<WorldAndName>();
-      
+
       File[] directories = new File(worldsRootDir).listFiles(File::isDirectory);
-      for(File worldDir : directories)
+      for (File worldDir : directories)
       {
          WorldConfig worldCfg = new WorldConfig();
-         
+
          logger.debug("Loading world in {}", worldDir);
          loadWorld(logger, dbConns, worldCfg, worldDir);
-         
+
          WorldAndName retVal = new WorldAndName();
-         retVal.name = worldDir.getAbsolutePath();
+         retVal.worldName = worldDir;
          retVal.worldCfg = worldCfg;
          worlds.add(retVal);
       }
       return worlds;
    }
-   
+
    private static boolean loadWorld(Logger logger, DBConnections dbConns, WorldConfig worldCfg, File worldDir)
    {
       boolean success = true;
@@ -109,7 +111,66 @@ public class ThesisCLIApp
       }
       return success;
    }
-   
+
+   private static boolean saveResults(List<WorldAndName> results)
+   {
+      File resultsDir = new File("results");
+      if (!resultsDir.isDirectory())
+      {
+         resultsDir.mkdirs();
+      }
+
+
+      try
+      {
+         File worldFile = new File(resultsDir, "worldData.txt");
+         PrintWriter worldWriter = new PrintWriter(worldFile);
+         worldWriter.println("World, Time all detected (ms), Time all destroyed (ms), Time world known (ms)");
+         
+         for (WorldAndName worldAndName : results)
+         {
+            saveTargetData(resultsDir, worldAndName);
+            
+            
+            StringBuilder sb = new StringBuilder();
+            sb.append(worldAndName.worldName.getName());
+            sb.append(",");
+            sb.append(worldAndName.results.getTimeAllTargetsFound());
+            sb.append(",");
+            sb.append(worldAndName.results.getTimeAllTargetsDestroyed());
+            sb.append(",");
+            sb.append(worldAndName.results.getTimeAllWorldKnown());
+            worldWriter.println(sb.toString());
+            
+         }         
+         
+         worldWriter.close();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+      }
+
+      return false;
+   }
+
+   private static void saveTargetData(File resultsDir, WorldAndName results)
+   {
+      File tgtFile = new File(resultsDir, results.worldName.getName() + "TgtData.txt");
+
+      try
+      {
+         PrintWriter tgtWriter = new PrintWriter(tgtFile);
+         results.results.saveTargetResults(tgtWriter);
+         tgtWriter.close();
+      }
+      catch (FileNotFoundException e)
+      {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
+
    public static void main(String[] args)
    {
       Logger logger = LoggerFactory.getLogger(LoggerIDs.MAIN);
@@ -117,24 +178,22 @@ public class ThesisCLIApp
 
       boolean abort = false;
 
-
-      
       DBConnections dbConns = new DBConnections();
       EntityTypeCfgs entityTypes = new EntityTypeCfgs();
 
       SimModelConfig simCfg = loadSimConfig(logger);
 
-      if(simCfg == null)
+      if (simCfg == null)
       {
          abort = true;
       }
 
-      if(args.length < 1)
+      if (args.length < 1)
       {
          abort = true;
          logger.error("No world directory path given.");
       }
-      
+
       if (!abort)
       {
          abort = !(dbConns.openConfigDB() && dbConns.openWorldsDB());
@@ -145,7 +204,7 @@ public class ThesisCLIApp
          abort = !loadData(logger, dbConns, entityTypes, simCfg);
       }
 
-      if(!abort)
+      if (!abort)
       {
          logger.debug("Sim model initialized with:\n{}", simCfg);
 
@@ -156,35 +215,42 @@ public class ThesisCLIApp
             @Override
             public int compare(WorldAndName lhs, WorldAndName rhs)
             {
-               return lhs.name.compareTo(rhs.name);
+               return lhs.worldName.getName().compareTo(rhs.worldName.getName());
             }
          });
 
-         for(WorldAndName worldAndName : worlds)
+         for (WorldAndName worldAndName : worlds)
          {
             StringBuilder sb = new StringBuilder();
             sb.append("\n*****************************************************************\n");
             sb.append("*****************************************************************\n");
             sb.append("*****************************************************************\n");
             sb.append("-----Start simulation of world {}");
-            logger.info(sb.toString(), worldAndName.name);
+            logger.info(sb.toString(), worldAndName.worldName.getName());
             ThesisCLI simRunner = new ThesisCLI();
             simRunner.resetNewSim(simCfg, worldAndName.worldCfg, entityTypes);
-            StatResults results = simRunner.runSim();
-            results.printResults();
+            worldAndName.results = simRunner.runSim();
          }
+
+         StringBuilder sb = new StringBuilder();
+         sb.append("\n*****************************************************************\n");
+         sb.append("*****************************************************************\n");
+         sb.append("*****************************************************************\n");
+         sb.append("-----Saving sim data to log files");
+         logger.info(sb.toString());
+         saveResults(worlds);
       }
 
-
-      if(abort)
+      if (abort)
       {
          logger.error("Failed to initialize application.  Terminating.");
       }
-   }   
-   
+   }
+
    private static class WorldAndName
    {
-      public String name;
+      public File worldName;
       public WorldConfig worldCfg;
+      public StatResults results;
    }
 }
