@@ -2,6 +2,7 @@ package thesis.cli;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -149,18 +150,29 @@ public class ThesisCLIApp
          logger.debug("Sim model initialized with:\n{}", simCfg);
 
          List<WorldAndName> worlds = loadWorlds(logger, dbConns, args[0]);
+         worlds.sort(new Comparator<WorldAndName>()
+         {
 
-         
+            @Override
+            public int compare(WorldAndName lhs, WorldAndName rhs)
+            {
+               return lhs.name.compareTo(rhs.name);
+            }
+         });
+
          for(WorldAndName worldAndName : worlds)
          {
-            logger.info("\n-----Start simulation of world {}----", worldAndName.name);
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n*****************************************************************\n");
+            sb.append("*****************************************************************\n");
+            sb.append("*****************************************************************\n");
+            sb.append("-----Start simulation of world {}");
+            logger.info(sb.toString(), worldAndName.name);
             ThesisCLI simRunner = new ThesisCLI();
             simRunner.resetNewSim(simCfg, worldAndName.worldCfg, entityTypes);
             StatResults results = simRunner.runSim();
             results.printResults();
          }
-         
-
       }
 
 
