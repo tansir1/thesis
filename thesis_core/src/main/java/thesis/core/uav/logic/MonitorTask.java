@@ -188,9 +188,7 @@ public class MonitorTask
 
    private void stepPendingAttack(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
-      //TULLOCK changed lines
       if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete ||
-      //if (tgtBelief.getTaskStatus().getAttackState() == TaskState.AnalyzingAttack ||
             !trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
       {
          logger.debug("UAV {} notes that pending attack for target {} has been completed.", hostUavId, tgtBelief.getTrueTargetID());
