@@ -1,0 +1,36 @@
+<configuration>
+
+	<!-- See http://logback.qos.ch/manual/configuration.html for documentation on file format -->
+
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="fileout" class="ch.qos.logback.core.FileAppender">
+		<file>sim.log</file>
+			<encoder>
+			<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+   <!-- <logger name="sim.uav.logic" level="TRACE"/>-->
+
+	<!-- Control logging settings of individual loggers -->
+	<!-- 
+	<logger name="main" level="INFO"/>
+	<logger name="sim" level="INFO"/>
+	<logger name="utils" level="INFO">
+		<appender-ref ref="someAppenderSpecificToThisLogger" />
+	<logger/>
+	 -->
+
+	<!-- Control global logging settings -->
+	<root level="debug">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="fileout" />
+	</root>
+</configuration>
