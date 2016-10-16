@@ -1,5 +1,7 @@
 package thesis.core;
 
+import java.io.PrintWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,5 +153,36 @@ public class StatResults
          logger.info("Tgt {}, found: {}ms, destroyed: {}ms, delta: {}ms", tgt.getID(), tgt.getTimeFirstDetection(),
                tgt.getTimeDestroyed(), tgt.getTimeDestroyed() - tgt.getTimeFirstDetection());
       }
+   }
+   
+   public void saveTargetResults(PrintWriter writer)
+   {
+      writer.println("TargetID, Time first detected (ms), Time destroyed (ms)");
+
+      for (Target tgt : tgtMgr.getAllTargets())
+      {
+         StringBuilder sb = new StringBuilder();
+         sb.append(tgt.getID());
+         sb.append(",");
+         sb.append(tgt.getTimeFirstDetection());
+         sb.append(",");
+         sb.append(tgt.getTimeDestroyed());
+         writer.println(sb.toString());
+      }
+   }
+   
+   public long getTimeAllTargetsFound()
+   {
+      return timeAllTgtsFound;
+   }
+   
+   public long getTimeAllTargetsDestroyed()
+   {
+      return timeAllTgtsDestroyed;
+   }
+   
+   public long getTimeAllWorldKnown()
+   {
+      return timeAllWorldKnown;
    }
 }

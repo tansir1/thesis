@@ -61,15 +61,20 @@ public class WeaponGroup
    {
       double bestProb = -1;
       Weapon bestWpn = null;
-
-      for (Weapon w : weapons)
+      
+      if(tgtType != -1)
       {
-         if (w.getQuantity() > 0)
+         for (Weapon w : weapons)
          {
-            bestProb = Math.max(bestProb, atkLogic.getWeaponProbs().getWeaponDestroyProb(w.getType(), tgtType));
-            bestWpn = w;
+            if (w.getQuantity() > 0)
+            {
+               bestProb = Math.max(bestProb, atkLogic.getWeaponProbs().getWeaponDestroyProb(w.getType(), tgtType));
+               bestWpn = w;
+            }
          }
       }
+
+
       return bestWpn;
    }
 

@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+
+dependencies {
+	compile project(':thesis_core')
+}
+
+
+mainClassName = "thesis.cli.ThesisCLIApp"
+
+
+task deployLocal(type: Copy, dependsOn:'installDist') {
+    from project(':thesis_cli').projectDir.toString() + "/build/install/thesis_cli/"
+    into "../deploy"
+}   
+

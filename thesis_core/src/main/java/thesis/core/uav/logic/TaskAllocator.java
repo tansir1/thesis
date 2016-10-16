@@ -265,15 +265,24 @@ public class TaskAllocator
    {
       int bid = -1;
 
-      Weapon wpn = hostUAV.getWeapons().getBestWeapon(tgt.getHighestProbabilityTargetType());
-      if (wpn != null)
+      int likelyTgtType = tgt.getHighestProbabilityTargetType();
+      if(likelyTgtType == -1)
       {
-         double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
-         // int mostLikelyType = tgt.getHighestProbabilityTargetType();
-
-         // FIXME For now just use distance as the cost function
-         bid = (int)(gis.getMaxWorldDistance() - distance);
+         logger.warn("Could not determine type of target for tgtBelief {} on UAV {}", tgt.getTrueTargetID(), hostUAV.getID());
       }
+      else
+      {
+         Weapon wpn = hostUAV.getWeapons().getBestWeapon(likelyTgtType);
+         if (wpn != null)
+         {
+            double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
+            // int mostLikelyType = tgt.getHighestProbabilityTargetType();
+
+            // FIXME For now just use distance as the cost function
+            bid = (int)(gis.getMaxWorldDistance() - distance);
+         }
+      }
+
 
       return bid;
    }
