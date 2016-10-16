@@ -10,6 +10,7 @@
 	</appender>
 
 	<appender name="fileout" class="ch.qos.logback.core.FileAppender">
+		<append>false</append>
 		<file>sim.log</file>
 			<encoder>
 			<pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n

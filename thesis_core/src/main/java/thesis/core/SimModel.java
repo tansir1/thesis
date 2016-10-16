@@ -69,6 +69,8 @@ public class SimModel
    public void reset(int randomSeed, WorldConfig worldCfg, EntityTypeCfgs entTypes, double commsRngPercent,
          double commsRelayProb, double beliefDecayRate, double minWorldUncertClear)
    {
+      SimTime.resetSimulation();
+
       randGen = new Random(randomSeed);
 
       this.entTypes = entTypes;

@@ -24,6 +24,13 @@ public class SimTime
 
    private static SimTimeState timeState = new SimTimeState();
 
+   public static void resetSimulation()
+   {
+      currentSimTimeMS = 0;
+      wallTime = 0;
+      frameCnt = 0;
+   }
+   
    /**
     * Increment the simulation time.
     */
