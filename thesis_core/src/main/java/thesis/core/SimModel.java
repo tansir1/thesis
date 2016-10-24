@@ -51,7 +51,7 @@ public class SimModel
       uavMgr = new UAVMgr();
       world = new World();
       
-      results = new StatResults();
+      results = new StatResults(logger);
       
       WorldBelief.worldKnownStrat = WorldKnownStrategy.Average;
    }

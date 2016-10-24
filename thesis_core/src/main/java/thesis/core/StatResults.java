@@ -15,6 +15,11 @@ import thesis.core.world.World;
 
 public class StatResults
 {
+   //10 minutes
+   private static final long MAX_SIM_TIME_MS = 1000 * 60 * 10;
+   
+   private Logger logger;
+   
    private boolean simFinished;
 
    private World world;
@@ -35,9 +40,9 @@ public class StatResults
    private boolean outOfAmmo;
    private long timeOutOfAmmo;
    
-   public StatResults()
+   public StatResults(Logger logger)
    {
-
+      this.logger = logger;
    }
 
    public void reset(World world, TargetMgr tgtMgr, UAVMgr uavMgr)
@@ -157,7 +162,15 @@ public class StatResults
          }
       }
       
-      simFinished = (allTgtsDestroyed || outOfAmmo) && allTgtsFound && allWorldKnown;
+      if(SimTime.getCurrentSimTimeMS() > MAX_SIM_TIME_MS)
+      {
+         simFinished = true;
+         logger.error("Exceeded allowable mission time.");
+      }
+      else
+      {
+         simFinished = (allTgtsDestroyed || outOfAmmo) && allTgtsFound && allWorldKnown;   
+      }
    }
 
    public boolean endStateReached()
