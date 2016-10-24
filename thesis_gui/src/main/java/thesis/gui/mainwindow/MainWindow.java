@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
@@ -23,6 +24,7 @@ import net.miginfocom.swing.MigLayout;
 import thesis.core.SimModel;
 import thesis.core.utilities.LoggerIDs;
 import thesis.gui.mainwindow.actions.Actions;
+import thesis.gui.mainwindow.tgtblfpan.TargetBeliefPanel;
 import thesis.gui.mainwindow.uavstatpanel.UAVViewPanel;
 import thesis.gui.simpanel.IMapMouseListener;
 import thesis.gui.simpanel.MapMouseData;
@@ -40,7 +42,8 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
    private RenderableSimWorldPanel simPanel;
    private UAVViewPanel uavViewPan;
    private SimStatusPanel simStatPan;
-
+   private TargetBeliefPanel tgtBlfPan;
+   
    private Actions actions;
 
    private JLabel statusLbl;
@@ -69,6 +72,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       simPanel = new RenderableSimWorldPanel();
       uavViewPan = new UAVViewPanel();
       simStatPan = new SimStatusPanel();
+      tgtBlfPan = new TargetBeliefPanel();
       simTimer = new SimTimer();
       actions = new Actions(frame, simPanel, simTimer);
 
@@ -91,16 +95,15 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       frame.setLayout(new BorderLayout());
       frame.add(simPanel, BorderLayout.CENTER);
 
-      JPanel westPan = new JPanel();
-      westPan.setLayout(new MigLayout());
+      JPanel tab1 = new JPanel();
+      tab1.setLayout(new MigLayout());
       //westPan.add(uavViewPan.getRenderable(), "spanx 3, wrap");
-      westPan.add(uavViewPan.getRenderable(), "growy, wrap");
-      westPan.add(simStatPan.getRenderable());
-
-//      JPanel westPan = new JPanel();
-//      westPan.setLayout(new BoxLayout(westPan, BoxLayout.Y_AXIS));
-//      westPan.add(uavViewPan.getRenderable());
-//      westPan.add(simStatPan.getRenderable());
+      tab1.add(uavViewPan.getRenderable(), "growy, wrap");
+      tab1.add(simStatPan.getRenderable());
+    
+      JTabbedPane westPan = new JTabbedPane();
+      westPan.addTab("Tab1", tab1);
+      westPan.addTab("Tab2", tgtBlfPan.getRenderable());
 
       frame.add(buildToolbar(), BorderLayout.NORTH);
       frame.add(westPan, BorderLayout.WEST);
@@ -190,6 +193,7 @@ public class MainWindow implements IMapMouseListener, ISimGUIUpdater
       uavViewPan.connectSimModel(simModel, simPanel);
       simTimer.connectSimRunner(simRunner);
       simPanel.connectSimModel(simModel, actions);
+      tgtBlfPan.connectSimModel(simModel);
    }
 
    protected SimStatusPanel getSimStatusPanel()

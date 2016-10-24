@@ -261,20 +261,21 @@ public class TargetTaskStatus
       // }
 
       //Need to check timestamp because attack status cycles between performing and complete depending if a strike succeeded or not
-      //if (attackUpdateTimestamp <= other.attackUpdateTimestamp)
-      {
+      if (attackUpdateTimestamp <= other.attackUpdateTimestamp)
+      {/*
          if (other.attackState == TaskState.Complete && attackState != other.attackState)
          {
             // Someone external completed the task
             copyOtherData = true;
          }
-         else if (other.attackUAVScore > attackUAVScore && other.attackState != TaskState.Complete
-               && attackState != TaskState.Complete)
+         else */if (other.attackUAVScore > attackUAVScore)
+//         else if (other.attackUAVScore > attackUAVScore && other.attackState != TaskState.Complete
+//               && attackState != TaskState.Complete)
          {
             // Everyone is bidding on the task still
             copyOtherData = true;
          }
-         else if(destroyed != other.destroyed)
+         else if(other.destroyed && !destroyed)
          {
             //Someone finished a BDA task and found  target destroyed, update model
             copyOtherData = true;
