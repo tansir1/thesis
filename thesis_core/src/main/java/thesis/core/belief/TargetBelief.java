@@ -66,7 +66,7 @@ public class TargetBelief
       {
          return;// The targets are not the same, do not merge
       }
-      
+           
       double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
 
       // If the other belief has newer data then merge it in with an alpha

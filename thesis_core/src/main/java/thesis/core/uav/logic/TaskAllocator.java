@@ -253,17 +253,27 @@ public class TaskAllocator
    private int computeMonitorBid(TargetBelief tgt, UAV hostUAV)
    {
       double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
-      // int mostLikelyType = tgt.getHighestProbabilityTargetType();
-      // double bestProb = hostUAV.getSensors().getBestScanProb(mostLikelyType);
+      int mostLikelyType = tgt.getHighestProbabilityTargetType();
+      double bestProb = hostUAV.getSensors().getBestScanProb(mostLikelyType);
+      
+      double bid = -1;
+      if(bestProb > -1)
+      {
+         //Distance is the basis for metric
+         bid = gis.getMaxWorldDistance() - distance;
+
+         //Convert prob(success) into "meters" for the metric
+         bid += gis.getMaxWorldDistance() * bestProb;   
+      }
 
       // FIXME For now just use distance as the cost function
-      double bid = gis.getMaxWorldDistance() - distance;
+      //double bid = gis.getMaxWorldDistance() - distance;
       return (int) bid;
    }
 
    private int computeAttackBid(TargetBelief tgt, UAV hostUAV)
    {
-      int bid = -1;
+      double bid = -1;
 
       int likelyTgtType = tgt.getHighestProbabilityTargetType();
       if(likelyTgtType == -1)
@@ -273,18 +283,25 @@ public class TaskAllocator
       else
       {
          Weapon wpn = hostUAV.getWeapons().getBestWeapon(likelyTgtType);
-         if (wpn != null)
+         if (wpn != null && wpn.getQuantity() > 0)
          {
             double distance = tgt.getCoordinate().distanceTo(hostUAV.getPathing().getCoordinate());
-            // int mostLikelyType = tgt.getHighestProbabilityTargetType();
+            double bestProb = hostUAV.getWeapons().getBestAttackProb(likelyTgtType);
 
-            // FIXME For now just use distance as the cost function
-            bid = (int)(gis.getMaxWorldDistance() - distance);
+            if(bestProb > -1)
+            {
+               //Distance is the basis for metric
+               bid = gis.getMaxWorldDistance() - distance;
+
+               //Convert prob(success) into "meters" for the metric
+               bid += gis.getMaxWorldDistance() * bestProb;   
+            }
+            
          }
       }
 
 
-      return bid;
+      return (int)bid;
    }
 
    public TargetBelief getBestMonitorTarget()

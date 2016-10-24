@@ -92,10 +92,13 @@ public class SensorGroup
    public double getBestScanProb(int tgtType)
    {
       double bestProb = -1;
-      SensorProbs sp = scanner.getSensorProbabilities();
-      for (Sensor s : sensors)
+      if (tgtType != -1)
       {
-         bestProb = Math.max(bestProb, sp.getSensorConfirmProb(s.getType(), tgtType));
+         SensorProbs sp = scanner.getSensorProbabilities();
+         for (Sensor s : sensors)
+         {
+            bestProb = Math.max(bestProb, sp.getSensorConfirmProb(s.getType(), tgtType));
+         }
       }
       return bestProb;
    }

@@ -117,7 +117,8 @@ public class AttackTask
    
    public void stepSimulation(TargetBelief tgtBelief, Pathing pathing, WeaponGroup wpnGrp, SensorGroup snsrGrp)
    {
-      Weapon wpn = wpnGrp.getBestWeapon(tgtBelief.getHighestProbabilityTargetType());
+      int likelyTgtType = tgtBelief.getHighestProbabilityTargetType();
+      Weapon wpn = wpnGrp.getBestWeapon(likelyTgtType);
       if (wpn == null)
       {
          logger.error("UAV {} attempted to attack but it has no weapon.", hostUavId);
@@ -130,6 +131,7 @@ public class AttackTask
       {
          logger.debug("UAV {} in range of Attack target {}.  Changing state from EnRoute to Performing.", hostUavId, tgtBelief.getTrueTargetID());
          tgtBelief.getTaskStatus().setAttackState(TaskState.Performing);
+         tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
          performingStartTime = SimTime.getCurrentSimTimeMS();
       }
 
@@ -153,7 +155,7 @@ public class AttackTask
          wpnGrp.getAttackLogic().fireAtTarget(tgtBelief, wpn, hostUavId);
          tgtBelief.getTaskStatus().setAttackState(TaskState.Complete);
          tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
-         tgtBelief.getTaskStatus().setAttackUAVScore(-1);
+         //tgtBelief.getTaskStatus().setAttackUAVScore(-1);
          tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
          performingStartTime = 0;
       }

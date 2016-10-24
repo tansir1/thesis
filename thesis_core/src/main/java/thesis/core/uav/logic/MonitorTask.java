@@ -28,6 +28,11 @@ public class MonitorTask
     */
    public static final long MILLISECONDS_TO_BDA = 1000 * 10;
 
+   /**
+    * The amount of time a UAV will wait for a pending attack before dropping the task.
+    */
+   public static final long MILLISECONDS_TO_DROP_PENDING = 1000 * 3600;
+   
    public enum TaskLogicState
    {
       NO_TASK, Confirm, PendingAttack, BDA
@@ -188,6 +193,8 @@ public class MonitorTask
 
    private void stepPendingAttack(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
+      long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;
+
       if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete ||
             !trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
       {
@@ -199,6 +206,11 @@ public class MonitorTask
          
          reset(tgtBelief, TaskLogicState.BDA, snsrGrp);
       }
+      else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_DROP_PENDING)
+      {
+         logger.debug("UAV {} has given up waiting for a pending attack on target {}.", hostUavId, tgtBelief.getTrueTargetID());
+         reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
+      }
    }
 
    private void requestAttack(TargetBelief tgtBelief)
@@ -206,6 +218,6 @@ public class MonitorTask
       tgtBelief.getTaskStatus().setAttackUAV(UAV.NULL_UAV_ID);
       tgtBelief.getTaskStatus().setAttackUAVScore(0);
       tgtBelief.getTaskStatus().setAttackState(TaskState.Open);
-      tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS()+1);
+      tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
    }
 }

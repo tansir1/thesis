@@ -2,6 +2,7 @@ package thesis.core.belief;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -143,6 +144,24 @@ public class WorldBelief
       {
          tgtBelief = new TargetBelief(numTgtTypes, tgtID);
          tgtBeliefs.add(tgtBelief);
+         tgtBeliefs.sort(new Comparator<TargetBelief>(){
+
+            @Override
+            public int compare(TargetBelief lhs, TargetBelief rhs)
+            {
+               if(lhs.getTrueTargetID() < rhs.getTrueTargetID())
+               {
+                  return -1;
+               }
+               else if(lhs.getTrueTargetID() > rhs.getTrueTargetID())
+               {
+                  return 1;
+               }
+               else
+               {
+                  return 0;
+               }
+            }});
       }
       return tgtBelief;
    }
