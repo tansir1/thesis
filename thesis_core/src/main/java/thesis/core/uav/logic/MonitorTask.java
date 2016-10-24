@@ -31,7 +31,7 @@ public class MonitorTask
    /**
     * The amount of time a UAV will wait for a pending attack before dropping the task.
     */
-   public static final long MILLISECONDS_TO_DROP_PENDING = 1000 * 3600;
+   public static final long MILLISECONDS_TO_DROP_PENDING = 1000 * 120;
    
    public enum TaskLogicState
    {
@@ -211,6 +211,11 @@ public class MonitorTask
       if(sendAttackRequest)
       {
          requestAttack(tgtBelief);
+      }
+      
+      if(stareStartTime < 0)
+      {
+         stareStartTime = SimTime.getCurrentSimTimeMS();
       }
       
       long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;

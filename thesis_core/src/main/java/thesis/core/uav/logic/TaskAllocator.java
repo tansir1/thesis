@@ -179,8 +179,9 @@ public class TaskAllocator
       {
          TargetBelief tb = itr.next();
 
-         if (tb.getTaskStatus().getMonitorState() == TaskState.Complete
-               || tb.getTaskStatus().getMonitorState() == TaskState.Performing)
+//         if (tb.getTaskStatus().getMonitorState() == TaskState.Complete
+//               || tb.getTaskStatus().getMonitorState() == TaskState.Performing)
+         if (tb.getTaskStatus().getMonitorState() == TaskState.Complete)
          {
             // Target cannot be monitored
             continue;
@@ -194,9 +195,19 @@ public class TaskAllocator
          // Task is Open, EnRoute
 
          int myBid = bids.get(tb);
+         int bidToBeat = tb.getTaskStatus().getMonitorUAVScore();
 
+         /*
+         if(tb.getTaskStatus().getMonitorState() == TaskState.Performing)
+         {
+            //Must be 20% better to take over
+            bidToBeat = (int)(bidToBeat * 1.2);
+            logger.warn("UAV {} had a sufficiently better monitor score to kick out UAV {} from monitoring target {}.",
+                  hostUavId, tb.getTaskStatus().getMonitorUAV(), tb.getTrueTargetID());
+         }*/
+         
          // If myBid > currently monitoring uav's bid
-         if (myBid > tb.getTaskStatus().getMonitorUAVScore())
+         if (myBid > bidToBeat)
          {
             // If my current bid > than my best monitor bid then store this bid
             if (myBid > bestBid)
