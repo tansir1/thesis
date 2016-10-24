@@ -82,4 +82,18 @@ public class WeaponGroup
    {
       return atkLogic;
    }
+   
+   public boolean isOutOfAmmo()
+   {
+      boolean outOfAmmo = true;
+      for(Weapon wpn : weapons)
+      {
+         if(wpn.getQuantity() > 0)
+         {
+            outOfAmmo = false;
+            break;
+         }
+      }
+      return outOfAmmo;
+   }
 }

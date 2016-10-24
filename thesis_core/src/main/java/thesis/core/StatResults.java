@@ -32,6 +32,9 @@ public class StatResults
    private boolean allWorldKnown;
    private long timeAllWorldKnown;
    
+   private boolean outOfAmmo;
+   private long timeOutOfAmmo;
+   
    public StatResults()
    {
 
@@ -49,6 +52,9 @@ public class StatResults
       
       timeAllWorldKnown = -1;
       allWorldKnown = false;
+      
+      timeOutOfAmmo = -1;
+      outOfAmmo = false;
 
       this.world = world;
       this.tgtMgr = tgtMgr;
@@ -80,6 +86,25 @@ public class StatResults
          }
       }
 
+      if(!outOfAmmo)
+      {
+         boolean allOut = true;
+         for(UAV uav : uavMgr.getAllUAVs())
+         {
+            if(!uav.getWeapons().isOutOfAmmo())
+            {
+               allOut = false;
+               break;
+            }
+         }
+         
+         if(allOut)
+         {
+            outOfAmmo = true;
+            timeOutOfAmmo = SimTime.getCurrentSimTimeMS();
+         }
+      }
+      
       if (!allTgtsFound)
       {
          boolean allTgtsDetected = true;
@@ -132,7 +157,7 @@ public class StatResults
          }
       }
       
-      simFinished = allTgtsDestroyed && allTgtsFound && allWorldKnown;
+      simFinished = (allTgtsDestroyed || outOfAmmo) && allTgtsFound && allWorldKnown;
    }
 
    public boolean endStateReached()
@@ -146,6 +171,7 @@ public class StatResults
       logger.info("--------SIM RESULTS------------");
       logger.info("Time all tgts detected: {}ms", timeAllTgtsFound);
       logger.info("Time all tgts destroyed: {}ms", timeAllTgtsDestroyed);
+      logger.info("Time out of ammo: {}ms", timeOutOfAmmo);
       logger.info("Time most UAVs believe all world known: {}ms", timeAllWorldKnown);
 
       for (Target tgt : tgtMgr.getAllTargets())

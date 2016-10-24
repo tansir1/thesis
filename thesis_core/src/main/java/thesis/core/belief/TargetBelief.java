@@ -55,41 +55,44 @@ public class TargetBelief
 
    public void merge(TargetBelief other, final double NEWER_TGT_ALPHA)
    {
-      if (other.pseudoTimestamp <= pseudoTimestamp)
+//      if (other.pseudoTimestamp <= pseudoTimestamp)
+//      {
+//         return;// My data is newer, ignore the other belief
+//      }
+
+      if (other.pseudoTimestamp >= pseudoTimestamp)
       {
-         return;// My data is newer, ignore the other belief
+         // Fake cross-track correlation between belief models from different
+         // agents by using the true target ID of the detected targets
+         if (other.trueTgtID != trueTgtID)
+         {
+            return;// The targets are not the same, do not merge
+         }
+              
+         double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
+   
+         // If the other belief has newer data then merge it in with an alpha
+         // filter.
+         double heading = (NEWER_TGT_ALPHA * other.pose.getHeading()) + (INVERSE_NEWER_ALPHA * pose.getHeading());
+         pose.setHeading(heading);
+   
+         pose.getCoordinate().interpolateTowards(other.getCoordinate(), NEWER_TGT_ALPHA);
+   
+         for (int i = 0; i < typeProbs.length; ++i)
+         {
+            typeProbs[i] = (NEWER_TGT_ALPHA * other.typeProbs[i]) + (INVERSE_NEWER_ALPHA * typeProbs[i]);
+         }
+   
+         // Move this belief's timestamp forward towards the other belief's
+         // time. This is an artifact of the merging process and why time is
+         // called 'pseudoTime' instead of just 'time.' The time must be
+         // adjusted so that transitively merging this data with a 3rd belief
+         // doesn't cause oscillations in the probabilities due to the order
+         // of merging.
+         double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
+         pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
       }
-
-      // Fake cross-track correlation between belief models from different
-      // agents by using the true target ID of the detected targets
-      if (other.trueTgtID != trueTgtID)
-      {
-         return;// The targets are not the same, do not merge
-      }
-           
-      double INVERSE_NEWER_ALPHA = 1d - NEWER_TGT_ALPHA;
-
-      // If the other belief has newer data then merge it in with an alpha
-      // filter.
-      double heading = (NEWER_TGT_ALPHA * other.pose.getHeading()) + (INVERSE_NEWER_ALPHA * pose.getHeading());
-      pose.setHeading(heading);
-
-      pose.getCoordinate().interpolateTowards(other.getCoordinate(), NEWER_TGT_ALPHA);
-
-      for (int i = 0; i < typeProbs.length; ++i)
-      {
-         typeProbs[i] = (NEWER_TGT_ALPHA * other.typeProbs[i]) + (INVERSE_NEWER_ALPHA * typeProbs[i]);
-      }
-
-      // Move this belief's timestamp forward towards the other belief's
-      // time. This is an artifact of the merging process and why time is
-      // called 'pseudoTime' instead of just 'time.' The time must be
-      // adjusted so that transitively merging this data with a 3rd belief
-      // doesn't cause oscillations in the probabilities due to the order
-      // of merging.
-      double timeDiff = Math.abs(pseudoTimestamp - other.pseudoTimestamp);
-      pseudoTimestamp += (long) (INVERSE_NEWER_ALPHA * timeDiff);
-
+      
       taskStatus.merge(other.taskStatus);
    }
 

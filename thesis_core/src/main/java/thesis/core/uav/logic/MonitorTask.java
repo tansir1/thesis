@@ -53,6 +53,12 @@ public class MonitorTask
 
    private boolean resyncDestCoord;
    private ITrueTargetStatusProvider trueTgtStatSvc;
+   
+   /**
+    * Prevent a race condition between timestamps of attack requests vs receiver believing it's complete and not merging.
+    */
+   private boolean sendAttackRequest;
+   private int numRepeatRequests;
 
    public MonitorTask(int hostUavId, ITrueTargetStatusProvider trueTgtStatSvc)
    {
@@ -64,6 +70,9 @@ public class MonitorTask
 
       logicState = TaskLogicState.NO_TASK;
       starePoint = new WorldCoordinate();
+      
+      sendAttackRequest = false;
+      numRepeatRequests = 0;
    }
 
    /**
@@ -84,6 +93,9 @@ public class MonitorTask
       starePoint.setCoordinate(tgtBelief.getCoordinate());
       snsrGrp.stareAtAll(starePoint);
 
+      sendAttackRequest = false;
+      numRepeatRequests = 0;
+      
       switch (logicState)
       {
       case BDA:
@@ -174,7 +186,7 @@ public class MonitorTask
    }
 
    private void stepConfirm(TargetBelief tgtBelief, SensorGroup snsrGrp)
-   {
+   {     
       long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;
       if (pathingHelper.isInSensorRange() && stareStartTime < 0)
       {
@@ -186,15 +198,26 @@ public class MonitorTask
       else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_CONFIRM)
       {
          logger.debug("UAV {} finished confirming target {}", hostUavId, tgtBelief.getTrueTargetID());
-         requestAttack(tgtBelief);
+         
          reset(tgtBelief, TaskLogicState.PendingAttack, snsrGrp);
+         sendAttackRequest = true;
       }
+      
+      
    }
 
    private void stepPendingAttack(TargetBelief tgtBelief, SensorGroup snsrGrp)
    {
+      if(sendAttackRequest)
+      {
+         requestAttack(tgtBelief);
+      }
+      
       long totalStareTime = SimTime.getCurrentSimTimeMS() - stareStartTime;
 
+      long repeatAttackReqTimeFraction = (long)(MILLISECONDS_TO_DROP_PENDING * 0.2);
+      long repeatAttackReqestTime = stareStartTime + (numRepeatRequests * repeatAttackReqTimeFraction);
+      
       if (tgtBelief.getTaskStatus().getAttackState() == TaskState.Complete ||
             !trueTgtStatSvc.isAlive(tgtBelief.getTrueTargetID()))
       {
@@ -208,8 +231,13 @@ public class MonitorTask
       }
       else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_DROP_PENDING)
       {
-         logger.debug("UAV {} has given up waiting for a pending attack on target {}.", hostUavId, tgtBelief.getTrueTargetID());
+         logger.warn("UAV {} has given up waiting for a pending attack on target {}.", hostUavId, tgtBelief.getTrueTargetID());
          reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
+      }
+      else if (stareStartTime > 0 && totalStareTime >= repeatAttackReqestTime)
+      {
+         logger.warn("UAV {} repeating attack request in belief model.", hostUavId);
+         sendAttackRequest = true;
       }
    }
 
@@ -219,5 +247,8 @@ public class MonitorTask
       tgtBelief.getTaskStatus().setAttackUAVScore(0);
       tgtBelief.getTaskStatus().setAttackState(TaskState.Open);
       tgtBelief.getTaskStatus().setAttackUpdateTimestamp(SimTime.getCurrentSimTimeMS());
+      
+      sendAttackRequest = false;
+      ++numRepeatRequests;
    }
 }

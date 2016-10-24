@@ -66,7 +66,7 @@ public class UAVLogicMgr
 
    public void stepSimulation(WorldBelief curBelief, List<Message> incomingMsgs, UAV hostUAV,
          IMsgTransmitter msgTransmitter)
-   {
+   {     
       for (Message msg : incomingMsgs)
       {
          switch (msg.getType())
