@@ -180,6 +180,13 @@ public class UAVLogicMgr
          break;
       case Monitor:
          monitorTask.stepSimulation(curTgt, hostUAV.getPathing(), hostUAV.getSensors());
+         if(curTgt.getTaskStatus().getMonitorState() == TaskState.NO_TASK ||
+               curTgt.getTaskStatus().getMonitorState() == TaskState.Open)
+         {
+            //Force a task/target switch since UAV timed out waiting for someone to strike
+            curTgt = null;
+            curTask = TaskType.Search;
+         }
          break;
       case Attack:
          attackTask.stepSimulation(curTgt, hostUAV.getPathing(), hostUAV.getWeapons(), hostUAV.getSensors());

@@ -237,6 +237,10 @@ public class MonitorTask
       else if (stareStartTime > 0 && totalStareTime >= MILLISECONDS_TO_DROP_PENDING)
       {
          logger.warn("UAV {} has given up waiting for a pending attack on target {}.", hostUavId, tgtBelief.getTrueTargetID());
+         tgtBelief.getTaskStatus().setMonitorState(TaskState.Open);
+         tgtBelief.getTaskStatus().setMonitorUAV(-1);
+         tgtBelief.getTaskStatus().setMonitorUAVScore(-1);
+         tgtBelief.getTaskStatus().setMonitorUpdateTimestamp(SimTime.getCurrentSimTimeMS());
          reset(tgtBelief, TaskLogicState.NO_TASK, snsrGrp);
       }
       else if (stareStartTime > 0 && totalStareTime >= repeatAttackReqestTime)
