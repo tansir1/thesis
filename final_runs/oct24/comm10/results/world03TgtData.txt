@@ -1,0 +1,7 @@
+TargetID, Time first detected (ms), Time destroyed (ms)
+0,32,41568
+1,10032,-1
+2,21552,931872
+3,16,98864
+4,54912,1034768
+5,10032,-1
