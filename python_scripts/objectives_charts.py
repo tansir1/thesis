@@ -66,6 +66,10 @@ comm2.known = np.array([339, 468, 233, 164, 93, 166, 332, 183, 293, 110])
 comm2.plotColor = 'magenta'
 comm2.plotLabel = 'Rng 2%'
 
+#comm_ranges = np.array([100,20,10,5,2])
+average_detected = np.array([116, 151, 116, 238, 380])
+average_destroyed = np.array([206, 239, 231, 279, 554])
+average_known = np.array([61, 90, 95, 242, 339])
 
 def plot_data(chart, axis_data, data_cfg, local_worlds=worlds):
     chart.plot(local_worlds, axis_data,
@@ -143,7 +147,33 @@ def known_plot():
     plt.savefig('../dissertation/diagrams/world_known.png')
     plt.show()
 
+def average_plot():
+    plt.figure(figsize=(figWidthInches, figHeightInches))
+    plt.xlabel('Communication Range %')
+    plt.ylabel('Time (s)')
+    plt.title('Average time to complete objectives per communication range')
+    plt.grid()
+
+    ticks = [0, 1, 2, 3, 4]
+
+    plt.plot(ticks, average_detected, linewidth=plotLineWidth, markersize=plotMarkerSize,
+             marker='o', label='Detected')
+    plt.plot(ticks, average_destroyed, linewidth=plotLineWidth, markersize=plotMarkerSize,
+             marker='o', label='Destroyed')
+    plt.plot(ticks, average_known, linewidth=plotLineWidth, markersize=plotMarkerSize,
+             marker='o', label='World Known')
+
+    tick_labels = ["100", '20', '10', '5', '2']
+    plt.xticks(ticks, tick_labels)
+
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.055),
+                 fancybox=True, shadow=True, ncol=3)
+
+    #plt.gca().invert_xaxis()
+    plt.savefig('../dissertation/diagrams/averages.png')
+    plt.show()
 
 detected_plot()
 destroyed_plot()
 known_plot()
+average_plot()
