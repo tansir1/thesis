@@ -1,13 +1,11 @@
 \chapter{Sensor and Weapon Models}
-UAVs carry sensors and weapons.  Sensors are used for scanning the world to determine if a target is present.  If a target is found sensors are then used for tracking the target.  Weapons are used for destroying targets.  There are multiple types of sensors and multiple types of weapons in the simulation.  Each has unique characteristics.  Each type of UAV carries a specific payload package of sensors and weapons.  This allows the UAVs to specialize as surveillance or strike platforms or to be a multi-role platform.
-
-\todo{Should detect vs confirm be described here or in UAV models?}
+UAVs carry sensors and weapons.  Sensors are used for scanning the world to determine if a target is present.  If a target is found sensors are then used for tracking the target.  Weapons are used for destroying targets.  There are multiple types of sensors and multiple types of weapons in the simulation.  Each has unique characteristics.  Each type of UAV carries a specific payload package of sensors and weapons.  This allows the UAVs to specialize as surveillance or strike platforms or to be a multi-role platform. \textbf{TODO: Should detect vs confirm be described here or in UAV models?}
 
 \section{Payload Type Definitions}
 
 Each type of sensor has a minimum and maximum detection range.  Anything that is to close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type.  Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation.  A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
 
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Sensor type definitions}
 	\centering
 	\rowcolors{1}{lightgray}{white}
@@ -25,7 +23,7 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 
 % \todo{Do we care about a UAV being in the blast radius?}
 
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Weapon type definitions}
 	\centering
 	\rowcolors{1}{lightgray}{white}
@@ -40,10 +38,9 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 \end{table}
 
 \section{Payload Probabilities}
-This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.  A sample set of data showing the sensor to target probability mapping can be seen in table~\ref{tab:snsrTgtProb}.
+This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.  A sample set of data showing the sensor to target probability mapping can be seen in table~\ref{tab:snsrTgtProb}\textbf{TODO: INSERT REAL NUMBERS}.
 
-\todo{Insert real numbers}
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Sensor to Target Probabilities}
 	\centering
 	\rowcolors{1}{lightgray}{white}
@@ -59,10 +56,9 @@ This simulation uses realistic sensors in that they cannot perfectly detect targ
 	\end{tabular}
 \end{table}
 
-Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example let's imagine a car.  They have crumble zones to absorb impact energy to protect the occupants.  In a head on collision the occupants are likely to survive because the front of the car will crumble and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is a less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination is shown in table~\ref{tab:wpnTgtProb}.
+Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example let's imagine a car.  They have crumble zones to absorb impact energy to protect the occupants.  In a head on collision the occupants are likely to survive because the front of the car will crumble and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is a less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination is shown in table~\ref{tab:wpnTgtProb}\textbf{TODO: INSERT REAL NUMBERS}.
 
-\todo{Insert real numbers}
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Weapon to Target Probabilities}
 	\centering
 	\rowcolors{1}{lightgray}{white}
@@ -77,10 +73,6 @@ Weapons have a similar lookup table functionality in regards to the probability 
 		\hline
 	\end{tabular}
 \end{table}
-
-\todo{Show image of sensor footprint over grid}
-
-\todo{chance of misclassification}
-\todo{Chance of empty cell detection}
+\textbf{TODO: Show image of sensor footprint over grid. chance of misclassification. Chance of empty cell detection}
 
 

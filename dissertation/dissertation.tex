@@ -18,19 +18,22 @@
 
 %\frontmatter
 \input{./text/title.tex}
-\todo{Check UVU formatting guidelines}
-\todo{Fix page breaks at chapter endings.}
-\todo{Fix header and footer}
+\textbf{TODO: Check UVU formatting guidelines}
+\textbf{TODO: Fix page breaks at chapter endings.}
+\textbf{TODO: Fix header and footer}
 \input{./text/frontMatter.tex}
 
 \tableofcontents
 \listoftables
 \listoffigures
 
+\newpage
+
 %\mainmatter
 \pagestyle{fancy}
-\twocolumn
-
+%\twocolumn %Using multicolumn package instead
+\begin{multicols}{2}
+	
 \include{./text/intro}
 \include{./text/relatedWork}
 \include{./text/scenModDesc}
@@ -43,8 +46,10 @@
 \include{./text/results}
 \include{./text/conclusion}
 
+\end{multicols}
 %\backmatter
-\onecolumn
+%\onecolumn
+\newpage
 \appendix
 \include{./text/appendix}
 
@@ -54,7 +59,7 @@
 
 
 %Notes to the author
-\listoftodos
+%\listoftodos
 
 %\include{./text/unused_proposal_text}
 \end{document}

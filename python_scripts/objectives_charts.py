@@ -123,7 +123,7 @@ def destroyed_plot():
     #plot_missing_points(plt, comm2, asdf)
 
     add_legend_below_plot(plt)
-    #plt.savefig('../dissertation/diagrams/destroyed.png')
+    plt.savefig('../dissertation/diagrams/destroyed.png')
     plt.show()
 
 
@@ -144,6 +144,6 @@ def known_plot():
     plt.show()
 
 
-#detected_plot()
+detected_plot()
 destroyed_plot()
-#known_plot()
+known_plot()

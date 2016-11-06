@@ -6,7 +6,7 @@ The scenario in this experiment consists of simulated worlds containing UAVs, mo
 
 The direction of travel for moving targets is constrained to a randomly generated road network within the world.  The road network is created by randomly selecting a few seed locations within the world.  The locations are then used as the initial point set for constructing a \textit{k-d tree}(\cite{wiki:kdtree}).  A true \textit{k-d tree} is not constructed since the spatial partitioning bounds do not extend to infinity.  Instead the road construction algorithm simply keeps track of the location of the tree nodes and uses these as road intersections or corners.  See figures~\ref{fig:kdtree} and~\ref{fig:kdtreeroads} for a comparison between a typical \textit{k-d tree} partition and the simulated world road construction.  The \textit{k-d tree} algorithm was used for creating a road network since it mimics the geometric nature of urban streets.
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
 	\includegraphics[scale=0.5]{370px-Kdtree_2d.png}
@@ -15,7 +15,7 @@ The direction of travel for moving targets is constrained to a randomly generate
 	\label{fig:kdtree}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
 	\includegraphics[scale=0.5]{Kdtree_roads.png}
@@ -32,4 +32,3 @@ When the simulation starts the UAVs begin searching the world for targets.  Whil
 
 When a target is found the UAV assigns an initial task status to the target and announces the discovery of the target.  The original UAV and anyone within communication's range compute a scoring value to determine who is the most appropriate UAV to monitor and/or attack the target.  Soon after the other UAV's in range who heard the initial target announcement will re-broadcast their internal belief model's and therefore propagate the target discovery throughout the swarm.
 
-\todo{Show a screenshot of the sim?}

@@ -1,44 +1,51 @@
 \chapter{Discussion of Results}
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-
-\begin{table}[h]
+\begin{table}[H]
 	\caption{Average time to complete objectives}
 	\centering
 	\rowcolors{1}{lightgray}{white}
 	\label{tab:avgResults}
-		\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
 		\hline
 		Comm. Range \% & Average time all detected (s) & Average time all destroyed (s) & Average time world known (s)\\
 		\hline
-			100 & 116 & 206 & 61  \\ \hline
-			 20 & 151 & 239 & 90  \\ \hline
-			 10 & 116 & 231 & 95  \\ \hline
-			  5 & 238 & 279 & 242 \\ \hline
-			  2 & 380 & 554 & 339 \\ \hline
+		100 & 116 & 206 & 61  \\ \hline
+		20 & 151 & 239 & 90  \\ \hline
+		10 & 116 & 231 & 95  \\ \hline
+		5 & 238 & 279 & 242 \\ \hline
+		2 & 380 & 554 & 339 \\ \hline
 	\end{tabular}
 \end{table}
 
-\begin{figure}[h]
+\end{multicols}
+
+
+
+\begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{destroyed.png}
+%	\includegraphics[scale=0.5]{destroyed.png}
+%	\includegraphics[width=5in,height=4in,keepaspectratio=false]{destroyed.png}
+	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{destroyed.png}
 	\caption{Time to destroy all targets}
 	\label{fig:time_to_destroy}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{detected.png}
+	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{detected.png}
 	\caption{Time to detect all targets}
 	\label{fig:time_to_detect}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{world_known.png}
+	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{world_known.png}
 	\caption{Time all world known}
 	\label{fig:time_all_world_known}
 \end{figure}
+
+\begin{multicols}{2}
