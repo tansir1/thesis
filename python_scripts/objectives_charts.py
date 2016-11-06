@@ -72,9 +72,14 @@ def plot_data(chart, axis_data, data_cfg, local_worlds=worlds):
                linewidth=plotLineWidth, markersize=plotMarkerSize, marker=data_cfg.plotMarker, color=data_cfg.plotColor,
                label=data_cfg.plotLabel)
 
+
 def add_legend_below_plot(chart):
     chart.legend(loc='upper center', bbox_to_anchor=(0.5, -0.055),
-               fancybox=True, shadow=True, ncol=5)
+                 fancybox=True, shadow=True, ncol=5)
+
+
+def plot_missing_points(chart, data_cfg, missing_pts):
+    chart.plot(missing_pts[:, 0], missing_pts[:, 1], '*', markersize=10, marker='^', color=data_cfg.plotColor)
 
 
 def detected_plot():
@@ -100,6 +105,9 @@ def destroyed_plot():
     skip_3rd_9th_world = np.array([0, 1, 2, 4, 5, 6, 7, 8])
     skip_4th_world = np.array([0, 1, 2, 3, 5, 6, 7, 8, 9])
 
+    #asdf = np.array([[3, 450],
+                     #[4, 100]])
+
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('World')
     plt.ylabel('Time (s)')
@@ -112,8 +120,10 @@ def destroyed_plot():
     plot_data(plt, comm10.destroyed, comm10, skip_3rd_world)
     plot_data(plt, comm5.destroyed, comm5, skip_4th_world)
     plot_data(plt, comm2.destroyed, comm2, skip_3rd_9th_world)
+    #plot_missing_points(plt, comm2, asdf)
+
     add_legend_below_plot(plt)
-    plt.savefig('../dissertation/diagrams/destroyed.png')
+    #plt.savefig('../dissertation/diagrams/destroyed.png')
     plt.show()
 
 
@@ -134,6 +144,6 @@ def known_plot():
     plt.show()
 
 
-detected_plot()
+#detected_plot()
 destroyed_plot()
-known_plot()
+#known_plot()
