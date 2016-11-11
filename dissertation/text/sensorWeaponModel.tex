@@ -3,7 +3,7 @@ UAVs carry sensors and weapons.  Sensors are used for scanning the world to dete
 
 \section{Payload Type Definitions}
 
-Each type of sensor has a minimum and maximum detection range.  Anything that is to close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type.  Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation.  A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
+Each type of sensor has a minimum and maximum detection range.  Anything that is to close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
 
 \begin{table}[H]
 	\caption{Sensor type definitions}
@@ -18,6 +18,26 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 		\hline
 	\end{tabular}
 \end{table}
+
+Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type as shown in figure~\ref{fig:wide_angle_scan}.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation as shown in figure~\ref{fig:narrow_scan}.
+
+\begin{figure}[H]
+	\centering
+	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+%	\includegraphics[scale=0.27]{wide_angle_scan.png}
+	\includegraphics[width=\linewidth]{wide_angle_scan.png}
+	\caption{A sensor performing a normal wide angle area scan.}
+	\label{fig:wide_angle_scan}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+	%	\includegraphics[scale=0.27]{narrow_scan.png}
+	\includegraphics[width=\linewidth]{narrow_scan.png}
+	\caption{A sensor performing a focused narrow scan of a destroyed target}
+	\label{fig:narrow_scan}
+\end{figure}
 
 Similarly each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is to far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
 
@@ -38,6 +58,7 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 \end{table}
 
 \section{Payload Probabilities}
+\label{sec:payload_probs}
 This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment in described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
 \begin{table}[H]
