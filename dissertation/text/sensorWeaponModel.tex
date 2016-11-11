@@ -38,7 +38,7 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 \end{table}
 
 \section{Payload Probabilities}
-This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.  A sample set of data showing the sensor to target probability mapping can be seen in table~\ref{tab:snsrTgtProb}.
+This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment in described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
 \begin{table}[H]
 	\caption{Sensor to Target Probabilities}
@@ -56,7 +56,31 @@ This simulation uses realistic sensors in that they cannot perfectly detect targ
 	\end{tabular}
 \end{table}
 
-Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example let's imagine a car.  They have crumble zones to absorb impact energy to protect the occupants.  In a head on collision the occupants are likely to survive because the front of the car will crumble and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is a less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination is shown in table~\ref{tab:wpnTgtProb}.
+Figure~\ref{fig:targetAngles} shows the gradient of performance scaling around a target based on the offset from the \textit{Best Angle}.  In this figure the target has a \textit{Best Angle} of $45^{\circ}$.  Any sensing or attacks at this angle will function with $100\%$ normal performance as defined in the probability lookup tables.  The direct opposite location at $225^{\circ}$ has a $0\%$ scaling value.  Any sensing or attack activities at this angle will not function at all.  Angles in between the \textit{Best Angle} and the opposite side will have their probabilities of success scaled by some percentage.
+
+%\end{multicols}
+
+\begin{figure}[H]
+	\centering
+	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+	\includegraphics[scale=0.25]{targetAngles.png}
+	\caption{Success scaling for a target with a best angle of $45^{\circ}$}
+	\label{fig:targetAngles}
+\end{figure}
+
+Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interacting with a red target.  The relative angle between the target's heading and Blue 1's is close to the \textit{Best Angle} of $45^{\circ}$.  Blue 1 can sense or attack the target with little to no performance degradation.  The relative angle between the heading of the target and Blue 2 is much greater.  Therefore Blue 2 will suffer a degradation in sensing and attack performance.
+
+\begin{figure}[H]
+	\centering
+	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+	\includegraphics[scale=0.25]{blue_red_angles.png}
+	\caption{Success scaling per relative angles}
+	\label{fig:blue_red_angles}
+\end{figure}
+
+%\begin{multicols}{2}
+
+Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example let's imagine a car.  They have crumble zones to absorb impact energy to protect the occupants.  In a head on collision the occupants are likely to survive because the front of the car will crumble and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is a less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.
 
 \begin{table}[H]
 	\caption{Weapon to Target Probabilities}
