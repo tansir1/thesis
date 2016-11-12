@@ -29,7 +29,7 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 \psi_{constant} &= \frac{v*\sin(\pi)}{r} \label{eq:uavTurnRateDeriv}
 \end{align}
 
-\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Path described in section~\ref{sec:dubin}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.
+\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Curves described in \cite{dubins}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.
 
 
 \section{UAV Communications}
@@ -47,7 +47,8 @@ P(rebroadcast) = 1 - \frac{hop}{num\_uavs - 1}
 \end{equation}
 
 \section{UAV Tasks}
-UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.  The Search task is always available for all UAVs to carry out.  The Monitor and Attack tasks can only be executed in association with a suspected or confirmed target respectively.\textbf{TODO: Explain assignment states here?}
+UAV's compete to selectively perform tasks in order to complete the mission.  The available tasks are \textit{Search}, \textit{Monitor}, and \textit{Attack}.  The Search task is always available for all UAVs to carry out.  The Monitor and Attack tasks can only be executed in association with a suspected or confirmed target respectively.
+%\textbf{TODO: Explain assignment states here?}
 
 \subsection{Search}\textbf{TODO: Uncertainty first used here but not defined}
 No target locations within the simulated world are known \textit{a priori}.  The UAV's must discover all targets individually.  A search-and-track survey paper in~\cite{senanayake} highlights many search algorithms to choose from.  Our search was accomplished by mimicking the foraging behaviors of animals with an algorithm similar in principle to a \textit{L\'evy Flight}(\cite{humphries}) but adapted to a discrete world instead of a continuous world.  The L\'evy Flight algorithm is a type of biased random walk.  The UAV foraging algorithm is enumerated in algorithm~\ref{alg:forage} in appendix~\ref{sec:algorithms}.  The algorithm will randomly select a grid cell within the world or it will divide the world into kernels, compute the uncertainty of each kernel, and randomly select a cell within the most uncertain kernel.  The kernel size must divide equally into the number of rows and columns in the world.
