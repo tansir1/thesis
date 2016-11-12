@@ -876,7 +876,7 @@ public class RenderSimState
 
    private void drawCommsRange(Graphics2D gfx)
    {
-      gfx.setColor(Color.PINK);
+      gfx.setColor(Color.CYAN);
 
       final Point pixels = new Point(0, 0);
 

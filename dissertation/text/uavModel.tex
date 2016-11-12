@@ -60,28 +60,51 @@ While performing the search task UAV's point their sensor payloads towards the s
 
 
 \subsection{Monitor}
-The Monitor task requires a UAV to watch a potential target.  The UAV will point its sensing payloads at the target, confirm the target's identity, track the target, and perform a battle damage assessment after the target has been struck.  These steps are broken down into states within the Monitor task.  The monitor task state transitions are illustrated in figure~\ref{sec:monitorSubStates}.
-
+The Monitor task requires a UAV to watch a potential target.  The UAV will point its sensing payloads at the target, confirm the target's identity, track the target, and perform a battle damage assessment after the target has been struck.  These steps are broken down into states within the Monitor task.  The monitor task state transitions are illustrated in figure~\ref{fig:monitor}.
 
 \subsubsection{En Route}
-When a UAV first starts the Monitor task it begins flying towards the target and points its payloads in the target's direction.  As the UAV flies it continues to scan any cell within its payload's field of view until the target is within range.  Once the target is in sensor range the UAV transitions to the Target Confirmation state.  
+When a UAV first starts the Monitor task it begins flying towards the target and points its payloads in the target's direction.  As the UAV flies it continues to scan any cell within its payload's field of view until the target is within range.  Once the target is in sensor range the UAV transitions to the Confirm state.  
 
 When the UAV is in sensor range it will begin orbiting the target.  If the target moves more than some user configurable percentage of the sensor's range then the UAV will adjust it's flight path and recenter the orbit over the target's new location.
 
-\subsubsection{Target Confirmation}
+\end{multicols}
+
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.6]{uav_monitor_states.png}
+	%	\includegraphics{uav_monitor_states.png}
+	\caption{Monitor sub-states}
+	\label{fig:monitor}
+\end{figure}
+
+\begin{multicols}{2}
+
+\subsubsection{Confirm}
 When the target is within sensor range the UAV will focus its sensors on the target.  This causes the sensors to stop performing a wide area scan and to zoom in on the target's suspected world cell location.  At this time the UAV is analyzing the sensor data to determine if the suspected target is a real target or if it's a false positive and no target exists.  No other targets can be detected in during this focused scan.  If the suspected target is fake then the UAV exits the Monitor task.  If the target is confirmed to be real then the UAV transitions to the Track Target state.  For purposes of this experiment the target confirmation analysis process was assumed to take 10 seconds.  No attempt was made to model real world physics of target identification from raw sensor data.
 
 \subsubsection{Track Target}
-In this state the UAV is continuing to point its payloads at the target but the sensors have resumed a wide area scan in hopes of finding other nearby targets.  The UAV stays in this state until the target outruns the UAV's sensors and is lost or the target is struck by a weapon.  When the UAV first enters this state it requests a weapon's strike on the target from the swarm.  The details of the weapon's strike request are presented in section~\ref{sec:uavBelief}.
+In this state the UAV is continuing to point its payloads at the target but the sensors have resumed a wide area scan in hopes of finding other nearby targets.  The UAV stays in this state until the target outruns the UAV's sensors and is lost or the target is struck by a weapon.  When the UAV first enters this state it requests a weapon's strike on the target from the swarm.  The details of the weapon's strike request are presented in chapter~\ref{sec:uavBelief}.
 
 \subsubsection{Battle Damage Assessment}
-When the monitoring UAV detects a weapon's strike on the target it will transition from wide area scan tracking to narrow focused scans of the target's location.  As in the Target Confirmation state during this focused scan no other targets can be detected and the certainty of other cells do not change.  This state represents the time it takes for the UAV to analyze its sensor data to determine if the target was destroyed or if it is still active.  Again, for purposes of the experiment it was assumed that battle damage assessment (BDA) takes 10 seconds to complete.  No attempt was made to model real world physics of target status from raw sensor data.
+When the monitoring UAV detects a weapon's strike on the target it will transition from wide area scan tracking to narrow focused scans of the target's location.  As in the Confirm state during this focused scan no other targets can be detected and the certainty of other cells that happen to be in the field of view do not change.  This state represents the time it takes for the UAV to analyze its sensor data to determine if the target was destroyed or if it is still active.  Again, for purposes of the experiment it was assumed that battle damage assessment (BDA) takes 10 seconds to complete.  No attempt was made to model real world physics of target status from raw sensor data.
 
 If the target is still active after the weapon's strike the UAV will transition back to the Track Target state and request another strike from the swarm.  If the target was destroyed then the UAV will exit the Monitor task.
 
 
 \subsection{Attack}
-The Attack task mechanics are similar to the Monitor task in that the UAV will fly towards the target and point all of its sensors at the target.  The UAV will plot a course such that its heading is aligned with the best attack angle relative to the heading of the target.  The UAV will re-plot a new course if the target moves a significant distance.  This distance is user configurable.  The UAV will wait until the distance to the target is below some percentage of the weapon's max range before firing.  For purposes of this experiment the percentage was set to 80\%.  An activity diagram describing the process is shown in~\ref{sec:attackActivity}.
+The Attack task mechanics are similar to the Monitor task in that the UAV will fly towards the target and point all of its sensors at the target.  The UAV will plot a course such that its heading is aligned with the best attack angle relative to the heading of the target.  The UAV will re-plot a new course if the target moves a significant distance.  This distance is user configurable.  The UAV will wait until the distance to the target is below some percentage of the weapon's max range before firing.  For purposes of this experiment the percentage was set to 80\%.  An activity diagram describing the process is shown in figure~\ref{fig:uavAttackActivity}.
 
-The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform it again since it's likely the closest strike platform available.  The details of this process are explained in section~\ref{XXXX}.\textbf{TODO: FIX REFERENCE}
+The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform it again since it's likely the closest strike platform available.  The details of this process are explained in chapter~\ref{sec:uavBelief}.
 
+\end{multicols}
+
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.5]{uav_activity_attack.png}
+	\caption{UAV Attack Activity}
+	\label{fig:uavAttackActivity}
+\end{figure}
+
+\begin{multicols}{2}

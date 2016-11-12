@@ -1,6 +1,16 @@
 \chapter{Belief Model}
 \label{sec:uavBelief}
-The belief model is the fundamental piece that allows the swarm to function as a cohesive group instead of many individuals in the same local area.  The belief model consists of data about all cells in the world grid and data about all known targets.  Each UAV has its own unique belief about the current state of the world.  Periodically the UAVs broadcast their belief to everyone nearby within communications range.  When a UAV receives another UAV's belief model the receiver merges the incoming data into their own internal belief model.  By this mechanism data is shared and propagated throughout the swarm.  Therefore the communication range of each UAV is a limiting factor in the effectiveness of the swarm.  Like all team based exercises effective communication is critical to success.\textbf{TODO: Add graphic of comm ranges}  
+The belief model is the fundamental piece that allows the swarm to function as a cohesive group instead of many individuals in the same local area.  The belief model consists of data about all cells in the world grid and data about all known targets.  Each UAV has its own unique belief about the current state of the world.  Periodically the UAVs broadcast their belief to everyone nearby within communications range.  When a UAV receives another UAV's belief model the receiver merges the incoming data into their own internal belief model.  By this mechanism data is shared and propagated throughout the swarm.  Therefore the communication range of each UAV is a limiting factor in the effectiveness of the swarm.  Like all team based exercises effective communication is critical to success.  Figure~\ref{fig:comm_ranges} shows the communication ranges of the blue swarm as cyan circles around the swarm members.  In this figure only the two swarm members in the bottom left have overlapping communication ranges so only those two are sharing belief data at this moment in the simulation.
+
+%\end{multicols}
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.3]{comm_ranges.png}
+	\caption{UAV communication ranges at $10\%$}
+	\label{fig:comm_ranges}
+\end{figure}
+%\begin{multicols}{2}
 
 \section{Cell Beliefs}\textbf{TODO: Image of cell attributes}
 Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
