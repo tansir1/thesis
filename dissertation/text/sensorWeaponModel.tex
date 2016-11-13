@@ -1,5 +1,6 @@
 \chapter{Sensor and Weapon Models}
-UAVs carry sensors and weapons.  Sensors are used for scanning the world to determine if a target is present.  If a target is found sensors are then used for tracking the target.  Weapons are used for destroying targets.  There are multiple types of sensors and multiple types of weapons in the simulation.  Each has unique characteristics.  Each type of UAV carries a specific payload package of sensors and weapons.  This allows the UAVs to specialize as surveillance platforms, strike platforms, or multi-role platforms. \textbf{TODO: Should detect vs confirm be described here or in UAV models?}
+UAVs carry sensors and weapons.  Sensors are used for scanning the world to determine if a target is present.  If a target is found sensors are then used for tracking the target.  Weapons are used for destroying targets.  There are multiple types of sensors and multiple types of weapons in the simulation.  Each has unique characteristics.  Each type of UAV carries a specific payload package of sensors and weapons.  This allows the UAVs to specialize as surveillance platforms, strike platforms, or multi-role platforms.
+% \textbf{TODO: Should detect vs confirm be described here or in UAV models?}
 
 \section{Payload Type Definitions}
 
@@ -13,8 +14,8 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 	\begin{tabular}{|p{1cm}|p{1.5cm}|p{1cm}|p{1cm}|p{1.5cm}|}
 		\hline
 		Sensor Type & Field of View ($^{\circ}$) & Min Range (m) & Max Range (m) & Slew rate ($\frac{^{\circ}}{s}$)\\ \hline
-		0 & 60 & 0 & 1100 & 30 \\
-		1 & 45 & 0 & 700  & 10 \\
+		0 & 60 & 10 & 1100 & 30 \\
+		1 & 45 & 50 & 700  & 10 \\
 		\hline
 	\end{tabular}
 \end{table}
@@ -51,15 +52,15 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 	\begin{tabular}{|p{1.4cm}|p{1.6cm}|p{1.2cm}|p{1.2cm}|}
 		\hline
 		Weapon Type & Launch Angle ($^{\circ}$) & Min Range (m) & Max Range (m)\\ \hline
-		0 & 24 & 0 & 200 \\
-		1 & 52 & 0 & 500 \\
+		0 & 24 & 10 & 200 \\
+		1 & 52 & 25 & 500 \\
 		\hline
 	\end{tabular}
 \end{table}
 
 \section{Payload Probabilities}
 \label{sec:payload_probs}
-This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment in described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
+This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
 \begin{table}[H]
 	\caption{Sensor to Target Probabilities}
