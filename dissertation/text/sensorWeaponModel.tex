@@ -4,7 +4,7 @@ UAVs carry sensors and weapons.  Sensors are used for scanning the world to dete
 
 \section{Payload Type Definitions}
 
-Each type of sensor has a minimum and maximum detection range.  Anything that is to close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
+Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
 
 \begin{table}[H]
 	\caption{Sensor type definitions}
@@ -40,7 +40,7 @@ Sensors have two scanning modes.  The normal mode is a wide angle scan set to a 
 	\label{fig:narrow_scan}
 \end{figure}
 
-Similarly each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is to far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
+Similarly, each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is too far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
 
 % \todo{Do we care about a UAV being in the blast radius?}
 
@@ -60,7 +60,7 @@ Similarly each weapon type has a minimum and maximum launch range.  If a target 
 
 \section{Payload Probabilities}
 \label{sec:payload_probs}
-This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
+This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability of confirming a target type, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in a lookup table.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb}.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimate to degrade.  For example, if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
 \begin{table}[H]
 	\caption{Sensor to Target Probabilities}
@@ -90,7 +90,7 @@ Figure~\ref{fig:targetAngles} shows the gradient of performance scaling around a
 	\label{fig:targetAngles}
 \end{figure}
 
-Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interacting with a red target.  The relative angle between the target's heading and Blue 1's is close to the \textit{Best Angle} of $45^{\circ}$.  Blue 1 can sense or attack the target with little to no performance degradation.  The relative angle between the heading of the target and Blue 2 is much greater.  Therefore Blue 2 will suffer a degradation in sensing and attack performance.
+Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interacting with a red target.  The relative angle between the target's heading and Blue 1's is close to the \textit{Best Angle} of $45^{\circ}$.  Blue 1 can sense or attack the target with little to no performance degradation.  The relative angle between the heading of the target and Blue 2 is much greater.  Therefore, Blue 2 will suffer a degradation in sensing and attack performance.
 
 \begin{figure}[H]
 	\centering
@@ -102,7 +102,7 @@ Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interactin
 
 %\begin{multicols}{2}
 
-Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example let's imagine a car.  They have crumble zones to absorb impact energy to protect the occupants.  In a head on collision the occupants are likely to survive because the front of the car will crumble and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is a less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.
+Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example, let's imagine a car.  They have crumple zones to absorb impact energy to protect the occupants.  In a head-on collision the occupants are likely to survive because the front of the car will crumple and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.
 
 \begin{table}[H]
 	\caption{Weapon to Target Probabilities}
