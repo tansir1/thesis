@@ -21,9 +21,9 @@
 
 %\frontmatter
 \input{./text/title.tex}
-\textbf{TODO: Check UVU formatting guidelines}
-\textbf{TODO: Fix page breaks at chapter endings.}
-\textbf{TODO: Fix header and footer}
+
+\renewcommand{\thepage}{\roman{page}}% Roman numerals for metadata pages
+
 \input{./text/frontMatter.tex}
 
 \tableofcontents
@@ -32,8 +32,16 @@
 
 \newpage
 
+\renewcommand{\thepage}{\arabic{page}}% Arabic numerals for page counter
+\setcounter{page}{1}% Start content page numbers with 1
+
 %\mainmatter
 \pagestyle{fancy}
+%\fancyhf{}%Clear default settings
+%\renewcommand{\headrulewidth}{1pt}
+%\lhead{\rightmark}
+%\cfoot{-\thepage -}
+
 
 %\twocolumn %Using multicolumn package instead
 \begin{multicols*}{2}
