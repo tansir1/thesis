@@ -8,6 +8,7 @@
 
 
 %-----Document references-----
+%\bibliographystyle{apalike}
 \addbibresource{text/references.bib}
 
 %To generate a 'track changes' style diff run latexdiff with these options:
@@ -57,9 +58,7 @@
 \appendix
 \include{./text/appendix}
 
-%This gets the Bibliography to appear in the table of contents by generating the header manually
-\chapter{Bibliography}
-\printbibliography[heading=none]
+\printbibliography[title=References,heading=bibintoc]
 
 
 %Notes to the author
