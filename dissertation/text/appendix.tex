@@ -1,7 +1,7 @@
 %\chapter{Appendix}
 
 %------------------------------------------------------------------------------
-
+\fontsize{10pt}{1pt}
 %\renewcommand*\rmdefault{cmr}
 
 \chapter{Payload Configurations}
@@ -39,48 +39,7 @@
 \chapter{Algorithms}
 \label{sec:algorithms}
 
-\begin{algorithm}[H]
-	\caption{UAV Foraging - Selecting a cell to search}
-	\label{alg:forage}
-	\begin{algorithmic}[1]
-		\Function{GenerateForageLocation}{}
-			\Require $ 0\le randomWeighting \le 1$
-			\Require $ kernelSize \ll min($number world rows, number world columns$)$
-			\Require $ \frac{number world rows}{kernelSize} \in Z$
-			\Require $ \frac{number world columns}{kernelSize} \in Z$
-			\Ensure $ 0 \le x \le $ number world rows
-			\Ensure $ 0 \le y \le $ number world columns
-			\State $rowsPerKernel\gets $ number world rows $ / kernelSize$
-			\State $colsPerKernel\gets $ number world columns $ / kernelSize$		
-			\State $x\gets -1$
-			\State $y\gets -1$
-			\State $maxUncertainty\gets -1$
-			\State $maxUncertRow\gets -1$
-			\State $maxUncertCol\gets -1$
-			
-			
-			\If{$random() < randomWeighting$}
-				\State $ y\gets $ random row
-				\State $ x\gets $ random column
-			\Else
-				\For{$i\gets0$, $i < $number world rows, $i\gets i + rowsPerKernel$}
-					\For{$j\gets0$, $j <$ number world columns, $j\gets j + colsPerKernel$}
-						\State $kernelUncert\gets computeKernelUncert(i,j, kernelSize)$
-						\If{$kernelUncert > maxUncertainty$}
-							\State $maxUncertainty\gets kernelUncert$
-							\State $maxUncertRow\gets i$
-							\State $maxUncertCol\gets j$	
-						\EndIf
-					\EndFor
-				\EndFor
-				\State $x\gets randomInteger(rowPerKernel) + maxUncertRow$			
-				\State $y\gets randomInteger(colsPerKernel) + maxUncertCol$
-			\EndIf \\
-			
-			\Return x, y
-		\EndFunction
-	\end{algorithmic}
-\end{algorithm}
+
 
 \begin{algorithm}[H]
 	\caption{Cell Belief Merging}
@@ -202,6 +161,49 @@
 			\State Set current task to Search
 		\EndIf
 		
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{UAV Foraging - Selecting a cell to search}
+	\label{alg:forage}
+	\begin{algorithmic}[1]
+		\Function{GenerateForageLocation}{}
+		\Require $ 0\le randomWeighting \le 1$
+		\Require $ kernelSize \ll min($number world rows, number world columns$)$
+		\Require $ \frac{number world rows}{kernelSize} \in Z$
+		\Require $ \frac{number world columns}{kernelSize} \in Z$
+		\Ensure $ 0 \le x \le $ number world rows
+		\Ensure $ 0 \le y \le $ number world columns
+		\State $rowsPerKernel\gets $ number world rows $ / kernelSize$
+		\State $colsPerKernel\gets $ number world columns $ / kernelSize$		
+		\State $x\gets -1$
+		\State $y\gets -1$
+		\State $maxUncertainty\gets -1$
+		\State $maxUncertRow\gets -1$
+		\State $maxUncertCol\gets -1$
+		
+		
+		\If{$random() < randomWeighting$}
+		\State $ y\gets $ random row
+		\State $ x\gets $ random column
+		\Else
+		\For{$i\gets0$, $i < $number world rows, $i\gets i + rowsPerKernel$}
+		\For{$j\gets0$, $j <$ number world columns, $j\gets j + colsPerKernel$}
+		\State $kernelUncert\gets computeKernelUncert(i,j, kernelSize)$
+		\If{$kernelUncert > maxUncertainty$}
+		\State $maxUncertainty\gets kernelUncert$
+		\State $maxUncertRow\gets i$
+		\State $maxUncertCol\gets j$	
+		\EndIf
+		\EndFor
+		\EndFor
+		\State $x\gets randomInteger(rowPerKernel) + maxUncertRow$			
+		\State $y\gets randomInteger(colsPerKernel) + maxUncertCol$
+		\EndIf \\
+		
+		\Return x, y
+		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
 %------------------------------------------------------------------------------
