@@ -70,7 +70,7 @@ When a UAV first starts the Monitor task it begins flying towards the target and
 
 When the UAV is in sensor range it will begin orbiting the target.  If the target moves more than some user configurable percentage of the sensor's range then the UAV will adjust its flight path and recenter the orbit over the target's new location.
 
-\end{multicols}
+\end{multicols*}
 
 \begin{figure}[H]
 	\centering
@@ -81,7 +81,7 @@ When the UAV is in sensor range it will begin orbiting the target.  If the targe
 	\label{fig:monitor}
 \end{figure}
 
-\begin{multicols}{2}
+\begin{multicols*}{2}
 
 \subsubsection{Confirm}
 When the target is within sensor range the UAV will focus its sensors on the target.  This causes the sensors to stop performing a wide area scan and to zoom in on the target's suspected world cell location.  At this time the UAV is analyzing the sensor data to determine if the suspected target is a real target or if it's a false positive and no target exists.  No other targets can be detected during this focused scan.  If the suspected target is fake then the UAV exits the Monitor task.  If the target is confirmed to be real then the UAV transitions to the Track Target state.  For purposes of this experiment the target confirmation analysis process was assumed to take 10 seconds.  No attempt was made to model real world physics of target identification from raw sensor data.
@@ -100,7 +100,7 @@ The Attack task mechanics are similar to the Monitor task in that the UAV will f
 
 The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform it again since it's likely the closest strike platform available.  The details of this process are explained in chapter~\ref{sec:uavBelief}.
 
-%\end{multicols}
+%\end{multicols*}
 
 \begin{figure}[H]
 	\centering
@@ -110,4 +110,4 @@ The weapon time-of-flight is not modeled.  Weapon strikes are considered instant
 	\label{fig:uavAttackActivity}
 \end{figure}
 
-%\begin{multicols}{2}
+%\begin{multicols*}{2}
