@@ -62,15 +62,13 @@ public class WeaponAttackLogic
          double leftBnd = Angle.normalizeNegPiToPi(uavPose.getHeading());
          double rightBnd = Angle.normalizeNegPiToPi(uavPose.getHeading());
 
-         leftBnd -= wpnLaunchFOV / 2;
-         rightBnd += wpnLaunchFOV / 2;
+         leftBnd -= wpnLaunchFOV;
+         rightBnd += wpnLaunchFOV;
 
          if (Angle.isBetween(angToTar, leftBnd, rightBnd))
          {
             inLAR = true;
          }
-
-         // FIXME Account for target's best attack angle
       }
 
       return inLAR;

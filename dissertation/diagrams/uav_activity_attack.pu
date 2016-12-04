@@ -1,21 +1,27 @@
 @startuml
 
-title UAV attack activity
+title UAV Attack Activity
 
 start
 
-if (target moved?) then (yes)
+while (Sensor lock on target?) is (Locked)
+
+if (Target moved?) then (yes)
   :Recompute Dubin's Path;
 else (no)
 endif
 
 if (Target within weapons range?) then (yes)
-  if( angle_between(uav, target) < launch_tolerance?) then (yes)
+  if( angle_between(uav, target) < launch_angle?) then (yes)
     :Deploy weapon;
     :Announce BDA task;
+    stop
   endif
 else (no)
+
 endif
+
+endwhile (Target lost)
 
 stop
 @enduml

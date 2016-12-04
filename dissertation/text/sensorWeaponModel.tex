@@ -23,27 +23,39 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 	\end{tabular}
 \end{table}
 
-Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type as shown in figure~\ref{fig:wide_angle_scan}.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation as shown in figure~\ref{fig:narrow_scan}.
+%Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type as shown in figure~\ref{fig:wide_angle_scan}.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation as shown in figure~\ref{fig:narrow_scan}.
+
+Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation.  Figure~\ref{fig:scan_sizes} shows a UAV in the bottom right performing a wide area scan and another UAV in the center of the image performing a focused scan on a recently destroyed target.  Note the size difference between the sensor footprints.
+
 
 \begin{figure}[H]
 	\centering
+	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+	%	\includegraphics[scale=0.27]{wide_angle_scan.png}
+	\includegraphics[width=\linewidth]{scan_sizes.png}
+	\caption{Comparison of sensor footprints}
+	\label{fig:scan_sizes}
+\end{figure}
+
+%\begin{figure}[H]
+%	\centering
 	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
 %	\includegraphics[scale=0.27]{wide_angle_scan.png}
-	\includegraphics[width=\linewidth]{wide_angle_scan.png}
-	\caption{A sensor performing a normal wide angle area scan.}
-	\label{fig:wide_angle_scan}
-\end{figure}
+%	\includegraphics[width=\linewidth]{wide_angle_scan.png}
+%	\caption{A sensor performing a normal wide angle area scan.}
+%	\label{fig:wide_angle_scan}
+%\end{figure}
 
-\begin{figure}[H]
-	\centering
+%\begin{figure}[H]
+%	\centering
 	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
 	%	\includegraphics[scale=0.27]{narrow_scan.png}
-	\includegraphics[width=\linewidth]{narrow_scan.png}
-	\caption{A sensor performing a focused narrow scan of a destroyed target}
-	\label{fig:narrow_scan}
-\end{figure}
+%	\includegraphics[width=\linewidth]{narrow_scan.png}
+%	\caption{A sensor performing a focused narrow scan of a destroyed target}
+%	\label{fig:narrow_scan}
+%\end{figure}
 
-Similarly, each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is too far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.
+Similarly, each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is too far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.  The launch angle region is defined as the area between two bearings referenced to the left and right of the heading of the UAV.  For example in table~\ref{tab:weaponType} weapon type 0 has a Launch Angle of $12^{\circ}$.  This means the bearing referenced from the nose of the UAV (boresight) to the target must be between $-12^{\circ}$ and $12^{\circ}$ before the UAV can launch the weapon.
 
 % \todo{Do we care about a UAV being in the blast radius?}
 
@@ -55,8 +67,8 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 	\begin{tabular}{|p{1.4cm}|p{1.6cm}|p{1.2cm}|p{1.2cm}|}
 		\hline
 		Weapon Type & Launch Angle ($^{\circ}$) & Min Range (m) & Max Range (m)\\ \hline
-		0 & 24 & 10 & 200 \\
-		1 & 52 & 25 & 500 \\
+		0 & 12 & 10 & 200 \\
+		1 & 26 & 25 & 500 \\
 		\hline
 	\end{tabular}
 \end{table}

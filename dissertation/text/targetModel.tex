@@ -3,14 +3,7 @@
 
 There are static targets and moving targets.  Static targets have a fixed position and orientation like a building.  Moving targets, as their name implies, have a dynamic position and orientation.  They move through the road network from haven to haven with a fixed velocity similar to an automobile in a city.  Targets have two notable attributes: \textit{Best Angle} and \textit{Max Speed}.
 
-The \textit{Max Speed} of a static target is zero and a moving target has a non-zero positive value.  The \textit{Best Angle} of a target is the best angle for sensing and attacking the target.  The \textit{Best Angle} is used in computing the performance or chance of success of a weapon or sensor accomplishing its task against the target.  If the relative angle between the weapon or sensor and the target deviates from the \textit{Best Angle} then the weapon or sensor will suffer a performance degradation.  This is explained in more detail in section~\ref{sec:payload_probs}.
-
-%Figures \textbf{XXX, YYY, ZZZ, and WWW} show examples of good and poor alignment between a target and the UAVs. \textbf{TODO: CREATE GOOD AND BAD ANGLE DIAGRAMS}
-
-%\missingfigure{Wpn vs tgt, good}
-%\missingfigure{Wpn vs tgt, bad}
-%\missingfigure{Snsr vs tgt, good}
-%\missingfigure{Snsr vs tgt, bad}
+The \textit{Max Speed} of a static target is zero and a moving target has a non-zero positive value.  The \textit{Best Angle} of a target is the best azimuthal angle for sensing and attacking the target as measured in the target's frame of reference.  A \textit{Best Angle} of $0^{\circ}$ is directly head on at the target.  Targets are assumed to be symmetrical so a \textbf{Best Angle} of $90^{\circ}$ means the target can be best observed or attacked from its direct left or right.  The \textit{Best Angle} is used in computing the performance or chance of success of a weapon or sensor accomplishing its task against the target.  If the relative angle between the weapon or sensor and the target deviates from the \textit{Best Angle} then the weapon or sensor will suffer a performance degradation.  This is explained in more detail in section~\ref{sec:payload_probs}.
 
 Moving targets cannot sense or actively evade UAVs.  They travel from haven to haven where they cannot be monitored or attacked by a UAV.  Once they arrive at a haven they will stay for a random but limited amount of time before moving to a new haven.  This behavior is designed to mimic a target hiding, performing deliveries, or having meetings at various locations.  The order of haven visitation is random.  Moving targets generate a path along the road network from haven to haven using the classic A* algorithm described in~\cite{wiki:astar}.
 
