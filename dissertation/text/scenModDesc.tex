@@ -8,9 +8,7 @@ The direction of travel for moving targets is constrained to a randomly generate
 
 An example rendering of a random world is shown in figure~\ref{fig:sample_world}. Static targets are shown as red buildings.  Mobile targets are red triangles along the road.  Blue triangles are UAVs.  The yellow boxes are havens for the mobile targets.
 
-When the simulation starts the UAVs begin searching the world for targets.  While scanning the world they update their internal belief model.  This internal model is shared with other members of the swarm when they are within communication's range of each other.  This model contains data regarding each UAV's confidence that a geographic region is clear and a list of known targets.  Chapter~\ref{sec:uavBelief} describes this model in detail.
 
-When a target is found the UAV assigns an initial task status to the target and announces the discovery of the target.  The original UAV and anyone within communication's range compute a scoring value to determine who is the most appropriate UAV to monitor or attack the target.  Soon after the other UAVs in range who heard the initial target announcement will re-broadcast their internal belief models, and therefore propagate the target discovery throughout the swarm.
 
 %\end{multicols*}
 

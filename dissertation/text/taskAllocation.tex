@@ -1,4 +1,5 @@
-\chapter{Task Allocation}
+%\chapter{Task Allocation}
+\section{Task Allocation}
 \label{sec:uncoordTasking}
 
 Assigning tasks amongst a group of workers is a well known problem with many facets and variants.  In our case we have a group of UAVs flying around with different capabilities.  The UAVs coordinate and cooperate but there is no centralized controller or manager.   In theory, having a centralized controller with perfect information could produce the most optimal configuration of task allocations for the entire swarm.  In practice, achieving such a system is difficult since it requires a large amount of communication and introduces a single point of failure.  Algorithms that create an optimal solution given perfect information can take a long time to run.  So even if we have a suitable communications network the responsiveness of the centralized controller introduces another potential problem especially as the size of the swarm or number of potential tasks increases.
@@ -7,7 +8,8 @@ Fully decentralized controllers cannot guarantee perfectly optimal task allocati
 
 Two common approaches to distributed task allocation are market based algorithms and behavioral algorithms.  On the spectrum from fully centralized to fully decentralized these algorithms lie somewhere in the middle in order to capitalize on the strengths of both approaches.
 
-\section{Market based allocation}
+%\section{Market based allocation}
+\subsection{Market based allocation}
 
 The Auction Algorithm, as its name implies, borrows concepts from economics to model an auction.  A centralized version was proposed in in~\cite{auction_derive} and enhanced in later revisions by the same author.  The author created a distributed version of the Auction Algorithm in~\cite{auction_parallel}.  The algorithm requires an agent to start an auction for some task to be completed.  Typically the agent that first detects a task starts the auction.  The agent broadcasts out a message with details about the task to the swarm.  Other agents then formulate a bid for the task and send their responses back to the auctioning agent.  The auctioneer waits for the bid responses and analyzes them.  The auctioneer could declare a winner or it could rebroadcast the current best bid and wait again for further responses with higher bids.  
 
@@ -17,7 +19,8 @@ Another market based system is the Contract Net protocol first introduced in~\ci
 
 In both market based systems there is a temporary communications channel and messaging sequence to support task allocation.  This is a detriment to communication constrained environments.
 
-\section{Behavior based allocation}
+%\section{Behavior based allocation}
+\subsection{Behavior based allocation}
 
 Behavior based algorithms are algorithmic representations of phenomenon seen in humans and animals. They differ from the market based solutions in that agents ``take'' or ``volunteer'' for a task instead of being ``assigned'' a task.  For example in~\cite{ant_colony_opt} a team of robots cooperated in a fully decentralized fashion and used the Ant Colony Optimization (described in ~\cite{wiki:aco}) algorithm for task allocation.  All of the robots were identical in form and function.  Tasks could require one or more robots.  Each robot used its own sensors to create a model of the environment and to generate a list of tasks to be accomplished.  A robot would then move about and observe a task.  It would then determine if enough robots were simultaneously working on a task together.  If so, then it would continue onwards toward another task, otherwise it would stop and help.  In this case no active communication occurred and tasks were passively taken.
 
@@ -27,7 +30,8 @@ Another common example of behavior based task allocation are pheromone systems. 
 %\textbf{TODO: Discuss TRA.pdf? Motivational behaviors?}
 
 %\section{Task allocation using only one way communication}
-\section{Territorial task allocation}
+%\section{Territorial task allocation}
+\subsection{Territorial task allocation}
 
 The allocation scheme used in this work is more closely aligned to the fully decentralized end of the spectrum.  It models the behaviors of territorial animals that shout, posture, or otherwise mark their domains so that other members of their species do not encroach.  The benefit of this behavior is that only one way communication is required.  There's no need for sequential data handling protocols.  If other agents exist within communications range they will share their belief models but they will not otherwise directly engage each other.  
 

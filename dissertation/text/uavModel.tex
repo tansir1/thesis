@@ -1,8 +1,10 @@
-\chapter{UAV Model}
+%\chapter{UAV Model}
+\section{UAV Model}
 Each UAV within the simulation is a self contained entity capable of acting and thinking on its own accord.  No UAV requires the presence of any other UAV or the aid of any external actor.  The swarm is made of multiple independent UAVs that share information and in doing so coordinate actions to complete the mission.  The simulation supports an arbitrary number of user defined UAV types (or platforms) with unique payloads.  Payload configurations for this work are shown in section~\ref{sec:pyldConfigs}.
 
 
-\section{UAV Kinematics}
+%\section{UAV Kinematics}
+\subsection{UAV Kinematics}
 Each UAV type has a fixed speed and turning radius.  The fixed speed represents the aircraft's standard cruising speed that it will maintain throughout the simulation.  An example set of UAV type kinematic configuration data is shown in table~\ref{tab:uavKinematic}.
 
 \begin{table}[H]
@@ -31,6 +33,20 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 
 \dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Curves described in \cite{dubins}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.
 
+
+
+
+
+
+
+
+
+
+\chapter{MOVE THIS}
+
+When the simulation starts the UAVs begin searching the world for targets.  While scanning the world they update their internal belief model.  This internal model is shared with other members of the swarm when they are within communication's range of each other.  This model contains data regarding each UAV's confidence that a geographic region is clear and a list of known targets.  Chapter~\ref{sec:uavBelief} describes this model in detail.
+
+When a target is found the UAV assigns an initial task status to the target and announces the discovery of the target.  The original UAV and anyone within communication's range compute a scoring value to determine who is the most appropriate UAV to monitor or attack the target.  Soon after the other UAVs in range who heard the initial target announcement will re-broadcast their internal belief models, and therefore propagate the target discovery throughout the swarm.
 
 \section{UAV Communications}
 While each agent within the swarm is capable of self actualization, mission performance improves when the agents work as a team.  To work as a team the UAVs must communicate with each other.  The simulation done in this work limits the communication range of UAV's to a percentage of the maximum world distance.  Given that the mission occurs in a square or rectangular environment, the maximum world distance occurs between opposite corners along a diagonal that bisects the mission area.  By specifying the communication range as a percentage of the world size the algorithms in this work are invariant of the physical world's size.

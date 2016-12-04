@@ -1,4 +1,5 @@
-\chapter{Belief Model}
+%\chapter{Belief Model}
+\section{Belief Model}
 \label{sec:uavBelief}
 The belief model is the fundamental piece that allows the swarm to function as a cohesive group instead of many individuals in the same local area.  The belief model consists of data about all cells in the world grid and data about all known targets.  Each UAV has its own unique belief about the current state of the world.  Periodically the UAVs broadcast their belief to everyone nearby within communications range.  When a UAV receives another UAV's belief model the receiver merges the incoming data into their own internal belief model.  By this mechanism data is shared and propagated throughout the swarm.  Therefore the communication range of each UAV is a limiting factor in the effectiveness of the swarm.  Like all team based exercises effective communication is critical to success.  Figure~\ref{fig:comm_ranges} shows the communication ranges of the blue swarm as cyan circles around the swarm members.  In this figure only the two swarm members in the bottom left have overlapping communication ranges so only those two are sharing belief data at this moment in the simulation.
 
@@ -6,7 +7,8 @@ The belief model is the fundamental piece that allows the swarm to function as a
 
 %\begin{multicols*}{2}
 
-\section{Cell Beliefs}
+%\section{Cell Beliefs}
+\subsection{Cell Beliefs}
 Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
 
 \begin{figure}[H]
@@ -45,7 +47,8 @@ A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in tho
 
 The goal of the mission is to destroy all the unknown targets in the search-and-destroy scenario.  Therefore the desired end state of the UAVs' shared belief model is to reduce the Shannon Uncertainty of each world cell to 0\%.  In this case all targets have been destroyed and all locations in the world have been explored.  In practice the world cells are never all driven to 0\% at once.  There is a global certainty decay rate that is applied to the cell beliefs at every time step.  It slowly drives $P(empty)$ back to 50\% over time.  This models the fact that unless a UAV is watching a cell they cannot know with 100\% certainty what is going on within that cell.  There is a chance that a moving target that has somehow evaded detection could be occupying a previously scanned world cell location.  So instead of requiring the uncertainty of all world cells to be at 0\% to end the mission we only require that all cells be driven below a user defined threshold percentage.
 
-\section{Target Beliefs}
+%\section{Target Beliefs}
+\subsection{Target Beliefs}
 When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor scans of the target are completed the probabilities per target type will converge to a single type.  This is accomplished with a Bayesian Inference system.  The inference update equation is shown in equation~\ref{eq:bayesian} where $DTT$ is the Detected Target Type from a sensor scan and $TT$ is a Target Type. $P_{TT}(x)$ is the probability that the scanned target's type is the $x$ type.  This equation is applied for every suspected target type returned from a sensor scan.  After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.\textbf{TODO: mulitcol format}
 
 %	P(\text{Detected Target Type} Y) = \frac{P(detect tgt type y) * P(prev belieft tgt Y exists)}{\sum_{T_{0}}^{Num Tgts}P(detect X as Y) * P(Prev beleif of X)}
@@ -88,7 +91,8 @@ The Task State enumerations control when and who may bid on tasks.  There are su
 	\item [Complete] The task has been completed by the UAV with the corresponding ID.  In the monitor case the target has been confirmed as destroyed.  In the attack case a weapon has been deployed but the target is not necessarily destroyed.
 \end{description}
 
-\section{Merging Beliefs}
+%\section{Merging Beliefs}
+\subsection{Merging Beliefs}
 Each UAV in the swarm periodically broadcasts its internal Belief Model.  The entire model is encoded and transmitted to all other swarm members within communications range.  When a UAV receives another swarm member's belief model it must be merged with the receiver's internal belief.  No UAV completely trusts any other UAV in the swarm.  All data is merged in a weighted or filtered fashion.  No data is copied 100\% as-is since there are no guarantees that any one UAV is perfectly correct about anything.  The mering process in this work is an implementation of the Fusion Update technique described in~\cite{shem} for merging multiple values of uncertainty.
 
 %\textbf{TODO: Future work: Sensor type expertise should weigh into this}.
