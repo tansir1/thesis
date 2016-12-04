@@ -1,0 +1,49 @@
+@startuml
+
+title Belief Model Object Diagram
+
+object WorldBelief
+object TargetBelief
+object CellBelief
+object WorldPose
+object TargetTaskStatus
+object TaskState
+
+WorldBelief "1"  *-- "0..NumTgts" TargetBelief
+WorldBelief "1"  *-- "Rows x Columns" CellBelief
+
+TargetBelief "1" *-- "1" WorldPose
+TargetBelief "1" *-- "1" TargetTaskStatus
+TargetTaskStatus "1" *-- "2" TaskState : Enumeration Values
+
+WorldBelief : Grid of CellBeliefs
+WorldBelief : List of TargetBeliefs
+
+CellBelief : Probabilty cell is empty
+CellBelief : Last update timestamp
+
+TargetBelief : List of target type probabilities
+TargetBelief : Last update timestamp
+TargetBelief : Unique target / track ID
+TargetBelief : Target's WorldPose
+TargetBelief : TargetTaskStatus
+
+WorldPose : Distance North
+WorldPose : Distance East
+WorldPose : Heading
+
+TargetTaskStatus : Target destroyed flag
+TargetTaskStatus : ..
+TargetTaskStatus : ID of monitoring UAV
+TargetTaskStatus : Score of monitoring UAV
+TargetTaskStatus : Monitor UAV TaskState
+TargetTaskStatus : Last update timestamp of monitor data
+TargetTaskStatus : ..
+TargetTaskStatus : ID of attacking UAV
+TargetTaskStatus : Score of attacking UAV
+TargetTaskStatus : Attack UAV TaskState
+TargetTaskStatus : Last update timestamp of attack data
+
+TaskState : NO_TASK, Open, EnRoute, Performing, Complete
+
+@enduml
