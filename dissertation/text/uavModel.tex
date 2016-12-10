@@ -121,16 +121,29 @@ If the target is still active after the weapon's strike the UAV will transition 
 \subsection{Attack}
 The Attack task mechanics are similar to the Monitor task in that the UAV will fly towards the target and point all of its sensors at the target.  The UAV will plot a course such that its heading is aligned with the best attack angle relative to the heading of the target.  The UAV will re-plot a new course if the target moves a significant distance.  This distance is user configurable.  The UAV will wait until the distance to the target is below some percentage of the weapon's max range before firing.  For purposes of this experiment the percentage was set to 80\%.  An activity diagram describing the process is shown in figure~\ref{fig:uavAttackActivity}.  In parallel to the actions shown in the diagram the UAV is constantly flying along the last computed Dubin's Path.
 
-The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform it again since it's likely the closest strike platform available.  The details of this process are explained in chapter~\ref{sec:uavBelief}.
+The weapon time-of-flight is not modeled.  Weapon strikes are considered instantaneous.  When the weapon is deployed the UAV has completed the task.  The UAV may assign itself a new task and begin maneuvering to a new destination.  However, the UAV performing the Monitor task may request another weapon strike from the swarm if the target was not destroyed.  Therefore the UAV that completed the Attack task might decide to perform the Attack task again since it's likely the closest strike platform available.  The details of this process are explained in chapter~\ref{sec:uavBelief}.  A summary of the interactions between the monitor and attack roles can be seen in figure~\ref{fig:monitorAttacKSequence}.
 
-%\end{multicols*}
+\end{multicols*}
 
 \begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.5]{uav_activity_attack.png}
+	\includegraphics[scale=0.75]{uav_activity_attack.png}
 	\caption{UAV Attack Activity}
 	\label{fig:uavAttackActivity}
 \end{figure}
 
-%\begin{multicols*}{2}
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.75]{monitor_attack_sequence.png}
+	\caption{Monitor and Attack Sequence Interactions}
+	\label{fig:monitorAttacKSequence}
+\end{figure}
+
+\newpage
+\clearpage
+
+\begin{multicols*}{2}
+
+

@@ -1,0 +1,16 @@
+@startuml
+hide footbox
+title Monitor and Attack Sequence Interactions
+MonitorUAV->MonitorUAV: EnRoute
+MonitorUAV->MonitorUAV: Confirm
+MonitorUAV->MonitorUAV: Track
+== Begin Strike and BDA Loop ==
+MonitorUAV->AttackUAV: Request strike
+note right: If the MonitorUAV\nrequests another strike\na different UAV could\nperform the task.
+AttackUAV->AttackUAV: EnRoute
+AttackUAV->AttackUAV: Deploy weapon
+AttackUAV->MonitorUAV: Announce strike complete
+MonitorUAV->MonitorUAV: BDA
+note left: If the target was destroyed\nthe sequence ends.  If not,\nthe MonitorUAV requests\nanother strike.
+== End Strike and BDA Loop ==
+@enduml
