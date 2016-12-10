@@ -44,23 +44,34 @@ The goal of the mission is to destroy all the unknown targets in the search-and-
 
 %\section{Target Beliefs}
 \subsection{Target Beliefs}
-When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor scans of the target are completed the probabilities per target type will converge to a single type.  This is accomplished with a Bayesian Inference system.  The inference update equation is shown in equation~\ref{eq:bayesian} where $DTT$ is the Detected Target Type from a sensor scan and $TT$ is a Target Type. $P_{TT}(x)$ is the probability that the scanned target's type is the $x$ type.  This equation is applied for every suspected target type returned from a sensor scan.  After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.\textbf{TODO: mulitcol format}
+When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor scans of the target are completed the probabilities per target type will converge to a single type.  This is accomplished with a Bayesian Inference system.  
+
+The Bayesian Inference update equation is shown in equation~\ref{eq:bayesian} where $P_{t}(T_{i})$ is the current probability that the target's type $T$ is the $ith$ target type, $P_{t-1}(T_{i})$ is the previous timestep's probability that the target's type $T$ is the $ith$ target type, $P(T_{i}|S_{i})$ is the probability of a sensor $S$ detecting target type $i$ and correctly perceiving it as a type $i$, and $P(T_{j}|S_{i})$ is the probability of mis-perceiving a detection of a target type $i$ as a target type $j$.  This equation is applied for every suspected target type returned from a sensor scan of a world cell. After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.
+
+%is the Detected Target Type from a sensor scan and $TT$ is a Target Type. $P_{TT}(x)$ is the probability that the scanned target's type is the $x$ type.  This equation is applied for every suspected target type returned from a sensor scan.  After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.\textbf{TODO: mulitcol format}
 
 %	P(\text{Detected Target Type} Y) = \frac{P(detect tgt type y) * P(prev belieft tgt Y exists)}{\sum_{T_{0}}^{Num Tgts}P(detect X as Y) * P(Prev beleif of X)}
 %	P(\text{Target is detected type}) = \frac{P(\text{Detecting Target Type}) * P(\text{Previous Target is detected type})}{\sum_{i=T_{0}}^{All types}d}
 
 %P(\text{(Mis)Classifying T_{i} as detected type}) * P(\text{Previous Target is T_{i}})
 
-\end{multicols*}
+%\end{multicols*}
+
+%\begin{equation}
+%\label{eq:bayesian_verbal}
+%P_{TT}^{'}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)} {\sum_{i=0}^{\text{Target types}}P(\text{ (Mis)Classifying } i \text{ as } DTT) * P_{TT}(i)}
+%\end{equation}
 
 \begin{equation}
 \label{eq:bayesian}
-P_{TT}^{'}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)} {\sum_{i=0}^{\text{Target types}}P(\text{ (Mis)Classifying } i \text{ as } DTT) * P_{TT}(i)}
+P_{t}(T_{i}) = \frac{P(T_{i}|S_{i})*P_{t-1}(T_{i})}{ \sum_{j=0}^{\text{All Target Types}}P(T_{j}|S_{i}) * P_{t-1}(T_{j}) }
 \end{equation}
+
+
 %	P_{TT}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)}  {ddd}
 
 
-\begin{multicols*}{2}
+%\begin{multicols*}{2}
 In addition to estimated data about the actual target, Target Beliefs encapsulate information about the tasks performed on the target.  This tasking data is collectively called the Target Task Status.  This data is used for coordinating activities within the swarm.  Since the swarm of UAVs has no centralized control system to allocate task assignments this process must be done by mutual consent within the swarm.  Each Target Belief has a Target Task Status that denotes who is performing tasks on a target and if the task is still eligible for others to take over.  The Target Task Status includes the following attributes.
 
 \begin{description}
