@@ -27,6 +27,7 @@ TargetBelief : Last update timestamp
 TargetBelief : Unique target / track ID
 TargetBelief : Target's WorldPose
 TargetBelief : TargetTaskStatus
+note top: List of target type\nprobabilities sum to one.
 
 WorldPose : Distance North
 WorldPose : Distance East
