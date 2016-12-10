@@ -21,18 +21,13 @@ Prior to beginning the mission the geographic area is tessellated into a rectang
 
 Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty, $P(empty)$, and a timestamp of when this data was last updated.  This is commonly called a Grid Based Occupancy Map. The probability value is updated in a Bayesian fashion by sensor scans during each time step of the simulation similar to~\cite{waharte}.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy~\cite{shannon}) value.
 
-A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to roughly 0.301 when $P(empty) = 0.5$. \textbf{TODO: multicol format issue}  The equation can be see in~\ref{eq:shannon}.  For ease of use it can be scaled from zero to one by dividing~\ref{eq:shannon} by it's maximum value of $U_{max}$ shown in~\ref{eq:shannon_max}.  The results of this are plotted in figure~\ref{fig:shannon}.
+A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to one when $P(empty) = 0.5$. \textbf{TODO: multicol format issue}  The equation can be see in~\ref{eq:shannon} and is plotted in figure~\ref{fig:shannon}.
 
 \end{multicols*}
 
 \begin{equation}
 	\label{eq:shannon}
-		U = -P(empty) * \log_{10}(P(empty)) - ( 1-P(empty) * \log_{10}(1-P(empty)))
-\end{equation}
-
-\begin{equation}
-	\label{eq:shannon_max}
-		U_{max} = -0.5 * \log_{10}(0.5) - (0.5 * \log_{10}(0.5)) \approx 0.301
+		U = -P(empty) * \log_{2}(P(empty)) - ( 1-P(empty) * \log_{2}(1-P(empty)))
 \end{equation}
 
 \begin{multicols*}{2}
@@ -41,7 +36,7 @@ A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in tho
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
 	\includegraphics[scale=0.4]{shannon.png}
-	\caption{Scaled Shannon Uncertainty}
+	\caption{Shannon Uncertainty}
 	\label{fig:shannon}
 \end{figure}
 
