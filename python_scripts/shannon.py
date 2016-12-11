@@ -10,13 +10,16 @@ def compute_shannon(num_pts):
     y = np.zeros(num_pts + 1)
 
     # Max uncertainty occurs at 0.5, get that value and use it to scale all results to [0, 1]
-    max_uncert = (-0.5 * math.log10(0.5)) - (0.5 * math.log10(0.5))
+    #max_uncert = (-0.5 * math.log10(0.5)) - (0.5 * math.log10(0.5))
+    max_uncert = (-0.5 * math.log2(0.5)) - (0.5 * math.log2(0.5))
 
     for i in range(len(x)-1):
         one_minus = 1 - x[i]
-        y[i] = x[i] * math.log10(x[i])
-        y[i] = (-x[i] * math.log10(x[i])) - (one_minus *math.log10(one_minus))
-        y[i] /= max_uncert
+        #y[i] = x[i] * math.log10(x[i])
+        #y[i] = (-x[i] * math.log10(x[i])) - (one_minus *math.log10(one_minus))
+        #y[i] /= max_uncert
+        y[i] = x[i] * math.log2(x[i])
+        y[i] = (-x[i] * math.log2(x[i])) - (one_minus *math.log2(one_minus))
 
     return x, y
 
