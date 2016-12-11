@@ -99,23 +99,6 @@ public class SimModel
       commsCfg.setMaxRelayHops(5);
 
       uavMgr.reset(entTypes, worldCfg.getUAVCfgs(), tgtMgr, randGen, commsCfg, worldCfg.getWorld().getWorldGIS(), beliefDecayRate, minWorldUncertClear);
-
-      // TEMPORARY! Initializes all UAVs with a pose to fly to for development
-      // testing purposes.
-      /*for (UAV uav : uavMgr.getAllUAVs())
-      {
-         WorldPose pose = new WorldPose();
-
-         double north = randGen.nextDouble() * world.getWorldGIS().getWidth();
-         double east = randGen.nextDouble() * world.getWorldGIS().getHeight();
-
-         pose.getCoordinate().setCoordinate(north, east);
-         pose.setHeading(randGen.nextInt(360));
-         uav.TEMP_setDestination(pose);
-
-         // Temporary sensor stare point
-         uav.getSensors().stareAtAll(pose.getCoordinate());
-      }*/
    }
 
    public World getWorld()

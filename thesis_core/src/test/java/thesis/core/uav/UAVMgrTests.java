@@ -19,7 +19,7 @@ import thesis.core.uav.comms.CommsConfig;
 import thesis.core.world.World;
 
 public class UAVMgrTests
-{
+{/*
    private List<UAVStartCfg> initUAVs()
    {
       // Construct 3 UAVs in a west to east line.
@@ -92,5 +92,5 @@ public class UAVMgrTests
       }
       assertTrue("Did not find UAV 2 in query region2.", uav2Found);
       assertTrue("Did not find UAV 3 in query region2.", uav3Found);
-   }
+   }*/
 }

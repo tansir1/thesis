@@ -4,7 +4,7 @@ public class SensorProbs
 {
    private double snsrDetectEmpty[];
    private double snsrDetectTgt[][];
-   private double snsrConfirm[][];
+   //private double snsrConfirm[][];
    private double snsrHdgCoef[][];
 
    private double snsrMisClass[][][];
@@ -18,7 +18,7 @@ public class SensorProbs
    {
       snsrDetectEmpty = new double[numSnsrTypes];
       snsrDetectTgt = new double[numSnsrTypes][numTgtTypes];
-      snsrConfirm = new double[numSnsrTypes][numTgtTypes];
+     // snsrConfirm = new double[numSnsrTypes][numTgtTypes];
       snsrHdgCoef = new double[numSnsrTypes][numTgtTypes];
       snsrMisClass = new double[numSnsrTypes][numTgtTypes][numTgtTypes];
 
@@ -28,7 +28,7 @@ public class SensorProbs
          for(int j=0; j<snsrDetectTgt[i].length; ++j)
          {
             snsrDetectTgt[i][j] = -1d;//-1 probability is used as an unset error flag
-            snsrConfirm[i][j] = -1d;
+            //snsrConfirm[i][j] = -1d;
             snsrHdgCoef[i][j] = -1d;
 
             snsrMisClass[i][j] = new double[numTgtTypes];
@@ -42,12 +42,12 @@ public class SensorProbs
 
    public int getNumSensorTypes()
    {
-      return snsrConfirm.length;
+      return snsrDetectTgt.length;
    }
 
    public int getNumTargetTypes()
    {
-      return snsrConfirm[0].length;
+      return snsrDetectTgt[0].length;
    }
 
    public double getSensorDetectTgtProb(int snsrType, int tgtType)
@@ -55,10 +55,10 @@ public class SensorProbs
       return snsrDetectTgt[snsrType][tgtType];
    }
 
-   public double getSensorConfirmProb(int snsrType, int tgtType)
-   {
-      return snsrConfirm[snsrType][tgtType];
-   }
+//   public double getSensorConfirmProb(int snsrType, int tgtType)
+//   {
+//      return snsrConfirm[snsrType][tgtType];
+//   }
 
    public double getSensorMisclassifyProb(int snsrType, int detectType, int misclassifyType)
    {
@@ -80,10 +80,10 @@ public class SensorProbs
       snsrDetectTgt[snsrType][tgtType] = prob;
    }
 
-   public void setSensorConfirmProb(int snsrType, int tgtType, double prob)
-   {
-      snsrConfirm[snsrType][tgtType] = prob;
-   }
+//   public void setSensorConfirmProb(int snsrType, int tgtType, double prob)
+//   {
+//      snsrConfirm[snsrType][tgtType] = prob;
+//   }
 
    public void setSensorHeadingCoeff(int snsrType, int tgtType, double coeff)
    {
