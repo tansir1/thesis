@@ -1,0 +1,5 @@
+*.loa
+dissertation.rtf
+_minted-dissertation/*
+diagrams/*.xcf
+*.docx

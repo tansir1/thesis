@@ -12,6 +12,12 @@ worlds/*
 sim.log
 *.db
 dissertation.run.xml
+canvas.txt
+*.odt
+*_LARGE.csv
+*_SMALL.csv
+*/.idea/*
+*/__pycache__/*
 
 #LaTeX and TexStudio intermediate files
 *.aux
