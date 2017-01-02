@@ -76,7 +76,10 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 %\section{Payload Probabilities}
 \subsection{Payload Probabilities}
 \label{sec:payload_probs}
+
+\subsubsection{Detecting Targets}
 This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability for mistakenly detecting a target incorrectly, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in lookup tables.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb} and table~\ref{tab:snsrTgtMisClassProb}.  $P(S_{x}|T_{x})$ is the probability of a sensor $S$ detecting target type $x$ and correctly perceiving it as a type $x$.  $P(S_{j}|T_{i})$ is the probability of a sensor $S$ detecting target type $i$ and mistakenly perceiving it as a type $j$.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimates to degrade.  For example, if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
+
 \textbf{TODO: P(Confirm) NEVER USED! REMOVE IT FROM DATA AND TEXT.  EXPLAIN TO SAUTER.}
 \textbf{TODO: Table for empty cell estimate, and udpate equations.}
 \begin{table}[H]
@@ -136,7 +139,27 @@ Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interactin
 
 %\begin{multicols*}{2}
 
-Weapons have a similar lookup table functionality in regards to the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example, let's imagine a car.  They have crumple zones to absorb impact energy to protect the occupants.  In a head-on collision the occupants are likely to survive because the front of the car will crumple and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.  $P(D_{x})$ is the probability of successfully destroying a target of type $x$.
+\subsubsection{Detecting Empty Areas}
+Not all areas in the world will contain a target.  Determining if an area is clear of targets has its own separate probability shown in table~\ref{tab:snsrEmptyProb} where $P(S_{e}|T_{e})$ is the probability of detecting that an area is empty of targets given that the area really is empty of all targets.  Just because a sensor does not detect any targets at all does not mean the scanned area is clear of targets.  The sensor could have missed something or its line of sight may be occluded by an obstacle.
+
+\begin{table}[H]
+	\caption{Empty Cell Detection Probabilities}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:snsrEmptyProb}
+	%	\begin{tabular}{|p{1cm}|p{1cm}|}
+	\begin{tabular}{|l|l|}
+		\hline
+		Sensor Type & $P(S_{e}|T_{e})$\\ \hline
+		0 & 0.8\\
+		1 & 0.6\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{Weapons}
+
+Just like sensors, weapons have a lookup table containing the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example, let's imagine a car.  They have crumple zones to absorb impact energy to protect the occupants.  In a head-on collision the occupants are likely to survive because the front of the car will crumple and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.  $P(D_{x})$ is the probability of successfully destroying a target of type $x$.
 
 \begin{table}[H]
 	\caption{Weapon to Target Probabilities}
