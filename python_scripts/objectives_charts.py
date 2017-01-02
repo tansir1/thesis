@@ -130,7 +130,7 @@ def detected_box_plot():
     plt.title('Time to detect all targets')
     plt.grid()
 
-    plt.boxplot(boxData, labels=labels, showmeans=True)
+    plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
     plt.savefig('../dissertation/diagrams/detected_box.png')
     plt.show()
 
@@ -150,7 +150,7 @@ def destroyed_box_plot():
     plt.title('Time to destroy all targets')
     plt.grid()
 
-    plt.boxplot(boxData, labels=labels, showmeans=True)
+    plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
     plt.savefig('../dissertation/diagrams/destroyed_box.png')
     plt.show()
 
@@ -170,8 +170,8 @@ def known_box_plot():
     plt.title('Time all world known')
     plt.grid()
 
-    plt.boxplot(boxData, labels=labels, showmeans=True)
-    plt.savefig('../dissertation/diagrams/destroyed_box.png')
+    plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
+    plt.savefig('../dissertation/diagrams/known_box.png')
     plt.show()
 
 detected_plot()

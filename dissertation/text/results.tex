@@ -1,5 +1,18 @@
 \chapter{Discussion of Results}
 \label{chap:results}
+
+\section{Performance Metrics}
+The \textbf{TODO: INSERT MODEL NAME} model was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.
+
+\begin{description}
+	\item [Time to detect all targets] The amount of time from the start of the simulation until all targets in the simulation have been detected by any UAV at least once.  This is implemented by using target truth data and maintaining a corresponding status flag per target that is set once the target is detected.  Once all of the flags have been set then all targets have been detected at least once.  When this evet occurs the time is recorded.
+	
+	\item[Time to destroy all targets] The amount of time from the start of the simulation until all targets have been destroyed.  This is implemented by using target truth data and recording the time when all targets have been destroyed.
+	
+	\item[All world known] This is the amount of time from the start of simulation until over half of the UAVs in the swarm reduce the average uncertainty of all of their Cell Beliefs below a user defined threshold.
+\end{description}
+
+
 \section{Experiment Configuration}
 For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
 
@@ -7,7 +20,11 @@ The mobile targets moved at $10m/s$ and were best hit from $\pm115^{\circ}$ from
 
 Two types of UAVs were modeled.  One is a fast long range ISR platform and the other is a slow strike platform.  The ISR platform is type 0 in table~\ref{tab:uavKinematic}.  The strike platform is type 1 in table~\ref{tab:uavKinematic}.  The ISR platform carries sensor 0 defined in table~\ref{tab:sensorType} and has no weapons.  The strike platform has sensor type 1 defined in table~\ref{tab:sensorType}.  The strike platform carries 4 rounds each of weapon types 0 and 1 defined in table~\ref{tab:weaponType}.  Ideally this is more than enough munitions to complete the missions even with a significant amount of misses.  The performance of these sensors and weapons against the targets are defined in tables~\ref{tab:snsrTgtProb}, ~\ref{tab:snsrTgtMisClassProb}, and \ref{tab:wpnTgtProb}.  Static targets are target type 0 and mobile targets are type 1.  The sensors all have a $10\%$ chance of misclassifying any target type as the other type as listed in ~\ref{tab:snsrTgtMisClassProb}.
 
-The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.
+The threshold for the ``all world known'' metric was set at 0.3. To obtain a Shannon Uncertainty of 0.3 or lower requires having a $P(empty) < 5\%$ or $P(empty) > 95\%$.
+
+\section{General Results}
+
+The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  Standard deviations are supplied in table~\ref{tab:stdDevResults}.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.  The standard deviations are \textbf{TODO: Box plots} \texbf{TODO: explain goals}
 
 \begin{table}[H]
 	\caption{Average time to complete objectives}
@@ -26,7 +43,24 @@ The simulation was ran for all 10 worlds with the same random seed.  This proces
 	\end{tabular}
 \end{table}
 
-\section{General Results}
+\begin{table}[H]
+	\caption{Standard deviation to complete objectives}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:stdDevResults}
+	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+		\hline
+		Comm. Range \% & Std. Dev. for time all detected (s) & Std. Dev. for time all destroyed (s) & Std. Dev. for time world known (s)\\
+		\hline
+		100 & 52 & 58  & 29  \\ \hline
+		20  & 62 & 53  & 68  \\ \hline
+		10  & 53 & 77  & 48  \\ \hline
+		5   & 93 & 85  & 50  \\ \hline
+		2   & 90 & 105 & 112 \\ \hline
+	\end{tabular}
+\end{table}
+
+
 
 The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network always performs better than a network with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in performance.  This can be seen in figure~\ref{fig:averages} and in the ratios listed in table~\ref{tab:avgResultsRatio}.
 
@@ -57,9 +91,30 @@ The $20\%$ and $10\%$ cases are not as heavily pressured as the shorter range ca
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{averages.png}
 	\caption{Average time to complete objectives per communication range}
 	\label{fig:averages}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{detected_box.png}
+	\caption{Boxplot for time to detect all targets}
+	\label{fig:detectBoxPlot}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{destroyed_box.png}
+	\caption{Boxplot for time to destroy all targets}
+	\label{fig:destroyedBoxPlot}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{known_box.png}
+	\caption{Boxplot for time to know whole world}
+	\label{fig:knownBoxPlot}
 \end{figure}
 
 \begin{multicols*}{2}
