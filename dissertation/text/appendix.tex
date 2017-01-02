@@ -271,12 +271,13 @@
 					\State bayesianDenominator $\mathrel{+}=$ probDetect $*$ prevBeliefTypeItr
 				\EndIf
 			\EndFor
-			\State P(New belief target is type iterator) $\gets \frac{probDetect * P(belif)}{\text{bayesianDenominator}}$
-			\State TODO: update belief model
+			\State P(New belief target is type iterator) $\gets \frac{probDetect * P(belief)}{\text{bayesianDenominator}}$
+
 		\EndFor
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
+%			\State TODO: update belief model
 
 %------------------------------------------------------------------------------
 
