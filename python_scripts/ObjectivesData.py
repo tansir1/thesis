@@ -60,6 +60,6 @@ comm2.plotColor = 'magenta'
 comm2.plotLabel = 'Rng 2%'
 
 #comm_ranges = np.array([100,20,10,5,2])
-average_detected = np.array([116, 151, 116, 238, 380])
-average_destroyed = np.array([206, 239, 231, 279, 554])
-average_known = np.array([61, 90, 95, 242, 339])
+average_detected = np.array([116, 151, 116, 161, 221])
+average_destroyed = np.array([206, 239, 231, 294, 434])
+average_known = np.array([61, 90, 95, 129, 238])

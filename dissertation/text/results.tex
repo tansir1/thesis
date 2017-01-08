@@ -2,7 +2,7 @@
 \label{chap:results}
 
 \section{Performance Metrics}
-The \textbf{TODO: INSERT MODEL NAME} model was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.
+The \textbf{TODO: INSERT MODEL NAME} model was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.  The metrics are defined as follows.
 
 \begin{description}
 	\item [Time to detect all targets] The amount of time from the start of the simulation until all targets in the simulation have been detected by any UAV at least once.  This is implemented by using target truth data and maintaining a corresponding status flag per target that is set once the target is detected.  Once all of the flags have been set then all targets have been detected at least once.  When this evet occurs the time is recorded.
@@ -14,7 +14,7 @@ The \textbf{TODO: INSERT MODEL NAME} model was implemented and simulated in a cu
 
 
 \section{Experiment Configuration}
-For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
+For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$Km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
 
 The mobile targets moved at $10m/s$ and were best hit from $\pm115^{\circ}$ from their front.  Static targets were best hit from $\pm45^{\circ}$.
 
@@ -38,8 +38,8 @@ The simulation was ran for all 10 worlds with the same random seed.  This proces
 		100 & 116 & 206 & 61  \\ \hline
 		20  & 151 & 239 & 90  \\ \hline
 		10  & 116 & 231 & 95  \\ \hline
-		5   & 238 & 279 & 242 \\ \hline
-		2   & 380 & 554 & 339 \\ \hline
+		5   & 161 & 294 & 129 \\ \hline
+		2   & 221 & 434 & 238 \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -60,7 +60,7 @@ The simulation was ran for all 10 worlds with the same random seed.  This proces
 	\end{tabular}
 \end{table}
 
-A more interesting view of the data is shown via Tukey style boxplots in figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles are bounded by the blue boxes.  The red lines are the median values across the 10 worlds and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
+A more interesting view of the data is shown via Tukey style boxplots in figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles of the metric data recorded across all 10 words is bounded by the blue boxes in the figures.  The red lines are the median values and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
 
 \end{multicols*}
 
@@ -94,9 +94,7 @@ A more interesting view of the data is shown via Tukey style boxplots in figures
 
 \begin{multicols*}{2}
 
-\textbf{TODO: REVISE HERE DOWN}
-
-The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network always performs better than a network with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in performance.  This can be seen in figure~\ref{fig:averages} and in the ratios listed in table~\ref{tab:avgResultsRatio}.
+The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network performs better than networks with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in all performance metrics.  Table~\ref{tab:avgResultsRatio} shows the ratios of performance between the test cases.  The $10\%$ and $20\%$ range cases at worst take $156\%$ of the time required by perfect global network.
 
 \begin{table}[H]
 	\caption{Ratio of time to complete objectives compared to 100\% range}
@@ -107,17 +105,46 @@ The $100\%$ communication range case serves as a comparative baseline against a 
 		\hline
 		Comm. Range \% & Average time all detected ratio & Average time all destroyed ratio & Average time world known ratio\\
 		\hline
-		100 & 1.0   & 1.0   & 1.0  \\ \hline
-		20  & 1.302 & 1.160 & 1.475  \\ \hline
-		10  & 1.0   & 1.121 & 1.557  \\ \hline
-		5   & 2.052 & 1.354 & 3.967 \\ \hline
-		2   & 3.276 & 2.690 & 5.557 \\ \hline
+		100 & 1.0   & 1.0   & 1.0   \\ \hline
+		20  & 1.299 & 1.163 & 1.481 \\ \hline
+		10  & 1.0   & 1.122 & 1.547 \\ \hline
+		5   & 1.393 & 1.43  & 2.112 \\ \hline
+		2   & 1.902 & 2.11  & 3.895 \\ \hline
 	\end{tabular}
 \end{table} 
             
-The similar performances can be attributed to the number of UAVs in the swarm.  This simulation used 5 UAVs.  If each of the 5 UAVs can cover $20\%$ of the world then in affect we've created a global network that is only separated by up a few relay hops.  Similarly the $10\%$ case covers half the world most of the time with 5 UAVs.  Conversely, the $5\%$ and $2\%$ cases can only cover a small fraction of the world at best and therefore their performance is much worse than the baseline $100\%$ case.
-            
-            
+The similar performances can be attributed to the density of UAVs in the swarm.  This simulation used 5 UAVs in a 2.5 by 2.5$Km$ world.  Assuming the UAVs are equally spaced across the world to maximize communication coverage then table~\ref{tab:worldCommsRngCoverage} shows how much of the world is covered in each test case.  The \textit{Physical Comm. Range} is the maximum distance across the world ($3.54Km = \sqrt{(2.5Km^{2}+2.5Km^{2})}$) times the \textit{Communication Range \%}.  The \textit{Maximum Possible Coverage} is the sum of the circular coverage areas of the 5 UAVs.  The \textit{Percent of World Area} is the the \textit{Maximum Possible Coverage} divided by the total area of the mission world converted to a percentage.  Since the UAVs are equally spaced for best possible communications coverage in these calculations the \textit{Percent of World Area} is a theoretical upper limit and will never be achieved in any practical means.
+
+\begin{table}[H]
+	\caption{World communication coverage percentage}
+	\centering
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:worldCommsRngCoverage}
+	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+		\hline
+		Comm. Range \% & Physical Comm. Range ($Km$) &  Maximum Possible Coverage ($Km^{2}$) & Percent of World Area (\%)\\
+		\hline
+		100 & 3.54 & 196.35 & 3141.59 \\ \hline
+		20  & 0.71 & 7.85   & 125.66  \\ \hline
+		10  & 0.35 & 1.96   & 31.42   \\ \hline
+		5   & 0.18 & 0.49   & 7.85    \\ \hline
+		2   & 0.07 & 0.08   & 1.26    \\ \hline
+	\end{tabular}
+\end{table} 
+
+Assuming theoretical best positioning the $20\%$ and $10\%$ cases can cover 125\% and 31\% of the world simultaneously respectively. Since the UAVs are constantly moving these coverage values are never reached.  However, their actual coverage values are sufficiently high that they randomly come in contact with each other to enable the sharing of information.  This lets the $20\%$ and $10\%$ cases have achieve similar performance metrics to the $100\%$ range baseline.  Conversely even the theoretical best communication coverage of the world for the $5\%$ and $2\%$ is a very low percentage and makes it difficult for those test cases to share belief data.
+
+Looking at the boxplots we can see that 
+
+less physical searching, thus less travel time, less mission time if comms large enoguh
+
+
+
+
+
+
+
+
 
 The $20\%$ and $10\%$ cases are not as heavily pressured as the shorter range cases to react to targets immediately.  These longer range cases can afford to wait for the most appropriate UAV to become available for the monitor and strike tasks so their average time to Destroy is roughly double that of their time to Detect everything.  The UAVs do not have to focus as much time on search and exploration tasking to maintain world certainty and keep Shannon entropy to a minimum.
 
