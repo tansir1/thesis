@@ -80,8 +80,6 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 \subsubsection{Detecting Targets}
 This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability for mistakenly detecting a target incorrectly, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in lookup tables.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb} and table~\ref{tab:snsrTgtMisClassProb}.  $P(S_{x}|T_{x})$ is the probability of a sensor $S$ detecting target type $x$ and correctly perceiving it as a type $x$.  $P(S_{j}|T_{i})$ is the probability of a sensor $S$ detecting target type $i$ and mistakenly perceiving it as a type $j$.  These attributes are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimates to degrade.  For example, if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
-\textbf{TODO: P(Confirm) NEVER USED! REMOVE IT FROM DATA AND TEXT.  EXPLAIN TO SAUTER.}
-\textbf{TODO: Table for empty cell estimate, and udpate equations.}
 \begin{table}[H]
 	\caption{Sensor to Target Probabilities}
 	\centering
