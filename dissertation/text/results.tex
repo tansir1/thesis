@@ -24,41 +24,26 @@ The threshold for the ``all world known'' metric was set at 0.3. To obtain a Sha
 
 \section{General Results}
 
-The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  Standard deviations are supplied in table~\ref{tab:stdDevResults}.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.
+The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  Standard deviations are included in table as $\pm$ values next to their corresponding averages.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.
+
 
 \begin{table}[H]
 	\caption{Average time to complete objectives}
 	\centering
 	\rowcolors{1}{lightgray}{white}
 	\label{tab:avgResults}
-	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+	\begin{tabular}{|p{1.1cm}|p{1.75cm}|p{1.75cm}|p{1.5cm}|}
 		\hline
 		Comm. Range \% & Average time all detected (s) & Average time all destroyed (s) & Average time world known (s)\\
 		\hline
-		100 & 116 & 206 & 61  \\ \hline
-		20  & 151 & 239 & 90  \\ \hline
-		10  & 116 & 231 & 95  \\ \hline
-		5   & 161 & 294 & 129 \\ \hline
-		2   & 221 & 434 & 238 \\ \hline
+		100 & 116 $\pm$ 52 & 206 $\pm$ 58  & 61 $\pm$ 29  \\ \hline
+		20  & 151 $\pm$ 62 & 239 $\pm$ 53  & 90 $\pm$ 68  \\ \hline
+		10  & 116 $\pm$ 53 & 231 $\pm$ 77  & 95 $\pm$ 48  \\ \hline
+		5   & 161 $\pm$ 93 & 294 $\pm$ 85  & 129$\pm$50 \\ \hline
+		2   & 221 $\pm$ 90 & 434$\pm$105 & 238$\pm$112 \\ \hline
 	\end{tabular}
 \end{table}
 
-\begin{table}[H]
-	\caption{Standard deviation to complete objectives}
-	\centering
-	\rowcolors{1}{lightgray}{white}
-	\label{tab:stdDevResults}
-	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
-		\hline
-		Comm. Range \% & Std. Dev. for time all detected (s) & Std. Dev. for time all destroyed (s) & Std. Dev. for time world known (s)\\
-		\hline
-		100 & 52 & 58  & 29  \\ \hline
-		20  & 62 & 53  & 68  \\ \hline
-		10  & 53 & 77  & 48  \\ \hline
-		5   & 93 & 85  & 50  \\ \hline
-		2   & 90 & 105 & 112 \\ \hline
-	\end{tabular}
-\end{table}
 
 A more interesting view of the data is shown via Tukey style boxplots in figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles of the metric data recorded across all 10 words is bounded by the blue boxes in the figures.  The red lines are the median values and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
 
