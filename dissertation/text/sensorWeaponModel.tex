@@ -113,14 +113,21 @@ This simulation uses realistic sensors in that they cannot perfectly detect targ
 	\end{tabular}
 \end{table}
 
-Figure~\ref{fig:targetAngles} shows the gradient of performance scaling around a target based on the offset from the \textit{Best Angle}.  In this figure the target has a \textit{Best Angle} of $45^{\circ}$.  Any sensing or attacks at this angle will function with $100\%$ normal performance as defined in the probability lookup tables.  The direct opposite location at $225^{\circ}$ has a $0\%$ scaling value.  Any sensing or attack activities at this angle will not function at all.  Angles in between the \textit{Best Angle} and the opposite side will have their probabilities of success scaled by some percentage.
+Figure~\ref{fig:targetAngles} shows the gradient of performance scaling around a target based on the offset from the \textit{Best Angle}.  In this figure the target has a \textit{Best Angle} of $45^{\circ}$ off of the target's front.  Any sensing or attacks at this angle, or its symmetric mirror at $315^{0}$, will function with $100\%$ normal performance as defined in the probability lookup tables.  The direct opposite location at $225^{\circ}$, or its mirror at $135^{0}$, has approximately a $50\%$ scaling value.  Any sensing or attack activities at these angle will have their performance cut in half.  Angles in between the \textit{Best Angle} and the opposite side will have their probabilities of success scaled by some percentage.
+
+The scaling values in this model were derived assuming that a perfect alignment provides $100\%$ performance and an alignment exactly $180^{0}$ opposite provides $0\%$ performance.  Using a linear scale and the two end points just described yields a performance degradation slope of $-1 / 180$ as computed in equation~\ref{eq:best_angle_degrade_slope}. However, due to the symmetric nature of the \textit{Best Angle} attribute the scaling performance never actually reaches $0\%$ since the best scaling from either mirror side is used.  At worst the scaling drops to $\approx30\%$ in figure~\ref{fig:targetAngles}. 
+
+\begin{equation}
+\label{eq:best_angle_degrade_slope}
+slope = \frac{0 - 1}{180-0} = \frac{-1}{180} \approx -0.0055556\frac{\%}{^{0}}
+\end{equation}
 
 %\end{multicols}
 
 \begin{figure}[H]
 	\centering
 	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
-	\includegraphics[scale=0.25]{targetAngles.png}
+	\includegraphics[scale=0.3]{red_scale_angle.png}
 	\caption{Success scaling for a target with a best angle of $45^{\circ}$}
 	\label{fig:targetAngles}
 \end{figure}
@@ -130,7 +137,7 @@ Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interactin
 \begin{figure}[H]
 	\centering
 	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
-	\includegraphics[scale=0.25]{blue_red_angles.png}
+	\includegraphics[scale=0.3]{blue_red_scale_angles.png}
 	\caption{Success scaling per relative angles}
 	\label{fig:blue_red_angles}
 \end{figure}
