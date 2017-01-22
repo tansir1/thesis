@@ -20,7 +20,6 @@ public class SensorProbsDAO
    private final String snsrTypeColName = "SensorType";
    private final String tgtTypeColName = "TargetType";
    private final String probDetectColName = "ProbDetect";
-   private final String probConfirmColName = "ProbConfirm";
    private final String hdgCoefColName = "HdgCoeff";
 
    private Connection dbCon;
@@ -46,8 +45,6 @@ public class SensorProbsDAO
          initTblSQL.append(tgtTypeColName);
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDetectColName);
-         initTblSQL.append(" double not null,");
-         initTblSQL.append(probConfirmColName);
          initTblSQL.append(" double not null,");
          initTblSQL.append(hdgCoefColName);
          initTblSQL.append(" double not null");
@@ -77,10 +74,8 @@ public class SensorProbsDAO
             int snsrTypeID = rs.getInt(snsrTypeColName);
             int tgtTypeID = rs.getInt(tgtTypeColName);
             double probDetect = rs.getDouble(probDetectColName);
-            double probConfirm = rs.getDouble(probConfirmColName);
             double hdgCoeff = rs.getDouble(hdgCoefColName);
 
-            snsrProbs.setSensorConfirmProb(snsrTypeID, tgtTypeID, probConfirm);
             snsrProbs.setSensorDetectTgtProb(snsrTypeID, tgtTypeID, probDetect);
             snsrProbs.setSensorHeadingCoeff(snsrTypeID, tgtTypeID, hdgCoeff);
          }
@@ -110,8 +105,6 @@ public class SensorProbsDAO
          sql.append(",");
          sql.append(probDetectColName);
          sql.append(",");
-         sql.append(probConfirmColName);
-         sql.append(",");
          sql.append(hdgCoefColName);
          sql.append(") values (?,?,?,?,?)");
 
@@ -128,8 +121,7 @@ public class SensorProbsDAO
                stmt.setInt(1, i);
                stmt.setInt(2, j);
                stmt.setDouble(3, snsrProbs.getSensorDetectTgtProb(i, j));
-               stmt.setDouble(4, snsrProbs.getSensorConfirmProb(i,j));
-               stmt.setDouble(5, snsrProbs.getSensorHeadingCoeff(i, j));
+               stmt.setDouble(4, snsrProbs.getSensorHeadingCoeff(i, j));
                stmt.addBatch();
             }
          }
@@ -163,12 +155,10 @@ public class SensorProbsDAO
          initTblSQL.append(" tinyint not null,");
          initTblSQL.append(probDetectColName);
          initTblSQL.append(" double not null,");
-         initTblSQL.append(probConfirmColName);
-         initTblSQL.append(" double not null,");
          initTblSQL.append(hdgCoefColName);
          initTblSQL.append(" double not null");
          initTblSQL.append(") as select ");
-         initTblSQL.append(snsrTypeColName + "," + tgtTypeColName + "," + probDetectColName + "," + probConfirmColName + "," + hdgCoefColName + " ");
+         initTblSQL.append(snsrTypeColName + "," + tgtTypeColName + "," + probDetectColName + "," + hdgCoefColName + " ");
          initTblSQL.append("from csvread('");
          initTblSQL.append(csvFile.getAbsolutePath());
          initTblSQL.append("');");

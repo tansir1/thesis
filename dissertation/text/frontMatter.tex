@@ -1,14 +1,17 @@
 
 \begin{abstract}
-The goal of this research was to develop a decentralized algorithm for controlling multiple heterogeneous Unmanned Air Vehicles (UAVs) in ``search and act'' scenarios without the need for two-way communication protocols.  This allows the swarm to act in communication poor environments.  The solution requires balancing the optimization of tasks currently known to the swarm while encouraging spatial exploration to find new tasks within the environment.  In this work a swarm of UAVs was simulated and given a mission to find and destroy all targets in an unknown area.  A new swarm control algorithm is presented that only requires one-way communication by modeling the behavior of territorial animals.
+The goal of this research was to develop a decentralized algorithm for controlling multiple heterogeneous Unmanned Air Vehicles (UAVs) in ``search and act'' scenarios that were not originally designed to cooperate as a team.  Existing UAVs already have logic that controls their flight behaviors, how they accomplish goals, how they detect tasks to perform, and how they encode their data.  Attempting to modify this existing logic to cooperate with other unknown and different aircraft types is a burdensome undertaking.  UAVs used in safety critical applications undergo severe scrutiny during development and before they are allowed to perform their missions.  So any changes to these types of vehicles is even more difficult yet these are the types of vehicles that would benefit the most from cooperative swarm capabilities.
+
+To minimize the changes necessary to retrofit preexisting legacy type UAVs with swarming capabilities this work proposes a decentralized swarm control algorithm that only requires one-way communication between its members.  This is an unusual choice since one of the primary benefits of swarms is their ability to actively cooperate, share information, and negotiate decisions which is usually performed by N-way conversations.  Restricting communications to one-way only greatly simplifies the process of retrofitting preexisting UAVs with the capability to form a cooperative swarm and avoids many common problems found in mobile ad hoc networks.  Ideally very few modifications are required to preexisting UAV control logic and the new swarming logic can be an augmentation to the preexisting command inputs and logic outputs of the UAV.  The work in this paper seeks to maintain the benefits of swarming while reducing the required infrastructure.
+
+A new decentralized swarm control algorithm that mimics the behavior of territorial animals is created and simulated with a virtual fleet of reconnaissance and attack UAVs.  The fleet is instructed to complete a search-and-destroy mission in an unknown environment with an unknown number of static and mobile targets.  The experiment varies the communication range of the swarm members and shows that even with severely limited communication ranges one-way communications still allow for successful mission completion with swarming.
 \end{abstract}
 
-
-%\section*{Acknowledgments}
-%\textbf{TODO: Add in acknowledgments}
+\section*{Acknowledgments}
+\textbf{TODO: Add in acknowledgments}
 
 %\newpage
 %\section{Dedication}
 
-\vspace{5cm}
-This work is dedicated to my wife whose unwavering support and encouragement made this crazy dream possible [Achievement Unlocked!] and to my parents who did everything they could to encourage my unending torrents of "how does that work?"
+%\vspace{5cm}
+%This work is dedicated to my wife whose unwavering support and encouragement made this crazy dream possible [Achievement Unlocked!] and to my parents who did everything they could to encourage my unending torrents of "how does that work?"

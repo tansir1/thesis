@@ -21,14 +21,14 @@ public class CellBeliefTests
       // Known values: probEmpty=0.7, uncert= ~0.265295
       cb1.updateEmptyBelief(16, 0.7);
       assertEquals("Did not store new prob empty.", 0.7, cb1.getProbabilityEmptyCell(), PROB_TOLERANCE);
-      assertEquals("cb1: Unexpected uncertainty value.", 0.265295, cb1.getUncertainty(), UNCERT_TOLERANCE);
+      assertEquals("cb1: Unexpected uncertainty value.", 0.881378, cb1.getUncertainty(), UNCERT_TOLERANCE);
       assertEquals("cb1: Unexpected pseudo timestamp.", 16, cb1.getPseudoTimestamp());
 
       cb2.mergeBelief(cb1);
       assertEquals("Did not correctly merge prob empty update.", 0.639999, cb2.getProbabilityEmptyCell(),
             PROB_TOLERANCE);
-      assertEquals("cb2: Unexpected uncertainty value.", 0.283776, cb2.getUncertainty(), UNCERT_TOLERANCE);
-      assertEquals("cb2: Unexpected pseudo timestamp.", 4, cb2.getPseudoTimestamp());
+      assertEquals("cb2: Unexpected uncertainty value.", 0.9427771, cb2.getUncertainty(), UNCERT_TOLERANCE);
+      assertEquals("cb2: Unexpected pseudo timestamp.", 16, cb2.getPseudoTimestamp());
    }
 
    @Test

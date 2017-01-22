@@ -1,34 +1,85 @@
 \chapter{Discussion of Results}
+\label{chap:results}
+
+\section{Performance Metrics}
+The \textbf{TODO: INSERT MODEL NAME} model was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.  The metrics are defined as follows.
+
+\begin{description}
+	\item [Time to detect all targets] The amount of time from the start of the simulation until all targets in the simulation have been detected by any UAV at least once.  This is implemented by using target truth data and maintaining a corresponding status flag per target that is set once the target is detected.  Once all of the flags have been set then all targets have been detected at least once.  When this evet occurs the time is recorded.
+	
+	\item[Time to destroy all targets] The amount of time from the start of the simulation until all targets have been destroyed.  This is implemented by using target truth data and recording the time when all targets have been destroyed.
+	
+	\item[All world known] This is the amount of time from the start of simulation until over half of the UAVs in the swarm reduce the average uncertainty of all of their Cell Beliefs below a user defined threshold.  In other words this is the amount of time it takes before the swarm is confident that it has sufficient data about the entire world.  Once this state is reached it has scanned a majority, if not all, of the world, and believes it has found a majority, if not all, of the targets.
+\end{description}
+
 
 \section{Experiment Configuration}
-For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
+For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$Km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
 
 The mobile targets moved at $10m/s$ and were best hit from $\pm115^{\circ}$ from their front.  Static targets were best hit from $\pm45^{\circ}$.
 
-Two types of UAVs were modeled.  One is a fast long range ISR platform and the other is a slow strike platform.  The ISR platform is type 0 in table~\ref{tab:uavKinematic}.  The strike platform is type 1 in table~\ref{tab:uavKinematic}.  The ISR platform carries sensor 0 defined in table~\ref{tab:sensorType} and has no weapons.  The strike platform has sensor type 1 defined in table~\ref{tab:sensorType}.  The strike platform carries 4 rounds each of weapon types 0 and 1 defined in table~\ref{tab:weaponType}.  Ideally this is more than enough munitions to complete the missions even with a significant amount of misses.  The performance of these sensors and weapons against the targets are defined in tables~\ref{tab:snsrTgtProb} and \ref{tab:wpnTgtProb} respectively.  Static targets are target type 0 and mobile targets are type 1.  The sensors all have a $10\%$ chance of misclassifying any target type as the other type.
+Two types of UAVs were modeled.  One is a fast long range ISR platform and the other is a slow strike platform.  The ISR platform is type 0 in table~\ref{tab:uavKinematic}.  The strike platform is type 1 in table~\ref{tab:uavKinematic}.  The ISR platform carries sensor 0 defined in table~\ref{tab:sensorType} and has no weapons.  The strike platform has sensor type 1 defined in table~\ref{tab:sensorType}.  The strike platform carries 4 rounds each of weapon types 0 and 1 defined in table~\ref{tab:weaponType}.  Ideally this is more than enough munitions to complete the missions even with a significant amount of misses.  The performance of these sensors and weapons against the targets are defined in tables~\ref{tab:snsrTgtProb}, ~\ref{tab:snsrTgtMisClassProb}, and \ref{tab:wpnTgtProb}.  Static targets are target type 0 and mobile targets are type 1.  The sensors all have a $10\%$ chance of misclassifying any target type as the other type as listed in ~\ref{tab:snsrTgtMisClassProb}.
 
-The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.
+The threshold for the ``all world known'' metric was set at 0.3. To obtain a Shannon Uncertainty of 0.3 or lower requires having a $P(empty) < 5\%$ or $P(empty) > 95\%$.
+
+\section{General Results}
+
+The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in table~\ref{tab:avgResults} and plotted in figure~\ref{fig:averages}.  Standard deviations are included in table as $\pm$ values next to their corresponding averages.  The complete raw time data per world and per communication range can be found in section~\ref{sec:raw_data}.
+
 
 \begin{table}[H]
 	\caption{Average time to complete objectives}
 	\centering
 	\rowcolors{1}{lightgray}{white}
 	\label{tab:avgResults}
-	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+	\begin{tabular}{|p{1.1cm}|p{1.75cm}|p{1.75cm}|p{1.5cm}|}
 		\hline
 		Comm. Range \% & Average time all detected (s) & Average time all destroyed (s) & Average time world known (s)\\
 		\hline
-		100 & 116 & 206 & 61  \\ \hline
-		20  & 151 & 239 & 90  \\ \hline
-		10  & 116 & 231 & 95  \\ \hline
-		5   & 238 & 279 & 242 \\ \hline
-		2   & 380 & 554 & 339 \\ \hline
+		100 & 116 $\pm$ 52 & 206 $\pm$ 58  & 61 $\pm$ 29  \\ \hline
+		20  & 151 $\pm$ 62 & 239 $\pm$ 53  & 90 $\pm$ 68  \\ \hline
+		10  & 116 $\pm$ 53 & 231 $\pm$ 77  & 95 $\pm$ 48  \\ \hline
+		5   & 161 $\pm$ 93 & 294 $\pm$ 85  & 129$\pm$50 \\ \hline
+		2   & 221 $\pm$ 90 & 434$\pm$105 & 238$\pm$112 \\ \hline
 	\end{tabular}
 \end{table}
 
-\section{General Results}
 
-The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network always performs better than a network with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in performance.  This can be seen in figure~\ref{fig:averages} and in the ratios listed in table~\ref{tab:avgResultsRatio}.
+A more interesting view of the data is shown via Tukey style boxplots in figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles of the metric data recorded across all 10 words is bounded by the blue boxes in the figures.  The red lines are the median values and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
+
+\end{multicols*}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{averages.png}
+	\caption{Average time to complete objectives per communication range}
+	\label{fig:averages}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{detected_box.png}
+	\caption{Boxplot for time to detect all targets}
+	\label{fig:detectBoxPlot}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{destroyed_box.png}
+	\caption{Boxplot for time to destroy all targets}
+	\label{fig:destroyedBoxPlot}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{known_box.png}
+	\caption{Boxplot for time to know whole world}
+	\label{fig:knownBoxPlot}
+\end{figure}
+
+\begin{multicols*}{2}
+
+The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network performs better than networks with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in all performance metrics.  Table~\ref{tab:avgResultsRatio} shows the ratios of performance between the test cases.  The $10\%$ and $20\%$ range cases at worst take $155\%$ of the time required by perfect global network.
 
 \begin{table}[H]
 	\caption{Ratio of time to complete objectives compared to 100\% range}
@@ -39,42 +90,60 @@ The $100\%$ communication range case serves as a comparative baseline against a 
 		\hline
 		Comm. Range \% & Average time all detected ratio & Average time all destroyed ratio & Average time world known ratio\\
 		\hline
-		100 & 1.0   & 1.0   & 1.0  \\ \hline
-		20  & 1.302 & 1.160 & 1.475  \\ \hline
-		10  & 1.0   & 1.121 & 1.557  \\ \hline
-		5   & 2.052 & 1.354 & 3.967 \\ \hline
-		2   & 3.276 & 2.690 & 5.557 \\ \hline
+		100 & 1.0   & 1.0   & 1.0   \\ \hline
+		20  & 1.299 & 1.163 & 1.481 \\ \hline
+		10  & 1.0   & 1.122 & 1.547 \\ \hline
+		5   & 1.393 & 1.43  & 2.112 \\ \hline
+		2   & 1.902 & 2.11  & 3.895 \\ \hline
 	\end{tabular}
-\end{table}
+\end{table} 
 
-The similar performances can be attributed to the number of UAVs in the swarm.  This simulation used 5 UAVs.  If each of the 5 UAVs can cover $20\%$ of the world then in affect we've created a global network that is only separated by up a few relay hops.  Similarly the $10\%$ case covers half the world most of the time with 5 UAVs.  Conversely, the $5\%$ and $2\%$ cases can only cover a small fraction of the world at best and therefore their performance is much worse than the baseline $100\%$ case.
+The similar performances can be attributed to the density of UAVs in the swarm.  This simulation used 5 UAVs in a 2.5 by 2.5$Km$ world.  Assuming the UAVs are equally spaced across the world to maximize communication coverage then table~\ref{tab:worldCommsRngCoverage} shows how much of the world is covered in each test case.  The \textit{Physical Comm. Range} is the maximum distance across the world ($3.54Km = \sqrt{(2.5Km^{2}+2.5Km^{2})}$) times the \textit{Communication Range \%} yielding the maximum communication distance between UAVs for the test case.  The \textit{Maximum Possible Coverage} is the sum of the circular coverage areas of the 5 UAVs.  The \textit{Percent of World Area} is the the \textit{Maximum Possible Coverage} divided by the total area of the mission world converted to a percentage.  Since the UAVs are equally spaced for best possible communications coverage in these calculations the \textit{Percent of World Area} is a theoretical upper limit and will never be achieved in any practical means.
 
-
-
-The $20\%$ and $10\%$ cases are not as heavily pressured as the shorter range cases to react to targets immediately.  These longer range cases can afford to wait for the most appropriate UAV to become available for the monitor and strike tasks so their average time to Destroy is roughly double that of their time to Detect everything.  The UAVs do not have to focus as much time on search and exploration tasking to maintain world certainty and keep Shannon entropy to a minimum.
-
-\end{multicols*}
-
-\begin{figure}[H]
+\begin{table}[H]
+	\caption{World communication coverage percentage}
 	\centering
-	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
-	\caption{Average time to complete objectives per communication range}
-	\label{fig:averages}
-\end{figure}
+	\rowcolors{1}{lightgray}{white}
+	\label{tab:worldCommsRngCoverage}
+	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+		\hline
+		Comm. Range \% & Physical Comm. Range ($Km$) &  Maximum Possible Coverage ($Km^{2}$) & Percent of World Area (\%)\\
+		\hline
+		100 & 3.54 & 196.35 & 3141.59 \\ \hline
+		20  & 0.71 & 7.85   & 125.66  \\ \hline
+		10  & 0.35 & 1.96   & 31.42   \\ \hline
+		5   & 0.18 & 0.49   & 7.85    \\ \hline
+		2   & 0.07 & 0.08   & 1.26    \\ \hline
+	\end{tabular}
+\end{table} 
 
-\begin{multicols*}{2}
+Assuming theoretical best positioning the $20\%$ and $10\%$ cases can cover 125\% and 31\% of the world simultaneously respectively. Since the UAVs are constantly moving these coverage values are never reached.  However, their actual coverage values are sufficiently high that they randomly come in contact with each other frequently to enable the sharing of information.  This lets the $20\%$ and $10\%$ cases achieve similar performance metrics to the $100\%$ range baseline.  Conversely, even the theoretical best communication coverage of the world for the $5\%$ and $2\%$ is a very low percentage and makes it difficult for those test cases to share belief data and coordinate.
 
-In contrast, the shorter range cases must react quickly once a target is found otherwise there is a strong possibility it will be lost.  This explains why the average time for Detections and World Known are near equal in the $5\%$ case with the average Destroyed time not far behind.  Once a target is seen it is immediately destroyed.
+Looking at the boxplots in figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} we can see that there is a gradual degradation in the performance metrics as communication ranges decrease.  In general all of test cases are roughly equal in performance to each other except the $2\%$ case.  The $10\%$ case in figure~\ref{fig:detectBoxPlot} looks odd in the plot due to the upper data points just barely crossing the threshold of the 1.5 interquartile range limit for a Tukey style boxplot.  This makes the upper two data points look like outliers in that dataset, however they fall in line  with the other datasets so they are not really abnormal. 
 
-The $2\%$ case shows a similar trend in the time necessary for Detecting and World Known but the Destroyed time is drastically slower.  This is likely because the much shorter range requires the UAVs to frequently give up Monitoring a target since no strike platform is around before the Monitor time out occurs.  In the $2\%$ case the only time a target is struck is when 2 UAVs happen to be near each other when the target is found or a strike UAV happens to be exploring a part of the world it thinks is highly uncertain.  The strike platform will synchronize with the Monitoring UAV and immediately begin the attack process, assuming it has munitions available, otherwise it will have to relay the message to someone else in the swarm.
+Given the high theoretical upper limit for \textit{Percent of World Area} covered by the $20\%$ and $10\%$ test cases in table~\ref{tab:worldCommsRngCoverage} we can expect them to perform well since there is a high probability that at least one other swarm member is in communication range.  The $5\%$ test case produced a surprising performance.  At best the 5 UAVs can only cover $7.85\%$ of the world at once yet it performed as well as the larger communication cases in its \textit{Time to detect all targets} and \textit{All world known} metrics.  This means despite the communication handicap the swarm was able to efficiently scan and survey the mission world.  The $5\%$ case suffered in the \textit{Time to destroy all targets} metric but still performed relatively well.  The performance drop can be directly attributed to the communication restriction.  In this model in order for a target to be attacked two swarm members must be in communication's range of each other and at least one of them must be an attack platform.  The simulation logs show that many times the Monitoring platforms timed out and let their targets go since an available Attack platform was not in communications range or able to be within range by the time a 3rd UAV carried the attack request to the rest of the swarm.
 
-Within the performance limits and size of the swarm in these simulations we can see that there is no absolute need for every member of a swarm to be able to reach all others in a global fashion.  In practice with standard RF equipment this is actually undesirable because the UAVs will constantly be jamming each other inadvertently.  The standard trade off is finding a suitable transmission range that allows sufficient bandwidth and world coverage between members of the swarm.  Another real world constraint on RF transmissions is the desire to remain undetected.  By limiting our transmission range and power we can limit the range of detectability by enemy RF sensors.  Within the constraints of this simulation we can drop the transmission range down to $10\%$ of the maximum world range with almost no detrimental affects on overall mission performance.  If some performance degradation is acceptable we can further reduce the communication range requirements to $5\%$.  It seems extreme but is also possible to still complete the mission with only a $2\%$ communication range albeit with a much longer mission duration and risk of failure.
+The $2\%$ communication's range test case is near useless for mission planning purposes but provides a set of worst case data points.  The communications range is so absurdly small compared to the size of the world area and the number of UAVs that the outcome is essentially random if swarming behaviors occur or not.  Table~\ref{tab:avgResults} shows an average detection time of 221 seconds and table~\ref{tab:stdDevResults} shows a standard deviation of 90s which is 40\% of the average value.  A $\pm40\%$ swing around the average is far to unreliable for mission planning purposes.
+
+It is interesting to note that the better performing ends (lower times) of the $2\%$ case still manage to complete the mission objectives and overlap with the performance of the larger test cases for all metrics. Using the simulation's graphical interface it was verified that the worst performing simulations had very few interactions amongst the swarm members while the better performing simulations had more interactions.  So the $2\%$ test case is useful for two purposes.  One is that it shows that the algorithm can complete a mission even when members of the swarm essentially act as solo agents but it takes much more time.  The second purpose is that it indirectly highlights the benefits of swarming versus solo agents.  When swarming interactions did occur the mission objectives were completed much more quickly than when swarming interactions did not occur.
+
+%The $20\%$ and $10\%$ cases are not as heavily pressured as the shorter range cases to react to targets immediately.  These longer range cases can afford to wait for the most appropriate UAV to become available for the monitor and strike tasks so their average time to Destroy is roughly double that of their time to Detect everything.  The UAVs do not have to focus as much time on search and exploration tasking to maintain world certainty and keep Shannon entropy to a minimum.
+
+
+
+%In contrast, the shorter range cases must react quickly once a target is found otherwise there is a strong possibility it will be lost.  This explains why the average time for Detections and World Known are near equal in the $5\%$ case with the average Destroyed time not far behind.  Once a target is seen it is immediately destroyed.
+
+%The $2\%$ case shows a similar trend in the time necessary for Detecting and World Known but the Destroyed time is drastically slower.  This is likely because the much shorter range requires the UAVs to frequently give up Monitoring a target since no strike platform is around before the Monitor time out occurs.  In the $2\%$ case the only time a target is struck is when 2 UAVs happen to be near each other when the target is found or a strike UAV happens to be exploring a part of the world it thinks is highly uncertain.  The strike platform will synchronize with the Monitoring UAV and immediately begin the attack process, assuming it has munitions available, otherwise it will have to relay the message to someone else in the swarm.
+
+Within the performance limits and size of the swarm in these simulations we can see that there is no absolute need for every member of a swarm to be able to reach all others in a global fashion.  In practice with standard RF equipment this is actually undesirable because the UAVs will constantly be jamming each other inadvertently.  The standard trade off is finding a suitable transmission range that allows sufficient bandwidth and world coverage between members of the swarm.  Another real world constraint on RF transmissions is the desire to remain undetected.  By limiting our transmission range and power we can limit the range of detectability by enemy RF sensors.
+
+Within the constraints of this simulation we can drop the transmission range down to $10\%$ of the maximum world range with almost no detrimental affects on overall mission performance.  If some performance degradation is acceptable we can further reduce the communication range requirements to $5\%$.  It seems extreme but is also possible to still complete the mission with only a $2\%$ communication range albeit with a much longer mission duration and a high risk of failure.
 
 \section{Unique Results}
-There are a few results where the swarm was unable to complete the mission.  World 3 was a problem for the $100\%$, $10\%$, and $2\%$ cases.  World 3 can be seen in figure~\ref{fig:world3}.  There is a static target located at row 9 column 0.  The best approach angle for striking a static target is $\pm45^{\circ}$.  In this literal edge case that approach angle puts the UAVs on a trajectory outside of the world.  Therefore the UAVs will attempt strikes at very poor angles from the target's backside instead.  The logs show that many shots are taken at this target and miss.  Eventually all of the strike platforms run out of munitions on this target unless they get very lucky.  This result is a limitation of the simulation's random generation nature.  A real world mission analyst would expand the mission area to allow for a better strike angle against this target.  The simulation does not account for accumulating damage.  Every strike is a boolean draw to decide if a target is destroyed or not.  So even though in the simulation dozens of shots were fired at the target it is still considered alive and well.  In the real world dozens of shots would have likely caused significant if not fatal damage to the target even when fired from an undesirable angle.
+There are a few results where the swarm was unable to complete the mission.  World 3 was a problem for the $100\%$, $10\%$, and $2\%$ cases.  World 3 can be seen in figure~\ref{fig:world3}.  There is a static target located at row 9 column 0.  The best approach angle for striking the static target is $\pm45^{\circ}$.  In this physically literal edge case those approach angles puts the UAVs on a trajectory outside of the world.  Therefore the UAVs will attempt strikes at very poor angles from the target's backside instead.  The simulation logs show that many shots are taken at this target and miss.  Eventually all of the strike platforms run out of munitions on this target unless they get very lucky.  This result is a limitation of the simulation's random generation nature.  A real world mission analyst would expand the mission area to allow for a better strike angle against this target.  The simulation does not account for accumulating damage.  Every strike is a boolean draw to decide if a target is destroyed or not.  So even though in the simulation dozens of shots were fired at the target it is still considered alive and well.  In the real world dozens of shots would have likely caused significant if not fatal damage to the target even when fired from an undesirable angle.
 
-Communication range case of $5\%$ failed to complete world 4 and case $2\%$ failed to complete world 9.  In both cases a mobile target survived.  The logs show that the Attack platforms and the Monitoring platforms were not in communication range in both cases.  This compounded into multiple problems and possible failure issues.  The strike UAVs, who are the only armed aircraft, have very poor sensors compared to the ISR platforms.  The Attack platforms have a hard time finding and tracking mobile targets with these poor sensors.  Since the Attack and Monitor aircraft were not in communication range the Attack platforms usually had out-dated information and therefore had a tendency to fire where the mobile target was in the past instead of where it is now.  
+Communication range case of $5\%$ failed to complete world 4 and case $2\%$ failed to complete world 9.  In both cases a mobile target survived.  The logs show that the Attack platforms and the Monitoring platforms were not in communication range in both cases.  This compounded into multiple problems and possible failure issues.  The strike UAVs, who are the only armed aircraft, have very poor sensors compared to the ISR platforms.  The Attack platforms have a hard time finding and tracking mobile targets with these poor sensors.  Since the Attack and Monitor aircraft were not in communication range the Attack platforms usually had out-dated information about the target's location.  Therefore the attack platform flew to the target's previous location and the attack aircraft's poor sensors could not detect the target in the surrounding areas.  Eventually the attack platform would give up since it could not find the target.
 
-Another compounding issue in these short communication range cases is that the Monitoring UAVs were strike platforms instead of ISR platforms.  In these cases a strike platform would happen upon a target but no ISR platforms were able to hear about the target announcement.  Therefore the strike platform would perform the Monitoring task and do a poor job of it.  It would follow the mobile target while requesting for a second strike platform to perform the Attack task.  When a strike platform began performing the Attack it would suffer from the same poor sensor issues as the Monitoring platform, leading to many shots at where a target ``was'' instead of where it really ``is.''
+Another compounding issue in these short communication range cases is when the Monitoring UAVs were strike platforms instead of ISR platforms.  In these cases a strike platform would happen upon a target but no ISR platforms were able to hear about the target announcement.  Therefore the strike platform would perform the Monitoring task and do a poor job of it.  It would follow the mobile target while requesting for a second strike platform to perform the Attack task.  When a strike platform began performing the Attack it would suffer from the same poor sensor issues as the Monitoring platform, leading to many shots at where a target ``was'' instead of where it really ``is.''
 
 

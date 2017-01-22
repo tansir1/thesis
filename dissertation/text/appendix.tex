@@ -206,6 +206,79 @@
 		\EndFunction
 	\end{algorithmic}
 \end{algorithm}
+
+
+
+
+\begin{algorithm}[H]
+	\caption{Detect Targets - Truth to Perception}
+	\label{alg:detectTgts}
+	\begin{algorithmic}[1]
+		\Function{DetectTargets}{WorldCell cell, Sensor sensor}
+			\State List$<$Target$>$ truthTgts $\gets$ ...lookup true targets in cell...
+			\State List$<$Target$>$ perceivedTgts $\gets$ ...empty list...
+			\ForAll{Target trueTgt in truthTgts}
+
+				\State probDetect $\gets$ Lookup probability of detecting true target type with the given sensor
+				\If {randomNumber() $<$ prodDetect} \\
+					\State Add trueTgt to perceivedTgts list
+				\EndIf
+			\EndFor \\
+			\Return perceivedTgts
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Perceive Target Type - Truth to Perception}
+	\label{alg:perceiveTgt}
+	\begin{algorithmic}[1]
+		\Function{CategorizeTargetType}{Target trueTgt, Sensor sensor}
+		\State int perceivedTgtType $\gets$ trueTgt.getTrueTargetType()
+		
+		\For{iterator $\gets 0$, iterator $< $ Number of Target Types, iterator $\gets$ iterator + 1 }
+			\If{iterator $\neq$ trueTgt.getTrueTargetType()}
+				\State probMisclassify $ \gets $ Lookup probability of mistakenly perceiving true target type as $iterator$ with the given sensor
+				\If{randomNumber() $<$ $P_{misclassify}(TT_{iterator} | Sensor detected target)$}
+					\State perceivedTgtType $\gets$ iterator
+					\Comment{Sensor misclassifies the target type}
+					\State Break out of loop early
+				\EndIf
+			\EndIf
+		\EndFor\\
+
+		\Return perceivedTgtType
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Sensor scan of a world cell - Truth to Perception}
+	\label{alg:sensorScan}
+	\begin{algorithmic}[1]
+		\Function{ScanCell}{WorldCell cell, Sensor sensor}
+		\State List$<$Target$>$ detectedTruthTgts $\gets$ DetectTargets(cell, sensor)
+		\State probDetect $\gets$ Lookup probability of detecting perceived target type with the given sensor
+		\ForAll{Target trueTgt in detectedTruthTgts}
+			\State int perceivedTgtType $\gets$ CategorizeTargetType(trueTgt, sensor)
+			\State float bayesianDenominator $\gets$ 0
+			\For{iterator $\gets 0$, iterator $< $ Number of Target Types, iterator $\gets$ iterator + 1 }
+				\State prevBeliefTypeItr $\gets$ P(Previous belief target is type iterator)
+				\If{iterator $\neq$ perceivedTgtType}
+					\State probMisclassify $ \gets $ Lookup probability of mistakenly perceiving target type as $iterator$ with the given sensor
+					\State bayesianDenominator $\mathrel{+}=$ probMisclassify $*$ prevBeliefTypeItr
+				\Else
+					\State bayesianDenominator $\mathrel{+}=$ probDetect $*$ prevBeliefTypeItr
+				\EndIf
+			\EndFor
+			\State P(New belief target is type iterator) $\gets \frac{probDetect * P(belief)}{\text{bayesianDenominator}}$
+
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+%			\State TODO: update belief model
+
 %------------------------------------------------------------------------------
 
 %--------------------RAW DATA-----------------------------------------------

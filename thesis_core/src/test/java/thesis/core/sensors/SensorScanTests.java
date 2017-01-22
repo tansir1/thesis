@@ -49,10 +49,6 @@ public class SensorScanTests
 
       pyldProb.setSensorDetectEmptyProb(0, 0.7f);
 
-      pyldProb.setSensorConfirmProb(0, 0, 0.4f);
-      pyldProb.setSensorConfirmProb(0, 1, 0.7f);
-      pyldProb.setSensorConfirmProb(0, 2, 0.6f);
-
       pyldProb.setSensorHeadingCoeff(0, 0, 0.5f);
       pyldProb.setSensorHeadingCoeff(0, 1, 0.5f);
       pyldProb.setSensorHeadingCoeff(0, 2, 0.5f);

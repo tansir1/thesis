@@ -99,7 +99,6 @@ public class TestUtils
       {
          for (int j = 0; j < numTgtTypes; ++j)
          {
-            pyldProb.setSensorConfirmProb(i, j, rand.nextDouble() * MAX_CONFIRM_PROB);
             pyldProb.setSensorDetectEmptyProb(i, rand.nextDouble() * MAX_DETECT_EMPTY_PROB);
             pyldProb.setSensorDetectTgtProb(i, j, rand.nextDouble() * MAX_DETECT_TGT_PROB);
             pyldProb.setSensorHeadingCoeff(i, j, rand.nextDouble() * MAX_HEADING_COEFF);
