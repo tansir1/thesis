@@ -244,7 +244,7 @@ The Task State enumerations control when and who may bid on tasks.  There are su
 \label{sec:mergingBeliefs}
 Each UAV in the swarm periodically broadcasts its internal Belief Model.  The model is shown in Object Diagram format in figure~\ref{fig:belief_object}.  The entire model is encoded and transmitted to all other swarm members within communications range.   When a UAV receives another swarm member's belief model it must be merged with the receiver's internal belief.  No UAV completely trusts any other UAV in the swarm.  All data is merged in a weighted or filtered fashion.  No data is copied 100\% as-is since there are no guarantees that any one UAV is perfectly correct about anything.  The merging process in this work is an implementation of the Fusion Update technique described in~\cite{shem} for merging multiple values of uncertainty.
 
-\textbf{TODO: Multicol formatting issue}
+%\textbf{TODO: Multicol formatting issue}
 %The entirety of the Belief Model is shown in figure~\ref{fig:belief_object} in an Object Diagram.
 \end{multicols*}
 \begin{figure}[H]
