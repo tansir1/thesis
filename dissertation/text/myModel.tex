@@ -168,7 +168,7 @@ The goal of the mission is to find all of the targets and destroy them.  In orde
 \subsection{Target Beliefs}
 When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor detection attempts of the target are completed the probabilities per target type will converge to a single type.  As with Cell Beliefs the probabilities for target type's are updated using a Bayesian Inference system.  
 
-The Bayesian Inference update equation for Target Beliefs is shown in equation~\ref{eq:bayesianTgt}.  The parameters in equation~\ref{eq:bayesianTgt} are the same as for Cell Beliefs with the addition of $P(S_{j}|T_{i})$ which is the probability of mis-perceiving a detection of a target type $i$ as a target type $j$.  This equation is applied for every suspected target type returned from a sensor scan of a world cell. After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief such that equation~\ref{eq:probsNormalize} holds true.  The values for $P(S_{x}|T_{x})$ used in this work are listed in table~\ref{tab:snsrTgtProb}. \textbf{TODO: Heading estimate/update}
+The Bayesian Inference update equation for Target Beliefs is shown in equation~\ref{eq:bayesianTgt}.  The parameters in equation~\ref{eq:bayesianTgt} are the same as for Cell Beliefs with the addition of $P(S_{j}|T_{i})$ which is the probability of mis-perceiving a detection of a target type $i$ as a target type $j$.  This equation is applied for every suspected target type returned from a sensor scan of a world cell. After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief such that equation~\ref{eq:probsNormalize} holds true.  The values for $P(S_{x}|T_{x})$ used in this work are listed in table~\ref{tab:snsrTgtProb}.
 
 %is the Detected Target Type from a sensor scan and $TT$ is a Target Type. $P_{TT}(x)$ is the probability that the scanned target's type is the $x$ type.  This equation is applied for every suspected target type returned from a sensor scan.  After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.\textbf{TODO: mulitcol format}
 
@@ -196,9 +196,24 @@ P_{t}(T_{i}) = \frac{P(S_{i}|T_{i})*P_{t-1}(T_{i})}{ \sum_{j=0}^{\text{All Targe
 
 %	P_{TT}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)}  {ddd}
 
+The Target Belief's orientation is updated upon each sensor scan with a simple weighted average of the perceived heading and the previous estimated heading value.  The simulation generates the perceived heading values in sensor detections by applying a random noise error value on top of truth data.  The simulation assumes that all sensors can estimate a target's heading within $\pm45^{\circ}$ of truth as a baseline performance.  This error range is scaled by $H_{ij}$ (described back in section~\ref{sec:sensor_var_descriptions}) to model sensor accuracy. The error range is computed with equation~\ref{eq:hdg_err_rng}.  Equation~\ref{eq:rand_hdg_err} then randomly selects a positive or negative value in the error range.  The results of equation~\ref{eq:rand_hdg_err} is then added to the true heading of the target to create the perceived heading in sensor detections.
+
+\begin{equation}
+\label{eq:hdg_err_rng}
+Err_{rng} = 90^{\circ} * (1 - H_{ij})
+\end{equation}
+
+\begin{equation}
+\label{eq:rand_hdg_err}
+Hdg_{err} = (random() * Err_{rng}) - \frac{Err_{rng}}{2}
+\end{equation}
+
+\begin{equation}
+Hdg_{p} = Hdg_{t} + Hdg_{err}
+\end{equation}
 
 %\begin{multicols*}{2}
-In addition to estimated data about the actual target, Target Beliefs encapsulate information about the tasks performed on the target.  This tasking data is collectively called the Target Task Status.  This data is used for coordinating activities within the swarm.  Since the swarm of UAVs has no centralized control system to allocate task assignments this process must be done by mutual consent within the swarm.  Each Target Belief has a Target Task Status that denotes who is performing tasks on a target and if the task is still eligible for others to take over.  The Target Task Status includes the following attributes.
+In addition to estimated physical data about the target, Target Beliefs encapsulate information about the tasks performed on the target.  This tasking data is collectively called the Target Task Status.  This data is used for coordinating activities within the swarm.  Since the swarm of UAVs has no centralized control system to allocate task assignments this process must be done by mutual consent within the swarm.  Each Target Belief has a Target Task Status that denotes who is performing tasks on a target and if the task is still eligible for others to take over.  The Target Task Status includes the following attributes.
 
 \begin{description}
 	\item [Monitor UAV ID] The ID of the UAV who has the best monitor score.
