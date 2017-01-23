@@ -1,4 +1,4 @@
-\chapter{Territorial swarming}
+\chapter{Implicit Territorial Swarming}
 \label{chap:myModel}
 When the simulation starts the UAVs begin searching the world for targets.  While scanning the world they update their internal belief model.  This internal model is shared with other members of the swarm when they are within communication's range of each other.  This model contains data regarding each UAV's confidence that a geographic region is clear and a list of known targets.  Section~\ref{sec:uavBelief} describes this model in detail.
 
@@ -198,7 +198,7 @@ P_{t}(T_{i}) = \frac{P(S_{i}|T_{i})*P_{t-1}(T_{i})}{ \sum_{j=0}^{\text{All Targe
 
 %	P_{TT}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)}  {ddd}
 
-The Target Belief's orientation is updated upon each sensor scan with a simple weighted average of the perceived heading and the previous estimated heading value.  The simulation generates the perceived heading values in sensor detections by applying a random noise error value on top of truth data.  The simulation assumes that all sensors can estimate a target's heading within $\pm45^{\circ}$ of truth as a baseline performance.  This error range is scaled by $H_{ij}$ (described back in section~\ref{sec:sensor_var_descriptions}) to model sensor accuracy. The error range is computed with equation~\ref{eq:hdg_err_rng}.  Equation~\ref{eq:rand_hdg_err} then randomly selects a positive or negative value in the error range.  The results of equation~\ref{eq:rand_hdg_err} is then added to the true heading of the target to create the perceived heading in sensor detections.
+The Target Belief's orientation is updated upon each sensor scan with a simple weighted average of the perceived heading and the previous estimated heading value.  The simulation generates the perceived heading values in sensor detections by applying a random noise error value on top of truth data.  The simulation assumes that all sensors can estimate a target's heading within $\pm45^{\circ}$ of truth as a baseline performance.  This error range is scaled by $H_{ij}$ (described back in section~\ref{sec:sensor_var_descriptions}) to model sensor accuracy. The error range is computed with equation~\ref{eq:hdg_err_rng}.  Equation~\ref{eq:rand_hdg_err} then randomly selects a positive or negative value ($Hdg_{err}$) in the error range.  The results of equation~\ref{eq:rand_hdg_err} is then added to the true heading ($Hdg_{t}$) of the target to create the perceived heading ($Hdg_{p}$) in simulated sensor detections.
 
 \begin{equation}
 \label{eq:hdg_err_rng}
@@ -215,7 +215,7 @@ Hdg_{p} = Hdg_{t} + Hdg_{err}
 \end{equation}
 
 %\begin{multicols*}{2}
-In addition to estimated physical data about the target, Target Beliefs encapsulate information about the tasks performed on the target.  This tasking data is collectively called the Target Task Status.  This data is used for coordinating activities within the swarm.  Since the swarm of UAVs has no centralized control system to allocate task assignments this process must be done by mutual consent within the swarm.  Each Target Belief has a Target Task Status that denotes who is performing tasks on a target and if the task is still eligible for others to take over.  The Target Task Status includes the following attributes.
+In addition to estimated physical data about the target, Target Beliefs encapsulate information about the tasks performed on the target.  This tasking data is collectively called the Target Task Status.  This data is used for coordinating activities within the swarm.  Since the swarm of UAVs has no centralized control system to allocate task assignments this process must be done by mutual consent within the swarm.  Mutual consent is facilitated by means of a scoring system and enumeration control flags contained in a Target Task Status.  Each Target Belief contains a Target Task Status.  The Target Task Status denotes who is performing tasks on a target and if the task is still eligible for others to take over. The Target Task Status includes the following attributes.
 
 \begin{description}
 	\item [Monitor UAV ID] The ID of the UAV who has the best monitor score.
@@ -229,9 +229,7 @@ In addition to estimated physical data about the target, Target Beliefs encapsul
 	\item [Target Destroyed Flag] A flag indicating if the target has been destroyed or not.
 \end{description}
 
-The Task State enumerations control when and who may bid on tasks.  There are subtle differences in their uses between the monitor tasks and the attack tasks.  These are explained in detail in  section~\ref{sec:uncoordTaskingMyWork}.
-
-\textbf{TODO: Task state should be before Target Task Status so it's defined ahead of time.}
+The Monitor Task State and Attack Task State enumerations control when and who may bid on tasks.  There are subtle differences in their uses between the monitor tasks and the attack tasks.  These are explained in detail in  section~\ref{sec:uncoordTaskingMyWork}.
 
 \begin{description}
 	\item [NO TASK] This is the initial null condition given to the monitor and attack tasks.  In the monitor case it means the target was just discovered and no one has had a chance to process it.  In the attack case it means no one has confirmed that the target should be destroyed.
