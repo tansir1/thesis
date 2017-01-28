@@ -7,7 +7,7 @@ UAVs carry sensors and weapons.  Sensors are used for scanning the world to dete
 %\section{Payload Type Definitions}
 \subsection{Payload Type Definitions}
 
-Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in table~\ref{tab:sensorType}.
+Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in Table~\ref{tab:sensorType}.
 
 \begin{table}[H]
 	\caption{Sensor type definitions}
@@ -17,9 +17,8 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 	\begin{tabular}{|p{1cm}|p{1.5cm}|p{1cm}|p{1cm}|p{1.5cm}|}
 		\hline
 		Sensor Type & Field of View ($^{\circ}$) & Min Range (m) & Max Range (m) & Slew rate ($\frac{^{\circ}}{s}$)\\ \hline
-		0 & 60 & 10 & 1100 & 30 \\
-		1 & 45 & 50 & 700  & 10 \\
-		\hline
+		0 & 60 & 10 & 1100 & 30 \\  \hline
+		1 & 45 & 50 & 700  & 10 \\  \hline
 	\end{tabular}
 \end{table}
 
@@ -55,7 +54,7 @@ Sensors have two scanning modes.  The normal mode is a wide angle scan set to a 
 %	\label{fig:narrow_scan}
 %\end{figure}
 
-Similarly, each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is too far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in table~\ref{tab:weaponType}.  The launch angle region is defined as the area between two bearings referenced to the left and right of the heading of the UAV.  For example in table~\ref{tab:weaponType} weapon type 0 has a Launch Angle of $12^{\circ}$.  This means the bearing referenced from the nose of the UAV (boresight) to the target must be between $-12^{\circ}$ and $12^{\circ}$ before the UAV can launch the weapon.
+Similarly, each weapon type has a minimum and maximum launch range.  If a target is too close the weapon will not have enough time to properly acquire the target and fuse itself.  If a target is too far away the weapon's propulsion system will fall short of a lethal distance.  Weapons have limited steering capabilities so the host UAV must align its heading to the target within an acceptable launch angle region. A sample set of data characterizing weapons can be seen in Table~\ref{tab:weaponType}.  The launch angle region is defined as the area between two bearings referenced to the left and right of the heading of the UAV.  For example in Table~\ref{tab:weaponType} weapon type 0 has a Launch Angle of $12^{\circ}$.  This means the bearing referenced from the nose of the UAV (boresight) to the target must be between $-12^{\circ}$ and $12^{\circ}$ before the UAV can launch the weapon.
 
 % \todo{Do we care about a UAV being in the blast radius?}
 
@@ -67,9 +66,8 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 	\begin{tabular}{|p{1.4cm}|p{1.6cm}|p{1.2cm}|p{1.2cm}|}
 		\hline
 		Weapon Type & Launch Angle ($^{\circ}$) & Min Range (m) & Max Range (m)\\ \hline
-		0 & 12 & 10 & 200 \\
-		1 & 26 & 25 & 500 \\
-		\hline
+		0 & 12 & 10 & 200 \\ \hline
+		1 & 26 & 25 & 500 \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -79,7 +77,7 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 
 \subsubsection{Detecting Targets}
 \label{sec:sensor_var_descriptions}
-This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability for mistakenly detecting a target incorrectly, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in lookup tables.  The values used for the experiment described in this paper are shown in table~\ref{tab:snsrTgtProb} and table~\ref{tab:snsrTgtMisClassProb}.  $P(S_{x}|T_{x})$ is the probability of a sensor $S$ detecting target type $x$ and correctly perceiving it as a type $x$.  $P(S_{j}|T_{i})$ is the probability of a sensor $S$ detecting target type $i$ and mistakenly perceiving it as a type $j$.  $H_{ij}$ is the Heading Estimation Coefficient for sensor $i$ against target type $j$.  It is purely a simulation construct used to help generate noise from truth data for sensor detections.  The $H_{ij}$ is not used in any UAV logic.  A value of zero for $H_{ij}$ means the sensor is near useless for estimating target headings while a value of one for $H_{ij}$ means the sensor can perfectly detect the target's heading.
+This simulation uses realistic sensors in that they cannot perfectly detect targets or clear areas.  Each type of sensor has a probability of detecting if a target exists, a probability for mistakenly detecting a target incorrectly, and an affinity for correctly estimating the heading of a target.  All of these attributes are user configurable and stored in lookup tables.  The values used for the experiment described in this paper are shown in Table~\ref{tab:snsrTgtProb} and Table~\ref{tab:snsrTgtMisClassProb}.  $P(S_{x}|T_{x})$ is the probability of a sensor $S$ detecting target type $x$ and correctly perceiving it as a type $x$.  $P(S_{j}|T_{i})$ is the probability of a sensor $S$ detecting target type $i$ and mistakenly perceiving it as a type $j$.  $H_{ij}$ is the Heading Estimation Coefficient for sensor $i$ against target type $j$.  It is purely a simulation construct used to help generate noise from truth data for sensor detections.  The $H_{ij}$ is not used in any UAV logic.  A value of zero for $H_{ij}$ means the sensor is near useless for estimating target headings while a value of one for $H_{ij}$ means the sensor can perfectly detect the target's heading.
 
 $P(S_{x}|T_{x})$ and $P(S_{j}|T_{i})$ are defined assuming perfect alignment with the target's \textit{Best Angle}.  Any variance from the target's \textit{Best Angle} will cause these probabilities and heading estimates to degrade.  For example, if a visible light spectrum camera is viewing a person's front we can see their face.  From this angle we can detect that we are looking at a person and confirm their identity.  If we orbit around behind the person we can still detect that a person is in front of the camera but the probability of confirming their identity correctly falls.
 
@@ -92,11 +90,10 @@ $P(S_{x}|T_{x})$ and $P(S_{j}|T_{i})$ are defined assuming perfect alignment wit
 		\hline
 %		Sensor Type & Target Type & Prob(Detect) & Heading Estimation Coefficient\\ \hline
 		Sensor Type & Target Type & $P(S_{x}|T_{x})$ & $H_{ij}$\\ \hline
-		0 & 0 & 0.6 & 0.5 \\
-		0 & 1 & 0.6 & 0.5 \\
-		1 & 0 & 0.4 & 0.5 \\
-		1 & 1 & 0.4 & 0.5 \\
-		\hline
+		0 & 0 & 0.6 & 0.5 \\  \hline
+		0 & 1 & 0.6 & 0.5 \\  \hline
+		1 & 0 & 0.4 & 0.5 \\  \hline
+		1 & 1 & 0.4 & 0.5 \\  \hline
 	\end{tabular}
 \end{table}
 
@@ -108,11 +105,10 @@ $P(S_{x}|T_{x})$ and $P(S_{j}|T_{i})$ are defined assuming perfect alignment wit
 	\begin{tabular}{|p{1cm}|p{1.25cm}|p{1.6cm}|p{1.5cm}|}
 		\hline
 		Sensor Type & True Target Type & Perceived Target Type & $P(S_{j}|T_{i})$\\ \hline
-		0 & 0 & 1 & 0.1 \\
-		0 & 1 & 0 & 0.1 \\
-		1 & 0 & 1 & 0.1 \\
-		1 & 1 & 0 & 0.1 \\
-		\hline
+		0 & 0 & 1 & 0.1 \\ \hline
+		0 & 1 & 0 & 0.1 \\ \hline
+		1 & 0 & 1 & 0.1 \\ \hline
+		1 & 1 & 0 & 0.1 \\ \hline
 	\end{tabular}
 \end{table}
 
@@ -131,7 +127,7 @@ slope = \frac{0 - 1}{180-0} = \frac{-1}{180} \approx -0.0055556\frac{\%}{^{0}}
 	\centering
 	%	\includegraphics[width=\linewidth,height=4in,keepaspectratio=false]{averages.png}
 	\includegraphics[scale=0.3]{red_scale_angle.png}
-	\caption{Success scaling for a target with a best angle of $45^{\circ}$}
+	\caption{Success scaling for a target with a \textit{Best Angle} of $45^{\circ}$}
 	\label{fig:targetAngles}
 \end{figure}
 
@@ -148,7 +144,7 @@ Figure~\ref{fig:blue_red_angles} shows an example of two UAVs in blue interactin
 %\begin{multicols*}{2}
 
 \subsubsection{Detecting Empty Areas}
-Not all areas in the world will contain a target.  Determining if an area is clear of targets has its own separate probability shown in table~\ref{tab:snsrEmptyProb} where $P(S_{e}|T_{e})$ is the probability of detecting that an area is empty of targets given that the area really is empty of all targets.  Just because a sensor does not detect any targets at all does not mean the scanned area is clear of targets.  The sensor could have missed something or its line of sight may be occluded by an obstacle.
+Not all areas in the world will contain a target.  Determining if an area is clear of targets has its own separate probability shown in Table~\ref{tab:snsrEmptyProb} where $P(S_{e}|T_{e})$ is the probability of detecting that an area is empty of targets given that the area really is empty of all targets.  Just because a sensor does not detect any targets at all does not mean the scanned area is clear of targets.  The sensor could have missed something or its line of sight may be occluded by an obstacle.
 
 \begin{table}[H]
 	\caption{Empty Cell Detection Probabilities}
@@ -159,15 +155,14 @@ Not all areas in the world will contain a target.  Determining if an area is cle
 	\begin{tabular}{|l|l|}
 		\hline
 		Sensor Type & $P(S_{e}|T_{e})$\\ \hline
-		0 & 0.8\\
-		1 & 0.6\\
-		\hline
+		0 & 0.8\\ \hline
+		1 & 0.6\\ \hline
 	\end{tabular}
 \end{table}
 
 \subsubsection{Weapons}
 
-Just like sensors, weapons have a lookup table containing the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example, let's imagine a car.  They have crumple zones to absorb impact energy to protect the occupants.  In a head-on collision the occupants are likely to survive because the front of the car will crumple and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in table~\ref{tab:wpnTgtProb}.  $P(D_{x})$ is the probability of successfully destroying a target of type $x$.
+Just like sensors, weapons have a lookup table containing the probability of successfully destroying a target assuming it is struck from its \textit{Best Angle}.  Any deviation from the \textit{Best Angle} causes a drop in the probability of destruction.  For example, let's imagine a car.  They have crumple zones to absorb impact energy to protect the occupants.  In a head-on collision the occupants are likely to survive because the front of the car will crumple and absorb a significant amount of energy.  If a car is struck along its sides in the door panels there is less protection for the occupants.  In this case the \textit{Best Angle} for a car is along the sides in the door panels. A sample set of data showing the probability of destruction mapping for each weapon and target combination in this experiment is shown in Table~\ref{tab:wpnTgtProb}.  $P(D_{x})$ is the probability of successfully destroying a target of type $x$.
 
 \begin{table}[H]
 	\caption{Weapon to Target Probabilities}
@@ -176,13 +171,12 @@ Just like sensors, weapons have a lookup table containing the probability of suc
 	\label{tab:wpnTgtProb}
 	\begin{tabular}{|p{1.5cm}|p{1.5cm}|p{3cm}|}
 		\hline
-%		Weapon Type & Target Type & Prob(Destruction)\\ \hline
+%		 & Target Type & Prob(Destruction)\\ \hline
 		Weapon Type & Target Type & $P(D_{x})$\\ \hline
-		0 & 0 & 0.75 \\
-		0 & 1 & 0.75 \\
-		1 & 0 & 0.75 \\
-		1 & 1 & 0.75 \\
-		\hline
+		0 & 0 & 0.75 \\ \hline
+		0 & 1 & 0.75 \\ \hline
+		1 & 0 & 0.75 \\ \hline
+		1 & 1 & 0.75 \\ \hline
 	\end{tabular}
 \end{table}
 
