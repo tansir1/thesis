@@ -1,13 +1,13 @@
 %\chapter{Sensor and Weapon Models}
 \section{Sensor and Weapon Models}
-
+\label{sec:sensor_wpn_models}
 UAVs carry sensors and weapons.  Sensors are used for scanning the world to determine if a target is present.  If a target is found sensors are then used for tracking the target.  Weapons are used for destroying targets.  There are multiple types of sensors and multiple types of weapons in the simulation.  Each has unique characteristics.  Each type of UAV carries a specific payload package of sensors and weapons.  This allows the UAVs to specialize as surveillance platforms, strike platforms, or multi-role platforms.
 % \textbf{TODO: Should detect vs confirm be described here or in UAV models?}
 
 %\section{Payload Type Definitions}
 \subsection{Payload Type Definitions}
 
-Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. A sample set of data characterizing sensors can be seen in Table~\ref{tab:sensorType}.
+Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. The performance characteristics of the sensors used in this simulation are shown in Table~\ref{tab:sensorType}.
 
 \begin{table}[H]
 	\caption{Sensor type definitions}
@@ -24,7 +24,7 @@ Each type of sensor has a minimum and maximum detection range.  Anything that is
 
 %Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type as shown in figure~\ref{fig:wide_angle_scan}.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation as shown in figure~\ref{fig:narrow_scan}.
 
-Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation.  Figure~\ref{fig:scan_sizes} shows a UAV in the bottom right performing a wide area scan and another UAV in the center of the image performing a focused scan on a recently destroyed target.  Note the size difference between the sensor footprints.
+Sensors have two scanning modes.  The normal mode is a wide angle scan set to a fixed field-of-view unique to the sensor type.  The second mode is a focused scan of a small area.  This mode is meant to emulate a sensor that is zoomed in on something of interest.  This mode is used to confirm target identities and perform battle damage assessment in the simulation.  Figure~\ref{fig:scan_sizes} shows a UAV in the bottom right performing a wide area scan and another UAV in the center of the image performing a focused scan on a recently destroyed target.  Note the size difference between the sensor footprints rendered in yellow.
 
 
 \begin{figure}[H]

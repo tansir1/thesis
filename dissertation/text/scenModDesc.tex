@@ -1,8 +1,8 @@
-\chapter{World Model and Scenario}
+\chapter{Methods}
+%\chapter{World Model and Scenario}
 \label{chap:worldScenModel}
-\textbf{TODO: Header formatting issues in this chapter}
 
-The scenario in this experiment consists of simulated worlds containing UAVs, moving targets, fixed targets, and target safe havens.  The UAVs work as a team to find all the targets and destroy them.  The simulated worlds are randomly generated via a custom utility for the project.  The number of UAVs, targets, and havens are configurable.  The worlds are rectangular and their sizes are configurable.  The utility reads the configuration file and generates data files describing random worlds.  
+The scenario in this experiment consists of simulated worlds containing UAVs, UAV payloads, moving targets, fixed targets, and target safe havens.  The UAVs work as a team to find all the targets and destroy them.  The simulated worlds are randomly generated via a custom utility for the project.  The number of UAVs, targets, and havens are configurable.  The worlds are rectangular and their sizes are configurable.  The utility reads the configuration file and generates data files describing random worlds.  
 
 %  See ~\ref{sec:exampleWorldCfg} for an example configuration file.
 
@@ -26,3 +26,5 @@ An example rendering of a random world is shown in figure~\ref{fig:sample_world}
 \end{figure}
 
 %\begin{multicols*}{2}
+
+Sections~\ref{sec:target_model}, \ref{sec:uav_model}, and \ref{sec:sensor_wpn_models} describe the rules and capabilities of the simulation.  The simulation is meant to be an approximation of the physical world to use as a test area for developing new control algorithms for swarms of UAVs.  The simulation is a custom software application created explicitly for this dissertation.  Section~\ref{sec:myModel} describes a new UAV swarm control algorithm to satisfy the goals of the research.
