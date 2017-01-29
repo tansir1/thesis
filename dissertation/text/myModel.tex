@@ -1,7 +1,7 @@
 %\chapter{Implicit Territorial Swarming}
 \section{Implicit Territorial Swarming}
 \label{sec:myModel}
-The other sections in this chapter described the rules and capabilities of the simulated worlds and the entities within.  These simulated worlds provide a virtual sandbox for developing new control algorithms for swarms of UAVs.  This section describes a new control algorithm developed for this dissertation by using these simulated worlds. 
+The other sections in this chapter described the rules and capabilities of the simulated worlds and the entities within.  These simulated worlds provide a virtual sandbox for developing new control algorithms for swarms of UAVs.  Using the taxonomy described in section~\ref{sec:types_swarms} by ~\citet{iridia} this section describes a new decentralized \textit{collective exploration} type swarm since periodic exploration of the mission area is part of the control logic and targets are not known beforehand.
 
 When the simulation starts the UAVs begin searching the world for targets.  While scanning the world they update their internal belief model.  This internal model is shared with other members of the swarm when they are within communication's range of each other.  This model contains data regarding each UAV's confidence that a geographic region is clear and a list of known targets.  Section~\ref{sec:uavBelief} describes this model in detail.
 
