@@ -7,7 +7,7 @@ UAVs carry sensors and weapons.  Sensors are used for scanning the world to dete
 %\section{Payload Type Definitions}
 \subsection{Payload Type Definitions}
 
-Each type of sensor has a minimum and maximum detection range.  Anything that is too close would oversaturate the sensor and yield invalid results.  Anything to far away does not produce enough of a signal to be detectable.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. The performance characteristics of the sensors used in this simulation are shown in Table~\ref{tab:sensorType}.
+Each type of sensor in the simulation has a minimum and maximum detection range.  In reality any target that is too close would oversaturate a sensor and yield invalid results.  Any target that is too far away does not produce enough of a signal to be detectable.  This phenomena is modeled by bounding the valid detection range of the sensors.  Sensors can be mounted on a gimbal turret or in a fixed orientation on their host UAV.  If they are gimbaled the sensors cannot slew faster than a maximum slew rate that is unique to the sensor type. The performance characteristics of the sensors used in this simulation are shown in Table~\ref{tab:sensorType}.
 
 \begin{table}[H]
 	\caption{Sensor type definitions}
