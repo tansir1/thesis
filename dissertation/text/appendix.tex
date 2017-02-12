@@ -92,30 +92,30 @@
 		\State $copyMonitorData\gets false$
 		\State $copyAttackData\gets false$
 		\\
-		\If{$otherTask.monitorState == Complete and myTask.monitorState != otherTask.monitorState$}
+		\If {$otherTask.monitorState$ {\bf =} $Complete$ {\bf and} $myTask.monitorState \neq otherTask.monitorState$}
 			\State $copyMonitorData\gets true$
 			\Comment Another UAV completed the task
-		\ElsIf{$otherTask.monitorScore > myTask.monitorScore and otherTask.monitorState != Complete and myTask.monitorState != Complete$}
+		\ElsIf{$otherTask.monitorScore > myTask.monitorScore$ {\bf and} $otherTask.monitorState \neq Complete$ {\bf and} $myTask.monitorState \neq Complete$}
 			\State $copyMonitorData\gets true$
 			\Comment Everyone is bidding on the task still
 		\EndIf
 		\\
-		\If{$copyMonitorData == true$}
+		\If{$copyMonitorData = true$}
 			\State $myTask.monitorID\gets otherTask.monitorID$
 			\State $myTask.monitorScore\gets otherTask.monitorScore$
 			\State $myTask.monitorState\gets otherTask.monitorState$
 			\State $myTask.monitorTimestamp\gets otherTask.monitorTimestamp$									
 		\EndIf
 		\\
-		\If{$otherTask.attackState == Complete and myTask.attackState != otherTask.attackState$}
+		\If{$otherTask.attackState = Complete$ {\bf and} $myTask.attackState \neq otherTask.attackState$}
 			\State $copyAttackData\gets true$
 			\Comment Another UAV completed the task
-		\ElsIf{$otherTask.attackScore > myTask.attackScore and otherTask.attackState != Complete and myTask.attackState != Complete$}
+		\ElsIf{$otherTask.attackScore > myTask.attackScore$ {\bf and} $otherTask.attackState \neq Complete$ {\bf and} $myTask.attackState \neq Complete$}
 			\State $copyAttackData\gets true$
 			\Comment Everyone is bidding on the task still
 		\EndIf
 		\\
-		\If{$copyAttackData == true$}
+		\If{$copyAttackData = true$}
 			\State $myTask.attackID\gets otherTask.attackID$
 			\State $myTask.attackScore\gets otherTask.attackScore$
 			\State $myTask.attackState\gets otherTask.attackState$
@@ -149,10 +149,10 @@
 		\State $bestMonitorTgt = max(monitorBids)$
 		\State $bestAttackTgt = max(attackBids)$
 		\\
-		\If{$bestAttackTgt$ not null and bid for $bestAttackTgt > $ current belief's task value for target}
+		\If{$bestAttackTgt$ not null {\bf and} bid for $bestAttackTgt > $ current belief's task value for target}
 			\State Update belief model with bid meta data
 			\State Set current task to Attack
-		\ElsIf{$bestMonitorTgt$ not null and bid for $bestMonitorTgt > $ current belief's task value for target}
+		\ElsIf{$bestMonitorTgt$ not null {\bf and} bid for $bestMonitorTgt > $ current belief's task value for target}
 			\State Update belief model with bid meta data		
 			\State Set current task to Monitor			
 		\Else
@@ -218,7 +218,7 @@
 			\ForAll{Target trueTgt in truthTgts}
 
 				\State probDetect $\gets$ Lookup probability of detecting true target type with the given sensor
-				\If {randomNumber() $<$ prodDetect} \\
+				\If {randomNumber() $<$ prodDetect}
 					\State Add trueTgt to perceivedTgts list
 				\EndIf
 			\EndFor \\

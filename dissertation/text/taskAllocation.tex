@@ -1,11 +1,10 @@
-%\chapter{Task Allocation}
 
-
-%\section{Task allocation using only one way communication}
-%\section{Territorial task allocation}
 \subsection{Task allocation}
 \label{sec:uncoordTaskingMyWork}
-\textbf{TODO: Formatting issue, page break?}
+
+%\chapter{Task Allocation}
+%\section{Task allocation using only one way communication}
+%\section{Territorial task allocation}
 
 The allocation scheme used in this work is more closely aligned to the fully decentralized end of the spectrum.  It models the behaviors of territorial animals that shout, posture, or otherwise mark their domains so that other members of their species do not encroach.  The benefit of this behavior is that only one way communication is required.  There's no need for sequential data handling protocols.  If other agents exist within communications range they will share their belief models but they will not otherwise directly engage each other.  
 
@@ -28,7 +27,7 @@ Target Task States start in the \textit{NO TASK} state when the target is first 
 UAVs think they can claim a task on a target when their score for the task is larger than the currently known score.  When a UAV thinks it can claim a task it sets the Target Belief data with the computed score, the UAV's ID, and sets its Task State to Enroute.  Other UAVs will hear these updates at the next periodic belief model broadcast.  Simultaneously other UAVs could believe they will claim the task as well and eventually multiple UAVs could arrive near the task.  While they are all enroute their beliefs propagate through the network and merge with others.  Eventually most of the UAVs will realize that they are not the best suited for the task and will go find some other task to perform.  The dominant UAV effectively guards their territory like an animal until a stronger one appears by posturing themselves in the area with the best score.
 %This competition period emulates the centralized controller strength in that someone coordinates who gets to perform the task.  In this case the centralized controller changes swiftly based on who the dominant UAV is at the time.
 
-This simple ``survival of the fittest'' mechanism has many benefits.  Since all coordination is implied instead of being explicit very little communication is required and no bidirectional communication occurs at all.  UAVs share their belief model of the world which is just a static data dump with well defined merging procedures.  Other UAVs hear this whole data packet or they hear nothing at all.  There is no need to maintain and manage temporary communication channels to facilitate negotiations or transactions like in market based algorithms.  This mechanism is most closely related to pheromone models with each UAV having their own unique pheromone signature.  This means the control laws for global navigation of the aircraft consolidate down to a series of strength comparisons with no higher level logic.  The formal algorithm for this task allocation scheme is written in~\ref{alg:taskAlloc}.
+This simple ``survival of the fittest'' mechanism has many benefits.  Since all coordination is implied instead of being explicit very little communication is required and no bidirectional communication occurs at all.  UAVs share their belief model of the world which is just a static data dump with well defined merging procedures.  Other UAVs hear this whole data packet or they hear nothing at all.  There is no need to maintain and manage temporary communication channels to facilitate negotiations or transactions like in market based algorithms.  This mechanism is most closely related to pheromone models with each UAV having their own unique pheromone signature.  This means the control laws for global navigation of the aircraft consolidate down to a series of strength comparisons with no higher level logic.  The formal algorithm for this task allocation scheme is written in algorithm~\ref{alg:taskAlloc}.
 
 %\textbf{TODO: 1 way useful for integrating into existing hardware with minimal software changes, make swarm out of hardware not meant to be a swarm, easier integration with legacy systems. Weighted average on merging because getting bayesian probability data for all other platforms and updating fleet is a difficult task. Higher quality platforms will weight their data higher than others in the fleet, could vary per target type?}
 %\textbf{TODO: This is the whole point of thesis}

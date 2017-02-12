@@ -36,18 +36,17 @@ P(miss) = \sum_{i=0}^{\text{All Target Types}} (1 - P(S_{i}|T_{i})) * P_{t-1}(T_
 P_{t}(empty) = \frac{P(S_{e}|T_{e})*P_{t-1}(empty)}{ P(S_{e}|T_{e})*P_{t-1}(empty) + P(miss)}
 \end{equation}
 
-The $P(empty)$ probability is then used to derive a Discrete Shannon Uncertainty value as described in \citet{shannon} (also known as Shannon Entropy).  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to one when $P(empty) = 0.5$. The equation can be see in~\ref{eq:shannon} and is plotted in figure~\ref{fig:shannon}.
+
+Similar to \citet{jin}, the $P(empty)$ probability is then used to derive a Discrete Shannon Uncertainty value as described in \citet{shannon} (also known as Shannon Entropy).  A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to one when $P(empty) = 0.5$. The equation can be see in~\ref{eq:shannon} and is plotted in figure~\ref{fig:shannon}.
 	
-\end{multicols*}
-
-
 \begin{equation}
 \label{eq:shannon}
-U = -P(empty) * \log_{2}(P(empty)) - ( 1-P(empty) * \log_{2}(1-P(empty)))
+\begin{aligned}
+U = &-P(empty) * \log_{2}(P(empty)) - \\&( 1-P(empty) * \log_{2}(1-P(empty)))
+\end{aligned}
 \end{equation}
 
-\begin{multicols*}{2}
-	
+
 \begin{figure}[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
@@ -56,16 +55,26 @@ U = -P(empty) * \log_{2}(P(empty)) - ( 1-P(empty) * \log_{2}(1-P(empty)))
 	\label{fig:shannon}
 \end{figure}
 
+%\end{multicols*}
+
+%\begin{equation}
+%\label{eq:shannon}
+%U = -P(empty) * \log_{2}(P(empty)) - ( 1-P(empty) * \log_{2}(1-P(empty)))
+%\end{equation}
+
+%\begin{multicols*}{2}
+
+
+
 The goal of the mission is to find all of the targets and destroy them.  In order to guarantee that all targets have been found the UAVs must reduce the Shannon Uncertainty of each world cell to 0 in their shared belief model.  In practice the world cells are never all driven to 0 at once.  There is a global certainty decay rate that is applied to the cell beliefs at every time step.  It slowly drives $P(empty)$ back to 50\% over time.  This models the fact that unless a UAV is watching a cell they cannot know with 100\% certainty what is going on within that cell.  There is a chance that a moving target that has somehow evaded detection could be occupying a previously scanned world cell location.  So instead of requiring the uncertainty of all world cells to be at 0\% to end the mission we only require that all cells be driven below a user defined threshold percentage.
 
 %A more accurate dispersion of uncertainty would require all UAVs in the swarm to understand the kinematic limits of every target type in the mission area.  Upon detection and subsequent sensor loss of a mobile target, uncertainty should radiate outward from the target's last known location.  The rate and directionality of uncertainty propagation would be computed using the known maximum speed and turning characteristics of the target's suspected type. This more accurate technique was not utilized in this model for two reasons.  One reason is that this increase in accuracy comes with an increase in algorithm complexity and computing requirements.  The goal of this work is to obtain swarming behavior with minimal logic and this added complexity negates that goal.  The second reason is because of the target data requirements.  Collecting and formatting this information for all of the pre-existing legacy vehicles in the swarm would be an additional burden on software retrofitting tasks.  It also poses additional intelligence gathering requirements before every deployment of the swarm.  Therefore the naive global decay rate for uncertainty, while not fully accurate, is feasible and usable.
 
 
+
 %\section{Target Beliefs}
 \subsubsection{Target Beliefs}
 When a UAV detects something that might be a target it adds a Target Belief to its Belief Model.  The Target Belief contains an estimation of the target's location and orientation.  It also contains a list of all possible target types and an associated probability that the detected target is the corresponding type of target. The list of target type probabilities within a Target Belief always sum up to one.  At initialization all target types are equally likely.  As time progresses and more sensor detection attempts of the target are completed the probabilities per target type will converge to a single type.  As with Cell Beliefs the probabilities for target type's are updated using a Bayesian Inference system.  
-
-The Bayesian Inference update equation for Target Beliefs is shown in equation~\ref{eq:bayesianTgt}.  The parameters in equation~\ref{eq:bayesianTgt} are the same as for Cell Beliefs with the addition of $P(S_{j}|T_{i})$ which is the probability of mis-perceiving a detection of a target type $i$ as a target type $j$.  This equation is applied for every suspected target type returned from a sensor scan of a world cell. After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief such that equation~\ref{eq:probsNormalize} holds true.  The values for $P(S_{x}|T_{x})$ used in this work are listed in Table~\ref{tab:snsrTgtProb}.
 
 %is the Detected Target Type from a sensor scan and $TT$ is a Target Type. $P_{TT}(x)$ is the probability that the scanned target's type is the $x$ type.  This equation is applied for every suspected target type returned from a sensor scan.  After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief.\textbf{TODO: mulitcol format}
 
@@ -92,6 +101,10 @@ P_{t}(T_{i}) = \frac{P(S_{i}|T_{i})*P_{t-1}(T_{i})}{ \sum_{j=0}^{\text{All Targe
 \end{equation}
 
 %	P_{TT}(DTT) = \frac{ P(\text{Detecting }TT) * P_{TT}(DTT)}  {ddd}
+
+The Bayesian Inference update equation for Target Beliefs is shown in equation~\ref{eq:bayesianTgt}.  The parameters in equation~\ref{eq:bayesianTgt} are the same as for Cell Beliefs with the addition of $P(S_{j}|T_{i})$ which is the probability of mis-perceiving a detection of a target type $i$ as a target type $j$.  This equation is applied for every suspected target type returned from a sensor scan of a world cell. After all of the sensor's possible target type results have been evaluated then the probabilities for all target types are normalized in the Target Belief such that equation~\ref{eq:probsNormalize} holds true.  The values for $P(S_{x}|T_{x})$ used in this work are listed in Table~\ref{tab:snsrTgtProb}.
+
+
 
 The Target Belief's orientation is updated upon each sensor scan with a simple weighted average of the perceived heading and the previous estimated heading value.  The simulation generates the perceived heading values in sensor detections by applying a random noise error value on top of truth data.  The simulation assumes that all sensors can estimate a target's heading within $\pm45^{\circ}$ of truth as a baseline performance.  This error range is scaled by $H_{ij}$ (described back in section~\ref{sec:sensor_var_descriptions}) to model sensor accuracy. The error range is computed with equation~\ref{eq:hdg_err_rng}.  Equation~\ref{eq:rand_hdg_err} then randomly selects a positive or negative value ($Hdg_{err}$) in the error range.  The results of equation~\ref{eq:rand_hdg_err} is then added to the true heading ($Hdg_{t}$) of the target to create the perceived heading ($Hdg_{p}$) in simulated sensor detections.
 
@@ -141,15 +154,7 @@ Each UAV in the swarm periodically broadcasts its internal Belief Model.  The mo
 	
 %\textbf{TODO: Multicol formatting issue}
 %The entirety of the Belief Model is shown in figure~\ref{fig:belief_object} in an Object Diagram.
-\end{multicols*}
-\begin{figure}[H]
-	\centering
-	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
-	\includegraphics[scale=0.75]{belief_object.png}
-	\caption{Belief Model Object Diagram}
-	\label{fig:belief_object}
-\end{figure}
-\begin{multicols*}{2}
+
 	
 %\textbf{TODO: Future work: Sensor type expertise should weigh into this}.
 
@@ -158,6 +163,7 @@ Merging Cell Beliefs is a simple process and is described in algorithm~\ref{alg:
 %Other alternative algorithms exist for for merging the belief data.  A Bayesian system is intractable because it would require every UAV in the swarm to know all of the characteristics of every other sensor in the swarm.  Every sensor detection would have to be encode in the belief data including all of the relative geometries between the sensor and target.  This would let the receivers recompute the entire world model with complete information.  The data transmission requirements and processing requirements for this merging system are enormous.  These requirements defeat the purpose of retrofitting legacy hardware platforms into a swarm but it would provide perfect synchronization between belief models.
 
 A pure Bayesian approach for merging cell beliefs is intractable because it would require every UAV in the swarm to recompute the word model from the entire history of all sensor readings every time new information was received.  This would defeat the goal of a simple algorithm that could easily retrofit legacy hardware platforms into a swarm.
+
 
 %Another alternative is to choose the belief data with the lower uncertainty.  The UAV with a lower uncertainty should have newer information, more sensor readings, or readings from better sensor(s).  If all of the sensors in the swarm had similar performance characteristics this would be a suitable method.  Problems arise when very poor sensors and very high quality sensors work together in the swarm.  No information about which sensor type performed a detection to update the belief model is encoded.  The belief model on the poor quality UAV may think it has very low certainty but in actuality it's just a collection of poor readings that are heavily mistaken.  The belief from a poor quality sensor might say that the $P(empty)$ of a cell is 10\% while the belief from a high quality sensor might say that the $P(empty)$ of that same cell is 90\%.  Both $P(empty)$ yield an uncertainty of roughly 0.4.  So which of these is the better one to choose in this case?  Without a better model of uncertainty that can account for these quality discrepancies this is not a viable alternative.
 
@@ -182,6 +188,17 @@ A pure Bayesian approach for merging cell beliefs is intractable because it woul
 %End from Sauter
 
 Using a weighted average is not a perfect solution but it is simple, intuitive, and easy to derive when comparing sensor and target type pairings.  It also prevents each UAV from having to know the details about every other UAV or sensor in the swarm.  The only one who knows all of the capabilities of the swarm is the human operator. It puts the responsibility on the swarm operator to give a relative strength per sensor and target type pairing.  It lets the operator set whether the UAV is extremely trusting of external data about a target or distrustful of external data about a target.
+
+\end{multicols*}
+\begin{figure}[H]
+	\centering
+	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
+	\includegraphics[scale=0.75]{belief_object.png}
+	\caption{Belief Model Object Diagram}
+	\label{fig:belief_object}
+\end{figure}
+\begin{multicols*}{2}
+
 
 Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At some time in the simulation UAV 1 believes cell $[2, 6]$ has a 20\% of being empty (or in other words an 80\% chance that something is there). This probability was last updated at time 1234.  UAV 1 has broadcasted this belief data and UAV 2 has received it.  UAV 2 believes there is a 50\% chance that the same cell is empty but this data was last updated a long time ago at time 22.  Therefore UAV 2 will merge UAV 1's data for this cell.  Since alpha is set to 0.6 the new $P_{2,6}(empty)$ for UAV 2 is $0.6*(0.2) + (1-0.6)*(0.5)=0.32$.  After the merging is complete UAV 2's $P(empty)$ value is set to $0.32$ and the last update timestamp is set to UAV 1's timestamp.
 

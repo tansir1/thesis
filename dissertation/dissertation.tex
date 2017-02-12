@@ -52,20 +52,30 @@
 \include{./text/intro}
 
 \include{./text/relatedWork}
+%\include{./text/scenModDesc}
+%\include{./text/targetModel}
+%\include{./text/uavModel}
+%\include{./text/sensorWeaponModel}
+%\include{./text/myModel}
+%\include{./text/belief_model}
+%\include{./text/taskAllocation}
+
+%\include implies a page break, \input does not
 \include{./text/scenModDesc}
-\include{./text/targetModel}
-\include{./text/uavModel}
-\include{./text/sensorWeaponModel}
-\include{./text/myModel}
-\include{./text/belief_model}
-\include{./text/taskAllocation}
+\input{./text/targetModel}
+\input{./text/uavModel}
+\input{./text/sensorWeaponModel}
+\input{./text/myModel}
+\input{./text/belief_model}
+\input{./text/taskAllocation}
+
 %\include{./text/performance}
 \include{./text/results}
 \include{./text/conclusion}
 
 \end{multicols*}
 %\backmatter
-%\onecolumn
+\onecolumn
 \newpage
 
 \printbibliography[title=References,heading=bibintoc]
