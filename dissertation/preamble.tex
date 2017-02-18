@@ -72,10 +72,18 @@
 %---Control of the number of columns on the page
 \usepackage{multicol}
 
+
+
 %-----Citations-----
 %http://ctan.sharelatex.com/tex-archive/macros/latex/contrib/biblatex/doc/biblatex.pdf
-%\usepackage[backend=biber,style=apa,citestyle=apa]{biblatex}
-\usepackage[backend=biber,style=authoryear,citestyle=authoryear,maxcitenames=1,natbib]{biblatex}
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage[style=apa,backend=biber]{biblatex}
+%\usepackage[style=apa,citestyle=apa,backend=biber]{biblatex}
+\DeclareLanguageMapping{american}{american-apa}
+%Had been using this verson
+%\usepackage[backend=biber,style=authoryear,citestyle=authoryear,maxcitenames=1,natbib]{biblatex}
+
 %\usepackage[backend=biber,style=apa,citestyle=authoryear,maxcitenames=1,natbib]{biblatex}
 %\addbibresource{text/references.bib}
 
