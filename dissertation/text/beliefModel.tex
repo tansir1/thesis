@@ -19,7 +19,7 @@ Prior to beginning the mission the geographic area is tessellated into a rectang
 	\label{fig:comm_ranges}
 \end{figure}
 
-Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty, $P(empty)$, and a timestamp of when this data was last updated.  This is commonly called a Grid Based Occupancy Map. The probability value is updated in a Bayesian fashion by sensor scans during each time step of the simulation similar to~\cite{waharte}.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy~\cite{shannon}) value.
+Each cell in the world grid is identified by a row and column index.  Each cell contains a probability of being empty, $P(empty)$, and a timestamp of when this data was last updated.  This is commonly called a Grid Based Occupancy Map. The probability value is updated in a Bayesian fashion by sensor scans during each time step of the simulation similar to~\parencite{waharte}.  This probability is then used to derive a Discrete Shannon Uncertainty (also known as Shannon Entropy~\parencite{shannon}) value.
 
 A Shannon Uncertainty curve is zero when $P(empty)$ is 0\% or 100\% since in those edges cases we know for certain if the cell is empty or not.  Conversely a Shannon Uncertainty curve is at its peak when we know nothing for certain when $P(empty)$ is 50\%.  Nominally a Shannon Uncertainty curve varies from zero to one when $P(empty) = 0.5$. \textbf{TODO: multicol format issue}  The equation can be see in~\ref{eq:shannon} and is plotted in figure~\ref{fig:shannon}.
 
@@ -104,7 +104,7 @@ The Task State enumerations control when and who may bid on tasks.  There are su
 
 %\section{Merging Beliefs}
 \subsection{Merging Beliefs}
-Each UAV in the swarm periodically broadcasts its internal Belief Model.  The model is shown in Object Diagram format in figure~\ref{fig:belief_object}.  The entire model is encoded and transmitted to all other swarm members within communications range.   When a UAV receives another swarm member's belief model it must be merged with the receiver's internal belief.  No UAV completely trusts any other UAV in the swarm.  All data is merged in a weighted or filtered fashion.  No data is copied 100\% as-is since there are no guarantees that any one UAV is perfectly correct about anything.  The merging process in this work is an implementation of the Fusion Update technique described in~\cite{shem} for merging multiple values of uncertainty.
+Each UAV in the swarm periodically broadcasts its internal Belief Model.  The model is shown in Object Diagram format in figure~\ref{fig:belief_object}.  The entire model is encoded and transmitted to all other swarm members within communications range.   When a UAV receives another swarm member's belief model it must be merged with the receiver's internal belief.  No UAV completely trusts any other UAV in the swarm.  All data is merged in a weighted or filtered fashion.  No data is copied 100\% as-is since there are no guarantees that any one UAV is perfectly correct about anything.  The merging process in this work is an implementation of the Fusion Update technique described in~\parencite{shem} for merging multiple values of uncertainty.
 
 \textbf{TODO: Multicol formatting issue}
 %The entirety of the Belief Model is shown in figure~\ref{fig:belief_object} in an Object Diagram.
@@ -148,7 +148,7 @@ Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At 
 	\end{tabular}
 \end{table}
 
-Merging Target Beliefs is more complicated but uses a similar weighted averaging technique as merging Cell Beliefs.  The model in this paper assumes that the UAVs are able to perform target track fusion (also known has cross-track correlation) amongst themselves and assign each track a unique ID such as in~\cite{stroupe}, \cite{barooah}, and~\cite{spillings}.  This process is outside the scope of this paper.
+Merging Target Beliefs is more complicated but uses a similar weighted averaging technique as merging Cell Beliefs.  The model in this paper assumes that the UAVs are able to perform target track fusion (also known has cross-track correlation) amongst themselves and assign each track a unique ID such as in~\parencite{stroupe}, \parencite{barooah}, and~\parencite{spillings}.  This process is outside the scope of this paper.
 
 As stated earlier Target Beliefs have an estimated location, orientation, and list of target type probabilities.  Now we assume they also have a unique identifier assigned by the target track fusion process.  This unique identifier is used as a first pass comparison filter when merging Target Belief data.  If the receiving UAV does not have any data for the incoming Target Belief it simply copies it verbatim.  If the receiving UAV already has data for the Target Belief then a more detailed inspection is required.  Target Beliefs only get merged if the received data is newer than the currently stored data.  In this case the estimated target orientation, position, and list of type probabilities are all averaged with a user defined weighting against the incoming data.  The formal algorithm is defined in algorithm~\ref{alg:mergeTarget}.
 
