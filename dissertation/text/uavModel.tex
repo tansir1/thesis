@@ -21,7 +21,7 @@ Each UAV type has a fixed speed and turning radius.  The fixed speed represents 
 	\end{tabular}
 \end{table}
 
-UAVs know their current 2D coordinate and heading.  This information is used to compute a path to any destination location and orientation.  In formal mathematics terms the kinematic model of a UAV is defined as \dots
+UAVs know their current 2D coordinate and heading.  This information is used to compute a path to any destination location and orientation.  In formal mathematics terms the kinematic model of a UAV is defined in equations~\ref{eq:uavChngX} - \ref{eq:uavTurnRateDeriv}.  This set of kinematic equations is a common model for simulating aircraft movement on a 2D plane and can be seen elsewhere in \textcite{beard}, \textcite{finke}, \textcite{mclainBeard}, and \textcite{coopPathBook}.
 
 \begin{align}
 \dot{x} &= v \cos(\psi) \label{eq:uavChngX}\\
@@ -31,5 +31,5 @@ UAVs know their current 2D coordinate and heading.  This information is used to 
 \psi_{constant} &= \frac{v*\sin(\pi)}{r} \label{eq:uavTurnRateDeriv}
 \end{align}
 
-\dots where $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Curves described in \textcite{dubins}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in Equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.  This set of kinematic equations is a common model for simulating aircraft movement on a 2D plane and can be seen elsewhere in \textcite{beard}, \textcite{finke}, \textcite{mclainBeard}, and \textcite{coopPathBook}.
+In equations \ref{eq:uavChngX} - \ref{eq:uavTurnRateDeriv} $x$ and $y$ represent the UAV's current position on a Cartesian plane, $v$ is the UAV's fixed speed, $\psi$ is the UAV's heading, and $r$ is the UAV's turning radius.  Equations~\ref{eq:uavChngX} and \ref{eq:uavChngY} enforce that a UAV's position changes relative to its speed on a continuous trajectory.  Equation~\ref{eq:uavTurnRate} forces the UAVs to always turn at a known rate or not at all.  This allows for simplified trajectory planning using the equations for Dubin's Curves described in \textcite{dubins}.  Equation~\ref{eq:uavAccel} states that the UAVs move at a constant speed.  The constant for the turn rate is computed as shown in Equation~\ref{eq:uavTurnRateDeriv}.  The world's terrain is modeled as a flat bald Earth.  
 
