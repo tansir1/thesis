@@ -1,0 +1,25 @@
+\subsection{Algorithm Evaluation}
+A set of simulated worlds were created that utilize the mechanics described in sections~\ref{sec:target_model} - \ref{sec:sensor_wpn_models}.  These simulated worlds were used to observe whether or not the new Implicit Territorial Swarming algorithm exhibits the necessary emergent behavior for swarming.
+
+\subsubsection{Performance Metrics}
+The new Implicit Territorial Swarming algorithm developed in this research was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.  The metrics are defined as follows.
+
+\begin{description}
+	\item [Time to detect all targets] The amount of time from the start of the simulation until all targets in the simulation have been detected by any UAV at least once.  This is implemented by using target truth data and maintaining a corresponding status flag per target that is set once the target is detected.  Once all of the flags have been set then all targets have been detected at least once.  When this event occurs the time is recorded.
+	
+	\item[Time to destroy all targets] The amount of time from the start of the simulation until all targets have been destroyed.  This is implemented by using target truth data and recording the time when all targets have been destroyed.
+	
+	\item[All world known] This is the amount of time from the start of simulation until over half of the UAVs in the swarm reduce the average uncertainty of all of their Cell Beliefs below a user defined threshold.  In other words this is the amount of time it takes before the swarm is confident that it has sufficient data about the entire world.  Once this state is reached it has scanned a majority, if not all, of the world, and believes it has found a majority, if not all, of the targets.
+\end{description}
+
+
+\subsubsection{Experiment Configuration}
+For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$Km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in Appendix~\ref{sec:world_images}.
+
+The mobile targets moved at $10m/s$ and were best hit from $\pm$ $115^{\circ}$ from their front.  Static targets were best hit from $\pm$ $45^{\circ}$.
+
+Two types of UAVs were modeled.  One is a fast long range ISR platform and the other is a slow strike platform.  The ISR platform is type 0 in Table~\ref{tab:uavKinematic}.  The strike platform is type 1 in Table~\ref{tab:uavKinematic}.  The ISR platform carries sensor 0 defined in Table~\ref{tab:sensorType} and has no weapons.  The strike platform has sensor type 1 defined in Table~\ref{tab:sensorType}.  The strike platform carries 4 rounds each of weapon types 0 and 1 defined in Table~\ref{tab:weaponType}.  Ideally this is more than enough munitions to complete the missions even with a significant amount of misses.  The performance of these sensors and weapons against the targets are defined in tables~\ref{tab:snsrTgtProb}, ~\ref{tab:snsrTgtMisClassProb}, and \ref{tab:wpnTgtProb}.  Static targets are target type 0 and mobile targets are type 1.  The sensors all have a $10\%$ chance of misclassifying any target type as the other type as listed in Table~\ref{tab:snsrTgtMisClassProb}.
+
+The threshold for the ``all world known'' metric was set at 0.3. To obtain a Shannon Uncertainty of 0.3 or lower requires having a $P(empty) < 5\%$ or $P(empty) > 95\%$.
+
+The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The communication range is defined as a percentage of the maximum distance across the simulated world.  Since the worlds are square shaped the maximum distance is located between any two diagonal corners.  Since the worlds are 2.5 by 2.5$Km$ then the maximum distance is physically 3.54$Km$ ($3.54Km = \sqrt{(2.5Km^{2}+2.5Km^{2})}$).  One set of simulations was run using a $100\%$ communication range to serve as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times. Four more runs were performed using communication ranges of $20\%$, $10\%$, $5\%$, and $2\%$.

@@ -1,30 +1,7 @@
-\chapter{Results and Discussion}
+\chapter{Results}
 \label{chap:results}
 
-\section{Performance Metrics}
-The new Implicit Territorial Swarming algorithm developed in this research was implemented and simulated in a custom computer program.  The model's performance was measured in three ways; time to detect all targets, time to destroy all targets, and the time it took to ``know'' the whole world.  Using these metrics conclusions can be drawn about the model's capabilities.  The metrics are defined as follows.
-
-\begin{description}
-	\item [Time to detect all targets] The amount of time from the start of the simulation until all targets in the simulation have been detected by any UAV at least once.  This is implemented by using target truth data and maintaining a corresponding status flag per target that is set once the target is detected.  Once all of the flags have been set then all targets have been detected at least once.  When this event occurs the time is recorded.
-	
-	\item[Time to destroy all targets] The amount of time from the start of the simulation until all targets have been destroyed.  This is implemented by using target truth data and recording the time when all targets have been destroyed.
-	
-	\item[All world known] This is the amount of time from the start of simulation until over half of the UAVs in the swarm reduce the average uncertainty of all of their Cell Beliefs below a user defined threshold.  In other words this is the amount of time it takes before the swarm is confident that it has sufficient data about the entire world.  Once this state is reached it has scanned a majority, if not all, of the world, and believes it has found a majority, if not all, of the targets.
-\end{description}
-
-
-\section{Experiment Configuration}
-For this experiment 10 random worlds were generated each with 2 mobile targets, 4 static targets, and 5 UAVs.  The simulated worlds were configured as a 2.5 by 2.5$Km$ area subdivided into 15 rows and columns.  A rendering of each generated world is included in section~\ref{sec:world_images}.
-
-The mobile targets moved at $10m/s$ and were best hit from $\pm$ $115^{\circ}$ from their front.  Static targets were best hit from $\pm$ $45^{\circ}$.
-
-Two types of UAVs were modeled.  One is a fast long range ISR platform and the other is a slow strike platform.  The ISR platform is type 0 in Table~\ref{tab:uavKinematic}.  The strike platform is type 1 in Table~\ref{tab:uavKinematic}.  The ISR platform carries sensor 0 defined in Table~\ref{tab:sensorType} and has no weapons.  The strike platform has sensor type 1 defined in Table~\ref{tab:sensorType}.  The strike platform carries 4 rounds each of weapon types 0 and 1 defined in Table~\ref{tab:weaponType}.  Ideally this is more than enough munitions to complete the missions even with a significant amount of misses.  The performance of these sensors and weapons against the targets are defined in tables~\ref{tab:snsrTgtProb}, ~\ref{tab:snsrTgtMisClassProb}, and \ref{tab:wpnTgtProb}.  Static targets are target type 0 and mobile targets are type 1.  The sensors all have a $10\%$ chance of misclassifying any target type as the other type as listed in Table~\ref{tab:snsrTgtMisClassProb}.
-
-The threshold for the ``all world known'' metric was set at 0.3. To obtain a Shannon Uncertainty of 0.3 or lower requires having a $P(empty) < 5\%$ or $P(empty) > 95\%$.
-
-\section{General Results}
-
-The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The results of these simulation runs were averaged together and are shown in Table~\ref{tab:avgResults} and plotted in Figure~\ref{fig:averages}.  Standard deviations are included in table as $\pm$ values next to their corresponding averages.  The complete raw time data per world and per communication range can be found in Appendix~\ref{sec:raw_data}.
+The results of the simulation runs were averaged together and are shown in Table~\ref{tab:avgResults} and plotted in Figure~\ref{fig:averages}.  Standard deviations are included in table as $\pm$ values next to their corresponding averages.  The complete raw time data per world and per communication range can be found in Appendix~\ref{sec:raw_data}.
 
 
 \begin{table}[H]
@@ -44,6 +21,26 @@ The simulation was ran for all 10 worlds with the same random seed.  This proces
 		2   & 221 $\pm$ 90 & 434$\pm$105 & 238$\pm$112 \\ \hline
 	\end{tabular}
 \end{table}
+
+Table~\ref{tab:avgResultsRatio} shows the ratios of performance between the test cases.  The $10\%$ and $20\%$ range cases at worst take $155\%$ of the time required by perfect global network baseline.
+
+\begin{table}[H]
+	\caption{Ratio of time to complete objectives compared to 100\% range}
+	\centering
+	%	\rowcolors{1}{lightgray}{white}
+	\label{tab:avgResultsRatio}
+	%	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+	\begin{tabular}{c c c c}
+		\hline
+		\parbox[c]{1.25cm}{\centering Comm.\\Range\\ \%} & \parbox[c]{1.5cm}{\centering Average\\time all\\detected\\ratio} & \parbox[c]{1.75cm}{\centering Average\\time all\\destroyed\\ratio} & \parbox[c]{1.5cm}{\centering Average\\time\\world\\known\\ratio}\\
+		\hline
+		100 & 1.0   & 1.0   & 1.0   \\
+		20  & 1.299 & 1.163 & 1.481 \\
+		10  & 1.0   & 1.122 & 1.547 \\
+		5   & 1.393 & 1.43  & 2.112 \\
+		2   & 1.902 & 2.11  & 3.895 \\ \hline
+	\end{tabular}
+\end{table} 
 
 
 A more interesting view of the data is shown via Tukey style boxplots in Figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles of the metric data recorded across all 10 words is bounded by the blue boxes in the figures.  The red lines are the median values and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
@@ -80,34 +77,22 @@ A more interesting view of the data is shown via Tukey style boxplots in Figures
 
 \begin{multicols*}{2}
 
-The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network performs better than networks with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in all performance metrics.  Table~\ref{tab:avgResultsRatio} shows the ratios of performance between the test cases.  The $10\%$ and $20\%$ range cases at worst take $155\%$ of the time required by perfect global network.
 
-\begin{table}[H]
-	\caption{Ratio of time to complete objectives compared to 100\% range}
-	\centering
-%	\rowcolors{1}{lightgray}{white}
-	\label{tab:avgResultsRatio}
-%	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
-	\begin{tabular}{c c c c}
-		\hline
-		\parbox[c]{1.25cm}{\centering Comm.\\Range\\ \%} & \parbox[c]{1.5cm}{\centering Average\\time all\\detected\\ratio} & \parbox[c]{1.75cm}{\centering Average\\time all\\destroyed\\ratio} & \parbox[c]{1.5cm}{\centering Average\\time\\world\\known\\ratio}\\
-		\hline
-		100 & 1.0   & 1.0   & 1.0   \\
-		20  & 1.299 & 1.163 & 1.481 \\
-		10  & 1.0   & 1.122 & 1.547 \\
-		5   & 1.393 & 1.43  & 2.112 \\
-		2   & 1.902 & 2.11  & 3.895 \\ \hline
-	\end{tabular}
-\end{table} 
+%-------------------------------------------------------------------------
 
-The similar performances can be attributed to the density of UAVs in the swarm.  This simulation used 5 UAVs in a 2.5 by 2.5$Km$ world.  Assuming the UAVs are equally spaced across the world to maximize communication coverage then Table~\ref{tab:worldCommsRngCoverage} shows how much of the world is covered in each test case.  The \textit{Physical Comm. Range} is the maximum distance across the world ($3.54Km = \sqrt{(2.5Km^{2}+2.5Km^{2})}$) times the \textit{Communication Range \%} yielding the maximum communication distance between UAVs for the test case.  The \textit{Maximum Possible Coverage} is the sum of the circular coverage areas of the 5 UAVs.  The \textit{Percent of World Area} is the the \textit{Maximum Possible Coverage} divided by the total area of the mission world converted to a percentage.  Since the UAVs are equally spaced for best possible communications coverage in these calculations the \textit{Percent of World Area} is a theoretical upper limit and will never be achieved in any practical means.
+\chapter{Discussion}
+\label{chap:discussion}
+
+The $100\%$ communication range case serves as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times.  As expected a perfect global and centralized communication network performs better than networks with limited ranges.  The interesting point of comparison is that the $10\%$ and $20\%$ range cases come very close or match the $100\%$ case in all performance metrics. 
+
+The similar performances can be attributed to the density of UAVs in the swarm.  This simulation used 5 UAVs in a 2.5 by 2.5$Km$ world.  Assuming the UAVs are equally spaced across the world to maximize communication coverage then Table~\ref{tab:worldCommsRngCoverage} shows how much of the world is covered in each test case.  The \textit{Physical Comm. Range} is the maximum distance across the world ($3.54Km$) times the \textit{Communication Range \%} yielding the maximum communication distance between UAVs for the test case.  The \textit{Maximum Possible Coverage} is the sum of the circular coverage areas of the 5 UAVs.  The \textit{Percent of World Area} is the the \textit{Maximum Possible Coverage} divided by the total area of the mission world converted to a percentage.  Since the UAVs are equally spaced for best possible communications coverage in these calculations the \textit{Percent of World Area} is a theoretical upper limit and will never be achieved in any practical means.
 
 \begin{table}[H]
 	\caption{World communication coverage percentage}
 	\centering
-%	\rowcolors{1}{lightgray}{white}
+	%	\rowcolors{1}{lightgray}{white}
 	\label{tab:worldCommsRngCoverage}
-%	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
+	%	\begin{tabular}{|p{1.25cm}|p{1.5cm}|p{1.75cm}|p{1.5cm}|}
 	\begin{tabular}{c c c c}
 		\hline
 		\parbox[c]{1.25cm}{\centering Comm.\\Range\\ \%} & \parbox[c]{1.5cm}{\centering Physical\\Comm.\\Range\\($Km$)} &  \parbox[c]{1.75cm}{\centering Maximum\\Possible\\Coverage\\($Km^{2}$)} & \parbox[c]{1.5cm}{\centering Percent\\of\\World\\Area\\(\%)}\\
@@ -151,7 +136,7 @@ Another compounding issue in these short communication range cases is when the M
 
 
 \section{Directions for Future Work}
-As shown by simulation the Implicit Territorial Swarming algorithm is functional but there is always room for improvement.  In this scenario all aircraft had an equal communication range.  An interesting excursion would be to model varying communication ranges amongst individuals in the swarm.  Similarly, the addition of non-RF based communication payloads whose sole purpose is to relay communications from one part of the swarm to another would add an interesting dynamic.
+As shown by simulation the Implicit Territorial Swarming algorithm is functional but there is always room for improvement.  In this scenario all aircraft had an equal communication range.  An interesting excursion would be to model varying communication ranges amongst individuals in the swarm.  Similarly, the addition of communication relay payloads whose sole purpose is to relay data from one part of the swarm to another would add an interesting dynamic.
 
 There is room for enhancement in the rules for swarm cooperation.  Currently the same platform cannot Monitor and Attack at the same time even when both tasks encompass the same target.  This would certainly effect the effectiveness of the extremely small communication range cases.  Another interesting concept is the idea of an ``interested bidder'' for tasks.  In this case a platform is currently engaged in performing task A but hears about new task B.  The UAV is very well suited for task B but it should not abandon its current task A until someone can take it over.  As is some other UAV will pick up task B, but it may do the job poorly compared to the UAV stuck on task A.  With this new concept the busy UAV could announce that it is very interested in task B and that anyone who can closely match its score on task A can takeover the work for task A.  Other UAVs hearing about the interested bidder might change their behaviors to help relieve the UAV on task A or temporarily delay their execution of task B to see if the UAV on task A gets relieved.
 
