@@ -11,12 +11,15 @@ Each UAV type has a fixed speed and turning radius.  The fixed speed represents 
 \begin{table}[H]
 	\caption{UAV kinematic definitions}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:uavKinematic}
-	\begin{tabular}{|p{1cm}|p{2cm}|p{1cm}|}
+%	\begin{tabular}{m{1cm} m{2cm} m{1cm}}
+	\begin{tabular}{c c c}
 		\hline
-		UAV Type & Turning Radius (m) & Speed ($\frac{m}{s}$)\\ \hline
-		0 & 150 & 100 \\ \hline
+%		UAV Type & Turning Radius (m) & Speed ($\frac{m}{s}$)\\ \hline
+		UAV Type & \parbox[c]{3cm}{\centering Turning\\Radius (m)} & Speed ($\frac{m}{s}$)\\ \hline
+		
+		0 & 150 & 100 \\
 		1 & 300 & 60 \\ \hline
 	\end{tabular}
 \end{table}

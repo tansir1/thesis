@@ -205,17 +205,17 @@ Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At 
 \begin{table}[H]
 	\caption{Example cell merging with $alpha=0.6$}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+	%\rowcolors{1}{lightgray}{white}
 	\label{tab:exampleCellMerge}
-	\begin{tabular}{|r|c|c||c|c|}
+	$Had to put in a blank column so that the cline command creates two lines instead of one continous line
+	
+	\begin{tabular}{rccccc}
 		\hline
-		& \multicolumn{2}{c||}{Before Merge} & \multicolumn{2}{c|}{After Merge} \\
-		\hline
-		UAV             & 1   & 2                            & 1   & 2 \\
-		\hline
-		$P_{2,6}(empty)$& 0.2 & 0.5                          & 0.2 & 0.32 \\
-		\hline
-		Timestamp       & 1234& 22                           & 1234& 1234 \\
+		& \multicolumn{2}{c}{Before Merge} & &\multicolumn{2}{c}{After Merge}\\  \cline{2-3}  \cline{5-6}
+%		\hline
+		UAV             & 1   & 2            &                & 1   & 2 \\
+		$P_{2,6}(empty)$& 0.2 & 0.5          &                & 0.2 & 0.32 \\
+		Timestamp       & 1234& 22           &                & 1234& 1234 \\
 		\hline
 	\end{tabular}
 \end{table}

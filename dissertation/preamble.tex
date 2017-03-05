@@ -34,7 +34,7 @@
 %Use these in a tabular environment
 %\hiderowcolors
 %\showrowcolors
-\usepackage[table]{xcolor}
+%\usepackage[table]{xcolor}
 
 %-----Let's the user added arbitrary notes for future document work----
 %https://www.ctan.org/pkg/todonotes?lang=en
@@ -96,12 +96,15 @@
 %\titleformat{\chapter}[display]   
 %{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}   
 %\titlespacing*{\chapter}{0pt}{-50pt}{40pt}
-
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd{\@makechapterhead}{50\p@}{0pt}{}{}
 \patchcmd{\@makeschapterhead}{50\p@}{0pt}{}{}
 \makeatother
+
+%-----Increase whitespace between table captions and data to something readable---
+\usepackage{caption} 
+\captionsetup[table]{skip=5pt}
 
 
 %-----Change to arial font for default as required by school formatting----

@@ -12,12 +12,14 @@ Each type of sensor in the simulation has a minimum and maximum detection range.
 \begin{table}[H]
 	\caption{Sensor type definitions}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:sensorType}
-	\begin{tabular}{|p{1cm}|p{1.5cm}|p{1cm}|p{1cm}|p{1.5cm}|}
+%	\begin{tabular}{|p{1cm}|p{1.5cm}|p{1cm}|p{1cm}|p{1.5cm}|}
+
+	\begin{tabular}{c c c c c}
 		\hline
-		Sensor Type & Field of View ($^{\circ}$) & Min Range (m) & Max Range (m) & Slew rate ($\frac{^{\circ}}{s}$)\\ \hline
-		0 & 60 & 10 & 1100 & 30 \\  \hline
+		\parbox[c]{1cm}{\centering Sensor\\Type} & \parbox[c]{1.5cm}{\centering Field of\\View ($^{\circ}$)} & \parbox[c]{1cm}{\centering Min\\Range (m)} & \parbox[c]{1cm}{\centering Max\\Range (m)} & \parbox[c]{1.5cm}{\centering Slew rate\\($\frac{^{\circ}}{s}$)}\\ \hline
+		0 & 60 & 10 & 1100 & 30 \\
 		1 & 45 & 50 & 700  & 10 \\  \hline
 	\end{tabular}
 \end{table}
@@ -63,12 +65,14 @@ Similarly, each weapon type has a minimum and maximum launch range.  If a target
 \begin{table}[H]
 	\caption{Weapon type definitions}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:weaponType}
-	\begin{tabular}{|p{1.4cm}|p{1.6cm}|p{1.2cm}|p{1.2cm}|}
+%	\begin{tabular}{|p{1.4cm}|p{1.6cm}|p{1.2cm}|p{1.2cm}|}
+	\begin{tabular}{c c c c}
 		\hline
-		Weapon Type & Launch Angle ($^{\circ}$) & Min Range (m) & Max Range (m)\\ \hline
-		0 & 12 & 10 & 200 \\ \hline
+		\parbox[c]{1.4cm}{\centering Weapon\\Type} & \parbox[c]{1.6cm}{\centering Launch\\Angle\\($^{\circ}$)} & \parbox[c]{1.2cm}{\centering Min\\Range\\(m)} & \parbox[c]{1.2cm}{\centering Max\\Range\\(m)}
+		\\ \hline
+		0 & 12 & 10 & 200 \\
 		1 & 26 & 25 & 500 \\ \hline
 	\end{tabular}
 \end{table}
@@ -86,15 +90,16 @@ $P(S_{x}|T_{x})$ and $P(S_{j}|T_{i})$ are defined assuming perfect alignment wit
 \begin{table}[H]
 	\caption{Sensor to Target Probabilities}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:snsrTgtProb}
-	\begin{tabular}{|p{1.2cm}|p{1.2cm}|p{1.5cm}|p{1cm}|}
+%	\begin{tabular}{|p{1.2cm}|p{1.2cm}|p{1.5cm}|p{1cm}|}
+	\begin{tabular}{c c c c}
 		\hline
 %		Sensor Type & Target Type & Prob(Detect) & Heading Estimation Coefficient\\ \hline
-		Sensor Type & Target Type & $P(S_{x}|T_{x})$ & $H_{ij}$\\ \hline
-		0 & 0 & 0.6 & 0.5 \\  \hline
-		0 & 1 & 0.6 & 0.5 \\  \hline
-		1 & 0 & 0.4 & 0.5 \\  \hline
+		\parbox[c]{1.2cm}{\centering Sensor\\Type} & \parbox[c]{1.2cm}{\centering Target\\Type} & $P(S_{x}|T_{x})$ & $H_{ij}$\\ \hline
+		0 & 0 & 0.6 & 0.5 \\
+		0 & 1 & 0.6 & 0.5 \\
+		1 & 0 & 0.4 & 0.5 \\
 		1 & 1 & 0.4 & 0.5 \\  \hline
 	\end{tabular}
 \end{table}
@@ -102,14 +107,16 @@ $P(S_{x}|T_{x})$ and $P(S_{j}|T_{i})$ are defined assuming perfect alignment wit
 \begin{table}[H]
 	\caption{Sensor to Target Misclassification Probabilities}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+	%\rowcolors{1}{lightgray}{white}
 	\label{tab:snsrTgtMisClassProb}
-	\begin{tabular}{|p{1cm}|p{1.25cm}|p{1.6cm}|p{1.5cm}|}
+	%\begin{tabular}{|p{1cm}|p{1.25cm}|p{1.6cm}|p{1.5cm}|}
+	\begin{tabular}{c c c c}
+		
 		\hline
-		Sensor Type & True Target Type & Perceived Target Type & $P(S_{j}|T_{i})$\\ \hline
-		0 & 0 & 1 & 0.1 \\ \hline
-		0 & 1 & 0 & 0.1 \\ \hline
-		1 & 0 & 1 & 0.1 \\ \hline
+		\parbox[c]{1cm}{\centering Sensor\\Type} & \parbox[c]{1.25cm}{\centering True\\Target\\Type} & \parbox[c]{1.6cm}{\centering Perceived\\Target\\Type} & $P(S_{j}|T_{i})$\\ \hline
+		0 & 0 & 1 & 0.1 \\
+		0 & 1 & 0 & 0.1 \\
+		1 & 0 & 1 & 0.1 \\
 		1 & 1 & 0 & 0.1 \\ \hline
 	\end{tabular}
 \end{table}
@@ -151,13 +158,13 @@ Not all areas in the world will contain a target.  Determining if an area is cle
 \begin{table}[H]
 	\caption{Empty Cell Detection Probabilities}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:snsrEmptyProb}
 	%	\begin{tabular}{|p{1cm}|p{1cm}|}
-	\begin{tabular}{|l|l|}
+	\begin{tabular}{l l}
 		\hline
 		Sensor Type & $P(S_{e}|T_{e})$\\ \hline
-		0 & 0.8\\ \hline
+		0 & 0.8\\
 		1 & 0.6\\ \hline
 	\end{tabular}
 \end{table}
@@ -171,15 +178,15 @@ Like cars, armored targets such as tanks have stronger and weaker areas, therefo
 \begin{table}[H]
 	\caption{Weapon to Target Probabilities}
 	\centering
-	\rowcolors{1}{lightgray}{white}
+%	\rowcolors{1}{lightgray}{white}
 	\label{tab:wpnTgtProb}
-	\begin{tabular}{|p{1.5cm}|p{1.5cm}|p{3cm}|}
+%	\begin{tabular}{|p{1.5cm}|p{1.5cm}|p{3cm}|}
+	\begin{tabular}{c c c}
 		\hline
-%		 & Target Type & Prob(Destruction)\\ \hline
-		Weapon Type & Target Type & $P(D_{x})$\\ \hline
-		0 & 0 & 0.75 \\ \hline
-		0 & 1 & 0.75 \\ \hline
-		1 & 0 & 0.75 \\ \hline
+		\parbox[c]{1.5cm}{\centering Weapon\\Type} & \parbox[c]{1.5cm}{\centering Target\\Type} & $P(D_{x})$\\ \hline
+		0 & 0 & 0.75 \\
+		0 & 1 & 0.75 \\
+		1 & 0 & 0.75 \\
 		1 & 1 & 0.75 \\ \hline
 	\end{tabular}
 \end{table}
