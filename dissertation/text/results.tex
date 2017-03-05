@@ -60,21 +60,21 @@ A more interesting view of the data is shown via Tukey style boxplots in Figures
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{detected_box.png}
-	\caption{Boxplot for time to detect all targets}
+	\caption{Boxplot for time to detect all targets per communication range}
 	\label{fig:detectBoxPlot}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{destroyed_box.png}
-	\caption{Boxplot for time to destroy all targets}
+	\caption{Boxplot for time to destroy all targets per communication range}
 	\label{fig:destroyedBoxPlot}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{known_box.png}
-	\caption{Boxplot for time to know whole world}
+	\caption{Boxplot for time to know whole world per communication range}
 	\label{fig:knownBoxPlot}
 \end{figure}
 
@@ -142,7 +142,7 @@ Within the performance limits and size of the swarm in these simulations we can 
 
 Within the constraints of this simulation we can drop the transmission range down to $10\%$ of the maximum world range with almost no detrimental affects on overall mission performance.  If some performance degradation is acceptable we can further reduce the communication range requirements to $5\%$.  It seems extreme but is also possible to still complete the mission with only a $2\%$ communication range albeit with a much longer mission duration and a high risk of failure.
 
-\section{Unique Results}
+\section{Limitations of the Study}
 There are a few results where the swarm was unable to complete the mission.  World 3 was a problem for the $100\%$, $10\%$, and $2\%$ cases.  World 3 can be seen in Figure~\ref{fig:world3}.  There is a static target located at row 9 column 0.  The best approach angle for striking the static target is $\pm$ $45^{\circ}$.  In this physically literal edge case those approach angles puts the UAVs on a trajectory outside of the world.  Therefore the UAVs will attempt strikes at very poor angles from the target's backside instead.  The simulation logs show that many shots are taken at this target and miss.  Eventually all of the strike platforms run out of munitions on this target unless they get very lucky.  This result is a limitation of the simulation's random generation nature.  A real world mission analyst would expand the mission area to allow for a better strike angle against this target.  The simulation does not account for accumulating damage.  Every strike is a boolean draw to decide if a target is destroyed or not.  So even though in the simulation dozens of shots were fired at the target it is still considered alive and well.  In the real world dozens of shots would have likely caused significant if not fatal damage to the target even when fired from an undesirable angle.
 
 Communication range case of $5\%$ failed to complete world 4 and case $2\%$ failed to complete world 9.  In both cases a mobile target survived.  The logs show that the Attack platforms and the Monitoring platforms were not in communication range in both cases.  This compounded into multiple problems and possible failure issues.  The strike UAVs, who are the only armed aircraft, have very poor sensors compared to the ISR platforms.  The Attack platforms have a hard time finding and tracking mobile targets with these poor sensors.  Since the Attack and Monitor aircraft were not in communication range the Attack platforms usually had out-dated information about the target's location.  Therefore the attack platform flew to the target's previous location and the attack aircraft's poor sensors could not detect the target in the surrounding areas.  Eventually the attack platform would give up since it could not find the target.
@@ -150,7 +150,7 @@ Communication range case of $5\%$ failed to complete world 4 and case $2\%$ fail
 Another compounding issue in these short communication range cases is when the Monitoring UAVs were strike platforms instead of ISR platforms.  In these cases a strike platform would happen upon a target but no ISR platforms were able to hear about the target announcement.  Therefore the strike platform would perform the Monitoring task and do a poor job of it.  It would follow the mobile target while requesting for a second strike platform to perform the Attack task.  When a strike platform began performing the Attack it would suffer from the same poor sensor issues as the Monitoring platform, leading to many shots at where a target ``was'' instead of where it really ``is.''
 
 
-\section{Future Work}
+\section{Directions for Future Work}
 As shown by simulation the Implicit Territorial Swarming algorithm is functional but there is always room for improvement.  In this scenario all aircraft had an equal communication range.  An interesting excursion would be to model varying communication ranges amongst individuals in the swarm.  Similarly, the addition of non-RF based communication payloads whose sole purpose is to relay communications from one part of the swarm to another would add an interesting dynamic.
 
 There is room for enhancement in the rules for swarm cooperation.  Currently the same platform cannot Monitor and Attack at the same time even when both tasks encompass the same target.  This would certainly effect the effectiveness of the extremely small communication range cases.  Another interesting concept is the idea of an ``interested bidder'' for tasks.  In this case a platform is currently engaged in performing task A but hears about new task B.  The UAV is very well suited for task B but it should not abandon its current task A until someone can take it over.  As is some other UAV will pick up task B, but it may do the job poorly compared to the UAV stuck on task A.  With this new concept the busy UAV could announce that it is very interested in task B and that anyone who can closely match its score on task A can takeover the work for task A.  Other UAVs hearing about the interested bidder might change their behaviors to help relieve the UAV on task A or temporarily delay their execution of task B to see if the UAV on task A gets relieved.

@@ -31,7 +31,7 @@ def detected_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('World')
     plt.ylabel('Time (s)')
-    plt.title('Time to detect all targets')
+    #plt.title('Time to detect all targets')
     plt.grid()
 
     #plt.xlim([-0.5,9.5])
@@ -56,7 +56,7 @@ def destroyed_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('World')
     plt.ylabel('Time (s)')
-    plt.title('Time to destroy all targets')
+    #plt.title('Time to destroy all targets')
     plt.grid()
 
     #plt.xlim([-0.5,9.5])
@@ -76,7 +76,7 @@ def known_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('World')
     plt.ylabel('Time (s)')
-    plt.title('Time all world known')
+    #plt.title('Time all world known')
     plt.grid()
     #plt.xlim([-0.5,9.5])
     plot_data(plt, od.comm100.known, od.comm100)
@@ -92,7 +92,7 @@ def average_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('Communication Range %')
     plt.ylabel('Time (s)')
-    plt.title('Average time to complete objectives per communication range')
+    #plt.title('Average time to complete objectives per communication range')
     plt.grid()
 
     ticks = [0, 1, 2, 3, 4]
@@ -127,7 +127,7 @@ def detected_box_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('Communication Range %')
     plt.ylabel('Time (s)')
-    plt.title('Time to detect all targets')
+    #plt.title('Time to detect all targets')
     plt.grid()
 
     plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
@@ -147,7 +147,7 @@ def destroyed_box_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('Communication Range %')
     plt.ylabel('Time (s)')
-    plt.title('Time to destroy all targets')
+    #plt.title('Time to destroy all targets')
     plt.grid()
 
     plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
@@ -167,7 +167,7 @@ def known_box_plot():
     plt.figure(figsize=(figWidthInches, figHeightInches))
     plt.xlabel('Communication Range %')
     plt.ylabel('Time (s)')
-    plt.title('Time all world known')
+    #plt.title('Time all world known')
     plt.grid()
 
     plt.boxplot(boxData, labels=labels, showmeans=True, sym='bd')
