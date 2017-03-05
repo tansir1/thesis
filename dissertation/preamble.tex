@@ -72,7 +72,10 @@
 %---Control of the number of columns on the page
 \usepackage{multicol}
 
-
+%----Abbreviations and symbols listing---
+\usepackage{enumitem}
+\newlist{abbrv}{itemize}{1}
+\setlist[abbrv,1]{label=,labelwidth=1in,align=parleft,itemsep=0\baselineskip,leftmargin=!}
 
 %-----Citations-----
 %http://ctan.sharelatex.com/tex-archive/macros/latex/contrib/biblatex/doc/biblatex.pdf
@@ -87,7 +90,22 @@
 %\usepackage[backend=biber,style=apa,citestyle=authoryear,maxcitenames=1,natbib]{biblatex}
 %\addbibresource{text/references.bib}
 
+
+%----Remove excess whitespace around chapter titles----
+%\usepackage{titlesec}
+%\titleformat{\chapter}[display]   
+%{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}   
+%\titlespacing*{\chapter}{0pt}{-50pt}{40pt}
+
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\@makechapterhead}{50\p@}{0pt}{}{}
+\patchcmd{\@makeschapterhead}{50\p@}{0pt}{}{}
+\makeatother
+
+
 %-----Change to arial font for default as required by school formatting----
 %\renewcommand*\rmdefault{arial}
 
 \usepackage[titletoc]{appendix}
+

@@ -1,0 +1,244 @@
+
+\chapter{Algorithms}
+\label{sec:algorithms}
+
+
+\section{Data Merging}
+\begin{algorithm}[H]
+	\caption{Cell Belief Merging}
+	\label{alg:mergeCell}
+	\begin{algorithmic}[1]
+		\Function{MergeCells}{$myCells[][], otherCells[][]$}
+		\State $numRows\gets $ number of world rows
+		\State $numCols\gets $ number of world columns
+		\State $alpha\gets $ user defined weighting value in [0,1]
+		\For{$i\gets 0, numRows$}
+			\For{$j\gets 0, numCols$}
+				\If{$otherCells_{ij}.lastUpdateTime > myCells_{ij}.lastUpdateTime$}
+					\State $myCells_{ij}.probCellEmpty\gets alpha * otherCells_{ij}.probCellEmpty + (1-alpha) * myCells_{ij}.probCellEmpty$
+					\State $myCells_{ij}.lastUpdateTime\gets otherCells_{ij}.lastUpdateTime$
+				\EndIf
+			\EndFor
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Target Belief Merging}
+	\label{alg:mergeTarget}
+	\begin{algorithmic}[1]
+		\Function{MergeTargets}{$myTarget, otherTarget$}
+		\State $alpha\gets $ user defined weighting value
+		\If{$otherTarget.lastUpdateTime > myTarget.lastUpdateTime$}
+			\State $myTarget.heading\gets alpha * otherTarget.heading + (1-alpha)*myTarget.heading$
+			\State \Call{InterpolateCoordinate}{$myTarget.location, otherTarget.location, alpha$}
+			\For{$i\gets 0, $ number of target types}
+				\State $myTarget.probTypes[i]\gets alpha * otherTarget.probTypes[i] + (1-alpha)*myTarget.probTypes[i]$
+			\EndFor
+			\State $myTarget.lastUpdateTime\gets otherTarget.lastUpdateTime$
+		\EndIf
+		\EndFunction
+		\\
+		\Function{InterpolateCoordinate}{from, to, percentage}
+			\State $deltaNorth\gets to.north - from.north$
+			\State $deltaEast\gets to.east - from.east$
+			\State $from.north\gets from.north + deltaNorth * percentage$
+			\State $from.east\gets from.east + deltaEast * percentage$
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Target Task Status Merging}
+	\label{alg:mergeTaskStatus}
+	\begin{algorithmic}[1]
+		\Function{MergeTargetTaskStatus}{$myTask, otherTask$}
+		\State $copyMonitorData\gets false$
+		\State $copyAttackData\gets false$
+		\\
+		\If {$otherTask.monitorState$ {\bf =} $Complete$ {\bf and} $myTask.monitorState \neq otherTask.monitorState$}
+			\State $copyMonitorData\gets true$
+			\Comment Another UAV completed the task
+		\ElsIf{$otherTask.monitorScore > myTask.monitorScore$ {\bf and} $otherTask.monitorState \neq Complete$ {\bf and} $myTask.monitorState \neq Complete$}
+			\State $copyMonitorData\gets true$
+			\Comment Everyone is bidding on the task still
+		\EndIf
+		\\
+		\If{$copyMonitorData = true$}
+			\State $myTask.monitorID\gets otherTask.monitorID$
+			\State $myTask.monitorScore\gets otherTask.monitorScore$
+			\State $myTask.monitorState\gets otherTask.monitorState$
+			\State $myTask.monitorTimestamp\gets otherTask.monitorTimestamp$									
+		\EndIf
+		\\
+		\If{$otherTask.attackState = Complete$ {\bf and} $myTask.attackState \neq otherTask.attackState$}
+			\State $copyAttackData\gets true$
+			\Comment Another UAV completed the task
+		\ElsIf{$otherTask.attackScore > myTask.attackScore$ {\bf and} $otherTask.attackState \neq Complete$ {\bf and} $myTask.attackState \neq Complete$}
+			\State $copyAttackData\gets true$
+			\Comment Everyone is bidding on the task still
+		\EndIf
+		\\
+		\If{$copyAttackData = true$}
+			\State $myTask.attackID\gets otherTask.attackID$
+			\State $myTask.attackScore\gets otherTask.attackScore$
+			\State $myTask.attackState\gets otherTask.attackState$
+			\State $myTask.attackTimestamp\gets otherTask.attackTimestamp$
+			\State $myTask.destroyed\gets otherTask.destroyed$					
+		\EndIf
+
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Task Allocation}
+\begin{algorithm}[H]
+	\caption{Task Allocation}
+	\label{alg:taskAlloc}
+	\begin{algorithmic}[1]
+		\State $attackBids \gets $Null Set
+		\State $monitorBids \gets $Null Set
+		\\
+		\If{attacking or monitoring}
+			\State Update bid of current task
+		\EndIf
+		\\
+		\For{all targets}
+			\State $monitorBids[target] \gets$ compute monitor bid(target)
+			\If{Target is pending an attack}
+				\State $attackBids[target] \gets$ compute attack bid(target)
+			\EndIf
+		\EndFor
+		\\
+		\State $bestMonitorTgt = max(monitorBids)$
+		\State $bestAttackTgt = max(attackBids)$
+		\\
+		\If{$bestAttackTgt$ not null {\bf and} bid for $bestAttackTgt > $ current belief's task value for target}
+			\State Update belief model with bid meta data
+			\State Set current task to Attack
+		\ElsIf{$bestMonitorTgt$ not null {\bf and} bid for $bestMonitorTgt > $ current belief's task value for target}
+			\State Update belief model with bid meta data		
+			\State Set current task to Monitor			
+		\Else
+			\State Set current task to Search
+		\EndIf
+		
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Searching}
+\begin{algorithm}[H]
+	\caption{UAV Foraging - Selecting a cell to search}
+	\label{alg:forage}
+	\begin{algorithmic}[1]
+		\Function{GenerateForageLocation}{}
+		\Require $ 0\le randomWeighting \le 1$
+		\Require $ kernelSize \ll min($number world rows, number world columns$)$
+		\Require $ \frac{number world rows}{kernelSize} \in Z$
+		\Require $ \frac{number world columns}{kernelSize} \in Z$
+		\Ensure $ 0 \le x \le $ number world rows
+		\Ensure $ 0 \le y \le $ number world columns
+		\State $rowsPerKernel\gets $ number world rows $ / kernelSize$
+		\State $colsPerKernel\gets $ number world columns $ / kernelSize$		
+		\State $x\gets -1$
+		\State $y\gets -1$
+		\State $maxUncertainty\gets -1$
+		\State $maxUncertRow\gets -1$
+		\State $maxUncertCol\gets -1$
+		
+		
+		\If{$random() < randomWeighting$}
+		\State $ y\gets $ random row
+		\State $ x\gets $ random column
+		\Else
+		\For{$i\gets0$, $i < $number world rows, $i\gets i + rowsPerKernel$}
+		\For{$j\gets0$, $j <$ number world columns, $j\gets j + colsPerKernel$}
+		\State $kernelUncert\gets computeKernelUncert(i,j, kernelSize)$
+		\If{$kernelUncert > maxUncertainty$}
+		\State $maxUncertainty\gets kernelUncert$
+		\State $maxUncertRow\gets i$
+		\State $maxUncertCol\gets j$	
+		\EndIf
+		\EndFor
+		\EndFor
+		\State $x\gets randomInteger(rowPerKernel) + maxUncertRow$			
+		\State $y\gets randomInteger(colsPerKernel) + maxUncertCol$
+		\EndIf \\
+		
+		\Return x, y
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+\section{Simulation Truth to Perception}
+\begin{algorithm}[H]
+	\caption{Detect Targets - Truth to Perception}
+	\label{alg:detectTgts}
+	\begin{algorithmic}[1]
+		\Function{DetectTargets}{WorldCell cell, Sensor sensor}
+			\State List$<$Target$>$ truthTgts $\gets$ ...lookup true targets in cell...
+			\State List$<$Target$>$ perceivedTgts $\gets$ ...empty list...
+			\ForAll{Target trueTgt in truthTgts}
+
+				\State probDetect $\gets$ Lookup probability of detecting true target type with the given sensor
+				\If {randomNumber() $<$ prodDetect}
+					\State Add trueTgt to perceivedTgts list
+				\EndIf
+			\EndFor \\
+			\Return perceivedTgts
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Perceive Target Type - Truth to Perception}
+	\label{alg:perceiveTgt}
+	\begin{algorithmic}[1]
+		\Function{CategorizeTargetType}{Target trueTgt, Sensor sensor}
+		\State int perceivedTgtType $\gets$ trueTgt.getTrueTargetType()
+		
+		\For{iterator $\gets 0$, iterator $< $ Number of Target Types, iterator $\gets$ iterator + 1 }
+			\If{iterator $\neq$ trueTgt.getTrueTargetType()}
+				\State probMisclassify $ \gets $ Lookup probability of mistakenly perceiving true target type as $iterator$ with the given sensor
+				\If{randomNumber() $<$ $P_{misclassify}(TT_{iterator} | Sensor detected target)$}
+					\State perceivedTgtType $\gets$ iterator
+					\Comment{Sensor misclassifies the target type}
+					\State Break out of loop early
+				\EndIf
+			\EndIf
+		\EndFor\\
+
+		\Return perceivedTgtType
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+	\caption{Sensor scan of a world cell - Truth to Perception}
+	\label{alg:sensorScan}
+	\begin{algorithmic}[1]
+		\Function{ScanCell}{WorldCell cell, Sensor sensor}
+		\State List$<$Target$>$ detectedTruthTgts $\gets$ DetectTargets(cell, sensor)
+		\State probDetect $\gets$ Lookup probability of detecting perceived target type with the given sensor
+		\ForAll{Target trueTgt in detectedTruthTgts}
+			\State int perceivedTgtType $\gets$ CategorizeTargetType(trueTgt, sensor)
+			\State float bayesianDenominator $\gets$ 0
+			\For{iterator $\gets 0$, iterator $< $ Number of Target Types, iterator $\gets$ iterator + 1 }
+				\State prevBeliefTypeItr $\gets$ P(Previous belief target is type iterator)
+				\If{iterator $\neq$ perceivedTgtType}
+					\State probMisclassify $ \gets $ Lookup probability of mistakenly perceiving target type as $iterator$ with the given sensor
+					\State bayesianDenominator $\mathrel{+}=$ probMisclassify $*$ prevBeliefTypeItr
+				\Else
+					\State bayesianDenominator $\mathrel{+}=$ probDetect $*$ prevBeliefTypeItr
+				\EndIf
+			\EndFor
+			\State P(New belief target is type iterator) $\gets \frac{probDetect * P(belief)}{\text{bayesianDenominator}}$
+
+		\EndFor
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+%			\State TODO: update belief model
