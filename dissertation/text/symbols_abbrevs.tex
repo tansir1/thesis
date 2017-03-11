@@ -10,6 +10,9 @@
 \item[RNG]              Range - Used to label communication range cases in Appendix~\ref{sec:raw_data}
 \item[UAV]				Unmanned Air Vehicle
 \item[$H_{ij}$] 		Heading Estimation Coefficient for sensor $i$ against target type $j$
+\item[$Hdg_{err}$]      Noise added to true target headings to generate sensor perception orientation measurements
+\item[$Hdg_{p}$]        Perceived target heading from a senor
+\item[$Hdg_{t}$]        A target's true heading
 \item[$\psi$]           UAV's heading angle
 \item[$r$]              UAV's turning radius
 \item[$v$] 				UAV's speed
@@ -21,5 +24,6 @@
 \item[$P(S_{e}|T_{e})$] The probability of sensor $S$ detecting that a scanned area is empty given that no targets are truly present
 \item[$P(S_{x}|T_{x})$] The probability of sensor $S$ detecting target type $x$ and correctly perceiving it as target type $x$
 \item[$P(S_{j}|T_{i})$] The probability of sensor $S$ detecting target type $i$ and mistakenly perceiving it as target type $j$
+\item[$T_{Hdg,t}$]      A target's estimated heading at time $t$
 \item[$U$]              The Shannon Uncertainty value of a Cell Belief
 \end{abbrv}

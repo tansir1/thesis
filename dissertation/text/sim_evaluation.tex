@@ -22,4 +22,6 @@ Two types of UAVs were modeled.  One is a fast long range ISR platform and the o
 
 The threshold for the ``all world known'' metric was set at 0.3. To obtain a Shannon Uncertainty of 0.3 or lower requires having a $P(empty) < 5\%$ or $P(empty) > 95\%$.
 
+The $\alpha$ weighting value for Equation~\ref{eq:tgt_hdg_update} was set to $0.4$.  The $\alpha$ for merging target beliefs in Algorithm~\ref{alg:mergeTarget} was set to $0.4$.  The $randomWeighting$ factor in Algorithm~\ref{alg:forage} was set to $0.33$.
+
 The simulation was ran for all 10 worlds with the same random seed.  This process was repeated 5 times in order to measure the effects on mission performance with a varying communication range.  The communication range is defined as a percentage of the maximum distance across the simulated world.  Since the worlds are square shaped the maximum distance is located between any two diagonal corners.  Since the worlds are 2.5 by 2.5$Km$ then the maximum distance is physically 3.54$Km$ ($3.54Km = \sqrt{(2.5Km^{2}+2.5Km^{2})}$).  One set of simulations was run using a $100\%$ communication range to serve as a comparative baseline against a perfect global communication network.  In this case all UAVs are able to communicate with all other UAVs at all times. Four more runs were performed using communication ranges of $20\%$, $10\%$, $5\%$, and $2\%$.
