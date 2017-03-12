@@ -45,37 +45,37 @@ Table~\ref{tab:avgResultsRatio} shows the ratios of performance between the test
 
 A more interesting view of the data is shown via Tukey style boxplots in Figures~\ref{fig:detectBoxPlot}, \ref{fig:destroyedBoxPlot}, and \ref{fig:knownBoxPlot} comparing the time to detect all targets, the time to destroy all targets, and the time to confidently know the whole world respectively.  The first and third quartiles of the metric data recorded across all 10 words is bounded by the blue boxes in the figures.  The red lines are the median values and the red dots are the average.  The whiskers are set to the nearest datum still within 1.5 times the interquartile range (also called the midspread or middle 50\%).  The blue dots are outliers beyond the interquartile range.
 
-\end{multicols*}
+%\end{multicols*}
 
-\begin{figure}[H]
+\begin{figure*}%[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{averages.png}
 	\caption{Average time to complete objectives per communication range}
 	\label{fig:averages}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[H]
+\begin{figure*}%[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{detected_box.png}
 	\caption{Boxplot for time to detect all targets per communication range}
 	\label{fig:detectBoxPlot}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[H]
+\begin{figure*}%[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{destroyed_box.png}
 	\caption{Boxplot for time to destroy all targets per communication range}
 	\label{fig:destroyedBoxPlot}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[H]
+\begin{figure*}%[H]
 	\centering
 	\includegraphics[width=\linewidth,height=3.5in,keepaspectratio=false]{known_box.png}
 	\caption{Boxplot for time to know whole world per communication range}
 	\label{fig:knownBoxPlot}
-\end{figure}
+\end{figure*}
 
-\begin{multicols*}{2}
+%\begin{multicols*}{2}
 
 
 %-------------------------------------------------------------------------
