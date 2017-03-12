@@ -63,7 +63,7 @@
 %\include{./text/taskAllocation}
 
 %\include implies a page break, \input does not
-\include{./text/scenModDesc}
+\input{./text/scenModDesc}
 \input{./text/targetModel}
 \input{./text/uavModel}
 \input{./text/sensorWeaponModel}
@@ -81,6 +81,8 @@
 \onecolumn
 \newpage
 
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{8000}
 \printbibliography[title=References,heading=bibintoc]
 
 \addappheadtotoc

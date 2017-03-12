@@ -194,15 +194,15 @@ A pure Bayesian approach for merging cell beliefs is intractable because it woul
 
 Using a weighted average is not a perfect solution but it is simple, intuitive, and easy to derive when comparing sensor and target type pairings.  It also prevents each UAV from having to know the details about every other UAV or sensor in the swarm.  The only one who knows all of the capabilities of the swarm is the human operator. It puts the responsibility on the swarm operator to give a relative strength per sensor and target type pairing.  It lets the operator set whether the UAV is extremely trusting of external data about a target or distrustful of external data about a target.
 
-\end{multicols*}
-\begin{figure}[H]
+%\end{multicols*}
+\begin{figure*}%[H]
 	\centering
 	%\includegraphics[width=\linewidth,height=\textheight]{imagefile}
 	\includegraphics[scale=0.75]{belief_object.png}
 	\caption{Belief Model Object Diagram}
 	\label{fig:belief_object}
-\end{figure}
-\begin{multicols*}{2}
+\end{figure*}
+%\begin{multicols*}{2}
 
 
 Table~\ref{tab:exampleCellMerge} shows an example of merging a single cell.  At some time in the simulation UAV 1 believes cell $[2, 6]$ has a 20\% of being empty (or in other words an 80\% chance that something is there). This probability was last updated at time 1234.  UAV 1 has broadcasted this belief data and UAV 2 has received it.  UAV 2 believes there is a 50\% chance that the same cell is empty but this data was last updated a long time ago at time 22.  Therefore UAV 2 will merge UAV 1's data for this cell.  Since alpha is set to 0.6 the new $P_{2,6}(empty)$ for UAV 2 is $0.6*(0.2) + (1-0.6)*(0.5)=0.32$.  After the merging is complete UAV 2's $P(empty)$ value is set to $0.32$ and the last update timestamp is set to UAV 1's timestamp.
