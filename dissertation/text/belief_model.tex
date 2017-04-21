@@ -9,6 +9,7 @@ The belief model is the fundamental piece that allows the swarm to function as a
 
 %\section{Cell Beliefs}
 \subsubsection{Cell Beliefs}
+\label{sec:cell_beliefs}
 Prior to beginning the mission the geographic area is tessellated into a rectangular grid of $M$ rows and $N$ columns.  The actual physical size of the cells is irrelevant to the algorithm.  However, scanning half a cell and declaring it empty while a target sits in the other half is erroneous.  Therefore a constraint exists such that the grid cells must be small enough so that the smallest field-of-view of all the sensors must be able to completely encompass a grid cell in a single sensor frame.  This constraint prevents the noted error condition.
 
 \begin{figure}[H]
